@@ -5,11 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CHEWGUMI | 한입에 건강을 더하다</title>
 <meta name="description" content="츄구미 ChewGumi | 상황 맞춤형 건강 간식 브랜드 gummy, candy">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CHEWGUMI">
+<meta property="og:title" content="CHEWGUMI | 한입에 건강을 더하다">
+<meta property="og:description" content="상황 맞춤형 건강 간식 브랜드 츄구미 — 트래블잇 · 듀잇">
+<meta property="og:image" content="https://chewgumi.com/web/product/medium/202511/a613606b1993ee46b245871cef885fa3.png">
+<meta property="og:url" content="https://chewgumi.com">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23EC5E86'/%3E%3Cstop offset='1' stop-color='%23DA4468'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial' font-size='34' font-weight='bold' fill='white'%3EC%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+/* 상세 레이어 구성 선택 */
+.d-opt { width:100%; margin-top:12px; padding:12px 14px; border-radius:14px; font-size:13px; color:var(--ink);
+  background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.85);
+  backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 4px 12px rgba(0,0,0,.05); appearance:auto; }
+
+/* 스마트스토어(네이버페이) 구매 버튼 */
+.d-npay { display:none; text-align:center; padding:12px 0; border-radius:999px; font-size:12px; letter-spacing:1px; font-weight:700;
+  color:#fff; background:#03C75A; box-shadow:0 6px 16px rgba(3,199,90,.35); margin-top:8px; }
+.d-npay.show { display:block; }
+
+/* 결제수단 뱃지 */
+.pay-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; justify-content:center; }
+.pay-badges span { font-size:10px; letter-spacing:.5px; font-weight:600; color:#555; padding:5px 12px; border-radius:999px;
+  background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.8);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
+
+/* 키보드 포커스 표시 (접근성) */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline:2px solid #E14E78; outline-offset:3px; border-radius:8px;
+}
+
 /* ==========================================================================
    CHEWGUMI × OFFGRAY 폼 재구현
    · 레이아웃: 카페24 디자인 PTMD871426 (데모몰 ecudemo394006) 구조 기반
@@ -55,7 +85,7 @@ header:not(.solid) { color:#fff; }
 header:not(.solid) .cart-n { border-color:#fff; }
 header.solid { background:rgba(251,251,253,.78); backdrop-filter:saturate(120%) blur(20px); -webkit-backdrop-filter:saturate(120%) blur(20px); border-bottom-color:rgba(0,0,0,.08); color:var(--ink); }
 header.solid .cart-n { border-color:var(--ink); }
-.head-top { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; height:58px; transition:height .25s ease; }
+.head-top { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; height:50px; transition:height .25s ease; }
 header.shrink .head-top { height:42px; }
 header.shrink .head-top .logo img { height:28px !important; }
 header.shrink .glass-wrap { padding:0 16px 8px; }
@@ -64,7 +94,7 @@ header.shrink .glass-bar { padding:3px; }
 .head-top .util { grid-column:3; }
 .head-top .burger { grid-column:1; justify-self:start; }
 /* 제목 아래 하나의 글래스 메뉴 바 */
-.glass-wrap { display:flex; justify-content:center; padding:2px 16px 14px; }
+.glass-wrap { display:flex; justify-content:center; padding:0 16px 14px; margin-top:-4px; }
 .glass-bar { display:flex; gap:4px; padding:6px; border-radius:999px;
   background:rgba(255,255,255,.5); backdrop-filter:blur(22px) saturate(120%); -webkit-backdrop-filter:blur(22px) saturate(120%);
   border:1px solid rgba(255,255,255,.65);
@@ -89,7 +119,8 @@ header:not(.solid) .gnb > li:hover > a { background:rgba(255,255,255,.22);
   opacity:0; transform:rotate(-14deg); transition:opacity .25s ease; pointer-events:none; }
 .gnb > li:hover > a::before { opacity:.9; }
 .gnb .sub { display:none; position:absolute; top:calc(100% + 10px); left:-6px; background:rgba(255,255,255,.72); backdrop-filter:blur(22px) saturate(120%); -webkit-backdrop-filter:blur(22px) saturate(120%); border:1px solid rgba(255,255,255,.6); min-width:190px; padding:10px 8px; color:var(--ink); border-radius:20px; box-shadow:0 18px 44px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.9); }
-.gnb > li:hover .sub { display:block; }
+.gnb > li:hover .sub, .gnb > li:focus-within .sub, .gnb > li.open .sub { display:block; }
+.gnb .sub::before { content:""; position:absolute; left:0; right:0; top:-12px; height:12px; }
 .gnb .sub a { display:block; padding:9px 14px; font-weight:400; font-size:12px; border-radius:12px; }
 .gnb .sub a::before { content:"→ "; }
 .gnb .sub a:hover { background:#f6f6f8; }
@@ -304,7 +335,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 .detail .d-img img { width:100%; height:100%; object-fit:cover; min-height:300px; }
 .detail .d-info { padding:34px 32px; position:relative; font-family:"Pretendard Variable",Pretendard,"Noto Sans KR"; }
 .detail .d-x { position:absolute; top:16px; right:18px; font-size:18px; }
-.detail .d-line { font-family:"Montserrat"; font-size:10px; letter-spacing:3px; color:var(--gray); }
+.detail .d-line { font-family:"Pretendard Variable",Pretendard,"Noto Sans KR",sans-serif; font-size:10px; letter-spacing:3px; color:var(--gray); }
 .detail .d-name { font-size:17px; font-weight:700; margin-top:10px; line-height:1.5; }
 .detail .d-price { margin-top:14px; display:flex; gap:10px; align-items:baseline; }
 .detail .d-desc { margin-top:16px; font-size:13px; color:#666; line-height:1.75; padding-top:16px; border-top:1px solid var(--line); }
@@ -313,7 +344,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 .detail .d-qty span { min-width:40px; text-align:center; font-weight:700; }
 .detail .d-total { margin-top:14px; font-size:14px; } .detail .d-total b { font-size:18px; }
 .detail .d-acts { margin-top:18px; display:flex; gap:10px; }
-.detail .d-acts a { flex:1; text-align:center; padding:14px 0; border-radius:999px; font-size:12px; letter-spacing:2px; font-family:"Montserrat"; font-weight:600; }
+.detail .d-acts a { flex:1; text-align:center; padding:14px 0; border-radius:999px; font-size:12px; letter-spacing:2px; font-family:"Pretendard Variable",Pretendard,"Noto Sans KR",sans-serif; font-weight:600; }
 .detail .d-notice { margin-top:16px; padding:12px 14px; border-radius:14px; font-size:11.5px; line-height:1.7; color:#666;
   background:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.65); box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
 .detail .d-notice b { color:var(--ink); }
@@ -488,7 +519,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
     <ul class="gnb glass-bar">
       <li><a href="#best">SHOP</a>
         <div class="sub">
-          <a href="#all" onclick="filterLine('all')">SHOP ALL</a><a href="#best">BESTSELLERS</a><a href="https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/" target="_blank" rel="noopener">TRAVEL-IT</a><a href="https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/" target="_blank" rel="noopener">DEW-IT</a>
+          <a href="#all" onclick="filterLine('all')">SHOP ALL</a><a href="#best">BESTSELLERS</a><a href="#all" onclick="filterLine('travel')">TRAVEL-IT</a><a href="#all" onclick="filterLine('doit')">DEW-IT</a>
         </div>
       </li>
       <li><a href="#about">ABOUT</a></li>
@@ -508,10 +539,10 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   <div class="d-auth"><a href="login.html">LOGIN</a><a href="https://chewgumi.com/member/join.html">JOIN US</a><a href="https://chewgumi.com/myshop/order/list.html">ORDER</a></div>
   <nav>
     <a href="#best" onclick="toggleDrawer(false)">SHOP</a>
-    <a class="d-sub" href="#best" onclick="toggleDrawer(false)">SHOP ALL</a>
+    <a class="d-sub" href="#all" onclick="toggleDrawer(false);filterLine('all')">SHOP ALL</a>
     <a class="d-sub" href="#best" onclick="toggleDrawer(false)">BESTSELLERS</a>
-    <a class="d-sub" href="https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/" target="_blank" rel="noopener" onclick="toggleDrawer(false)">TRAVEL-IT</a>
-    <a class="d-sub" href="https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/" target="_blank" rel="noopener" onclick="toggleDrawer(false)">DEW-IT</a>
+    <a class="d-sub" href="#all" onclick="toggleDrawer(false);filterLine('travel')">TRAVEL-IT</a>
+    <a class="d-sub" href="#all" onclick="toggleDrawer(false);filterLine('doit')">DEW-IT</a>
     <a href="#about" onclick="toggleDrawer(false)">ABOUT</a>
     <a href="#arrivals" onclick="toggleDrawer(false)">ARCHIVE</a>
     <a href="notice.html" onclick="toggleDrawer(false);openBoardLayer('notice');return false;">COMMUNITY</a>
@@ -532,14 +563,14 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
     <div class="hero-txt">
       <div class="en">Travel-it</div>
       <div class="sub kr" data-en="12 nutrients in one chew — your travel energy booster">12가지 영양소를 한 입에 — 여행용 에너지 부스터 젤리</div>
-      <a class="hero-btn" href="https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/" target="_blank" rel="noopener">SHOP NOW</a>
+      <a class="hero-btn" href="#all" onclick="filterLine('travel')">SHOP NOW</a>
     </div>
   </div>
   <div class="slide slide-3">
     <div class="hero-txt">
       <div class="en">Dew-it</div>
       <div class="sub kr" data-en="93% Finnish xylitol · sugar-free candy">핀란드산 자일리톨 93% · 무설탕 캔디</div>
-      <a class="hero-btn" href="https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/" target="_blank" rel="noopener">SHOP NOW</a>
+      <a class="hero-btn" href="#all" onclick="filterLine('doit')">SHOP NOW</a>
     </div>
   </div>
   <button class="hero-arrow prev" onclick="heroGo(-1)" aria-label="이전 배너">‹</button>
@@ -584,6 +615,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 <section id="community" style="background:var(--alt);">
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">Community</h2><a class="sec-more" href="notice.html" onclick="openBoardLayer('notice');return false;">VIEW ALL</a></div>
+    <p class="comm-mention kr" data-en="Be with us." style="margin:-6px 0 18px; font-size:14px; letter-spacing:.5px; color:var(--gray);">우리와 함께하세요.</p>
     <div class="comm-grid">
       <a class="comm-card" href="notice.html" onclick="openBoardLayer('notice');return false;">
         <h3><span class="comm-dot"></span>Notice</h3>
@@ -600,6 +632,17 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
         <ul class="comm-list" data-key="qna"></ul>
         <span class="comm-more">MORE</span>
       </a>
+    </div>
+    <div class="store-reviews" style="margin-top:26px;">
+      <div style="font-size:11px; font-weight:700; letter-spacing:3px; color:var(--ink); margin-bottom:12px;">STORE REVIEWS</div>
+      <div class="ft-links" style="justify-content:flex-start; margin-top:0;">
+        <a href="https://m.oasis.co.kr/product/detail/112626" target="_blank" rel="noopener">OASIS · TRAVEL-IT</a>
+        <a href="https://smartstore.naver.com/chewgumi/products/13393122244" target="_blank" rel="noopener">SMARTSTORE · DEW-IT</a>
+        <a href="https://www.wadiz.kr/web/maker/detail/5973786" target="_blank" rel="noopener">WADIZ</a>
+        <a href="https://www.threads.com/@healthy.me.helpme/post/DSojDgwEkUc" target="_blank" rel="noopener">THREADS · TRAVEL-IT</a>
+        <a href="https://www.ssg.com/item/itemView.ssg?itemId=1000698983115&amp;siteNo=6004&amp;salestrNo=6005" target="_blank" rel="noopener">SSG · TRAVEL-IT</a>
+        <a href="https://www.ssg.com/item/itemView.ssg?itemId=1000771601064&amp;siteNo=6004&amp;salestrNo=6005" target="_blank" rel="noopener">SSG · DEW-IT</a>
+      </div>
     </div>
   </div>
 </section>
@@ -738,11 +781,11 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
       <div>
         <div class="ft-title">CS CENTER</div>
         chewgumi24@gmail.com<br>
-        운영시간 : 9:00 ~ 18:00
+        <span class="kr" data-en="Hours : 9:00 ~ 18:00">운영시간 : 9:00 ~ 18:00</span>
       </div>
       <div>
         <div class="ft-title">SNS</div>
-        <a href="https://www.instagram.com/chew_gumi/" target="_blank" rel="noopener">INSTAGRAM @chew_gumi →</a><br>
+        <a href="https://www.instagram.com/chuckgumi_official/" target="_blank" rel="noopener">INSTAGRAM @chuckgumi_official →</a><br>
         <a href="https://chewgumi.com" target="_blank" rel="noopener">OFFICIAL STORE chewgumi.com →</a>
       </div>
     </div></div>
@@ -751,6 +794,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
+      <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a>
     </div>
   </div>
 </footer>
@@ -765,16 +809,18 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
       <div class="d-name" id="dName"></div>
       <div class="d-price"><span class="p-origin" id="dOrigin"></span><span class="p-sale" id="dSale" style="font-size:18px"></span></div>
       <div class="d-desc" id="dDesc"></div>
+      <select id="dOpt" class="d-opt" onchange="applyOpt()" aria-label="구성 선택"></select>
       <div class="d-qty">
         <button onclick="chgQty(-1)">−</button><span id="dQty">1</span><button onclick="chgQty(1)">＋</button>
       </div>
       <div class="d-total"><span data-en="Total">총 상품금액</span> <b id="dTotal"></b></div>
       <div class="d-acts">
-        <a class="d-buy" id="dBuy" href="https://chewgumi.com" target="_blank" rel="noopener" title="공식몰에서 구매가 진행됩니다">BUY NOW</a>
+        <a class="d-buy" id="dBuy" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return buyNowFromDetail(event)" title="공식몰에서 구매가 진행됩니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
       </div>
-      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch for orders before 2PM (weekdays) · <b>Returns</b> Unopened, within 7 days · Options and payment are completed on the official store.">
-        <b>배송</b> 평일 14시 이전 주문 당일 출고 · <b>교환/반품</b> 미개봉 7일 이내 · 옵션 선택과 결제는 공식몰에서 안전하게 진행됩니다.
+      <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
+      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch for orders before 2PM (weekdays) · <b>Returns</b> Unopened, within 7 days · Options and payment are completed on the official store (NaverPay · Card · Bank transfer).">
+        <b>배송</b> 평일 14시 이전 주문 당일 출고 · <b>교환/반품</b> 미개봉 7일 이내 · 옵션 선택과 결제는 공식몰에서 안전하게 진행됩니다. (네이버페이 · 신용카드 · 계좌이체 · 가상계좌)
       </div>
     </div>
   </div>
@@ -804,8 +850,9 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   <div class="c-list" id="cList"><div class="c-empty">장바구니가 비어 있습니다</div></div>
   <div class="c-foot">
     <div class="c-total"><span>총 상품금액</span><b id="cTotal">₩0</b></div>
-    <div class="c-note">버튼을 누르면 공식몰의 해당 상품 페이지가 열립니다. 공식몰에서 상품을 담고 결제(토스·카카오페이·카드·계좌이체 등)를 완료해 주세요.</div>
-    <a class="c-checkout" id="cCheckout" href="https://chewgumi.com" target="_blank" rel="noopener">공식몰에서 결제하기</a>
+    <div class="c-note">버튼을 누르면 담으신 상품의 공식몰 페이지가 바로 열립니다. 공식몰에서 수량 선택 후 결제(토스·카카오페이·카드·계좌이체 등)를 완료해 주세요.</div>
+    <a class="c-checkout" id="cCheckout" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return cartCheckout(event)">공식몰에서 결제하기</a>
+    <div class="pay-badges" aria-label="지원 결제수단"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
     <a class="c-continue" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 확인</a>
     <button class="c-continue" onclick="closeCart()">계속 쇼핑하기</button>
   </div>
@@ -820,6 +867,24 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 </nav>
 
 <script>
+/* 터치 기기 GNB 드롭다운: 첫 탭은 메뉴 열기, 두 번째 탭은 이동 */
+if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+  document.querySelectorAll('.gnb > li').forEach(li => {
+    if (!li.querySelector('.sub')) return;
+    li.addEventListener('click', e => {
+      const top = li.querySelector(':scope > a');
+      if ((e.target === top || top.contains(e.target)) && !li.classList.contains('open')) {
+        e.preventDefault(); e.stopPropagation();
+        document.querySelectorAll('.gnb > li.open').forEach(o => o.classList.remove('open'));
+        li.classList.add('open');
+      }
+    }, true);
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.gnb > li.open').forEach(o => o.classList.remove('open'));
+  });
+}
+
 /* 한/영 자동 전환 + 토글 */
 let cgLang = 'ko';
 document.querySelectorAll('[data-en]').forEach(el => { el.dataset.ko = el.innerHTML; });
@@ -863,7 +928,7 @@ document.querySelectorAll('[data-en]').forEach(el => { el.dataset.ko = el.innerH
     dotsBox.querySelectorAll('button').forEach((d, i) => d.classList.toggle('on', i === cur));
   }
   window.heroGo = d => { show(cur + d); restart(); };
-  function restart(){ clearInterval(timer); timer = setInterval(() => show(cur + 1), 4500); }
+  function restart(){ clearInterval(timer); timer = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? null : setInterval(() => show(cur + 1), 4500); }
   box.addEventListener('mouseenter', () => clearInterval(timer));
   box.addEventListener('mouseleave', restart);
   restart();
@@ -882,6 +947,116 @@ function setLang(l){
 /* 브라우저 언어 자동 감지: 한국어 환경이 아니면 영어로 시작 */
 if (!(navigator.language || 'ko').toLowerCase().startsWith('ko')) setLang('en');
 
+/* 바로구매: chewgumi.com 내 호스팅 시 카페24 주문서로 직행, 외부 호스팅 시 상품 페이지로 폴백 */
+function cgIsMall(){ return /(^|\.)chewgumi\.com$/.test(location.hostname) || /cafe24shop|cafe24\.com$/.test(location.hostname); }
+function cgDirectOrder(productNo, qty, fallbackUrl){
+  if (!cgIsMall()) { window.open(fallbackUrl, '_blank', 'noopener'); return; }
+  const body = 'product_no=' + productNo + '&quantity=' + (qty || 1) + '&basket_type=A0000&shop_no=1';
+  fetch('/exec/front/order/basket/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+    body
+  }).then(r => r.ok ? r : Promise.reject())
+    .then(() => { location.href = '/order/orderform.html?basket_type=A0000&delvtype=A'; })
+    .catch(() => { window.open(fallbackUrl, '_blank', 'noopener'); });
+}
+function buyNowFromDetail(ev){
+  const a = document.getElementById('dBuy');
+  const m = (a.href || '').match(/product_no=(\d+)/);
+  if (m && cgIsMall()) { ev.preventDefault(); cgDirectOrder(m[1], dQty, a.href); return false; }
+  return true; /* 외부 호스팅: href(상품 페이지)로 이동 */
+}
+function cartCheckout(ev){
+  const a = document.getElementById('cCheckout');
+  if (!cgIsMall() || !CART.length) return true;
+  ev.preventDefault();
+  /* 담긴 상품을 공식몰 장바구니에 순서대로 담고 장바구니로 이동 */
+  const adds = CART.map(it => {
+    const m = (productUrl(it.name) || '').match(/product_no=(\d+)/);
+    if (!m) return Promise.resolve();
+    return fetch('/exec/front/order/basket/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+      body: 'product_no=' + m[1] + '&quantity=' + it.qty + '&basket_type=A0001&shop_no=1'
+    });
+  });
+  Promise.allSettled(adds).then(() => { location.href = '/order/basket.html'; });
+  return false;
+}
+
+/* 상세 레이어 구성(옵션) 선택 — cueren 스타일 */
+const CG_OPTIONS = {
+  travel: [
+    { k:'1',  label:'1봉 (40g)',  name:'[1봉] 트래블잇 Travel-it (40g)',  origin:3500,   sale:3500,  no:15 },
+    { k:'3',  label:'3봉 (40g×3)',  name:'[3봉] 트래블잇 Travel-it (40g)',  origin:18000,  sale:9900,  no:11 },
+    { k:'5',  label:'5봉 (40g×5)',  name:'[5봉] 트래블잇 Travel-it (40g)',  origin:30000,  sale:14900, no:12 },
+    { k:'10', label:'10봉 (40g×10)', name:'[10봉] 트래블잇 Travel-it (40g)', origin:60000,  sale:27900, no:13 },
+    { k:'20', label:'20봉 (40g×20)', name:'[20봉] 트래블잇 Travel-it (40g)', origin:120000, sale:52500, no:14 }
+  ],
+  doit: [
+    { k:'lemon', label:'레몬민트',  name:'듀잇 레몬민트 — 무설탕 자일리톨 캔디', origin:39000,  sale:19900, no:16 },
+    { k:'grape', label:'그레이프',  name:'듀잇 그레이프 — 무설탕 자일리톨 캔디', origin:39000,  sale:19900, no:17 },
+    { k:'4',  label:'4개입',  name:'듀잇 4개입 — 무설탕 자일리톨 캔디',  origin:39000,  sale:19900, no:18 },
+    { k:'6',  label:'6개입',  name:'듀잇 6개입 — 무설탕 자일리톨 캔디',  origin:54800,  sale:27900, no:19 },
+    { k:'10', label:'10개입', name:'듀잇 10개입 — 무설탕 자일리톨 캔디', origin:84200,  sale:42900, no:20 },
+    { k:'20', label:'20개입', name:'듀잇 20개입 — 무설탕 자일리톨 캔디', origin:158900, sale:81000, no:21 }
+  ]
+};
+function findOptIndex(line, name){
+  const list = CG_OPTIONS[line] || [];
+  const n = name || '';
+  for (let i = 0; i < list.length; i++) {
+    const o = list[i];
+    if (line === 'travel') { const m = n.match(/\[(\d+)봉\]/); if (m && m[1] === o.k) return i; }
+    else { if ((o.k === 'lemon' && n.includes('레몬민트')) || (o.k === 'grape' && n.includes('그레이프')) || n.includes(o.k + '개입')) return i; }
+  }
+  return 0;
+}
+function applyOpt(){
+  const line = window._curLine, sel = document.getElementById('dOpt');
+  const o = (CG_OPTIONS[line] || [])[sel.selectedIndex];
+  if (!o) return;
+  window._curOpt = o;
+  document.getElementById('dOrigin').textContent = o.origin > o.sale ? '₩' + o.origin.toLocaleString() : '';
+  document.getElementById('dSale').textContent = '₩' + o.sale.toLocaleString();
+  dPrice = o.sale; renderQty();
+  document.getElementById('dBuy').href = 'https://chewgumi.com/product/detail.html?product_no=' + o.no + '&cate_no=' + (line === 'travel' ? 42 : 47) + '&display_group=1';
+}
+
+/* 상품명 → 스마트스토어(네이버페이) 매핑 — 트래블잇 주소 확보 시 추가 */
+const SMARTSTORE = {
+  dewit: 'https://smartstore.naver.com/chewgumi/products/13393122244'
+  /* , travel: '트래블잇 스마트스토어 URL' */
+};
+function smartstoreUrl(name){
+  const n = (name || '');
+  const isTravel = n.includes('트래블잇') || n.toLowerCase().includes('travel');
+  if (isTravel) return SMARTSTORE.travel || null;
+  if (n.includes('듀잇')) return SMARTSTORE.dewit || null;
+  return null;
+}
+
+/* 상품명 → 공식몰 상품 상세 페이지 매핑 */
+const CG_TRAVEL_CAT = 'https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/';
+const CG_DEWIT_CAT  = 'https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/';
+function productUrl(name){
+  const n = (name || '').trim();
+  const detail = (no, cate) => 'https://chewgumi.com/product/detail.html?product_no=' + no + '&cate_no=' + cate + '&display_group=1';
+  const isTravel = n.includes('트래블잇') || n.toLowerCase().includes('travel');
+  if (isTravel) {
+    const m = n.match(/\[(\d+)봉\]/);
+    const map = {'1':15, '3':11, '5':12, '10':13, '20':14};
+    return (m && map[m[1]]) ? detail(map[m[1]], 42) : CG_TRAVEL_CAT;
+  }
+  if (n.includes('레몬민트')) return detail(16, 47);
+  if (n.includes('그레이프')) return detail(17, 47);
+  if (n.includes('4개입'))  return detail(18, 47);
+  if (n.includes('6개입'))  return detail(19, 47);
+  if (n.includes('10개입')) return detail(20, 47);
+  if (n.includes('20개입')) return detail(21, 47);
+  return CG_DEWIT_CAT;
+}
+
 /* 상품 상세 페이지 */
 let dPrice = 0, dQty = 1;
 function won(n){ return '₩' + n.toLocaleString('ko-KR'); }
@@ -894,7 +1069,16 @@ function openDetail(card){
   const sale = card.querySelector('.p-sale').textContent;
   document.getElementById('dSale').textContent = sale;
   window._curCard = card;
-  document.getElementById('dBuy').href = card.dataset.line === 'travel' ? 'https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/' : 'https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/';
+  document.getElementById('dBuy').href = productUrl(card.querySelector('.name').textContent);
+  const np = document.getElementById('dNpay');
+  const su = smartstoreUrl(card.querySelector('.name').textContent);
+  if (su) { np.href = su; np.classList.add('show'); } else { np.classList.remove('show'); }
+  window._curLine = card.dataset.line;
+  const sel = document.getElementById('dOpt');
+  const opts = CG_OPTIONS[card.dataset.line] || [];
+  sel.innerHTML = opts.map(o => '<option>' + o.label + ' — ₩' + o.sale.toLocaleString() + '</option>').join('');
+  sel.selectedIndex = findOptIndex(card.dataset.line, card.querySelector('.name').textContent);
+  applyOpt();
   document.getElementById('dDesc').textContent = (cgLang === 'en' && card.dataset.descEn) ? card.dataset.descEn : card.dataset.desc;
   dPrice = Number(sale.replace(/[^0-9]/g,'')); dQty = 1; renderQty();
   document.getElementById('detail').classList.remove('hide');
@@ -945,7 +1129,7 @@ document.querySelectorAll('.card').forEach(c => ioCard.observe(c));
 
 /* 이미지 로딩 실패 대비: 상품 사진은 플레이스홀더로, 비어버린 화보 레일은 섹션 숨김 */
 const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="100%" height="100%" fill="#f4f4f6"/><text x="50%" y="50%" text-anchor="middle" font-family="Montserrat,Arial" font-size="18" letter-spacing="4" fill="#c7c7d0">CHEWGUMI</text></svg>');
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="100%" height="100%" fill="#f4f4f6"/><text x="50%" y="50%" text-anchor="middle" font-family="Arial" font-size="18" letter-spacing="4" fill="#c7c7d0">CHEWGUMI</text></svg>');
 document.querySelectorAll('.card .thumb img, .popup img, .lineup-card img').forEach(img => {
   img.addEventListener('error', () => {
     if (!img.dataset.err && img.src.includes('chewgumi.com')) {
@@ -1041,7 +1225,7 @@ function closeCart(){ document.getElementById('cartP').classList.remove('open');
 function addToCart(){
   if (!window._curCard) return;
   const card = window._curCard;
-  const name = card.querySelector('.name').textContent.trim();
+  const name = (window._curOpt && window._curOpt.name) || card.querySelector('.name').textContent.trim();
   const found = CART.find(i => i.name === name);
   if (found) found.qty += dQty;
   else CART.push({ name, price: dPrice, qty: dQty, img: card.querySelector('.thumb img').src });
@@ -1065,8 +1249,11 @@ function renderCart(){
       <button class="c-del" onclick="cartDel(${i})" aria-label="삭제">✕</button>
     </div>`).join('');
   document.getElementById('cTotal').textContent = won(CART.reduce((a,i)=>a+i.price*i.qty,0));
+  const urls = new Set(CART.map(i => productUrl(i.name)));
   const lines = new Set(CART.map(i => i.name.includes('트래블잇') || i.name.toLowerCase().includes('travel') ? 't' : 'd'));
-  document.getElementById('cCheckout').href = lines.size === 1 ? (lines.has('t') ? 'https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/' : 'https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/') : 'https://chewgumi.com';
+  document.getElementById('cCheckout').href = urls.size === 1 ? [...urls][0]
+    : lines.size === 1 ? (lines.has('t') ? CG_TRAVEL_CAT : CG_DEWIT_CAT)
+    : 'https://chewgumi.com';
 }
 
 /* 링크·버튼 클릭 시 화면 전체 물방울 파동 */
