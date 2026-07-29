@@ -475,6 +475,17 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 .sec-title, .hero h1, .bl-title, .comm-card h3, .film-cap .en, .full-banner .cap .en, .popup-body .p-title
  { font-family:'Playfair Display',"Pretendard Variable",Pretendard,serif; font-weight:600; letter-spacing:.01em; }
 </style>
+
+<!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
+[GA4] analytics.google.com에서 속성 생성 → 측정 ID(G-XXXXXXX) 발급 후 아래 두 줄을 주석 밖으로
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXX');</script>
+
+[메타 픽셀] business.facebook.com 이벤트 관리자에서 픽셀 생성 → PIXEL_ID 교체 후 주석 밖으로
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','PIXEL_ID');fbq('track','PageView');</script>
+
+[네이버 애널리틱스] analytics.naver.com 가입 → 사이트 등록 후 발급 스크립트를 여기에
+═══════════════════════════════════════════════════════════ -->
 </head>
 <body>
 
@@ -807,7 +818,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
       <button class="d-x" onclick="closeDetail()" aria-label="닫기">✕</button>
       <div class="d-line" id="dLine"></div>
       <div class="d-name" id="dName"></div>
-      <div class="d-price"><span class="p-origin" id="dOrigin"></span><span class="p-sale" id="dSale" style="font-size:18px"></span></div>
+      <div class="d-price"><span class="p-origin" id="dOrigin"></span><span class="p-sale" id="dSale" style="font-size:18px"></span><span id="dUsd" style="font-size:12px;color:var(--gray);margin-left:8px;"></span></div>
       <div class="d-desc" id="dDesc"></div>
       <select id="dOpt" class="d-opt" onchange="applyOpt()" aria-label="구성 선택"></select>
       <div class="d-qty">
@@ -939,6 +950,7 @@ function setLang(l){
   document.querySelectorAll('[data-en]').forEach(el => { el.innerHTML = l === 'en' ? el.dataset.en : el.dataset.ko; });
   document.getElementById('langBtn').textContent = l === 'en' ? 'KR' : 'EN';
   document.documentElement.lang = l;
+  if (l === 'en') cgLoadUsd(); else cgUpdUsd();
   const d = document.getElementById('detail');
   if (d && !d.classList.contains('hide') && window._curCard) {
     document.getElementById('dDesc').textContent = l === 'en' && window._curCard.dataset.descEn ? window._curCard.dataset.descEn : window._curCard.dataset.desc;
@@ -984,6 +996,22 @@ function cartCheckout(ev){
   return false;
 }
 
+/* EN 모드 달러 환산가 — Frankfurter API (무료, 키 불필요, CORS 개방) */
+let cgUsdPerKrw = null;
+function cgLoadUsd(){
+  if (cgUsdPerKrw !== null) { cgUpdUsd(); return; }
+  fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
+    .then(r => r.json())
+    .then(d => { if (d && d.rates && d.rates.KRW) { cgUsdPerKrw = d.rates.KRW; cgUpdUsd(); } })
+    .catch(() => {}); /* 실패해도 원화 표시는 정상 */
+}
+function cgUpdUsd(){
+  const el = document.getElementById('dUsd');
+  if (!el) return;
+  el.textContent = (cgLang === 'en' && cgUsdPerKrw && typeof dPrice === 'number' && dPrice > 0)
+    ? '≈ $' + (dPrice / cgUsdPerKrw).toFixed(2) : '';
+}
+
 /* 상세 레이어 구성(옵션) 선택 — cueren 스타일 */
 const CG_OPTIONS = {
   travel: [
@@ -1021,6 +1049,7 @@ function applyOpt(){
   document.getElementById('dSale').textContent = '₩' + o.sale.toLocaleString();
   dPrice = o.sale; renderQty();
   document.getElementById('dBuy').href = 'https://chewgumi.com/product/detail.html?product_no=' + o.no + '&cate_no=' + (line === 'travel' ? 42 : 47) + '&display_group=1';
+  cgUpdUsd();
 }
 
 /* 상품명 → 스마트스토어(네이버페이) 매핑 — 트래블잇 주소 확보 시 추가 */
