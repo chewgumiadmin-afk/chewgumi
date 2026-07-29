@@ -849,7 +849,28 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
     <div class="bl-title" id="blTitle"></div>
     <div class="bl-sub" id="blSub"></div>
     <div id="blList"></div>
-    <a class="bl-foot" id="blMore" href="notice.html">FULL PAGE</a>
+    <div id="blWrite" style="display:none; margin-top:14px; padding:16px; border-radius:18px; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85);">
+      <div id="wAuth">
+        <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:var(--gray); margin-bottom:10px;">COMMUNITY LOGIN</div>
+        <input id="wEmail" type="email" placeholder="이메일" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
+        <input id="wPw" type="password" placeholder="비밀번호 (6자 이상)" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;">
+        <div style="display:flex;gap:8px;">
+          <button onclick="sbLogin()" style="flex:1;padding:11px 0;border:0;border-radius:999px;font-weight:700;color:#fff;background:linear-gradient(135deg,#EC5E86,#DA4468);cursor:pointer;">로그인</button>
+          <button onclick="sbSignup()" style="flex:1;padding:11px 0;border-radius:999px;font-weight:700;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);cursor:pointer;">회원가입</button>
+        </div>
+      </div>
+      <div id="wForm" style="display:none;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:var(--gray); margin-bottom:10px;">WRITE <span id="wUser" style="font-weight:500;letter-spacing:0;"></span></div>
+        <input id="wTitle" placeholder="제목" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
+        <textarea id="wBody" placeholder="내용" rows="3" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;resize:vertical;"></textarea>
+        <button onclick="sbPost()" style="width:100%;padding:12px 0;border:0;border-radius:999px;font-weight:700;color:#fff;background:linear-gradient(135deg,#EC5E86,#DA4468);cursor:pointer;">등록하기</button>
+      </div>
+      <div id="wMsg" style="font-size:12px;color:var(--gray);margin-top:8px;"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button id="blWriteBtn" onclick="toggleWrite()" style="flex:1;padding:12px 0;border-radius:999px;font-size:12px;letter-spacing:2px;font-weight:700;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);cursor:pointer;">✏ 글쓰기</button>
+      <a class="bl-foot" id="blMore" href="notice.html" style="flex:1;margin-top:0;">FULL PAGE</a>
+    </div>
   </div>
 </div>
 
@@ -1202,7 +1223,97 @@ const BOARDS = {
     { t:'교환/반품은 어떻게 신청하나요?', m:'반품', badge:'Q', b:'미개봉 상태에 한해 수령 후 7일 이내 가능합니다. 이메일(chewgumi24@gmail.com)로 연락해 주세요.' },
     { t:'대량 구매(단체·행사)도 가능한가요?', m:'구매', badge:'Q', b:'가능합니다. 수량과 일정에 따라 견적을 드리니 이메일로 문의해 주세요.' } ] }
 };
+/* ── Supabase 커뮤니티 DB 연동 (읽기: 공개 / 쓰기: 커뮤니티 회원) ── */
+const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const sbLoaded = {};
+let sbToken = null, sbUser = null;
+try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { sbToken = s.t; sbUser = s.u; } } catch(e){}
+
+function sbFetchBoard(key){
+  if (sbLoaded[key]) return;
+  fetch(SB_URL + '/rest/v1/posts?board=eq.' + key + '&select=title,content,meta,badge&order=created_at.desc',
+    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(rows => {
+      if (!Array.isArray(rows) || !rows.length) return;
+      BOARDS[key].items = rows.map((r, i) => ({ t: r.title, m: r.meta, badge: r.badge, b: r.content, open: i === 0 }));
+      sbLoaded[key] = true;
+      const layer = document.getElementById('boardLayer');
+      if (layer && !layer.classList.contains('hide')) {
+        const on = document.querySelector('.bl-tabs button.on');
+        if (on && on.dataset.b === key) renderBoard(key);
+      }
+      const ul = document.querySelector('.comm-list[data-key="' + key + '"]');
+      if (ul) ul.innerHTML = BOARDS[key].items.slice(0,3).map(i =>
+        `<li><span class="t">${i.t}</span><span class="d">${(i.m||'').replace('2026.','')}</span></li>`).join('');
+    })
+    .catch(() => {}); /* 실패 시 내장 데이터 그대로 표시 */
+}
+['notice','review','qna'].forEach(sbFetchBoard);
+
+function toggleWrite(){
+  const box = document.getElementById('blWrite');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  sbSyncWriteUI();
+}
+function sbSyncWriteUI(){
+  document.getElementById('wAuth').style.display = sbToken ? 'none' : 'block';
+  document.getElementById('wForm').style.display = sbToken ? 'block' : 'none';
+  document.getElementById('wUser').textContent = sbUser ? '· ' + sbUser : '';
+}
+function sbMsg(t){ document.getElementById('wMsg').textContent = t; }
+function sbSignup(){
+  const email = document.getElementById('wEmail').value.trim(), pw = document.getElementById('wPw').value;
+  if (!email || pw.length < 6) return sbMsg('이메일과 6자 이상 비밀번호를 입력해 주세요.');
+  fetch(SB_URL + '/auth/v1/signup', { method:'POST', headers:{ apikey: SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email, password: pw }) })
+    .then(r => r.json())
+    .then(d => {
+      if (d.access_token) { sbSetSession(d.access_token, email); sbMsg('가입 완료! 이제 글을 쓸 수 있습니다.'); }
+      else if (d.id || (d.user && d.user.id)) sbMsg('가입 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 로그인해 주세요.');
+      else sbMsg(d.msg || d.error_description || '가입에 실패했습니다. 이미 가입된 이메일일 수 있어요.');
+    }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
+}
+function sbLogin(){
+  const email = document.getElementById('wEmail').value.trim(), pw = document.getElementById('wPw').value;
+  if (!email || !pw) return sbMsg('이메일과 비밀번호를 입력해 주세요.');
+  fetch(SB_URL + '/auth/v1/token?grant_type=password', { method:'POST', headers:{ apikey: SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email, password: pw }) })
+    .then(r => r.json())
+    .then(d => {
+      if (d.access_token) { sbSetSession(d.access_token, email); sbMsg(''); }
+      else sbMsg('로그인 실패: 이메일·비밀번호를 확인하거나, 가입 메일 인증을 먼저 완료해 주세요.');
+    }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
+}
+function sbSetSession(t, email){
+  sbToken = t; sbUser = email.split('@')[0];
+  try { localStorage.setItem('cg_sb', JSON.stringify({ t: sbToken, u: sbUser })); } catch(e){}
+  sbSyncWriteUI();
+}
+function sbPost(){
+  const on = document.querySelector('.bl-tabs button.on');
+  const key = on ? on.dataset.b : 'review';
+  const title = document.getElementById('wTitle').value.trim();
+  const body = document.getElementById('wBody').value.trim();
+  if (!title || !body) return sbMsg('제목과 내용을 입력해 주세요.');
+  const today = new Date(); const meta = sbUser + ' · ' + today.getFullYear() + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + String(today.getDate()).padStart(2,'0');
+  fetch(SB_URL + '/rest/v1/posts', { method:'POST',
+    headers:{ apikey: SB_KEY, Authorization: 'Bearer ' + sbToken, 'Content-Type':'application/json', Prefer:'return=minimal' },
+    body: JSON.stringify({ board: key, title, content: body, meta, badge: key === 'qna' ? 'Q' : '' }) })
+    .then(r => {
+      if (r.status === 401) { sbToken = null; try{localStorage.removeItem('cg_sb');}catch(e){} sbSyncWriteUI(); return sbMsg('로그인이 만료되었습니다. 다시 로그인해 주세요.'); }
+      if (!r.ok) return sbMsg('등록에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      document.getElementById('wTitle').value = ''; document.getElementById('wBody').value = '';
+      sbLoaded[key] = false; sbFetchBoard(key); sbMsg('등록되었습니다!');
+    }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
+}
+
 function renderBoard(key){
+  sbFetchBoard(key);
+  const wb = document.getElementById('blWriteBtn');
+  if (wb) wb.style.display = key === 'notice' ? 'none' : 'block';
+  const w = document.getElementById('blWrite'); if (w && key === 'notice') w.style.display = 'none';
   const d = BOARDS[key];
   document.getElementById('blTitle').textContent = d.title;
   document.getElementById('blSub').textContent = d.sub;
