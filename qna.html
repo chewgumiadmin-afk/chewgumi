@@ -117,7 +117,7 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
     <ul class="glass-bar">
       <li><a href="index.html#best">SHOP</a>
         <div class="sub">
-          <a href="index.html#best">SHOP ALL</a><a href="index.html#best">BESTSELLERS</a><a href="index.html#best">TRAVEL-IT</a><a href="index.html#best">DEW-IT</a>
+          <a href="index.html#all">SHOP ALL</a><a href="index.html#best">BESTSELLERS</a><a href="index.html?line=travel#all">TRAVEL-IT</a><a href="index.html?line=doit#all">DEW-IT</a>
         </div>
       </li>
       <li><a href="index.html#about">ABOUT</a></li>
@@ -165,6 +165,32 @@ document.addEventListener('click', e => {
   r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px';
   document.body.appendChild(r); setTimeout(() => r.remove(), 800);
 });
+</script>
+
+<script>
+/* ── Supabase 게시판 실시간 동기화 (읽기 전용) ── */
+(function(){
+  var URL_ = 'https://psynvpuedzjvytsgdhgg.supabase.co', KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk', BOARD = 'qna';
+  var panel = document.querySelector('.wrap .panel');
+  if (!panel) return;
+  fetch(URL_ + '/rest/v1/posts?board=eq.' + BOARD + '&select=title,content,meta,badge&order=created_at.desc',
+    { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } })
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+    .then(function(rows){
+      if (!Array.isArray(rows) || !rows.length) return;
+      var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+      panel.innerHTML = rows.map(function(r, i){
+        var badge = r.badge ? '<span class="badge">' + esc(r.badge) + '</span>' : '';
+        return '<div class="item' + (i === 0 ? ' open' : '') + '">'
+          + '<div class="i-head" onclick="this.parentElement.classList.toggle(\'open\')">'
+          + '<span class="i-title">' + badge + esc(r.title) + '</span>'
+          + '<span class="i-meta">' + esc(r.meta) + '</span></div>'
+          + '<div class="i-body">' + esc(r.content) + '</div></div>';
+      }).join('');
+    })
+    .catch(function(){}); /* 실패 시 기존 내용 유지 */
+})();
 </script>
 </body>
 </html>
