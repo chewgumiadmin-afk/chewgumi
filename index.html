@@ -882,7 +882,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   <div class="c-list" id="cList"><div class="c-empty">장바구니가 비어 있습니다</div></div>
   <div class="c-foot">
     <div class="c-total"><span>총 상품금액</span><b id="cTotal">₩0</b></div>
-    <div class="c-note">버튼을 누르면 담으신 상품의 공식몰 페이지가 바로 열립니다. 공식몰에서 수량 선택 후 결제(토스·카카오페이·카드·계좌이체 등)를 완료해 주세요.</div>
+    <div class="c-note">버튼을 누르면 담으신 상품의 공식몰 페이지가 바로 열립니다. 공식몰에서 수량 선택 후 결제(네이버페이·카드·계좌이체·가상계좌)를 완료해 주세요.</div>
     <a class="c-checkout" id="cCheckout" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return cartCheckout(event)">공식몰에서 결제하기</a>
     <div class="pay-badges" aria-label="지원 결제수단"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
     <a class="c-continue" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 확인</a>
@@ -977,6 +977,27 @@ function setLang(l){
     document.getElementById('dDesc').textContent = l === 'en' && window._curCard.dataset.descEn ? window._curCard.dataset.descEn : window._curCard.dataset.desc;
   }
 }
+/* 서브페이지에서 ?line=travel|doit 로 들어온 경우 해당 라인 필터 적용 */
+(function(){
+  var p = new URLSearchParams(location.search).get('line');
+  if (p === 'travel' || p === 'doit') {
+    window.addEventListener('load', function(){ try { filterLine(p); } catch(e){} });
+  }
+})();
+
+/* 다른 페이지에서 ?line=travel|doit 로 진입 시 해당 라인 필터 자동 적용 */
+(function(){
+  var m = (location.search || '').match(/[?&]line=(travel|doit|all)/);
+  if (!m) return;
+  var apply = function(){
+    if (typeof filterLine === 'function') filterLine(m[1]);
+    var t = document.getElementById('all');
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+})();
+
 /* 브라우저 언어 자동 감지: 한국어 환경이 아니면 영어로 시작 */
 if (!(navigator.language || 'ko').toLowerCase().startsWith('ko')) setLang('en');
 
