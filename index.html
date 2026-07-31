@@ -17,6 +17,26 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* NEW : 트리플잇 3종 (가이드 사양) */
+#newline { padding:80px 0 20px; }
+.nl-head { display:flex; align-items:baseline; gap:14px; margin-bottom:26px; flex-wrap:wrap; }
+.nl-title { font-family:'Poppins',sans-serif; font-size:clamp(30px,3.6vw,48px); font-weight:700; color:#000; letter-spacing:-.01em; }
+.nl-sub { font-size:clamp(14px,1.6vw,23px); font-weight:400; color:var(--gray); }
+.nl-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:31px; }
+.nl-card { display:flex; flex-direction:column; }
+.nl-thumb { position:relative; border-radius:18px; overflow:hidden; background:var(--pink-light); aspect-ratio:1/1; }
+.nl-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease; }
+.nl-card:hover .nl-thumb img { transform:scale(1.04); }
+.nl-badge { position:absolute; top:12px; left:12px; z-index:2; font-size:10px; font-weight:700; letter-spacing:1.5px;
+  padding:6px 12px; border-radius:999px; background:rgba(0,0,0,.72); color:#fff; }
+.nl-name { margin-top:16px; font-size:clamp(17px,2vw,32px); font-weight:700; color:#000; letter-spacing:-.01em; }
+.nl-more { margin-top:6px; font-size:clamp(13px,1.4vw,24px); font-weight:500; color:var(--gray); }
+.nl-note { margin-top:26px; font-size:13px; color:var(--gray); }
+@media (max-width:640px){
+  #newline { padding:52px 0 10px; }
+  .nl-grid { grid-template-columns:1fr; gap:22px; }
+}
+
 /* 리뷰 섹션 물결 배경 (디자이너 제공) */
 .wave-sec { position:relative; background-color:#FFE4E6;
   background-image:url('assets/review-bg.png'); background-size:100% 100%;
@@ -590,6 +610,16 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','PIXEL_ID');fbq('track','PageView');</script>
 
 [네이버 애널리틱스] analytics.naver.com 가입 → 사이트 등록 후 발급 스크립트를 여기에
+
+[채널톡 상담] channel.io 가입 → 채널 설정 → 플러그인 설치에서 발급받은 플러그인 키를 넣고 아래 블록을 주석 밖으로
+<script>
+(function(){var w=window;if(w.ChannelIO)return;var ch=function(){ch.c(arguments)};ch.q=[];ch.c=function(a){ch.q.push(a)};w.ChannelIO=ch;
+function l(){if(w.ChannelIOInitialized)return;w.ChannelIOInitialized=true;var s=document.createElement("script");
+s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";
+var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(s,x);}
+if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
+</script>
 ═══════════════════════════════════════════════════════════ -->
 </head>
 <body>
@@ -669,6 +699,43 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   <button class="hero-arrow next" onclick="heroGo(1)" aria-label="다음 배너">›</button>
   <div class="hero-dots" id="heroDots"></div>
 </div>
+
+<!-- NEW : 트리플잇 3종 (출시 예정) -->
+<section id="newline">
+  <div class="wrap">
+    <div class="nl-head">
+      <h2 class="nl-title">NEW</h2>
+      <p class="nl-sub kr" data-en="Meet ChewGumi's new gummies!">츄구미의 새로운 구미를 만나보세요!</p>
+    </div>
+    <div class="nl-grid">
+      <div class="nl-card">
+        <div class="nl-thumb">
+          <img src="assets/product-dream-it.png" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
+          <span class="nl-badge">COMING SOON</span>
+        </div>
+        <div class="nl-name">Dream-it, <span class="kr">드림 잇</span></div>
+        <div class="nl-more kr" data-en="Peach Flavor">복숭아맛 젤리</div>
+      </div>
+      <div class="nl-card">
+        <div class="nl-thumb">
+          <img src="assets/product-spark-it.png" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
+          <span class="nl-badge">COMING SOON</span>
+        </div>
+        <div class="nl-name">Spark-it, <span class="kr">스파크 잇</span></div>
+        <div class="nl-more kr" data-en="Blueberry Flavor">블루베리맛 젤리</div>
+      </div>
+      <div class="nl-card">
+        <div class="nl-thumb">
+          <img src="assets/product-reset-it.png" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
+          <span class="nl-badge">COMING SOON</span>
+        </div>
+        <div class="nl-name">Reset-it, <span class="kr">리셋 잇</span></div>
+        <div class="nl-more kr" data-en="Green Grape Flavor">청포도맛 젤리</div>
+      </div>
+    </div>
+    <p class="nl-note kr" data-en="Triple-it launches soon. Sign up to get notified first.">트리플 잇은 곧 출시됩니다. 회원가입하시면 가장 먼저 소식을 받아보실 수 있어요.</p>
+  </div>
+</section>
 
 <!-- 신제품 배너 (디자이너 제공) -->
 <section class="mid-banner">
