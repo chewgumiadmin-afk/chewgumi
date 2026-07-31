@@ -17,6 +17,44 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* 리뷰 섹션 물결 배경 (디자이너 제공) */
+.wave-sec { position:relative; background-color:#FFE4E6;
+  background-image:url('assets/review-bg.png'); background-size:100% 100%;
+  background-position:center; background-repeat:no-repeat; padding-top:96px !important; padding-bottom:96px !important; }
+.rev-head { text-align:center; margin-bottom:26px; }
+.rev-title { font-family:'Poppins',sans-serif; font-weight:800; color:#E95073;
+  font-size:clamp(24px,3.4vw,46px); letter-spacing:-.01em; line-height:1.15; }
+.rev-sub { margin-top:12px; font-size:clamp(14px,1.5vw,20px); font-weight:400; color:#333; }
+.wave-sec .comm-card { box-shadow:0 10px 26px rgba(0,0,0,.10); border-radius:18px; }
+@media (max-width:640px){ .wave-sec { padding-top:64px !important; padding-bottom:64px !important; } }
+
+/* 첫 방문 팝업 (가이드: 405×455 · 라운드20 · 버튼 160×47 라운드4) */
+.popup { width:405px; max-width:calc(100vw - 40px); border-radius:20px !important; background:#fff !important;
+  padding:0 0 26px !important; text-align:center; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.22) !important; }
+.popup .p-illust { width:100%; height:auto; display:block; margin:0 0 6px; }
+.popup .p-title { font-size:24px; font-weight:700; color:#000; padding:0 26px; letter-spacing:-.02em; }
+.popup .p-desc { font-size:17px; font-weight:400; color:#555; line-height:1.55; padding:10px 26px 0; }
+.popup .p-desc b { font-weight:700; color:#000; }
+.popup .p-acts { display:flex; gap:12px; justify-content:center; padding:22px 26px 0; }
+.popup .p-acts button { width:160px; max-width:calc(50% - 6px); height:47px; border:0; border-radius:4px;
+  font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; transition:filter .2s ease; }
+.popup .p-acts button:hover { filter:brightness(.96); }
+.popup .p-close { background:#E9E9E9; color:#4a4a4a; }
+.popup .p-join { background:#E95073; color:#fff; }
+@media (max-width:480px){
+  .popup .p-title { font-size:20px; } .popup .p-desc { font-size:14.5px; }
+  .popup .p-acts button { height:44px; font-size:14px; }
+}
+
+/* 상단 알림바 (디자인 가이드: 1920×45, 고정 문구) */
+.topbar { position:relative; overflow:hidden; height:45px; display:flex; align-items:center; justify-content:center;
+  padding:0 16px; background:linear-gradient(90deg,#E95073,#D82558) !important; animation:none !important; }
+.topbar::before, .topbar::after { display:none !important; }
+.topbar .tb-link { display:block; color:#fff; font-size:15px; font-weight:600; letter-spacing:.2px;
+  text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:none; text-transform:none; }
+.topbar .tb-link b { color:var(--sub); font-weight:800; }
+@media (max-width:640px){ .topbar { height:38px; } .topbar .tb-link { font-size:12.5px; } }
+
 /* 중간 신제품 배너 */
 .mid-banner { max-width:1360px; margin:60px auto; width:calc(100% - 40px); }
 .mid-banner a { display:block; border-radius:28px; overflow:hidden; box-shadow:0 18px 44px rgba(0,0,0,.10); }
@@ -558,28 +596,22 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
 <div class="popup-dim" id="popup">
-  <div class="popup" role="dialog" aria-label="쿠폰 안내 팝업">
-    <img referrerpolicy="no-referrer" src="https://drive.google.com/thumbnail?id=1SIVMBOw9NsmjmvcBN6C8IVIz-IXLcd3L&sz=w2000" alt="ChewGumi"
-         onerror="this.src='https://chewgumi.com/web/product/medium/202511/a613606b1993ee46b245871cef885fa3.png'">
-    <div class="popup-body">
-      <div class="p-en">WELCOME GIFT</div>
-      <div class="p-title" data-en="Get a ₩2,000 coupon when you join!">회원 가입 시 2,000원 할인 쿠폰 제공!</div>
-      <div class="p-desc" data-en="Join now and enjoy Travel-it &amp; Dew-it for less.">지금 가입하고 트래블잇·듀잇을<br>더 가볍게 만나보세요.</div>
-      <a class="p-btn" href="#" onclick="closePopup();openJoin();return false;">JOIN US</a>
-    </div>
-    <div class="popup-foot">
-      <button onclick="closePopup(true)" data-en="Don't show today">오늘 하루 보지 않기</button>
-      <button onclick="closePopup(false)" data-en="Close">닫기</button>
+  <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
+    <img class="p-illust" src="assets/popup-illust.png" alt="" aria-hidden="true">
+    <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
+    <div class="p-desc" data-en="Join now and get a &lt;b&gt;₩2,000&lt;/b&gt; coupon you can use right away!">지금 가입하시면 즉시 사용 가능한 <b>2000원</b> 할인쿠폰을 드려요!</div>
+    <div class="p-acts">
+      <button class="p-close" onclick="closePopup(true)" data-en="Close">닫기</button>
+      <button class="p-join" onclick="closePopup(false);openJoin();" data-en="Quick Sign Up">1초 회원가입</button>
     </div>
   </div>
 </div>
 
 <!-- 탑바 티커 -->
-<div class="topbar" aria-hidden="true">
-  <div class="ticker">
-    <span>ADD HEALTH IN ONE BITE.</span><span class="kr">한입에 건강을 더하다, 츄구미</span><span>CHEW YOUR MOMENT.</span><span>TRAVEL-IT · DEW-IT</span>
-    <span>ADD HEALTH IN ONE BITE.</span><span class="kr">한입에 건강을 더하다, 츄구미</span><span>CHEW YOUR MOMENT.</span><span>TRAVEL-IT · DEW-IT</span>
-  </div>
+<div class="topbar">
+  <a class="tb-link" href="#" onclick="openJoin();return false;">
+    <span class="kr" data-en="Sign up and get a &lt;b&gt;₩2,000&lt;/b&gt; discount coupon!">회원 가입 하고 <b>2000원 할인 쿠폰</b> 받기!</span>
+  </a>
 </div>
 
 <!-- 헤더 -->
@@ -679,10 +711,15 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 </section>
 
 <!-- COMMUNITY 요약 (BOARDS에서 자동 추림 · 클릭 시 대형 레이어) -->
-<section id="community" style="background:var(--alt);">
+<section id="community" class="wave-sec">
   <div class="wrap">
-    <div class="sec-head"><h2 class="sec-title">Community</h2><a class="sec-more" href="notice.html" onclick="openBoardLayer('notice');return false;">VIEW ALL</a></div>
-    <p class="comm-mention kr" data-en="Be with us." style="margin:-6px 0 18px; font-size:14px; letter-spacing:.5px; color:var(--gray);">우리와 함께하세요.</p>
+    <div class="rev-head">
+      <h2 class="rev-title">REAL STORIES FROM SATISFIED CUSTOMERS</h2>
+      <p class="rev-sub kr" data-en="See real reviews from people who enjoyed ChewGumi!">츄구미를 즐긴 사람들의 생생한 후기를 확인하세요!</p>
+    </div>
+    <div class="sec-head" style="border:0;padding:0;margin:0 0 14px;justify-content:flex-end;">
+      <a class="sec-more" href="notice.html" onclick="openBoardLayer('notice');return false;">VIEW ALL</a>
+    </div>
     <div class="comm-grid">
       <a class="comm-card" href="notice.html" onclick="openBoardLayer('notice');return false;">
         <h3><span class="comm-dot"></span>Notice</h3>
