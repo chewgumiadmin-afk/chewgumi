@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ADMIN | CHEWGUMI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --pink1:#EC5E86; --pink2:#E14E78; --pink3:#DA4468; --ink:#1d1d1f; --gray:#86868b;
+  --glass:rgba(255,255,255,.62); --line:rgba(255,255,255,.85); }
+*{margin:0;padding:0;box-sizing:border-box}
+body{ font-family:"Pretendard Variable",Pretendard,"Noto Sans KR",sans-serif; color:var(--ink); min-height:100vh;
+  padding:28px 16px 70px;
+  background:
+    radial-gradient(900px 500px at 12% -5%, rgba(236,94,134,.16), transparent 60%),
+    radial-gradient(700px 460px at 95% 12%, rgba(255,214,165,.24), transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4); }
+a{color:inherit}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--pink2); outline-offset:3px; border-radius:8px; }
+.wrap{max-width:860px;margin:0 auto}
+.top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.top h1{font-family:'Playfair Display',serif;font-size:28px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a.home{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{ background:var(--glass); border:1px solid var(--line); border-radius:24px; padding:20px; margin-bottom:16px;
+  backdrop-filter:blur(22px) saturate(120%); -webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:0 18px 44px rgba(0,0,0,.09), inset 0 1px 0 rgba(255,255,255,.9); }
+.panel h2{font-size:11px;letter-spacing:3px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{ width:100%; padding:12px 14px; margin-bottom:9px; border-radius:14px; font-size:13px;
+  font-family:inherit; color:var(--ink);
+  border:1px solid var(--line); background:rgba(255,255,255,.75); box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
+textarea{resize:vertical;min-height:90px}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row>*{flex:1;min-width:130px}
+button{cursor:pointer;font-family:inherit}
+.btn{ padding:13px 22px; border:0; border-radius:999px; font-size:13px; font-weight:700; color:#fff;
+  background:linear-gradient(135deg,var(--pink1),var(--pink3)); box-shadow:0 8px 20px rgba(218,68,104,.32); }
+.btn.ghost{ background:rgba(255,255,255,.72); color:var(--ink); border:1px solid var(--line); box-shadow:none; }
+.msg{font-size:12px;color:var(--gray);margin-top:8px;min-height:16px;line-height:1.6}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{ padding:9px 18px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:1px;
+  background:rgba(255,255,255,.6); border:1px solid var(--line); color:var(--gray); }
+.tabs button.on{ background:linear-gradient(135deg,var(--pink1),var(--pink3)); color:#fff; border-color:transparent; }
+.item{ border-bottom:1px solid rgba(0,0,0,.06); padding:13px 2px; display:flex; gap:12px; align-items:flex-start; }
+.item:last-child{border-bottom:0}
+.item .c{flex:1;min-width:0}
+.item .t{font-size:14px;font-weight:600;margin-bottom:3px;word-break:break-word}
+.item .m{font-size:11.5px;color:var(--gray)}
+.item .b{font-size:12.5px;color:#555;margin-top:6px;line-height:1.7;word-break:break-word}
+.item .src{ display:inline-block;margin-top:7px;font-size:10.5px;font-weight:700;letter-spacing:.5px;
+  padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid var(--line); }
+.del{ flex:none; padding:8px 14px; border-radius:999px; font-size:11.5px; font-weight:700;
+  background:rgba(255,255,255,.7); border:1px solid var(--line); color:#c0395c; }
+.empty{font-size:13px;color:var(--gray);padding:18px 2px}
+.note{font-size:11.5px;color:var(--gray);line-height:1.8;margin-top:6px}
+.note strong{color:var(--ink)}
+.hide{display:none}
+@media (max-width:600px){ .top h1{font-size:23px} .panel{padding:16px;border-radius:20px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>ChewGumi Admin</h1>
+      <div class="s">COMMUNITY CONTENT MANAGER</div>
+    </div>
+    <a class="home" href="index.html">← 사이트로 돌아가기</a>
+  </div>
+
+  <!-- 로그인 -->
+  <div class="panel" id="loginPanel">
+    <h2>ADMIN LOGIN</h2>
+    <input id="aEmail" type="email" placeholder="이메일" autocomplete="email">
+    <input id="aPw" type="password" placeholder="비밀번호" autocomplete="current-password">
+    <div class="row">
+      <button class="btn" onclick="aLogin()">로그인</button>
+    </div>
+    <div class="msg" id="aMsg"></div>
+    <div class="note">
+      운영자 계정이 없다면 사이트의 <strong>JOIN US</strong>에서 먼저 가입한 뒤 이 화면에서 로그인하세요.<br>
+      주문 확인·배송 송장 등록은 <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener">카페24 관리자</a>에서 처리합니다.
+    </div>
+  </div>
+
+  <!-- 관리 화면 -->
+  <div id="adminArea" class="hide">
+    <div class="panel">
+      <h2>새 글 등록</h2>
+      <div class="row">
+        <select id="wBoard">
+          <option value="notice">공지사항 (NOTICE)</option>
+          <option value="review">리뷰 (REVIEW)</option>
+          <option value="qna">문의 (Q&amp;A)</option>
+        </select>
+        <input id="wBadge" placeholder="뱃지 (예: 공지 / 배송 / Q · 없으면 비움)">
+      </div>
+      <input id="wTitle" placeholder="제목">
+      <textarea id="wBody" placeholder="내용"></textarea>
+      <div class="row">
+        <input id="wMeta" placeholder="표시 정보 (예: 2026.08.01 또는 김O연 · Travel-it)">
+        <input id="wSource" placeholder="출처 (예: 오아시스 · 비우면 자사몰)">
+      </div>
+      <input id="wSrcUrl" placeholder="출처 링크 (외부 리뷰일 때만 · https://...)">
+      <div class="row">
+        <button class="btn" onclick="aPost()">등록하기</button>
+        <button class="btn ghost" onclick="aClear()">입력 초기화</button>
+      </div>
+      <div class="msg" id="wMsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>게시글 관리</h2>
+      <div class="tabs">
+        <button data-b="notice" class="on" onclick="aLoad('notice')">NOTICE</button>
+        <button data-b="review" onclick="aLoad('review')">REVIEW</button>
+        <button data-b="qna" onclick="aLoad('qna')">Q&amp;A</button>
+      </div>
+      <div id="aList"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="whoami" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="aLogout()" style="max-width:160px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+let token = null, who = '', curBoard = 'notice';
+
+try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { token = s.t; who = s.u; } } catch(e){}
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+function msg(id, t){ document.getElementById(id).textContent = t; }
+
+function sync(){
+  const on = !!token;
+  document.getElementById('loginPanel').classList.toggle('hide', on);
+  document.getElementById('adminArea').classList.toggle('hide', !on);
+  if (on) {
+    document.getElementById('whoami').textContent = (who || '') + ' 님으로 로그인 중입니다.';
+    aLoad(curBoard);
+  }
+}
+
+function aLogin(){
+  const email = document.getElementById('aEmail').value.trim();
+  const pw = document.getElementById('aPw').value;
+  if (!email || !pw) return msg('aMsg', '이메일과 비밀번호를 입력해 주세요.');
+  fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: pw })
+  }).then(r => r.json()).then(d => {
+    if (d.access_token) {
+      token = d.access_token; who = email.split('@')[0];
+      try { localStorage.setItem('cg_sb', JSON.stringify({ t: token, u: who })); } catch(e){}
+      msg('aMsg',''); sync();
+    } else {
+      msg('aMsg', '로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.');
+    }
+  }).catch(() => msg('aMsg', '네트워크 오류가 발생했습니다.'));
+}
+
+function aLogout(){
+  token = null; who = '';
+  try { localStorage.removeItem('cg_sb'); } catch(e){}
+  sync();
+}
+
+function aLoad(board){
+  curBoard = board;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.b === board));
+  const list = document.getElementById('aList');
+  list.innerHTML = '<div class="empty">불러오는 중…</div>';
+  fetch(SB_URL + '/rest/v1/posts?board=eq.' + board + '&select=id,title,content,meta,badge,source,source_url,created_at&order=created_at.desc',
+    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(rows => {
+      if (!rows.length) { list.innerHTML = '<div class="empty">등록된 글이 없습니다.</div>'; return; }
+      list.innerHTML = rows.map(r => `
+        <div class="item">
+          <div class="c">
+            <div class="t">${r.badge ? '[' + esc(r.badge) + '] ' : ''}${esc(r.title)}</div>
+            <div class="m">${esc(r.meta)} · ${new Date(r.created_at).toLocaleDateString('ko-KR')}</div>
+            <div class="b">${esc(r.content)}</div>
+            ${r.source_url ? `<a class="src" href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(r.source || 'LINK')} →</a>` : ''}
+          </div>
+          <button class="del" onclick="aDel(${r.id}, this)">삭제</button>
+        </div>`).join('');
+    })
+    .catch(() => { list.innerHTML = '<div class="empty">불러오지 못했습니다. 새로고침해 주세요.</div>'; });
+}
+
+function aPost(){
+  const board = document.getElementById('wBoard').value;
+  const title = document.getElementById('wTitle').value.trim();
+  const content = document.getElementById('wBody').value.trim();
+  if (!title || !content) return msg('wMsg', '제목과 내용을 입력해 주세요.');
+  const d = new Date();
+  const meta = document.getElementById('wMeta').value.trim()
+    || (d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0'));
+  const body = {
+    board, title, content, meta,
+    badge: document.getElementById('wBadge').value.trim(),
+    source: document.getElementById('wSource').value.trim(),
+    source_url: document.getElementById('wSrcUrl').value.trim()
+  };
+  fetch(SB_URL + '/rest/v1/posts', {
+    method: 'POST',
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+    body: JSON.stringify(body)
+  }).then(r => {
+    if (r.status === 401) { aLogout(); return msg('wMsg', '로그인이 만료되었습니다. 다시 로그인해 주세요.'); }
+    if (!r.ok) return msg('wMsg', '등록에 실패했습니다.');
+    aClear(); msg('wMsg', '등록되었습니다.');
+    aLoad(board);
+  }).catch(() => msg('wMsg', '네트워크 오류가 발생했습니다.'));
+}
+
+function aClear(){
+  ['wTitle','wBody','wMeta','wBadge','wSource','wSrcUrl'].forEach(id => document.getElementById(id).value = '');
+  msg('wMsg','');
+}
+
+function aDel(id, btn){
+  if (!confirm('이 글을 삭제할까요? 되돌릴 수 없습니다.')) return;
+  btn.disabled = true; btn.textContent = '삭제 중';
+  fetch(SB_URL + '/rest/v1/posts?id=eq.' + id, {
+    method: 'DELETE',
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + token }
+  }).then(r => {
+    if (r.ok) { aLoad(curBoard); return; }
+    btn.disabled = false; btn.textContent = '삭제';
+    alert(r.status === 401 ? '로그인이 만료되었습니다. 다시 로그인해 주세요.'
+      : '삭제 권한이 없습니다. 운영자 계정으로 로그인했는지 확인해 주세요.');
+  }).catch(() => { btn.disabled = false; btn.textContent = '삭제'; alert('네트워크 오류가 발생했습니다.'); });
+}
+
+sync();
+</script>
+</body>
+</html>
