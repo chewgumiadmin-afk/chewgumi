@@ -173,7 +173,7 @@ document.addEventListener('click', e => {
   var URL_ = 'https://psynvpuedzjvytsgdhgg.supabase.co', KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk', BOARD = 'review';
   var panel = document.querySelector('.wrap .panel');
   if (!panel) return;
-  fetch(URL_ + '/rest/v1/posts?board=eq.' + BOARD + '&select=title,content,meta,badge&order=created_at.desc',
+  fetch(URL_ + '/rest/v1/posts?board=eq.' + BOARD + '&select=title,content,meta,badge,source,source_url&order=created_at.desc',
     { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } })
     .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
     .then(function(rows){
@@ -186,7 +186,7 @@ document.addEventListener('click', e => {
           + '<div class="i-head" onclick="this.parentElement.classList.toggle(\'open\')">'
           + '<span class="i-title">' + badge + esc(r.title) + '</span>'
           + '<span class="i-meta">' + esc(r.meta) + '</span></div>'
-          + '<div class="i-body">' + esc(r.content) + '</div></div>';
+          + '<div class="i-body">' + esc(r.content) + (r.source_url ? '<br><a href="' + esc(r.source_url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);text-decoration:none;color:#1d1d1f;">' + esc(r.source || 'LINK') + '에서 보기 →</a>' : '') + '</div></div>';
       }).join('');
     })
     .catch(function(){}); /* 실패 시 기존 내용 유지 */
