@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v28 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v29 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1049,7 +1049,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v28 · 2026-08-03</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v29 · 2026-08-03</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1754,7 +1754,7 @@ function renderCart(){
       <div class="c-info">
         <div class="c-name">${it.name}</div>
         <div class="c-price">${won(it.price)} · 소계 ${won(it.price*it.qty)}</div>
-        <a class="c-open" href="${productUrl(it.name)}" target="_blank" rel="noopener">공식몰에서 담기 →</a>
+        <a class="c-open" href="${productUrl(it.name)}" target="_blank" rel="noopener">공식몰에서 구매 →</a>
       </div>
       <div class="c-qty"><button onclick="cartQty(${i},-1)">−</button><span>${it.qty}</span><button onclick="cartQty(${i},1)">＋</button></div>
       <button class="c-del" onclick="cartDel(${i})" aria-label="삭제">✕</button>
@@ -1770,7 +1770,7 @@ function renderCart(){
   } else {
     btn.href = first;
     btn.textContent = '① 첫 상품부터 담으러 가기';
-    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 각 상품의 <b>「공식몰에서 담기」</b>를 눌러 공식몰 장바구니에 [CART] 담은 뒤, 아래 <b>「② 공식몰 장바구니에서 결제」</b>로 한 번에 결제해 주세요.';
+    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 각 상품의 <b>「공식몰에서 구매」</b>를 눌러 공식몰에서 옵션 선택 후 [CART]에 담은 뒤, 아래 <b>「② 공식몰 장바구니에서 결제」</b>로 한 번에 결제해 주세요.';
   }
   const bask = document.getElementById('cBasket');
   if (bask) bask.textContent = CART.length > 1 ? '② 공식몰 장바구니에서 결제' : '공식몰 장바구니 열기';
