@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v16 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v17 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -23,9 +23,11 @@
 .v-err { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; }
 
 /* 장바구니 개별 상품 공식몰 링크 */
-.c-open { display:inline-block; margin-top:6px; font-size:11px; font-weight:700; letter-spacing:.5px;
-  color:var(--main); text-decoration:underline; text-underline-offset:3px; }
-.c-open:hover { color:var(--main2); }
+.c-open { display:inline-block; margin-top:8px; font-size:11px; font-weight:700; letter-spacing:.5px;
+  color:#fff; background:linear-gradient(135deg,var(--main2),var(--main)); padding:7px 14px; border-radius:999px;
+  text-decoration:none; box-shadow:0 4px 12px rgba(216,37,88,.3); }
+.c-open:hover { filter:brightness(1.05); }
+.c-note b { color:var(--ink); font-weight:700; }
 
 /* NEW : 트리플잇 3종 (가이드 사양) */
 #newline { padding:80px 0 20px; }
@@ -989,7 +991,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v16 · 2026-07-31</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v17 · 2026-07-31</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1070,7 +1072,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <div class="c-note" id="cNote">담으신 상품의 공식몰 페이지가 열립니다. 수량 선택 후 결제를 진행해 주세요.</div>
     <a class="c-checkout" id="cCheckout" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return cartCheckout(event)">공식몰에서 결제하기</a>
     <div class="pay-badges" aria-label="지원 결제수단"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
-    <a class="c-continue" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 열기</a>
+    <a class="c-continue" id="cBasket" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 열기</a>
     <button class="c-continue" onclick="closeCart()">계속 쇼핑하기</button>
   </div>
 </aside>
@@ -1693,19 +1695,20 @@ function renderCart(){
       <button class="c-del" onclick="cartDel(${i})" aria-label="삭제">✕</button>
     </div>`).join('');
   document.getElementById('cTotal').textContent = won(CART.reduce((a,i)=>a+i.price*i.qty,0));
-  const urls = new Set(CART.map(i => productUrl(i.name)));
-  const lines = new Set(CART.map(i => i.name.includes('트래블잇') || i.name.toLowerCase().includes('travel') ? 't' : 'd'));
   const btn = document.getElementById('cCheckout');
   const note = document.getElementById('cNote');
-  if (urls.size === 1) {
-    btn.href = [...urls][0];
-    btn.textContent = '공식몰에서 바로 구매하기';
-    if (note) note.textContent = '담으신 상품의 공식몰 페이지가 열립니다. 수량 선택 후 결제(네이버페이·카드·계좌이체·가상계좌)를 진행해 주세요.';
+  const first = CART.length ? productUrl(CART[0].name) : 'https://chewgumi.com';
+  if (CART.length === 1) {
+    btn.href = first;
+    btn.textContent = '공식몰에서 구매하기';
+    if (note) note.innerHTML = '공식몰 상품 페이지가 열립니다. <b>옵션·수량을 선택하고 [BUY NOW]</b>를 누르면 결제로 이어집니다.';
   } else {
-    btn.href = lines.size === 1 ? (lines.has('t') ? CG_TRAVEL_CAT : CG_DEWIT_CAT) : 'https://chewgumi.com';
-    btn.textContent = '공식몰로 이동하기';
-    if (note) note.textContent = '여러 상품을 담으셨습니다. 각 상품의 「공식몰에서 담기」를 눌러 공식몰 장바구니에 담은 뒤 한 번에 결제해 주세요.';
+    btn.href = first;
+    btn.textContent = '① 첫 상품부터 담으러 가기';
+    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 각 상품의 <b>「공식몰에서 담기」</b>를 눌러 공식몰 장바구니에 [CART] 담은 뒤, 아래 <b>「② 공식몰 장바구니에서 결제」</b>로 한 번에 결제해 주세요.';
   }
+  const bask = document.getElementById('cBasket');
+  if (bask) bask.textContent = CART.length > 1 ? '② 공식몰 장바구니에서 결제' : '공식몰 장바구니 열기';
 }
 
 /* 링크·버튼 클릭 시 화면 전체 물방울 파동 */
