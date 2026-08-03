@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<!-- ChewGumi MyPage v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 | CHEWGUMI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<style>
+:root{--main:#D82558;--main2:#E95073;--light:#FFE4E6;--sub:#FFE923;--ink:#000;--gray:#797979;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding-bottom:70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.topbar{height:45px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,var(--main2),var(--main));color:#fff;font-size:14.5px;font-weight:600}
+.head{max-width:820px;margin:0 auto;padding:22px 20px 0;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:var(--main)}
+.head nav a{font-size:12.5px;color:var(--gray);margin-left:14px}
+.wrap{max-width:820px;margin:0 auto;padding:20px}
+h1{font-family:'Poppins',sans-serif;font-size:27px;font-weight:700;margin-bottom:18px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+label{display:block;font-size:12.5px;font-weight:600;margin:11px 0 5px}
+input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-family:inherit;color:var(--ink);
+  border:1px solid var(--line);background:rgba(255,255,255,.8)}
+.row2{display:flex;gap:8px}.row2 input{flex:1}
+.btn-sm{flex:none;padding:0 16px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.9);
+  font-size:12.5px;font-weight:700}
+.btn{padding:13px 24px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px}
+.chk{display:flex;align-items:center;gap:9px;margin-top:11px;font-size:12.5px}
+.chk input{width:19px;height:19px;flex:none;appearance:none;border-radius:6px;border:1.5px solid rgba(0,0,0,.2);
+  background:#fff;position:relative;cursor:pointer}
+.chk input:checked{background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+.chk input:checked::after{content:"";position:absolute;left:6px;top:2.5px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+/* 요약 */
+.sumg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sc{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+.sc .l{font-size:11.5px;color:var(--gray)}
+.sc .v{margin-top:6px;font-size:21px;font-weight:800;color:var(--main)}
+/* 주문 */
+.o{border-bottom:1px solid rgba(0,0,0,.07);padding:14px 2px}
+.o:last-child{border-bottom:0}
+.o-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.o-no{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px}
+.o-d{font-size:11.5px;color:var(--gray)}
+.st{font-size:10.5px;font-weight:700;padding:5px 11px;border-radius:999px;color:#fff}
+.st.pending{background:#999}.st.paid{background:#3182F6}.st.preparing{background:#E9A23B}
+.st.shipping{background:#7B61FF}.st.delivered{background:#2AA060}
+.st.cancelled,.st.refunded{background:#C0395C}
+.o-b{margin-top:8px;font-size:12.5px;line-height:1.7;color:#444}
+.o-amt{font-size:14.5px;font-weight:800;color:var(--main)}
+.empty{padding:40px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:600px){.sumg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">마이페이지</div>
+<div class="head">
+  <a class="logo" href="index.html">CHEW GUMI</a>
+  <nav><a href="index.html#all">전체상품</a><a href="cart.html">장바구니</a><a href="index.html">홈</a></nav>
+</div>
+
+<div class="wrap">
+  <h1>My Page</h1>
+
+  <div class="panel" id="login">
+    <h2>LOGIN</h2>
+    <input id="em" type="email" placeholder="이메일" autocomplete="email">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-top:9px">
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" onclick="doLogin()" style="flex:1">로그인</button>
+      <a class="btn ghost" href="join.html" style="flex:1;display:flex;align-items:center;justify-content:center">회원가입</a>
+    </div>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>SUMMARY</h2>
+      <div class="sumg">
+        <div class="sc"><div class="l">보유 적립금</div><div class="v"><span id="pts">0</span>원</div></div>
+        <div class="sc"><div class="l">총 주문</div><div class="v"><span id="oc">0</span>건</div></div>
+        <div class="sc"><div class="l">누적 구매액</div><div class="v"><span id="oa">0</span>원</div></div>
+      </div>
+      <div class="msg" style="margin-top:12px">구매 확정 시 결제 금액의 1%가 적립됩니다.</div>
+    </div>
+
+    <div class="panel">
+      <h2>MY INFO · 회원 정보</h2>
+      <label>이름</label><input id="fName">
+      <label>휴대전화</label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000">
+      <label>우편번호</label>
+      <div class="row2"><input id="fZip" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
+      <label>주소</label><input id="fAddr1" readonly>
+      <label>상세주소</label><input id="fAddr2">
+      <div class="chk"><input type="checkbox" id="mSms"><label for="mSms" style="margin:0">SMS 마케팅 수신 동의</label></div>
+      <div class="chk"><input type="checkbox" id="mEmail"><label for="mEmail" style="margin:0">이메일 마케팅 수신 동의</label></div>
+      <div style="margin-top:16px"><button class="btn" onclick="saveProfile()">저장하기</button></div>
+      <div class="msg" id="pmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>ORDERS · 주문 내역</h2>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>ACCOUNT</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const ST={pending:'입금대기',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
+  delivered:'배송완료',cancelled:'취소',refunded:'환불'};
+let token=null,who='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const $=id=>document.getElementById(id);
+const won=v=>Number(v||0).toLocaleString();
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';loadProfile();loadOrders();}}
+
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function findAddr(){
+  if(!window.daum||!daum.Postcode){$('fAddr1').readOnly=false;return;}
+  new daum.Postcode({oncomplete:d=>{$('fZip').value=d.zonecode;
+    $('fAddr1').value=d.roadAddress||d.jibunAddress;$('fAddr2').focus();}}).open();
+}
+
+function loadProfile(){
+  fetch(SB+'/rest/v1/profiles?select=*&limit=1',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject(r.status)).then(([p])=>{
+    if(!p)return;
+    $('fName').value=p.name||'';$('fPhone').value=p.phone||'';
+    $('fZip').value=p.zipcode||'';$('fAddr1').value=p.addr1||'';$('fAddr2').value=p.addr2||'';
+    $('mSms').checked=!!p.marketing_sms;$('mEmail').checked=!!p.marketing_email;
+    $('pts').textContent=won(p.points);
+  }).catch(s=>{if(s===401){doLogout();}});
+}
+function saveProfile(){
+  const body={name:$('fName').value.trim(),phone:$('fPhone').value.trim(),
+    zipcode:$('fZip').value.trim(),addr1:$('fAddr1').value.trim(),addr2:$('fAddr2').value.trim(),
+    marketing_sms:$('mSms').checked,marketing_email:$('mEmail').checked,
+    updated_at:new Date().toISOString()};
+  fetch(SB+'/rest/v1/profiles',{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(body)})
+  .then(r=>{$('pmsg').textContent=r.ok?'저장되었습니다.':'저장에 실패했습니다.';})
+  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+
+function loadOrders(){
+  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty)&order=created_at.desc',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject(r.status)).then(rows=>{
+    const paid=rows.filter(o=>['paid','preparing','shipping','delivered'].includes(o.status));
+    $('oc').textContent=paid.length;
+    $('oa').textContent=won(paid.reduce((s,o)=>s+o.pay_amount-(o.refund_amount||0),0));
+    if(!rows.length){$('list').innerHTML='<div class="empty">주문 내역이 없습니다.</div>';return;}
+    $('list').innerHTML=rows.map(o=>{
+      const its=(o.order_items||[]).map(i=>esc(i.product_name)+' × '+i.qty).join(', ');
+      return '<div class="o"><div class="o-h">'
+        +'<div><span class="o-no">'+esc(o.order_no)+'</span> '
+        +'<span class="st '+o.status+'">'+(ST[o.status]||o.status)+'</span><br>'
+        +'<span class="o-d">'+new Date(o.created_at).toLocaleDateString('ko-KR')+'</span></div>'
+        +'<div class="o-amt">₩'+won(o.pay_amount)+'</div></div>'
+        +'<div class="o-b">'+its
+        +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
+        +(o.track_status?' · '+esc(o.track_status):'')
+        +(o.refund_amount>0?'<br>환불 ₩'+won(o.refund_amount):'')
+        +(o.cash_receipt_url?'<br><a href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener" style="text-decoration:underline">현금영수증 보기</a>':'')
+        +'</div></div>';
+    }).join('');
+  }).catch(s=>{$('list').innerHTML='<div class="empty">'+(s===401?'로그인이 만료되었습니다.':'주문을 불러오지 못했습니다.')+'</div>';});
+}
+sync();
+</script>
+</body>
+</html>
