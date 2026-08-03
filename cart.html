@@ -66,6 +66,45 @@ h1{font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;margin-bottom
   display:flex;flex-wrap:wrap;gap:12px;justify-content:center;font-size:11.5px;color:var(--gray)}
 .foot a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:560px){ .item .th{width:64px;height:64px} h1{font-size:23px} }
+
+/* 탭 */
+.tabs{display:flex;gap:8px;margin:16px 0 20px}
+.tabs a{padding:10px 20px;border-radius:999px;font-size:13px;font-weight:600;
+  background:rgba(255,255,255,.6);border:1px solid var(--line);color:var(--gray)}
+.tabs a.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+/* 목록 헤더 */
+.list-head{display:flex;align-items:center;gap:12px;padding-bottom:12px;margin-bottom:4px;
+  border-bottom:1.5px solid rgba(0,0,0,.12);flex-wrap:wrap}
+.allbox{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer}
+.cnt{flex:1;font-size:13px;color:var(--gray)}
+.cnt b{color:var(--main);font-weight:700}
+.delsel{font-family:inherit;font-size:12px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.8);border:1px solid var(--line);color:var(--ink)}
+input[type=checkbox]{appearance:none;width:20px;height:20px;flex:none;border-radius:6px;border:1.5px solid rgba(0,0,0,.2);
+  background:#fff;cursor:pointer;position:relative;transition:.15s}
+input[type=checkbox]:checked{background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:3px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+/* 아이템 */
+.item .n{display:block;font-size:14px;font-weight:600;line-height:1.4}
+.item .opt{margin-top:5px;font-size:11.5px;color:var(--gray)}
+.item .opt-act{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.item .opt-act a{font-size:11px;font-weight:600;padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,.8);border:1px solid var(--line);color:var(--ink)}
+.item .opt-act a:last-child{color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+.item .right{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+.item .amt{font-size:15px;font-weight:800;color:var(--main)}
+/* 결제 요약 */
+.pay-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;font-size:13.5px;color:var(--gray)}
+.pay-row b{font-size:15px;color:var(--ink);font-weight:700}
+.pay-row.total{margin-top:6px;padding-top:15px;border-top:1.5px solid rgba(0,0,0,.12);font-size:15px;color:var(--ink);font-weight:600}
+.pay-row.total b{font-size:26px;font-weight:800;color:var(--main)}
+.pay-note{margin-top:12px;font-size:11.5px;color:var(--gray);line-height:1.7}
+.s1.alt{background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink);box-shadow:none}
+@media(max-width:560px){
+  .item{flex-wrap:wrap}
+  .item .right{width:100%;flex-direction:row;justify-content:space-between;align-items:center}
+}
 </style>
 </head>
 <body>
@@ -82,7 +121,10 @@ h1{font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;margin-bottom
 
 <div class="wrap">
   <h1>Cart</h1>
-  <p class="lead">담으신 상품을 확인하고 공식몰에서 결제해 주세요.</p>
+  <div class="tabs">
+    <a class="on" href="cart.html">장바구니</a>
+    <a href="https://chewgumi.com/myshop/wish_list.html" target="_blank" rel="noopener">나의 위시리스트</a>
+  </div>
   <div id="body"></div>
 </div>
 
@@ -130,48 +172,84 @@ const save = () => { try { localStorage.setItem('cg_cart', JSON.stringify(CART))
 function chg(i, d){ CART[i].qty = Math.min(99, Math.max(1, (CART[i].qty || 1) + d)); save(); render(); }
 function del(i){ CART.splice(i, 1); save(); render(); }
 
+function selKeys(){ return [...document.querySelectorAll('.pick:checked')].map(c => +c.dataset.i); }
+function toggleAll(el){ document.querySelectorAll('.pick').forEach(c => c.checked = el.checked); sumUp(); }
+function sumUp(){
+  const sel = selKeys();
+  const items = sel.length ? sel.map(i => CART[i]) : [];
+  const goods = items.reduce((s,i)=>s+i.price*i.qty,0);
+  const el = id => document.getElementById(id);
+  if (el('sGoods')) el('sGoods').textContent = won(goods);
+  if (el('sShip'))  el('sShip').textContent  = '0원';
+  if (el('sPay'))   el('sPay').textContent   = won(goods);
+  if (el('selN'))   el('selN').textContent   = sel.length;
+  const all = document.getElementById('allChk');
+  if (all) all.checked = CART.length > 0 && sel.length === CART.length;
+}
+function delSelected(){
+  const sel = selKeys();
+  if (!sel.length) return alert('삭제할 상품을 선택해 주세요.');
+  CART = CART.filter((_, i) => !sel.includes(i));
+  save(); render();
+}
+function orderSelected(all){
+  const sel = all ? CART.map((_, i) => i) : selKeys();
+  if (!sel.length) return alert('주문할 상품을 선택해 주세요.');
+  const first = matchNo(CART[sel[0]].name);
+  window.open(detailUrl(first), '_blank', 'noopener');
+}
+
 function render(){
   const box = document.getElementById('body');
   if (!CART.length) {
     box.innerHTML = '<div class="panel"><div class="empty">' +
-      '<div class="e-t">장바구니가 비어 있습니다</div>' +
+      '<div class="e-t">장바구니에 담긴 상품이 없습니다</div>' +
       '<div>마음에 드는 츄구미를 담아보세요.</div>' +
       '<a href="index.html#all">상품 보러 가기</a></div></div>';
     return;
   }
-  const total = CART.reduce((s, i) => s + i.price * i.qty, 0);
   const rows = CART.map((it, i) => {
     const n = matchNo(it.name);
     return '<div class="item">' +
-      '<div class="th"><img src="' + CDN + P[n].img + '" alt="' + esc(it.name) + '" loading="lazy"></div>' +
-      '<div class="c"><div class="n">' + esc(it.name) + '</div>' +
-      '<div class="p">' + won(it.price) + ' · 소계 <b>' + won(it.price * it.qty) + '</b></div>' +
-      '<a class="open" href="' + detailUrl(n) + '" target="_blank" rel="noopener">공식몰에서 담기 →</a></div>' +
-      '<div class="ctrl"><button onclick="chg(' + i + ',-1)" aria-label="수량 감소">−</button>' +
-      '<span>' + it.qty + '</span>' +
-      '<button onclick="chg(' + i + ',1)" aria-label="수량 증가">＋</button></div>' +
+      '<input type="checkbox" class="pick" data-i="' + i + '" checked onchange="sumUp()" aria-label="선택">' +
+      '<div class="th"><img src="' + CDN + P[n].img + '" alt="" loading="lazy"></div>' +
+      '<div class="c">' +
+        '<a class="n" href="product.html?no=' + n + '">' + esc(it.name) + '</a>' +
+        '<div class="opt">구성 : ' + esc(P[n].n) + '</div>' +
+        '<div class="opt-act"><a href="product.html?no=' + n + '">옵션 변경</a>' +
+        '<a href="' + detailUrl(n) + '" target="_blank" rel="noopener">공식몰에서 담기 →</a></div>' +
+      '</div>' +
+      '<div class="right">' +
+        '<div class="ctrl"><button onclick="chg(' + i + ',-1)" aria-label="수량 감소">−</button>' +
+        '<span>' + it.qty + '</span>' +
+        '<button onclick="chg(' + i + ',1)" aria-label="수량 증가">＋</button></div>' +
+        '<div class="amt">' + won(it.price * it.qty) + '</div>' +
+      '</div>' +
       '<button class="del" onclick="del(' + i + ')" aria-label="삭제">✕</button></div>';
   }).join('');
 
-  const one = CART.length === 1;
-  const firstNo = matchNo(CART[0].name);
-  const guide = one
-    ? '공식몰 상품 페이지가 열립니다. <b>옵션·수량을 선택하고 [BUY NOW]</b>를 누르면 결제로 이어집니다.'
-    : '담으신 상품이 <b>' + CART.length + '개</b>입니다. 각 상품의 <b>「공식몰에서 담기」</b>로 공식몰 장바구니에 담은 뒤, <b>②</b>에서 한 번에 결제해 주세요.';
-
   box.innerHTML =
-    '<div class="panel">' + rows + '</div>' +
-    '<div class="panel"><div class="sum"><span class="l">총 상품금액</span><span class="v">' + won(total) + '</span></div>' +
-    '<div class="note">' + guide + '</div>' +
-    '<div class="steps">' +
-      '<a class="s1" href="' + detailUrl(firstNo) + '" target="_blank" rel="noopener">' +
-        (one ? '공식몰에서 구매하기' : '① 첫 상품부터 담으러 가기') + '</a>' +
-      '<a class="s2" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener">' +
-        (one ? '공식몰 장바구니 열기' : '② 공식몰 장바구니에서 결제') + '</a>' +
-      '<a class="s2" href="index.html#all">계속 쇼핑하기</a>' +
+    '<div class="panel">' +
+      '<div class="list-head">' +
+        '<label class="allbox"><input type="checkbox" id="allChk" checked onchange="toggleAll(this)"> 전체선택</label>' +
+        '<span class="cnt">전체상품 ( <b>' + CART.length + '</b> )</span>' +
+        '<button class="delsel" onclick="delSelected()">선택 삭제</button>' +
+      '</div>' + rows +
     '</div>' +
-    '<div class="pays"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>' +
+    '<div class="panel pay">' +
+      '<div class="pay-row"><span>총 상품금액</span><b id="sGoods">₩0</b></div>' +
+      '<div class="pay-row"><span>총 배송비</span><b id="sShip">0원</b></div>' +
+      '<div class="pay-row total"><span>결제 예정 금액</span><b id="sPay">₩0</b></div>' +
+      '<p class="pay-note">주문서 작성 단계에서 할인·적립금 적용을 하실 수 있습니다. 결제는 공식몰(chewgumi.com)에서 안전하게 진행됩니다.</p>' +
+      '<div class="steps">' +
+        '<a class="s1" href="#" onclick="orderSelected(false);return false;">선택 상품 주문 (<span id="selN">0</span>)</a>' +
+        '<a class="s1 alt" href="#" onclick="orderSelected(true);return false;">전체 상품 주문</a>' +
+        '<a class="s2" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener">공식몰 장바구니 열기</a>' +
+        '<a class="s2" href="index.html#all">계속 쇼핑하기</a>' +
+      '</div>' +
+      '<div class="pays"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>' +
     '</div>';
+  sumUp();
 }
 render();
 </script>
