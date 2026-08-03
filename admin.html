@@ -89,6 +89,23 @@ button{cursor:pointer;font-family:inherit}
 .ext b{display:block;font-size:13.5px;font-weight:700}
 .ext span{display:block;margin-top:4px;font-size:11.5px;color:var(--gray)}
 @media(max-width:600px){.ext-grid{grid-template-columns:1fr}}
+
+.prow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.06);flex-wrap:wrap}
+.prow:last-child{border-bottom:0}
+.prow .pn{flex:1;min-width:150px;font-size:13px;font-weight:600}
+.prow .pp{font-size:12px;color:var(--gray);min-width:90px}
+.prow input[type=number]{width:84px;padding:8px 10px;margin:0;border-radius:10px;font-size:12.5px;
+  border:1px solid var(--line);background:rgba(255,255,255,.85);font-family:inherit}
+.prow .sw{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray)}
+.prow button{padding:8px 14px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.prow .soldout{font-size:10.5px;font-weight:700;color:#fff;background:#C0395C;padding:4px 9px;border-radius:999px}
+.mrow{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.06);flex-wrap:wrap;align-items:center}
+.mrow:last-child{border-bottom:0}
+.mrow .me{flex:1;min-width:170px;font-size:13px;font-weight:600}
+.mrow .mi{font-size:11.5px;color:var(--gray)}
+.mrow .mp{font-size:13px;font-weight:700;color:var(--main)}
+.empty{padding:26px 0;text-align:center;color:var(--gray);font-size:13px}
 </style>
 </head>
 <body>
@@ -112,28 +129,40 @@ button{cursor:pointer;font-family:inherit}
     <div class="msg" id="aMsg"></div>
     <div class="note">
       운영자 계정이 없다면 사이트의 <strong>JOIN US</strong>에서 먼저 가입한 뒤 이 화면에서 로그인하세요.<br>
-      주문 확인·배송 송장 등록은 <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener">카페24 관리자</a>에서 처리합니다.
+      주문·배송·회원·상품 관리를 이 화면에서 모두 처리합니다.
     </div>
   </div>
 
   <!-- 관리 화면 -->
   <div id="adminArea" class="hide">
     <div class="panel">
-      <h2>주문 · 배송 관리 (카페24)</h2>
+      <h2>운영 메뉴</h2>
       <div class="ext-grid">
-        <a class="ext" href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener">
-          <b>주문 대시보드</b><span>실시간 매출·오늘의 할 일</span></a>
-        <a class="ext" href="https://chewgumi.cafe24.com/disp/admin/shop1/order/list" target="_blank" rel="noopener">
-          <b>전체 주문 조회</b><span>입금전·배송준비·배송중</span></a>
-        <a class="ext" href="https://chewgumi.cafe24.com/disp/admin/shop1/order/shippingprepare" target="_blank" rel="noopener">
-          <b>배송 준비 · 송장 등록</b><span>택배사·운송장 번호 입력</span></a>
-        <a class="ext" href="https://chewgumi.cafe24.com/disp/admin/shop1/product/list" target="_blank" rel="noopener">
-          <b>상품 · 재고 관리</b><span>품절 해제, 가격 수정</span></a>
+        <a class="ext" href="orders.html">
+          <b>주문 · 배송 관리</b><span>매출 현황, 송장 등록, 환불, 배송조회</span></a>
+        <a class="ext" href="#stock" onclick="document.getElementById('stockPanel').scrollIntoView({behavior:'smooth'});return false;">
+          <b>상품 · 재고 관리</b><span>재고 수량, 판매 여부, 가격</span></a>
+        <a class="ext" href="#member" onclick="document.getElementById('memberPanel').scrollIntoView({behavior:'smooth'});return false;">
+          <b>회원 관리</b><span>가입 회원, 적립금, 연락처</span></a>
+        <a class="ext" href="index.html">
+          <b>사이트 보기</b><span>고객 화면 확인</span></a>
       </div>
       <div class="note" style="margin-top:12px">
-        주문·결제·배송 데이터는 모두 카페24에 저장됩니다. 별도 데이터베이스 구축 없이 위 메뉴에서 처리하시면 됩니다.
+        주문·결제·배송·회원 데이터는 모두 츄구미 자체 서버에 저장됩니다.
       </div>
     </div>
+
+    <div class="panel" id="stockPanel">
+      <h2>상품 · 재고 관리</h2>
+      <div id="stockList"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="stMsg"></div>
+    </div>
+
+    <div class="panel" id="memberPanel">
+      <h2>회원 관리</h2>
+      <div id="memberList"><div class="empty">불러오는 중…</div></div>
+    </div>
+
     <div class="panel">
       <h2>새 글 등록</h2>
       <div class="row">
@@ -214,6 +243,44 @@ try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { to
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
 function msg(id, t){ document.getElementById(id).textContent = t; }
 
+function loadStock(){
+  fetch(SB_URL+'/rest/v1/products?select=id,name,price_sale,stock,active&order=sort_order',
+    {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}})
+  .then(r=>r.json()).then(rows=>{
+    const box=document.getElementById('stockList');
+    if(!rows.length){box.innerHTML='<div class="empty">상품이 없습니다.</div>';return;}
+    box.innerHTML=rows.map(p=>
+      '<div class="prow"><span class="pn">'+esc(p.name)+
+      (p.stock<=0?' <span class="soldout">품절</span>':'')+'</span>'
+      +'<span class="pp">₩'+Number(p.price_sale).toLocaleString()+'</span>'
+      +'<span class="sw">재고 <input type="number" id="sk'+p.id+'" value="'+p.stock+'" min="0"></span>'
+      +'<span class="sw"><input type="checkbox" id="ac'+p.id+'"'+(p.active?' checked':'')+' style="width:18px;height:18px;margin:0"> 판매</span>'
+      +'<button onclick="saveStock('+p.id+')">저장</button></div>').join('');
+  }).catch(()=>{document.getElementById('stockList').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function saveStock(id){
+  const body={stock:parseInt(document.getElementById('sk'+id).value,10)||0,
+    active:document.getElementById('ac'+id).checked};
+  fetch(SB_URL+'/rest/v1/products?id=eq.'+id,{method:'PATCH',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(body)})
+  .then(r=>{msg('stMsg',r.ok?'저장되었습니다.':'저장 권한이 없습니다. 운영자로 로그인해 주세요.');
+    if(r.ok)loadStock();})
+  .catch(()=>msg('stMsg','네트워크 오류가 발생했습니다.'));
+}
+function loadMembers(){
+  fetch(SB_URL+'/rest/v1/profiles?select=email,name,phone,points,created_at&order=created_at.desc&limit=200',
+    {headers:{apikey:SB_KEY,Authorization:'Bearer '+token}})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    const box=document.getElementById('memberList');
+    if(!rows.length){box.innerHTML='<div class="empty">가입한 회원이 없습니다.</div>';return;}
+    box.innerHTML='<div class="msg" style="margin:0 0 8px">총 '+rows.length+'명</div>'
+      +rows.map(m=>'<div class="mrow"><span class="me">'+esc(m.name||'(이름 미등록)')
+      +'<div class="mi">'+esc(m.email)+(m.phone?' · '+esc(m.phone):'')+'</div></span>'
+      +'<span class="mi">'+new Date(m.created_at).toLocaleDateString('ko-KR')+' 가입</span>'
+      +'<span class="mp">'+Number(m.points||0).toLocaleString()+'P</span></div>').join('');
+  }).catch(()=>{document.getElementById('memberList').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
+}
 function sync(){
   const on = !!token;
   document.getElementById('loginPanel').classList.toggle('hide', on);
@@ -221,6 +288,8 @@ function sync(){
   if (on) {
     document.getElementById('whoami').textContent = (who || '') + ' 님으로 로그인 중입니다.';
     aLoad(curBoard);
+    loadStock();
+    loadMembers();
   }
 }
 
