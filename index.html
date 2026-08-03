@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v20 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v21 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1004,7 +1004,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v20 · 2026-07-31</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v21 · 2026-07-31</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1086,7 +1086,8 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <div class="c-note" id="cNote">담으신 상품의 공식몰 페이지가 열립니다. 수량 선택 후 결제를 진행해 주세요.</div>
     <a class="c-checkout" id="cCheckout" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return cartCheckout(event)">공식몰에서 결제하기</a>
     <div class="pay-badges" aria-label="지원 결제수단"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
-    <a class="c-continue" id="cBasket" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 열기</a>
+    <a class="c-continue" href="cart.html" style="margin-top:8px;">장바구니 페이지에서 보기</a>
+      <a class="c-continue" id="cBasket" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 열기</a>
     <button class="c-continue" onclick="closeCart()">계속 쇼핑하기</button>
   </div>
 </aside>
@@ -1680,7 +1681,9 @@ document.querySelectorAll('.comm-list[data-key]').forEach(ul => {
 });
 
 /* 글래스 장바구니 */
-const CART = [];
+let CART = [];
+try { CART = JSON.parse(localStorage.getItem('cg_cart') || '[]'); } catch(e){ CART = []; }
+function saveCart(){ try { localStorage.setItem('cg_cart', JSON.stringify(CART)); } catch(e){} }
 function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
 function addToCart(){
@@ -1695,6 +1698,7 @@ function addToCart(){
 function cartQty(i, d){ CART[i].qty = Math.max(1, CART[i].qty + d); renderCart(); }
 function cartDel(i){ CART.splice(i,1); renderCart(); }
 function renderCart(){
+  saveCart();
   const list = document.getElementById('cList');
   const n = CART.reduce((a,i)=>a+i.qty,0);
   document.getElementById('cartN').textContent = n;
