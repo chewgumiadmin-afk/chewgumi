@@ -80,12 +80,13 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <div class="field"><input type="password" id="upw" placeholder="비밀번호" autocomplete="current-password"></div>
       <button class="btn" type="submit">LOGIN</button>
     </form>
+    <div id="lgMsg" style="font-size:12px;color:#D82558;margin-top:10px;min-height:16px"></div>
     <a class="btn ghost" href="join.html" target="_blank" rel="noopener">JOIN US — 가입하고 2,000원 쿠폰 받기</a>
 
     <div class="links">
-      <a href="https://chewgumi.com/member/find_id.html" target="_blank" rel="noopener">아이디 찾기</a>
-      <a href="https://chewgumi.com/member/find_passwd.html" target="_blank" rel="noopener">비밀번호 찾기</a>
-      <a href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener">장바구니</a>
+      <a href="#" onclick="alert('가입하신 이메일이 아이디입니다. 기억나지 않으시면 chewgumi24@gmail.com 으로 문의해 주세요.');return false;" target="_blank" rel="noopener">아이디 찾기</a>
+      <a href="#" onclick="alert('비밀번호 재설정은 chewgumi24@gmail.com 으로 요청해 주세요. 곧 자동 재설정 기능을 제공할 예정입니다.');return false;" target="_blank" rel="noopener">비밀번호 찾기</a>
+      <a href="cart.html">장바구니</a>
     </div>
     <div class="note">보안을 위해 로그인과 결제는 공식몰(chewgumi.com)에서 진행됩니다.<br>LOGIN을 누르면 공식몰 로그인 화면으로 안전하게 이동합니다.</div>
     <a class="home" href="index.html">HOME</a>
@@ -93,7 +94,28 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 </div>
 
 <script>
-function goLogin(){ window.open('https://chewgumi.com/member/login.html', '_blank', 'noopener'); }
+const SB_URL='https://psynvpuedzjvytsgdhgg.supabase.co';
+const SB_KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+function goLogin(){
+  const ids=['id','email','userId','loginId'], pws=['pw','password','loginPw'];
+  const find=a=>{for(const x of a){const el=document.getElementById(x);if(el)return el;}
+    return null;};
+  const ie=find(ids)||document.querySelector('input[type=email],input[type=text]');
+  const ip=find(pws)||document.querySelector('input[type=password]');
+  const m=document.getElementById('lgMsg');
+  const email=(ie&&ie.value||'').trim(), pw=(ip&&ip.value)||'';
+  if(!email||!pw){if(m)m.textContent='이메일과 비밀번호를 입력해 주세요.';return;}
+  if(m)m.textContent='로그인 중…';
+  fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:SB_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:d.access_token,u:email.split('@')[0]}));}catch(e){}
+      location.href='mypage.html';
+    } else if(m) m.textContent='로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.';
+  }).catch(()=>{if(m)m.textContent='네트워크 오류가 발생했습니다.';});
+}
 document.addEventListener('click', e => {
   const t = e.target.closest('a, button'); if (!t) return;
   const r = document.createElement('span'); r.className='ripple';
