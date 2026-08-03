@@ -63,6 +63,9 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
 .buy{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;box-shadow:0 10px 24px rgba(216,37,88,.32)}
 .buy.off{background:#bbb;box-shadow:none;pointer-events:none}
 .cart{background:rgba(255,255,255,.75);border:1px solid var(--line);color:var(--ink)}
+.toss{display:none;margin-top:10px;height:50px;border-radius:999px;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:#fff;background:#3182F6;box-shadow:0 8px 20px rgba(49,130,246,.32)}
+.toss.on{display:flex}
 .pays{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;justify-content:center}
 .pays span{font-size:10px;font-weight:600;color:#555;padding:5px 12px;border-radius:999px;
   background:rgba(255,255,255,.65);border:1px solid var(--line)}
@@ -125,6 +128,7 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
           <a class="cart" id="pCart" href="#" onclick="addCart();return false;">장바구니</a>
           <a class="buy" id="pBuy" href="#" target="_blank" rel="noopener">BUY NOW</a>
         </div>
+        <a class="toss" id="pToss" href="#" target="_blank" rel="noopener">토스페이로 바로 결제</a>
         <div class="pays"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
       </div>
 
@@ -168,6 +172,16 @@ const P = {
   21:{n:'듀잇 20개입', line:'doit', cate:47, o:158900,s:81000, img:'202512/942a7d4949aa31bea2c60e76208c1b76.png', d:'가장 알뜰한 20개입 대용량 구성.'}
 };
 const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
+
+/* ─────────────────────────────────────────────────────────
+   토스페이먼츠 결제링크 (상점관리자 → 결제링크에서 발급 후 붙여넣기)
+   https://app.tosspayments.com  →  결제링크 → 링크 만들기 → 주소 복사
+   비워두면 버튼이 표시되지 않습니다. 예) 11:'https://pay.toss.im/xxxxx'
+   ───────────────────────────────────────────────────────── */
+const PAY_LINKS = {
+  15:'', 11:'', 12:'', 13:'', 14:'',
+  16:'', 17:'', 18:'', 19:'', 20:'', 21:''
+};
 let no = parseInt(new URLSearchParams(location.search).get('no'), 10);
 if (!P[no]) no = 11;
 let qty = 1, rate = null;
@@ -197,6 +211,10 @@ function render(){
   buy.href = detailUrl(no);
   buy.className = 'buy' + (p.sold ? ' off' : '');
   buy.textContent = p.sold ? 'SOLD OUT' : 'BUY NOW';
+
+  const toss = document.getElementById('pToss');
+  const link = PAY_LINKS[no];
+  if (link && !p.sold) { toss.href = link; toss.classList.add('on'); } else { toss.classList.remove('on'); }
 
   document.getElementById('rel').innerHTML = ORDER.filter(n => n !== no).slice(0, 4).map(n =>
     '<a class="rel-card" href="product.html?no=' + n + '">' +
