@@ -217,7 +217,7 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
         <div class="acts">
           <button class="wish" id="pWish" onclick="toggleWish()" aria-label="관심상품">♡</button>
           <a class="cart" id="pCart" href="#" onclick="addCart();return false;">장바구니</a>
-          <a class="buy" id="pBuy" href="#" target="_blank" rel="noopener">BUY NOW</a>
+          <a class="buy" id="pBuy" href="checkout.html" onclick="return buyNow(event)">BUY NOW</a>
         </div>
         <a class="toss" id="pToss" href="#" target="_blank" rel="noopener">토스페이로 바로 결제</a>
         <div class="pays"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
@@ -432,7 +432,7 @@ function render(){
   sel.innerHTML = same.map(n => '<option value="' + n + '"' + (n === no ? ' selected' : '') + '>' + P[n].n + ' — ' + won(P[n].s) + '</option>').join('');
 
   const buy = document.getElementById('pBuy');
-  buy.href = detailUrl(no);
+  buy.href = 'checkout.html';
   buy.className = 'buy' + (p.sold ? ' off' : '');
   buy.textContent = p.sold ? 'SOLD OUT' : 'BUY NOW';
 
@@ -473,6 +473,17 @@ function total(){
 }
 function getCart(){ try{ return JSON.parse(localStorage.getItem('cg_cart') || '[]'); }catch(e){ return []; } }
 function setCart(c){ try{ localStorage.setItem('cg_cart', JSON.stringify(c)); }catch(e){} }
+function buyNow(ev){
+  ev.preventDefault();
+  const p = P[no];
+  if (p.sold) return false;
+  const c = getCart();
+  const ex = c.find(i => i.name === p.n);
+  if (ex) ex.qty = qty; else c.push({ name: p.n, price: p.s, qty: qty });
+  setCart(c);
+  location.href = 'checkout.html';
+  return false;
+}
 function addCart(){
   const c = getCart();
   const ex = c.find(i => i.name === P[no].n);
