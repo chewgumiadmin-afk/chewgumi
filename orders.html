@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!-- ChewGumi Order Dashboard v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>주문 관리 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--light:#FFE4E6;--ink:#000;--gray:#797979;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.top h1{font-family:'Poppins',sans-serif;font-size:26px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;font-size:13.5px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.8)}
+.btn{padding:13px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12px;color:var(--gray);margin-top:8px;min-height:16px}
+/* 통계 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:16px;padding:16px}
+.stat .l{font-size:11.5px;color:var(--gray)}
+.stat .v{margin-top:6px;font-size:22px;font-weight:800;color:var(--main)}
+.stat .u{font-size:11px;color:var(--gray);margin-left:3px;font-weight:500}
+/* 필터 */
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.65);
+  font-size:12px;font-weight:600;color:var(--gray)}
+.tabs button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+/* 주문 카드 */
+.o{border-bottom:1px solid rgba(0,0,0,.07);padding:15px 2px}
+.o:last-child{border-bottom:0}
+.o-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.o-no{font-family:'Poppins',sans-serif;font-weight:700;font-size:13.5px}
+.o-d{font-size:11.5px;color:var(--gray)}
+.st{font-size:10.5px;font-weight:700;letter-spacing:.5px;padding:5px 11px;border-radius:999px;color:#fff}
+.st.pending{background:#999}.st.paid{background:#3182F6}.st.preparing{background:#E9A23B}
+.st.shipping{background:#7B61FF}.st.delivered{background:#2AA060}
+.st.cancelled,.st.refunded{background:#C0395C}
+.o-b{margin-top:9px;font-size:12.5px;line-height:1.75;color:#444}
+.o-b b{color:var(--ink)}
+.o-amt{font-size:15px;font-weight:800;color:var(--main)}
+.o-act{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;align-items:center}
+.o-act select,.o-act input{width:auto;margin:0;padding:9px 12px;font-size:12px;border-radius:11px}
+.o-act .mini{padding:9px 15px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.empty{padding:44px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Order Dashboard</h1><div class="s">CHEWGUMI ADMIN</div></div>
+    <div><a href="admin.html">게시판 관리</a> · <a href="index.html">사이트</a></div>
+  </div>
+
+  <!-- 로그인 -->
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>매출 현황</h2>
+      <div class="stats">
+        <div class="stat"><div class="l">오늘 결제</div><div class="v"><span id="tAmt">0</span><span class="u">원</span></div><div class="l"><span id="tCnt">0</span>건</div></div>
+        <div class="stat"><div class="l">이번 달 결제</div><div class="v"><span id="mAmt">0</span><span class="u">원</span></div><div class="l"><span id="mCnt">0</span>건</div></div>
+        <div class="stat"><div class="l">배송 준비</div><div class="v" id="cPrep">0</div><div class="l">건</div></div>
+        <div class="stat"><div class="l">배송 중</div><div class="v" id="cShip">0</div><div class="l">건</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>주문 목록</h2>
+      <div class="tabs">
+        <button class="on" data-s="all" onclick="setS('all')">전체</button>
+        <button data-s="paid" onclick="setS('paid')">결제완료</button>
+        <button data-s="preparing" onclick="setS('preparing')">배송준비</button>
+        <button data-s="shipping" onclick="setS('shipping')">배송중</button>
+        <button data-s="delivered" onclick="setS('delivered')">배송완료</button>
+        <button data-s="pending" onclick="setS('pending')">미결제</button>
+      </div>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:150px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const ST={pending:'미결제',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
+  delivered:'배송완료',cancelled:'취소',refunded:'환불'};
+let token=null,who='',filt='all',ORD=[];
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const $=id=>document.getElementById(id);
+const won=v=>Number(v||0).toLocaleString();
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';load();}}
+
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 계정을 확인하거나 가입 메일 인증을 완료해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function load(){
+  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price)&order=created_at.desc&limit=200',
+    {headers:{apikey:KEY,Authorization:'Bearer '+token}})
+  .then(r=>r.ok?r.json():Promise.reject(r.status))
+  .then(rows=>{ORD=rows;stats();render();})
+  .catch(s=>{$('list').innerHTML='<div class="empty">'+(s===401?'로그인이 만료되었습니다. 다시 로그인해 주세요.':'주문을 불러오지 못했습니다. 운영자 계정인지 확인해 주세요.')+'</div>';});
+}
+
+function stats(){
+  const today=new Date().toISOString().slice(0,10);
+  const month=today.slice(0,7);
+  const paidL=['paid','preparing','shipping','delivered'];
+  let ta=0,tc=0,ma=0,mc=0,cp=0,cs=0;
+  ORD.forEach(o=>{
+    const d=(o.paid_at||o.created_at||'').slice(0,10);
+    if(paidL.includes(o.status)){
+      if(d===today){ta+=o.pay_amount;tc++;}
+      if(d.slice(0,7)===month){ma+=o.pay_amount;mc++;}
+    }
+    if(o.status==='preparing'||o.status==='paid')cp++;
+    if(o.status==='shipping')cs++;
+  });
+  $('tAmt').textContent=won(ta);$('tCnt').textContent=tc;
+  $('mAmt').textContent=won(ma);$('mCnt').textContent=mc;
+  $('cPrep').textContent=cp;$('cShip').textContent=cs;
+}
+
+function setS(s){filt=s;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
+  render();}
+
+function render(){
+  const rows=ORD.filter(o=>filt==='all'||o.status===filt);
+  if(!rows.length){$('list').innerHTML='<div class="empty">주문 내역이 없습니다.</div>';return;}
+  $('list').innerHTML=rows.map(o=>{
+    const its=(o.order_items||[]).map(i=>esc(i.product_name)+' × '+i.qty).join(', ');
+    return '<div class="o"><div class="o-h">'
+      +'<div><span class="o-no">'+esc(o.order_no)+'</span> '
+      +'<span class="st '+o.status+'">'+(ST[o.status]||o.status)+'</span><br>'
+      +'<span class="o-d">'+new Date(o.created_at).toLocaleString('ko-KR')+'</span></div>'
+      +'<div class="o-amt">₩'+won(o.pay_amount)+'</div></div>'
+      +'<div class="o-b"><b>'+esc(o.buyer_name)+'</b> · '+esc(o.buyer_phone)
+      +(o.buyer_email?' · '+esc(o.buyer_email):'')+'<br>'
+      +(o.addr1?'['+esc(o.zipcode)+'] '+esc(o.addr1)+' '+esc(o.addr2)+'<br>':'')
+      +(o.memo?'메모: '+esc(o.memo)+'<br>':'')
+      +'상품: '+its+(o.pay_method?'<br>결제수단: '+esc(o.pay_method):'')
+      +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')+'</div>'
+      +'<div class="o-act">'
+      +'<select id="st'+o.id+'">'+Object.keys(ST).map(k=>'<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+ST[k]+'</option>').join('')+'</select>'
+      +'<input id="cr'+o.id+'" placeholder="택배사" value="'+esc(o.courier)+'" style="width:96px">'
+      +'<input id="tn'+o.id+'" placeholder="운송장번호" value="'+esc(o.tracking_no)+'" style="width:150px">'
+      +'<button class="mini" onclick="save('+o.id+')">저장</button></div></div>';
+  }).join('');
+}
+
+function save(id){
+  const body={status:$('st'+id).value,courier:$('cr'+id).value.trim(),tracking_no:$('tn'+id).value.trim()};
+  fetch(SB+'/rest/v1/orders?id=eq.'+id,{method:'PATCH',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(body)})
+  .then(r=>{if(r.ok)load();
+    else alert(r.status===401?'로그인이 만료되었습니다.':'저장 권한이 없습니다. 운영자 계정으로 로그인해 주세요.');})
+  .catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
+sync();
+</script>
+</body>
+</html>
