@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v34 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v35 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1049,7 +1049,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v34 · 2026-08-03</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v35 · 2026-08-03</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1129,7 +1129,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <div class="c-foot">
     <div class="c-total"><span>총 상품금액</span><b id="cTotal">₩0</b></div>
     <div class="c-note" id="cNote">담으신 상품의 공식몰 페이지가 열립니다. 수량 선택 후 결제를 진행해 주세요.</div>
-    <a class="c-checkout" id="cCheckout" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return cartCheckout(event)">공식몰에서 결제하기</a>
+    <a class="c-checkout" id="cCheckout" href="checkout.html">주문서 작성하기</a>
     <div class="pay-badges" aria-label="지원 결제수단"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
     <a class="c-continue" href="cart.html" style="margin-top:8px;">장바구니 페이지에서 보기</a>
       <a class="c-continue" id="cBasket" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener" style="margin-top:8px;">공식몰 장바구니 열기</a>
@@ -1248,111 +1248,6 @@ function setLang(l){
 /* 브라우저 언어 자동 감지: 한국어 환경이 아니면 영어로 시작 */
 if (!(navigator.language || 'ko').toLowerCase().startsWith('ko')) setLang('en');
 
-/* 바로구매: chewgumi.com 내 호스팅 시 카페24 주문서로 직행, 외부 호스팅 시 상품 페이지로 폴백 */
-function cgIsMall(){ return /(^|\.)chewgumi\.com$/.test(location.hostname) || /cafe24shop|cafe24\.com$/.test(location.hostname); }
-function cgDirectOrder(productNo, qty, fallbackUrl){
-  if (!cgIsMall()) { window.open(fallbackUrl, '_blank', 'noopener'); return; }
-  const body = 'product_no=' + productNo + '&quantity=' + (qty || 1) + '&basket_type=A0000&shop_no=1';
-  fetch('/exec/front/order/basket/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-    body
-  }).then(r => r.ok ? r : Promise.reject())
-    .then(() => { location.href = '/order/orderform.html?basket_type=A0000&delvtype=A'; })
-    .catch(() => { window.open(fallbackUrl, '_blank', 'noopener'); });
-}
-function buyNowDirect(ev){
-  ev.preventDefault();
-  const name = (window._curOpt && window._curOpt.name)
-    || (window._curCard && window._curCard.querySelector('.name').textContent.trim());
-  const price = (window._curOpt && window._curOpt.sale) || dPrice || 0;
-  if (!name || !price) { location.href = 'checkout.html'; return false; }
-  try {
-    const c = JSON.parse(localStorage.getItem('cg_cart') || '[]');
-    const ex = c.find(i => i.name === name);
-    if (ex) ex.qty = dQty; else c.push({ name: name, price: price, qty: dQty });
-    localStorage.setItem('cg_cart', JSON.stringify(c));
-  } catch(e){}
-  location.href = 'checkout.html';
-  return false;
-}
-
-function cartCheckout(ev){
-  const a = document.getElementById('cCheckout');
-  if (!cgIsMall() || !CART.length) return true;
-  ev.preventDefault();
-  /* 담긴 상품을 공식몰 장바구니에 순서대로 담고 장바구니로 이동 */
-  const adds = CART.map(it => {
-    const m = (productUrl(it.name) || '').match(/product_no=(\d+)/);
-    if (!m) return Promise.resolve();
-    return fetch('/exec/front/order/basket/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-      body: 'product_no=' + m[1] + '&quantity=' + it.qty + '&basket_type=A0001&shop_no=1'
-    });
-  });
-  Promise.allSettled(adds).then(() => { location.href = '/order/basket.html'; });
-  return false;
-}
-
-/* EN 모드 달러 환산가 — Frankfurter API (무료, 키 불필요, CORS 개방) */
-let cgUsdPerKrw = null;
-function cgLoadUsd(){
-  if (cgUsdPerKrw !== null) { cgUpdUsd(); return; }
-  fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
-    .then(r => r.json())
-    .then(d => { if (d && d.rates && d.rates.KRW) { cgUsdPerKrw = d.rates.KRW; cgUpdUsd(); } })
-    .catch(() => {}); /* 실패해도 원화 표시는 정상 */
-}
-function cgUpdUsd(){
-  const el = document.getElementById('dUsd');
-  if (!el) return;
-  el.textContent = (cgLang === 'en' && cgUsdPerKrw && typeof dPrice === 'number' && dPrice > 0)
-    ? '≈ $' + (dPrice / cgUsdPerKrw).toFixed(2) : '';
-}
-
-/* 상세 레이어 구성(옵션) 선택 — cueren 스타일 */
-const CG_OPTIONS = {
-  travel: [
-    { k:'1',  label:'1봉 (40g)',  name:'[1봉] 트래블잇 Travel-it (40g)',  origin:3500,   sale:3500,  no:15 },
-    { k:'3',  label:'3봉 (40g×3)',  name:'[3봉] 트래블잇 Travel-it (40g)',  origin:18000,  sale:9900,  no:11 },
-    { k:'5',  label:'5봉 (40g×5)',  name:'[5봉] 트래블잇 Travel-it (40g)',  origin:30000,  sale:14900, no:12 },
-    { k:'10', label:'10봉 (40g×10)', name:'[10봉] 트래블잇 Travel-it (40g)', origin:60000,  sale:27900, no:13 },
-    { k:'20', label:'20봉 (40g×20)', name:'[20봉] 트래블잇 Travel-it (40g)', origin:120000, sale:52500, no:14 }
-  ],
-  doit: [
-    { k:'lemon', label:'레몬민트',  name:'듀잇 레몬민트 — 무설탕 자일리톨 캔디', origin:39000,  sale:19900, no:16 },
-    { k:'grape', label:'그레이프',  name:'듀잇 그레이프 — 무설탕 자일리톨 캔디', origin:39000,  sale:19900, no:17 },
-    { k:'4',  label:'4개입',  name:'듀잇 4개입 — 무설탕 자일리톨 캔디',  origin:39000,  sale:19900, no:18 },
-    { k:'6',  label:'6개입',  name:'듀잇 6개입 — 무설탕 자일리톨 캔디',  origin:54800,  sale:27900, no:19 },
-    { k:'10', label:'10개입', name:'듀잇 10개입 — 무설탕 자일리톨 캔디', origin:84200,  sale:42900, no:20 },
-    { k:'20', label:'20개입', name:'듀잇 20개입 — 무설탕 자일리톨 캔디', origin:158900, sale:81000, no:21 }
-  ]
-};
-function findOptIndex(line, name){
-  const list = CG_OPTIONS[line] || [];
-  const n = name || '';
-  for (let i = 0; i < list.length; i++) {
-    const o = list[i];
-    if (line === 'travel') { const m = n.match(/\[(\d+)봉\]/); if (m && m[1] === o.k) return i; }
-    else { if ((o.k === 'lemon' && n.includes('레몬민트')) || (o.k === 'grape' && n.includes('그레이프')) || n.includes(o.k + '개입')) return i; }
-  }
-  return 0;
-}
-function applyOpt(){
-  const line = window._curLine, sel = document.getElementById('dOpt');
-  const o = (CG_OPTIONS[line] || [])[sel.selectedIndex];
-  if (!o) return;
-  window._curOpt = o;
-  document.getElementById('dOrigin').textContent = o.origin > o.sale ? '₩' + o.origin.toLocaleString() : '';
-  document.getElementById('dSale').textContent = '₩' + o.sale.toLocaleString();
-  dPrice = o.sale; renderQty();
-  document.getElementById('dBuy').href = 'checkout.html';
-  cgUpdUsd();
-  const df = document.getElementById('dFull');
-  if (df && window._curOpt) df.href = 'product.html?no=' + window._curOpt.no;
-}
-
 /* 상품명 → 스마트스토어(네이버페이) 매핑 — 트래블잇 주소 확보 시 추가 */
 const SMARTSTORE = {
   dewit: 'https://smartstore.naver.com/chewgumi/products/13393122244'
@@ -1435,12 +1330,28 @@ function closePopup(today){
   if (today) { try { localStorage.setItem('cg_popup_until', String(Date.now() + 864e5)); } catch(e){} }
 }
 (function(){
+  const p = document.getElementById('popup');
   try {
     const until = Number(localStorage.getItem('cg_popup_until') || 0);
-    if (Date.now() < until) document.getElementById('popup').classList.add('hide');
+    if (Date.now() < until) p.classList.add('hide');
   } catch(e){}
-  if (!document.getElementById('popup').classList.contains('hide')) document.body.style.overflow = 'hidden';
+  document.body.style.overflow = p.classList.contains('hide') ? '' : 'hidden';
 })();
+
+/* 안전장치: 열린 레이어가 하나도 없으면 스크롤을 반드시 복구 */
+function cgUnlockIfIdle(){
+  const open =
+    (document.getElementById('popup') && !document.getElementById('popup').classList.contains('hide')) ||
+    (document.getElementById('detail') && !document.getElementById('detail').classList.contains('hide')) ||
+    (document.getElementById('joinLayer') && !document.getElementById('joinLayer').classList.contains('hide')) ||
+    (document.getElementById('boardLayer') && !document.getElementById('boardLayer').classList.contains('hide')) ||
+    (document.getElementById('cartP') && document.getElementById('cartP').classList.contains('open')) ||
+    (document.getElementById('drawer') && document.getElementById('drawer').classList.contains('open'));
+  if (!open) document.body.style.overflow = '';
+}
+document.addEventListener('click', () => setTimeout(cgUnlockIfIdle, 60));
+document.addEventListener('keyup', e => { if (e.key === 'Escape') setTimeout(cgUnlockIfIdle, 60); });
+window.addEventListener('pageshow', () => setTimeout(cgUnlockIfIdle, 60));
 
 function toggleDrawer(open){
   document.getElementById('drawer').classList.toggle('open', open);
