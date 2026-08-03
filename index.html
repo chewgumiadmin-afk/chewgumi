@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v29 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v30 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1049,7 +1049,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v29 · 2026-08-03</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v30 · 2026-08-03</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1768,12 +1768,12 @@ function renderCart(){
     btn.textContent = '공식몰에서 구매하기';
     if (note) note.innerHTML = '공식몰 상품 페이지가 열립니다. <b>옵션·수량을 선택하고 [BUY NOW]</b>를 누르면 결제로 이어집니다.';
   } else {
-    btn.href = first;
-    btn.textContent = '① 첫 상품부터 담으러 가기';
-    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 각 상품의 <b>「공식몰에서 구매」</b>를 눌러 공식몰에서 옵션 선택 후 [CART]에 담은 뒤, 아래 <b>「② 공식몰 장바구니에서 결제」</b>로 한 번에 결제해 주세요.';
+    btn.href = 'https://chewgumi.com/order/basket.html';
+    btn.textContent = '공식몰 장바구니에서 결제';
+    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 위 목록에서 상품별 <b>「공식몰에서 구매」</b>를 눌러 공식몰에 담아주신 뒤, 이 버튼으로 한 번에 결제하시면 됩니다.';
   }
   const bask = document.getElementById('cBasket');
-  if (bask) bask.textContent = CART.length > 1 ? '② 공식몰 장바구니에서 결제' : '공식몰 장바구니 열기';
+  if (bask) bask.textContent = '공식몰 장바구니 열기';
 }
 
 /* 링크·버튼 클릭 시 화면 전체 물방울 파동 */
