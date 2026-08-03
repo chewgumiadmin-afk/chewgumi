@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v21 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v22 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -64,8 +64,9 @@
 
 /* 리뷰 섹션 물결 배경 (디자이너 제공) */
 .wave-sec { position:relative; background-color:#FFE4E6;
-  background-image:url('assets/review-bg.png'); background-size:100% 100%;
-  background-position:center; background-repeat:no-repeat; padding-top:96px !important; padding-bottom:96px !important; }
+  background-image:url('assets/review-bg.png'); background-size:100% auto;
+  background-position:top center; background-repeat:no-repeat;
+  padding-top:120px !important; padding-bottom:96px !important; }
 .rev-head { text-align:center; margin-bottom:26px; }
 .rev-title { font-family:'Poppins',sans-serif; font-weight:800; color:#E95073;
   font-size:clamp(24px,3.4vw,46px); letter-spacing:-.01em; line-height:1.15; }
@@ -76,7 +77,7 @@
 /* 첫 방문 팝업 (가이드: 405×455 · 라운드20 · 버튼 160×47 라운드4) */
 .popup { width:405px; max-width:calc(100vw - 40px); border-radius:20px !important; background:#fff !important;
   padding:0 0 26px !important; text-align:center; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.22) !important; }
-.popup .p-illust { width:100%; height:auto; display:block; margin:0 0 6px; }
+.popup .p-illust { display:block; width:62%; max-width:250px; height:auto; margin:26px auto 10px; }
 .popup .p-title { font-size:24px; font-weight:700; color:#000; padding:0 26px; letter-spacing:-.02em; }
 .popup .p-desc { font-size:17px; font-weight:400; color:#555; line-height:1.55; padding:10px 26px 0; }
 .popup .p-desc b { font-weight:700; color:#000; }
@@ -121,8 +122,9 @@
 }
 
 /* 디자이너 배너 반영 */
-.hero { aspect-ratio:1568/756 !important; max-height:560px !important; background:#FFE4E6 !important; }
-@media (min-width:1200px){ .hero { max-height:560px !important; } }
+.hero { aspect-ratio:1568/756 !important; max-height:none !important; min-height:0 !important;
+  max-width:1160px !important; background:#FFE4E6 !important; }
+@media (max-width:640px){ .hero { aspect-ratio:1568/756 !important; } }
 .hero .slide { background-color:#FFE4E6 !important; background-size:cover; background-position:center; display:block; }
 .hero .slide-4 { background-image:url('assets/hero-dew-green.png'); }
 .hero::after { display:none; }
@@ -336,7 +338,7 @@ header:not(.solid) .gnb > li:hover > a { background:rgba(255,255,255,.22);
 .hero-dots button { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.45); transition:all .3s ease; }
 .hero-dots button.on { background:#fff; width:20px; border-radius:999px; }
 @media (max-width:900px){ .hero-arrow { display:none; } .hero .slide-2 .slide-prd { right:-4%; height:64%; } }
-@media (max-width:900px){ .hero { width:calc(100% - 28px); margin:12px auto 0; aspect-ratio:4/3; min-height:0; max-height:none; border-radius:22px; } }
+@media (max-width:900px){ .hero { width:calc(100% - 28px); margin:12px auto 0; min-height:0; max-height:none; border-radius:22px; } }
 .hero::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 40%, rgba(0,0,0,.28)); }
 .hero-txt { z-index:2; }
 .hero-txt { position:absolute; left:6%; bottom:10%; color:#fff; text-shadow:0 1px 12px rgba(0,0,0,.25); }
@@ -1004,7 +1006,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v21 · 2026-07-31</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v22 · 2026-07-31</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
