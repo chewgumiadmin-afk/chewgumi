@@ -81,6 +81,9 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .ract .btn{flex:1;padding:13px 0}
 .btn.danger{background:linear-gradient(135deg,#D9536F,#C0395C);box-shadow:0 8px 20px rgba(192,57,92,.3)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
+
+.mini.sh{color:#2AA060;border-color:rgba(42,160,96,.35)}
+.o-act a.mini{display:inline-flex;align-items:center;text-decoration:none}
 </style>
 </head>
 <body>
@@ -231,14 +234,22 @@ function render(){
       +(o.memo?'메모: '+esc(o.memo)+'<br>':'')
       +'상품: '+its+(o.pay_method?'<br>결제수단: '+esc(o.pay_method):'')
       +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
+      +(o.track_status?'<br>배송상태: <b>'+esc(o.track_status)+'</b>'
+        +(o.track_checked_at?' ('+new Date(o.track_checked_at).toLocaleString('ko-KR')+' 확인)':''):'')
+      +(o.cash_receipt_no?'<br>현금영수증 발급됨':'')
       +(o.refund_amount>0?'<br><b style="color:#C0395C">환불 ₩'+won(o.refund_amount)+'</b>'
         +(o.refund_amount<o.pay_amount?' (부분) · 잔액 ₩'+won(o.pay_amount-o.refund_amount):' (전액)')
         +(o.refund_reason?' · '+esc(o.refund_reason):''):'')+'</div>'
       +'<div class="o-act">'
       +'<select id="st'+o.id+'">'+Object.keys(ST).map(k=>'<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+ST[k]+'</option>').join('')+'</select>'
-      +'<input id="cr'+o.id+'" placeholder="택배사" value="'+esc(o.courier)+'" style="width:96px">'
+      +'<select id="cc'+o.id+'" style="width:118px">'+COURIERS.map(c=>'<option value="'+c.c+'"'+(c.c===o.courier_code?' selected':'')+'>'+c.n+'</option>').join('')+'</select>'
       +'<input id="tn'+o.id+'" placeholder="운송장번호" value="'+esc(o.tracking_no)+'" style="width:150px">'
       +'<button class="mini" onclick="save('+o.id+')">저장</button>'
+      +'<button class="mini sh" onclick="ship(\''+o.order_no+'\','+o.id+')">발송처리+알림</button>'
+      +(o.tracking_no?'<button class="mini" onclick="track(\''+o.order_no+'\')">배송조회</button>':'')
+      +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no
+        ?'<button class="mini" onclick="openCash(\''+o.order_no+'\')">현금영수증</button>':'')
+      +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증 보기</a>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
       +'</div></div>';
@@ -246,12 +257,49 @@ function render(){
 }
 
 function save(id){
-  const body={status:$('st'+id).value,courier:$('cr'+id).value.trim(),tracking_no:$('tn'+id).value.trim()};
+  const cc=$('cc'+id).value;
+  const body={status:$('st'+id).value,courier_code:cc,
+    courier:(COURIERS.find(c=>c.c===cc)||{}).n||'',tracking_no:$('tn'+id).value.trim()};
   fetch(SB+'/rest/v1/orders?id=eq.'+id,{method:'PATCH',
     headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
   .then(r=>{if(r.ok)load();
     else alert(r.status===401?'로그인이 만료되었습니다.':'저장 권한이 없습니다. 운영자 계정으로 로그인해 주세요.');})
+  .catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
+const COURIERS=[{c:'',n:'택배사 선택'},{c:'04',n:'CJ대한통운'},{c:'05',n:'한진택배'},
+  {c:'08',n:'롯데택배'},{c:'01',n:'우체국택배'},{c:'06',n:'로젠택배'},{c:'11',n:'일양로지스'},
+  {c:'46',n:'CU 편의점'},{c:'23',n:'경동택배'}];
+const FNU=SB+'/functions/v1/order';
+function call(payload){
+  return fetch(FNU,{method:'POST',headers:{'Content-Type':'application/json',apikey:KEY,
+    Authorization:'Bearer '+token},body:JSON.stringify(payload)})
+    .then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function ship(no,id){
+  const cc=$('cc'+id).value, tn=$('tn'+id).value.trim();
+  if(!tn)return alert('운송장 번호를 입력해 주세요.');
+  if(!confirm('발송 처리하고 고객에게 알림을 보냅니다. 진행할까요?'))return;
+  call({action:'ship',orderId:no,courierCode:cc,
+    courier:(COURIERS.find(c=>c.c===cc)||{}).n||'택배',trackingNo:tn})
+  .then(({ok,d})=>{if(ok&&d.ok){alert('발송 처리되었습니다.');load();}else alert(d.error||'처리에 실패했습니다.');})
+  .catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
+function track(no){
+  call({action:'track',orderId:no}).then(({ok,d})=>{
+    if(!ok)return alert(d.error||'배송 조회에 실패했습니다.');
+    const lines=(d.details||[]).map(x=>'· '+(x.timeString||'')+' '+(x.where||'')+' '+(x.kind||'')).join('\n');
+    alert('배송 상태: '+(d.last||'-')+(d.complete?' (배송완료)':'')+'\n\n'+lines);
+    load();
+  }).catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
+function openCash(no){
+  const num=prompt('현금영수증 발급 번호를 입력하세요.\n(개인: 휴대폰번호 / 사업자: 사업자등록번호)');
+  if(!num)return;
+  const biz=confirm('사업자 지출증빙으로 발급할까요?\n[확인] 지출증빙  /  [취소] 소득공제');
+  call({action:'cashReceipt',orderId:no,registrationNumber:num,type:biz?'business':'person'})
+  .then(({ok,d})=>{if(ok&&d.ok){alert('현금영수증이 발급되었습니다.');load();}
+    else alert(d.error||'발급에 실패했습니다.');})
   .catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
 let rOrder=null;
