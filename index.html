@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v19 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v20 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1004,7 +1004,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v19 · 2026-07-31</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v20 · 2026-07-31</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1028,6 +1028,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return buyNowFromDetail(event)" title="공식몰에서 구매가 진행됩니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
+        <a class="d-cart" id="dFull" href="#" style="flex:0 0 100%;margin-top:8px;">상세페이지 보기</a>
       </div>
       <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
       <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch for orders before 2PM (weekdays) · <b>Returns</b> Unopened, within 7 days · Options and payment are completed on the official store (NaverPay · Card · Bank transfer).">
@@ -1292,6 +1293,8 @@ function applyOpt(){
   dPrice = o.sale; renderQty();
   document.getElementById('dBuy').href = 'https://chewgumi.com/product/detail.html?product_no=' + o.no + '&cate_no=' + (line === 'travel' ? 42 : 47) + '&display_group=1';
   cgUpdUsd();
+  const df = document.getElementById('dFull');
+  if (df && window._curOpt) df.href = 'product.html?no=' + window._curOpt.no;
 }
 
 /* 상품명 → 스마트스토어(네이버페이) 매핑 — 트래블잇 주소 확보 시 추가 */
