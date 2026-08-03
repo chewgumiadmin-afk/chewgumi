@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v17 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v18 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -18,6 +18,19 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* 가입 레이어 — 쇼핑몰 회원 우선 배치 */
+.j-primary-box { margin:4px 0 18px; }
+.j-shop { display:block; padding:15px 0; border-radius:999px; text-align:center; text-decoration:none;
+  font-size:14px; font-weight:700; color:#fff; background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 10px 24px rgba(216,37,88,.32); }
+.j-shop:hover { filter:brightness(1.05); }
+.j-shop-login { display:block; text-align:center; margin-top:10px; font-size:12.5px; color:var(--gray);
+  text-decoration:underline; text-underline-offset:3px; }
+.j-hint { margin-top:10px; font-size:11.5px; color:var(--gray); text-align:center; line-height:1.6; }
+.j-divider { display:flex; align-items:center; gap:10px; margin:6px 0 14px; }
+.j-divider::before, .j-divider::after { content:""; flex:1; height:1px; background:rgba(0,0,0,.09); }
+.j-divider span { font-size:10.5px; letter-spacing:.5px; color:var(--gray); white-space:nowrap; }
+
 /* 자체 호스팅 영상 플레이어 */
 .video-card video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; }
 .v-err { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; }
@@ -991,7 +1004,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v17 · 2026-07-31</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v18 · 2026-07-31</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1734,7 +1747,15 @@ setHead();
   <div class="join-box" role="dialog" aria-label="회원가입">
     <button class="j-x" onclick="closeJoin()" aria-label="닫기">✕</button>
     <h3 id="jTitle">Join Us</h3>
-    <div class="j-sub" id="jSub">츄구미 커뮤니티 회원가입 · 리뷰와 문의를 남길 수 있어요</div>
+    <div class="j-sub" id="jSub">가입하고 <b style="color:var(--main)">2,000원 할인쿠폰</b>을 받아보세요</div>
+    <div class="j-primary-box">
+      <a class="j-shop" href="https://chewgumi.com/member/join.html" target="_blank" rel="noopener">
+        쇼핑몰 회원가입 · 2,000원 쿠폰 받기
+      </a>
+      <a class="j-shop-login" href="https://chewgumi.com/member/login.html" target="_blank" rel="noopener">이미 회원이신가요? 로그인</a>
+      <div class="j-hint">상품 구매·주문조회·쿠폰은 쇼핑몰 회원으로 이용하실 수 있어요.</div>
+    </div>
+    <div class="j-divider"><span>커뮤니티 회원 (리뷰·문의 작성용)</span></div>
     <div id="jForm">
       <input id="jEmail" type="email" placeholder="이메일" autocomplete="email">
       <input id="jPw" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="new-password">
@@ -1745,10 +1766,7 @@ setHead();
     </div>
     <div id="jDone" style="display:none; font-size:13px; line-height:1.8;"></div>
     <div class="j-msg" id="jMsg"></div>
-    <div class="j-mall">
-      상품 구매·주문조회용 <strong>쇼핑몰 회원</strong>은 공식몰에서 가입해 주세요 (가입 시 2,000원 쿠폰)<br>
-      <a href="https://chewgumi.com/member/join.html" target="_blank" rel="noopener">공식몰 회원가입 →</a>
-    </div>
+
   </div>
 </div>
 </body>
