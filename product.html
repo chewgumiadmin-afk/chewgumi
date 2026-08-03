@@ -11,6 +11,56 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* 구매 순서 안내 */
+.flow-list{list-style:none;counter-reset:s;margin:0;padding:0}
+.flow-list li{counter-increment:s;position:relative;padding:0 0 16px 34px;font-size:13px;line-height:1.6}
+.flow-list li:last-child{padding-bottom:0}
+.flow-list li::before{content:counter(s);position:absolute;left:0;top:0;width:23px;height:23px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main))}
+.flow-list li span{font-size:12px;color:var(--gray)}
+.flow-btns{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.flow-btns a{font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:999px;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.flow-btns a:last-child{color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+.flow-note{margin-top:12px;font-size:11.5px;color:var(--gray);line-height:1.7}
+
+/* 우측 슬라이드 장바구니 */
+.cart-dim{position:fixed;inset:0;background:rgba(20,10,14,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .3s;z-index:1200}
+.cart-dim.open{opacity:1;pointer-events:auto}
+.cart-p{position:fixed;top:0;right:0;height:100%;width:400px;max-width:88vw;z-index:1300;
+  transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+  background:rgba(255,255,255,.82);border-left:1px solid var(--line);
+  backdrop-filter:blur(26px) saturate(120%);-webkit-backdrop-filter:blur(26px) saturate(120%);
+  box-shadow:-18px 0 50px rgba(0,0,0,.16)}
+.cart-p.open{transform:translateX(0)}
+.c-head{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;
+  border-bottom:1px solid rgba(0,0,0,.07);font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:2px;font-size:13px}
+.c-head em{font-style:normal;color:var(--main);margin-left:4px}
+.c-head button{background:none;border:0;font-size:17px;cursor:pointer;color:var(--gray);font-family:inherit}
+.c-body{flex:1;overflow-y:auto;padding:16px 20px 26px}
+.c-item{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.c-th{width:56px;height:56px;flex:none;border-radius:12px;overflow:hidden;background:var(--pink-light)}
+.c-th img{width:100%;height:100%;object-fit:cover}
+.c-c{flex:1;min-width:0}
+.c-n{font-size:12.5px;font-weight:600;line-height:1.4}
+.c-p{margin-top:4px;font-size:11.5px;color:var(--gray)}
+.c-p b{color:var(--main)}
+.c-ctrl{display:flex;align-items:center;gap:5px;flex:none}
+.c-ctrl button{width:27px;height:27px;border:1px solid var(--line);border-radius:50%;background:rgba(255,255,255,.85);
+  cursor:pointer;font-family:inherit;font-size:13px}
+.c-ctrl span{min-width:18px;text-align:center;font-weight:700;font-size:13px}
+.c-del{background:none;border:0;color:var(--gray);cursor:pointer;font-size:14px;padding:4px;font-family:inherit}
+.c-sum{display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;font-size:13px;color:var(--gray)}
+.c-sum b{font-size:21px;font-weight:800;color:var(--main)}
+.c-go{display:flex;align-items:center;justify-content:center;height:52px;border-radius:999px;margin-top:16px;
+  font-size:14px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 10px 24px rgba(216,37,88,.3)}
+.c-cont{width:100%;height:48px;border-radius:999px;margin-top:9px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;background:rgba(255,255,255,.8);border:1px solid var(--line);color:var(--ink)}
+.c-empty{text-align:center;padding:50px 0;color:var(--gray);font-size:13px}
+
 :root{ --main:#D82558; --main2:#E95073; --pink-bg:#FFBDCC; --pink-light:#FFE4E6; --sub:#FFE923;
   --ink:#000; --gray:#797979; --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.62); }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -95,6 +145,7 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
     <a href="index.html#all">전체상품</a>
     <a href="index.html#community">고객센터</a>
     <a href="join.html">SIGN UP</a>
+    <a href="#" onclick="openCart();return false;">장바구니</a>
   </nav>
 </div>
 
@@ -132,6 +183,21 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
         <div class="pays"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
       </div>
 
+      <div class="panel flow">
+        <h3>구매 순서</h3>
+        <ol class="flow-list">
+          <li><b>로그인 또는 회원가입</b><br><span>공식몰 회원이어야 주문조회·쿠폰 사용이 가능합니다.</span>
+            <div class="flow-btns">
+              <a href="https://chewgumi.com/member/login.html" target="_blank" rel="noopener">로그인</a>
+              <a href="join.html">회원가입 · 2,000원 쿠폰</a>
+            </div>
+          </li>
+          <li><b>옵션·수량 선택</b><br><span>위에서 구성과 수량을 고르고 [BUY NOW] 또는 [장바구니]를 누릅니다.</span></li>
+          <li><b>결제</b><br><span>공식몰 주문서에서 네이버페이·카드·계좌이체·가상계좌로 결제합니다.</span></li>
+        </ol>
+        <p class="flow-note">비회원으로도 구매하실 수 있지만, 회원가입 시 2,000원 할인쿠폰과 주문조회 기능을 이용하실 수 있습니다.</p>
+      </div>
+
       <div class="info">
         <b>배송</b> 택배 · 무료배송 · 평일 14시 이전 결제 시 당일 출고<br>
         <b>교환/반품</b> 미개봉 상태에 한해 수령 후 7일 이내 가능<br>
@@ -145,6 +211,12 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
     <div class="rel-grid" id="rel"></div>
   </div>
 </div>
+
+<div class="cart-dim" id="cartDim" onclick="closeCart()"></div>
+<aside class="cart-p" id="cartP" aria-label="장바구니">
+  <div class="c-head"><span>CART <em id="cartN">0</em></span><button onclick="closeCart()" aria-label="닫기">✕</button></div>
+  <div class="c-body" id="cartBody"></div>
+</aside>
 
 <div class="foot">
   <a href="https://chewgumi.com/shopinfo/company.html" target="_blank" rel="noopener">회사소개</a>
@@ -232,14 +304,48 @@ function total(){
   document.getElementById('pTotal').textContent = won(v);
   document.getElementById('pUsd').textContent = rate ? '≈ $' + (v / rate).toFixed(2) : '';
 }
+function getCart(){ try{ return JSON.parse(localStorage.getItem('cg_cart') || '[]'); }catch(e){ return []; } }
+function setCart(c){ try{ localStorage.setItem('cg_cart', JSON.stringify(c)); }catch(e){} }
 function addCart(){
-  try{
-    const c = JSON.parse(localStorage.getItem('cg_cart') || '[]');
-    const ex = c.find(i => i.name === P[no].n);
-    if (ex) ex.qty += qty; else c.push({ name: P[no].n, price: P[no].s, qty: qty });
-    localStorage.setItem('cg_cart', JSON.stringify(c));
-    alert('장바구니에 담았습니다. 홈 화면 우측 상단 장바구니에서 확인하실 수 있어요.');
-  }catch(e){ alert('장바구니 저장에 실패했습니다.'); }
+  const c = getCart();
+  const ex = c.find(i => i.name === P[no].n);
+  if (ex) ex.qty += qty; else c.push({ name: P[no].n, price: P[no].s, qty: qty });
+  setCart(c); openCart();
+}
+function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open');
+  document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCart(){ document.getElementById('cartP').classList.remove('open');
+  document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
+function cQty(i,d){ const c=getCart(); c[i].qty=Math.min(99,Math.max(1,c[i].qty+d)); setCart(c); renderCart(); }
+function cDel(i){ const c=getCart(); c.splice(i,1); setCart(c); renderCart(); }
+function renderCart(){
+  const c = getCart(), box = document.getElementById('cartBody');
+  document.getElementById('cartN').textContent = c.reduce((s,i)=>s+i.qty,0);
+  if (!c.length){ box.innerHTML = '<div class="c-empty">장바구니가 비어 있습니다</div>'; return; }
+  const total = c.reduce((s,i)=>s+i.price*i.qty,0);
+  const esc = s => String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[ch]);
+  box.innerHTML = c.map((it,i)=>{
+    const n = matchNo(it.name);
+    return '<div class="c-item"><div class="c-th"><img src="'+CDN+P[n].img+'" alt=""></div>'
+      +'<div class="c-c"><div class="c-n">'+esc(it.name)+'</div>'
+      +'<div class="c-p">'+won(it.price)+' · 소계 <b>'+won(it.price*it.qty)+'</b></div></div>'
+      +'<div class="c-ctrl"><button onclick="cQty('+i+',-1)">−</button><span>'+it.qty+'</span>'
+      +'<button onclick="cQty('+i+',1)">＋</button></div>'
+      +'<button class="c-del" onclick="cDel('+i+')" aria-label="삭제">✕</button></div>';
+  }).join('')
+  + '<div class="c-sum"><span>총 상품금액</span><b>'+won(total)+'</b></div>'
+  + '<a class="c-go" href="cart.html">장바구니 페이지에서 결제하기</a>'
+  + '<button class="c-cont" onclick="closeCart()">계속 쇼핑하기</button>';
+}
+function matchNo(name){
+  const s = String(name||'');
+  if (s.includes('트래블잇') || s.toLowerCase().includes('travel')){
+    const m = s.match(/\[(\d+)봉\]/); const map={'1':15,'3':11,'5':12,'10':13,'20':14};
+    return (m && map[m[1]]) || 11; }
+  if (s.includes('레몬민트')) return 16;
+  if (s.includes('그레이프')) return 17;
+  const m2 = s.match(/(\d+)개입/); const map2={'4':18,'6':19,'10':20,'20':21};
+  return (m2 && map2[m2[1]]) || 18;
 }
 fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
   .then(r => r.json()).then(d => { if (d && d.rates) { rate = d.rates.KRW; total(); } }).catch(() => {});
