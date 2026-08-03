@@ -237,18 +237,14 @@ function sumUp(){
   if (el('selN'))   el('selN').textContent   = sel.length;
   const all = document.getElementById('allChk');
   if (all) all.checked = CART.length > 0 && sel.length === CART.length;
+  const bs = document.getElementById('btnSel');
+  if (bs) bs.href = sel.length ? detailUrl(matchNo(CART[sel[0]].name)) : detailUrl(matchNo(CART[0].name));
 }
 function delSelected(){
   const sel = selKeys();
   if (!sel.length) return cgModal({icon:'!',title:'삭제할 상품을 선택해 주세요'});
   CART = CART.filter((_, i) => !sel.includes(i));
   save(); render();
-}
-function orderSelected(all){
-  const sel = all ? CART.map((_, i) => i) : selKeys();
-  if (!sel.length) return cgModal({icon:'!',title:'주문할 상품을 선택해 주세요'});
-  const first = matchNo(CART[sel[0]].name);
-  window.open(detailUrl(first), '_blank', 'noopener');
 }
 
 function render(){
@@ -294,8 +290,8 @@ function render(){
       '<div class="pay-row total"><span>결제 예정 금액</span><b id="sPay">₩0</b></div>' +
       '<p class="pay-note">주문서 작성 단계에서 할인·적립금 적용을 하실 수 있습니다. 결제는 공식몰(chewgumi.com)에서 안전하게 진행됩니다.</p>' +
       '<div class="steps">' +
-        '<a class="s1" href="#" onclick="orderSelected(false);return false;">선택 상품 주문 (<span id="selN">0</span>)</a>' +
-        '<a class="s1 alt" href="#" onclick="orderSelected(true);return false;">전체 상품 주문</a>' +
+        '<a class="s1" id="btnSel" href="' + detailUrl(matchNo(CART[0].name)) + '" target="_blank" rel="noopener">선택 상품 주문 (<span id="selN">0</span>)</a>' +
+        '<a class="s1 alt" href="' + detailUrl(matchNo(CART[0].name)) + '" target="_blank" rel="noopener">전체 상품 주문</a>' +
         '<a class="s2" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener">공식몰 장바구니 열기</a>' +
         '<a class="s2" href="index.html#all">계속 쇼핑하기</a>' +
       '</div>' +
