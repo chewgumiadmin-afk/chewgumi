@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!-- ChewGumi Cart v21 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장바구니 | CHEWGUMI</title>
+<meta name="description" content="츄구미 장바구니">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{ --main:#D82558; --main2:#E95073; --pink-light:#FFE4E6; --sub:#FFE923;
+  --ink:#000; --gray:#797979; --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.62); }
+*{margin:0;padding:0;box-sizing:border-box}
+body{ font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif; color:var(--ink); min-height:100vh; padding-bottom:70px;
+  background:radial-gradient(900px 500px at 12% -5%, rgba(236,94,134,.14), transparent 60%),
+    radial-gradient(700px 460px at 95% 12%, rgba(255,233,35,.16), transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4); }
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.topbar{height:45px;display:flex;align-items:center;justify-content:center;padding:0 16px;
+  background:linear-gradient(90deg,var(--main2),var(--main));color:#fff;font-size:15px;font-weight:600}
+.topbar b{color:var(--sub);font-weight:800}
+.head{max-width:900px;margin:0 auto;padding:22px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.head .logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:var(--main)}
+.head nav a{font-size:12.5px;color:var(--gray);margin-left:16px}
+.wrap{max-width:900px;margin:0 auto;padding:22px 20px}
+h1{font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px}
+.lead{font-size:13px;color:var(--gray);margin-bottom:22px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:14px;
+  backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07), inset 0 1px 0 rgba(255,255,255,.9)}
+.item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,.07);align-items:center}
+.item:last-child{border-bottom:0}
+.item .th{width:82px;height:82px;flex:none;border-radius:14px;overflow:hidden;background:var(--pink-light)}
+.item .th img{width:100%;height:100%;object-fit:cover}
+.item .c{flex:1;min-width:0}
+.item .n{font-size:14px;font-weight:600;line-height:1.4;word-break:break-word}
+.item .p{margin-top:5px;font-size:12.5px;color:var(--gray)}
+.item .p b{color:var(--main);font-weight:700}
+.item .open{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:#fff;padding:7px 13px;
+  border-radius:999px;background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 4px 12px rgba(216,37,88,.28)}
+.item .ctrl{display:flex;align-items:center;gap:7px;flex:none}
+.item .ctrl button{width:32px;height:32px;border:1px solid var(--line);border-radius:50%;
+  background:rgba(255,255,255,.8);cursor:pointer;font-family:inherit;font-size:15px}
+.item .ctrl span{min-width:22px;text-align:center;font-weight:700;font-size:14px}
+.item .del{flex:none;background:none;border:0;color:var(--gray);font-size:16px;cursor:pointer;padding:6px}
+.sum{display:flex;justify-content:space-between;align-items:baseline;padding-top:6px}
+.sum .l{font-size:14px;color:var(--gray)}
+.sum .v{font-size:26px;font-weight:800;color:var(--main)}
+.note{font-size:12.5px;color:var(--gray);line-height:1.8;margin-top:12px}
+.note b{color:var(--ink)}
+.steps{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.steps a{height:54px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700}
+.s1{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;box-shadow:0 10px 24px rgba(216,37,88,.3)}
+.s2{background:rgba(255,255,255,.78);border:1px solid var(--line);color:var(--ink)}
+.pays{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;justify-content:center}
+.pays span{font-size:10px;font-weight:600;color:#555;padding:5px 12px;border-radius:999px;
+  background:rgba(255,255,255,.65);border:1px solid var(--line)}
+.empty{text-align:center;padding:50px 20px;color:var(--gray)}
+.empty .e-t{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px}
+.empty a{display:inline-block;margin-top:18px;padding:14px 30px;border-radius:999px;font-size:13px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,var(--main2),var(--main))}
+.foot{max-width:900px;margin:40px auto 0;padding:20px;border-top:1px solid rgba(0,0,0,.07);
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;font-size:11.5px;color:var(--gray)}
+.foot a{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:560px){ .item .th{width:64px;height:64px} h1{font-size:23px} }
+</style>
+</head>
+<body>
+<div class="topbar">회원 가입 하고 <b>&nbsp;2000원 할인 쿠폰&nbsp;</b> 받기!</div>
+
+<div class="head">
+  <a class="logo" href="index.html">CHEW GUMI</a>
+  <nav>
+    <a href="index.html#all">전체상품</a>
+    <a href="join.html">SIGN UP</a>
+    <a href="index.html">홈</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <h1>Cart</h1>
+  <p class="lead">담으신 상품을 확인하고 공식몰에서 결제해 주세요.</p>
+  <div id="body"></div>
+</div>
+
+<div class="foot">
+  <a href="https://chewgumi.com/shopinfo/company.html" target="_blank" rel="noopener">회사소개</a>
+  <a href="https://chewgumi.com/member/mall_agreement.html" target="_blank" rel="noopener">이용약관</a>
+  <a href="https://chewgumi.com/member/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>
+  <a href="https://chewgumi.com/shopinfo/guide.html" target="_blank" rel="noopener">이용안내</a>
+  <a href="https://chewgumi.com/board/board/3" target="_blank" rel="noopener">자주묻는질문(FAQ)</a>
+</div>
+
+<script>
+const CDN = 'https://chewgumi.com/web/product/medium/';
+const P = {
+  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'202511/9e01d14282da90dfce9b6cecef79044d.png'},
+  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'202511/a613606b1993ee46b245871cef885fa3.png'},
+  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'202511/62b0681bd9464871b96fb0be365a828b.png'},
+  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'202511/3cebc0f3dd89b5a930cdd19b4c309602.png'},
+  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'202511/d7b93d93f846e37de5fa33da43de5c37.png'},
+  16:{n:'듀잇 레몬민트', cate:47, img:'202512/afad3d6dddd247af314c05157948d298.png'},
+  17:{n:'듀잇 그레이프', cate:47, img:'202512/55a36711d9dc4b14c9ee46972c6afc3c.png'},
+  18:{n:'듀잇 4개입', cate:47, img:'202512/2c58793be7f900d4997e26451366b9cb.png'},
+  19:{n:'듀잇 6개입', cate:47, img:'202512/4f3394ac34364fc0e1f88744141a8c99.png'},
+  20:{n:'듀잇 10개입', cate:47, img:'202512/f89d6da91dd672a5f25a7a295ebf3be6.png'},
+  21:{n:'듀잇 20개입', cate:47, img:'202512/942a7d4949aa31bea2c60e76208c1b76.png'}
+};
+function matchNo(name){
+  const s = String(name || '');
+  const t = s.includes('트래블잇') || s.toLowerCase().includes('travel');
+  if (t) { const m = s.match(/\[(\d+)봉\]/); const map={'1':15,'3':11,'5':12,'10':13,'20':14}; return (m && map[m[1]]) || 11; }
+  if (s.includes('레몬민트')) return 16;
+  if (s.includes('그레이프')) return 17;
+  const m2 = s.match(/(\d+)개입/);
+  const map2 = {'4':18,'6':19,'10':20,'20':21};
+  return (m2 && map2[m2[1]]) || 18;
+}
+const detailUrl = n => 'https://chewgumi.com/product/detail.html?product_no=' + n + '&cate_no=' + P[n].cate + '&display_group=1';
+const won = v => '₩' + Number(v).toLocaleString();
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+let CART = [];
+try { CART = JSON.parse(localStorage.getItem('cg_cart') || '[]'); } catch(e){ CART = []; }
+const save = () => { try { localStorage.setItem('cg_cart', JSON.stringify(CART)); } catch(e){} };
+
+function chg(i, d){ CART[i].qty = Math.min(99, Math.max(1, (CART[i].qty || 1) + d)); save(); render(); }
+function del(i){ CART.splice(i, 1); save(); render(); }
+
+function render(){
+  const box = document.getElementById('body');
+  if (!CART.length) {
+    box.innerHTML = '<div class="panel"><div class="empty">' +
+      '<div class="e-t">장바구니가 비어 있습니다</div>' +
+      '<div>마음에 드는 츄구미를 담아보세요.</div>' +
+      '<a href="index.html#all">상품 보러 가기</a></div></div>';
+    return;
+  }
+  const total = CART.reduce((s, i) => s + i.price * i.qty, 0);
+  const rows = CART.map((it, i) => {
+    const n = matchNo(it.name);
+    return '<div class="item">' +
+      '<div class="th"><img src="' + CDN + P[n].img + '" alt="' + esc(it.name) + '" loading="lazy"></div>' +
+      '<div class="c"><div class="n">' + esc(it.name) + '</div>' +
+      '<div class="p">' + won(it.price) + ' · 소계 <b>' + won(it.price * it.qty) + '</b></div>' +
+      '<a class="open" href="' + detailUrl(n) + '" target="_blank" rel="noopener">공식몰에서 담기 →</a></div>' +
+      '<div class="ctrl"><button onclick="chg(' + i + ',-1)" aria-label="수량 감소">−</button>' +
+      '<span>' + it.qty + '</span>' +
+      '<button onclick="chg(' + i + ',1)" aria-label="수량 증가">＋</button></div>' +
+      '<button class="del" onclick="del(' + i + ')" aria-label="삭제">✕</button></div>';
+  }).join('');
+
+  const one = CART.length === 1;
+  const firstNo = matchNo(CART[0].name);
+  const guide = one
+    ? '공식몰 상품 페이지가 열립니다. <b>옵션·수량을 선택하고 [BUY NOW]</b>를 누르면 결제로 이어집니다.'
+    : '담으신 상품이 <b>' + CART.length + '개</b>입니다. 각 상품의 <b>「공식몰에서 담기」</b>로 공식몰 장바구니에 담은 뒤, <b>②</b>에서 한 번에 결제해 주세요.';
+
+  box.innerHTML =
+    '<div class="panel">' + rows + '</div>' +
+    '<div class="panel"><div class="sum"><span class="l">총 상품금액</span><span class="v">' + won(total) + '</span></div>' +
+    '<div class="note">' + guide + '</div>' +
+    '<div class="steps">' +
+      '<a class="s1" href="' + detailUrl(firstNo) + '" target="_blank" rel="noopener">' +
+        (one ? '공식몰에서 구매하기' : '① 첫 상품부터 담으러 가기') + '</a>' +
+      '<a class="s2" href="https://chewgumi.com/order/basket.html" target="_blank" rel="noopener">' +
+        (one ? '공식몰 장바구니 열기' : '② 공식몰 장바구니에서 결제') + '</a>' +
+      '<a class="s2" href="index.html#all">계속 쇼핑하기</a>' +
+    '</div>' +
+    '<div class="pays"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>' +
+    '</div>';
+}
+render();
+</script>
+</body>
+</html>
