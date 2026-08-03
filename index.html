@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v31 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v32 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1049,7 +1049,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v31 · 2026-08-03</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v32 · 2026-08-03</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1071,7 +1071,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="d-total"><span data-en="Total">총 상품금액</span> <b id="dTotal"></b></div>
       <div class="d-acts">
-        <a class="d-buy" id="dBuy" href="https://chewgumi.com" target="_blank" rel="noopener" onclick="return buyNowFromDetail(event)" title="공식몰에서 구매가 진행됩니다">BUY NOW</a>
+        <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
         <a class="d-cart d-full" id="dFull" href="#">상세페이지 보기</a>
       </div>
@@ -1261,12 +1261,22 @@ function cgDirectOrder(productNo, qty, fallbackUrl){
     .then(() => { location.href = '/order/orderform.html?basket_type=A0000&delvtype=A'; })
     .catch(() => { window.open(fallbackUrl, '_blank', 'noopener'); });
 }
-function buyNowFromDetail(ev){
-  const a = document.getElementById('dBuy');
-  const m = (a.href || '').match(/product_no=(\d+)/);
-  if (m && cgIsMall()) { ev.preventDefault(); cgDirectOrder(m[1], dQty, a.href); return false; }
-  return true; /* 외부 호스팅: href(상품 페이지)로 이동 */
+function buyNowDirect(ev){
+  ev.preventDefault();
+  const name = (window._curOpt && window._curOpt.name)
+    || (window._curCard && window._curCard.querySelector('.name').textContent.trim());
+  const price = (window._curOpt && window._curOpt.sale) || dPrice || 0;
+  if (!name || !price) { location.href = 'checkout.html'; return false; }
+  try {
+    const c = JSON.parse(localStorage.getItem('cg_cart') || '[]');
+    const ex = c.find(i => i.name === name);
+    if (ex) ex.qty = dQty; else c.push({ name: name, price: price, qty: dQty });
+    localStorage.setItem('cg_cart', JSON.stringify(c));
+  } catch(e){}
+  location.href = 'checkout.html';
+  return false;
 }
+
 function cartCheckout(ev){
   const a = document.getElementById('cCheckout');
   if (!cgIsMall() || !CART.length) return true;
@@ -1337,7 +1347,7 @@ function applyOpt(){
   document.getElementById('dOrigin').textContent = o.origin > o.sale ? '₩' + o.origin.toLocaleString() : '';
   document.getElementById('dSale').textContent = '₩' + o.sale.toLocaleString();
   dPrice = o.sale; renderQty();
-  document.getElementById('dBuy').href = 'https://chewgumi.com/product/detail.html?product_no=' + o.no + '&cate_no=' + (line === 'travel' ? 42 : 47) + '&display_group=1';
+  document.getElementById('dBuy').href = 'checkout.html';
   cgUpdUsd();
   const df = document.getElementById('dFull');
   if (df && window._curOpt) df.href = 'product.html?no=' + window._curOpt.no;
@@ -1389,7 +1399,7 @@ function openDetail(card){
   const sale = card.querySelector('.p-sale').textContent;
   document.getElementById('dSale').textContent = sale;
   window._curCard = card;
-  document.getElementById('dBuy').href = productUrl(card.querySelector('.name').textContent);
+  document.getElementById('dBuy').href = 'checkout.html';
   const np = document.getElementById('dNpay');
   const su = smartstoreUrl(card.querySelector('.name').textContent);
   if (su) { np.href = su; np.classList.add('show'); } else { np.classList.remove('show'); }
