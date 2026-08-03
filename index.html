@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v22 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v23 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -78,18 +78,21 @@
 .popup { width:405px; max-width:calc(100vw - 40px); border-radius:20px !important; background:#fff !important;
   padding:0 0 26px !important; text-align:center; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.22) !important; }
 .popup .p-illust { display:block; width:62%; max-width:250px; height:auto; margin:26px auto 10px; }
-.popup .p-title { font-size:24px; font-weight:700; color:#000; padding:0 26px; letter-spacing:-.02em; }
-.popup .p-desc { font-size:17px; font-weight:400; color:#555; line-height:1.55; padding:10px 26px 0; }
+.popup .p-title { font-size:23px; font-weight:700; color:#000; padding:0 28px; letter-spacing:-.03em;
+  line-height:1.35; word-break:keep-all; }
+.popup .p-desc { font-size:15.5px; font-weight:400; color:#555; line-height:1.6; padding:9px 28px 0;
+  letter-spacing:-.02em; word-break:keep-all; }
 .popup .p-desc b { font-weight:700; color:#000; }
-.popup .p-acts { display:flex; gap:12px; justify-content:center; padding:22px 26px 0; }
+.popup .p-acts { display:flex; gap:11px; justify-content:center; padding:22px 28px 0; }
 .popup .p-acts button { width:160px; max-width:calc(50% - 6px); height:47px; border:0; border-radius:4px;
   font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; transition:filter .2s ease; }
 .popup .p-acts button:hover { filter:brightness(.96); }
 .popup .p-close { background:#E9E9E9; color:#4a4a4a; }
 .popup .p-join { background:#E95073; color:#fff; }
 @media (max-width:480px){
-  .popup .p-title { font-size:20px; } .popup .p-desc { font-size:14.5px; }
-  .popup .p-acts button { height:44px; font-size:14px; }
+  .popup .p-title { font-size:19px; padding:0 20px; } .popup .p-desc { font-size:13.5px; padding:8px 20px 0; }
+  .popup .p-acts { padding:18px 20px 0; gap:9px; } .popup .p-acts button { height:44px; font-size:13.5px; }
+  .popup .p-illust { width:56%; margin:20px auto 8px; }
 }
 
 /* 상단 알림바 (디자인 가이드: 1920×45, 고정 문구) */
@@ -1006,7 +1009,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v22 · 2026-07-31</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v23 · 2026-07-31</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
