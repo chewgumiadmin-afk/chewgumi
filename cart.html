@@ -9,6 +9,28 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* 글래스 팝업 (중앙 · 라운드) */
+.cg-dim{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(20,10,14,.42);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.cg-dim.on{display:flex}
+.cg-box{width:100%;max-width:360px;border-radius:26px;padding:28px 24px 22px;text-align:center;
+  background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);
+  backdrop-filter:blur(26px) saturate(125%);-webkit-backdrop-filter:blur(26px) saturate(125%);
+  box-shadow:0 24px 60px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.95);
+  animation:cgPop .28s cubic-bezier(.34,1.4,.5,1)}
+@keyframes cgPop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:none}}
+.cg-ico{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:25px;background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;
+  box-shadow:0 8px 20px rgba(216,37,88,.32)}
+.cg-t{font-size:17px;font-weight:700;line-height:1.5;word-break:keep-all;letter-spacing:-.02em}
+.cg-s{margin-top:8px;font-size:13px;color:var(--gray);line-height:1.7;word-break:keep-all}
+.cg-acts{display:flex;gap:9px;margin-top:20px}
+.cg-acts button,.cg-acts a{flex:1;height:48px;border:0;border-radius:999px;font-family:inherit;font-size:13.5px;
+  font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cg-ok{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.cg-gh{background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.95);color:var(--ink)}
+@media(prefers-reduced-motion:reduce){.cg-box{animation:none}}
+
 :root{ --main:#D82558; --main2:#E95073; --pink-light:#FFE4E6; --sub:#FFE923;
   --ink:#000; --gray:#797979; --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.62); }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -115,6 +137,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
   <nav>
     <a href="index.html#all">전체상품</a>
     <a href="join.html">SIGN UP</a>
+    <a href="wish.html">관심상품</a>
     <a href="index.html">홈</a>
   </nav>
 </div>
@@ -128,6 +151,15 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
   <div id="body"></div>
 </div>
 
+<div class="cg-dim" id="cgDim" onclick="if(event.target===this)cgClose()">
+  <div class="cg-box" role="dialog" aria-live="polite">
+    <div class="cg-ico" id="cgIco">✓</div>
+    <div class="cg-t" id="cgT"></div>
+    <div class="cg-s" id="cgS"></div>
+    <div class="cg-acts" id="cgA"></div>
+  </div>
+</div>
+
 <div class="foot">
   <a href="about.html">회사소개</a>
   <a href="https://chewgumi.com/member/mall_agreement.html" target="_blank" rel="noopener">이용약관</a>
@@ -137,6 +169,26 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
 </div>
 
 <script>
+/* 글래스 팝업 */
+function cgClose(){ document.getElementById('cgDim').classList.remove('on'); }
+function cgModal(o){
+  o = o || {};
+  document.getElementById('cgIco').textContent = o.icon || '✓';
+  document.getElementById('cgT').textContent = o.title || '';
+  document.getElementById('cgS').innerHTML = o.desc || '';
+  var acts = o.actions || [{ t:'확인', k:'ok' }];
+  document.getElementById('cgA').innerHTML = acts.map(function(a, i){
+    var cls = a.k === 'ok' ? 'cg-ok' : 'cg-gh';
+    return a.href
+      ? '<a class="' + cls + '" href="' + a.href + '"' + (a.blank ? ' target="_blank" rel="noopener"' : '') + '>' + a.t + '</a>'
+      : '<button class="' + cls + '" data-i="' + i + '">' + a.t + '</button>';
+  }).join('');
+  document.querySelectorAll('#cgA button').forEach(function(b){
+    b.onclick = function(){ var a = acts[+b.dataset.i]; cgClose(); if (a && typeof a.fn === 'function') a.fn(); };
+  });
+  document.getElementById('cgDim').classList.add('on');
+}
+
 const CDN = 'https://chewgumi.com/web/product/medium/';
 const P = {
   15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'202511/9e01d14282da90dfce9b6cecef79044d.png'},
@@ -188,13 +240,13 @@ function sumUp(){
 }
 function delSelected(){
   const sel = selKeys();
-  if (!sel.length) return alert('삭제할 상품을 선택해 주세요.');
+  if (!sel.length) return cgModal({icon:'!',title:'삭제할 상품을 선택해 주세요'});
   CART = CART.filter((_, i) => !sel.includes(i));
   save(); render();
 }
 function orderSelected(all){
   const sel = all ? CART.map((_, i) => i) : selKeys();
-  if (!sel.length) return alert('주문할 상품을 선택해 주세요.');
+  if (!sel.length) return cgModal({icon:'!',title:'주문할 상품을 선택해 주세요'});
   const first = matchNo(CART[sel[0]].name);
   window.open(detailUrl(first), '_blank', 'noopener');
 }
