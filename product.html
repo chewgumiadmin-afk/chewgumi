@@ -170,6 +170,9 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
 .pd-img{width:100%;max-width:860px;height:auto;display:block;margin:0 auto 12px;border-radius:16px}
 .pd-note{margin-top:16px;font-size:12px;color:var(--gray);text-align:center;line-height:1.8}
 .pd-note a{color:var(--main);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+.pd-empty{padding:44px 20px;text-align:center;font-size:13px;color:var(--gray);border-radius:16px;
+  background:rgba(255,255,255,.55);border:1px dashed rgba(0,0,0,.14)}
 </style>
 </head>
 <body>
@@ -379,7 +382,10 @@ const DETAIL_IMGS = {
   12:[],
   13:[],
   14:[],
-  16:[ NN + '20251201/0_EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8.jpg' ],
+  16:[ NN + '20251201/0_EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8.jpg',
+       'https://chewgumi.com/web/product/extra/big/202512/0b653075b2b2cafe07fa11dbecf7e226.png',
+       'https://chewgumi.com/web/product/extra/big/202512/b982d690da329cb8c94deca628a44ef8.png',
+       'https://chewgumi.com/web/product/extra/big/202512/305ef85870b86f71f52b027e3aa4f891.png' ],
   17:[ NN + '20251201/0_EB9380EC9E87_EAB7B8EBA088EC9DB4ED9484.jpg' ],
   18:[ NN + '20251201/0_EB9380EC9E87_34EAB09CEC9E85.jpg' ],
   19:[ NN + '20251201/0_EB9380EC9E87_36EAB09CEC9E85.jpg' ],
@@ -438,7 +444,11 @@ function render(){
     document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
       '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
       'onerror="this.style.display=\'none\';checkDetail();">').join('');
-  } else { wrap.style.display = 'none'; }
+  } else {
+    wrap.style.display = 'block';
+    document.getElementById('pDetailImgs').innerHTML =
+      '<div class="pd-empty">이 상품의 상세 이미지는 공식몰에서 확인하실 수 있습니다.</div>';
+  }
 
   document.getElementById('rel').innerHTML = ORDER.filter(n => n !== no).slice(0, 4).map(n =>
     '<a class="rel-card" href="product.html?no=' + n + '">' +
