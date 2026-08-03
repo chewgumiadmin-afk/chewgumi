@@ -155,7 +155,23 @@ function findAddr(){
     $('fAddr1').value=d.roadAddress||d.jibunAddress;$('fAddr2').focus();}}).open();
 }
 
+async function fillProfile(){
+  let tk=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)tk=s.t;}catch(e){}
+  if(!tk)return;
+  try{
+    const r=await fetch(SB+'/rest/v1/profiles?select=name,phone,zipcode,addr1,addr2&limit=1',
+      {headers:{apikey:KEY,Authorization:'Bearer '+tk}});
+    const [p]=await r.json();
+    if(!p)return;
+    if(p.name)$('fName').value=p.name;
+    if(p.phone)$('fPhone').value=p.phone;
+    if(p.zipcode)$('fZip').value=p.zipcode;
+    if(p.addr1)$('fAddr1').value=p.addr1;
+    if(p.addr2)$('fAddr2').value=p.addr2;
+  }catch(e){}
+}
 async function init(){
+  fillProfile();
   if(!CART.length){$('items').innerHTML='<div style="padding:26px 0;text-align:center;color:var(--gray);font-size:13px">장바구니가 비어 있습니다</div>';return;}
   const r=await fetch(SB+'/rest/v1/products?select=id,name,price_sale,image,stock,active',
     {headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
@@ -197,7 +213,10 @@ $('payBtn').addEventListener('click',async()=>{
   const items=CART.map(it=>({id:matchId(it.name),qty:it.qty}));
   let od;
   try{
-    const res=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json',apikey:KEY},
+    let tk=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)tk=s.t;}catch(e){}
+    const hd={'Content-Type':'application/json',apikey:KEY};
+    if(tk)hd.Authorization='Bearer '+tk;
+    const res=await fetch(FN,{method:'POST',headers:hd,
       body:JSON.stringify({action:'create',buyer,items})});
     od=await res.json();
     if(!res.ok){$('msg').textContent=od.error||'주문 생성에 실패했습니다.';$('payBtn').disabled=false;return;}
