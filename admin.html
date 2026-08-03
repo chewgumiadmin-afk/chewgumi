@@ -81,6 +81,14 @@ button{cursor:pointer;font-family:inherit}
 .note strong{color:var(--ink)}
 .hide{display:none}
 @media (max-width:600px){ .top h1{font-size:23px} .panel{padding:16px;border-radius:20px} }
+
+.ext-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ext{display:block;padding:15px 16px;border-radius:16px;border:1px solid var(--line);
+  background:rgba(255,255,255,.72);transition:transform .2s ease,box-shadow .2s ease}
+.ext:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
+.ext b{display:block;font-size:13.5px;font-weight:700}
+.ext span{display:block;margin-top:4px;font-size:11.5px;color:var(--gray)}
+@media(max-width:600px){.ext-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -110,6 +118,22 @@ button{cursor:pointer;font-family:inherit}
 
   <!-- 관리 화면 -->
   <div id="adminArea" class="hide">
+    <div class="panel">
+      <h2>주문 · 배송 관리 (카페24)</h2>
+      <div class="ext-grid">
+        <a class="ext" href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener">
+          <b>주문 대시보드</b><span>실시간 매출·오늘의 할 일</span></a>
+        <a class="ext" href="https://chewgumi.cafe24.com/disp/admin/shop1/order/list" target="_blank" rel="noopener">
+          <b>전체 주문 조회</b><span>입금전·배송준비·배송중</span></a>
+        <a class="ext" href="https://chewgumi.cafe24.com/disp/admin/shop1/order/shippingprepare" target="_blank" rel="noopener">
+          <b>배송 준비 · 송장 등록</b><span>택배사·운송장 번호 입력</span></a>
+        <a class="ext" href="https://chewgumi.cafe24.com/disp/admin/shop1/product/list" target="_blank" rel="noopener">
+          <b>상품 · 재고 관리</b><span>품절 해제, 가격 수정</span></a>
+      </div>
+      <div class="note" style="margin-top:12px">
+        주문·결제·배송 데이터는 모두 카페24에 저장됩니다. 별도 데이터베이스 구축 없이 위 메뉴에서 처리하시면 됩니다.
+      </div>
+    </div>
     <div class="panel">
       <h2>새 글 등록</h2>
       <div class="row">
