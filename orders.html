@@ -64,6 +64,23 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .empty{padding:44px 0;text-align:center;color:var(--gray);font-size:13px}
 .hide{display:none}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+.mini.rf{color:#C0395C;border-color:rgba(192,57,92,.35)}
+.rdim{position:fixed;inset:0;background:rgba(20,10,14,.45);backdrop-filter:blur(5px);z-index:1400;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.rdim.on{display:flex}
+.rbox{width:100%;max-width:400px;border-radius:22px;padding:24px;background:rgba(255,255,255,.92);
+  border:1px solid var(--line);box-shadow:0 22px 54px rgba(0,0,0,.2)}
+.rbox h3{font-size:19px;font-weight:700;margin-bottom:5px}
+.rsub{font-size:12px;color:var(--gray);margin-bottom:14px;line-height:1.6}
+.rbox label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.rhint{font-size:11px;color:var(--gray);margin-top:-4px;line-height:1.6}
+.racc{margin-top:12px;font-size:12px;color:var(--gray)}
+.racc summary{cursor:pointer;padding:8px 0;font-weight:600}
+.ract{display:flex;gap:8px;margin-top:16px}
+.ract .btn{flex:1;padding:13px 0}
+.btn.danger{background:linear-gradient(135deg,#D9536F,#C0395C);box-shadow:0 8px 20px rgba(192,57,92,.3)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -114,6 +131,29 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
   </div>
 </div>
 
+<div class="rdim" id="rdim" onclick="if(event.target===this)closeRefund()">
+  <div class="rbox">
+    <h3>환불 처리</h3>
+    <div class="rsub" id="rSub"></div>
+    <label>환불 금액 (원)</label>
+    <input id="rAmt" inputmode="numeric">
+    <div class="rhint">전액 환불하려면 그대로 두고, 부분 환불은 금액을 줄여서 입력하세요.</div>
+    <label>환불 사유</label>
+    <input id="rReason" placeholder="예) 고객 변심, 상품 불량">
+    <details class="racc">
+      <summary>환불 계좌 입력 (가상계좌·계좌이체 결제일 때만)</summary>
+      <input id="rBank" placeholder="은행코드 (예: 국민 04, 신한 88, 우리 20)">
+      <input id="rAccNo" placeholder="계좌번호 (숫자만)">
+      <input id="rHolder" placeholder="예금주">
+    </details>
+    <div class="ract">
+      <button class="btn ghost" onclick="closeRefund()">닫기</button>
+      <button class="btn danger" id="rGo" onclick="doRefund()">환불 실행</button>
+    </div>
+    <div class="msg" id="rMsg"></div>
+  </div>
+</div>
+
 <script>
 const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
@@ -145,7 +185,7 @@ function doLogin(){
 function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
 function load(){
-  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price)&order=created_at.desc&limit=200',
+  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price),refunds(amount,reason,created_at)&order=created_at.desc&limit=200',
     {headers:{apikey:KEY,Authorization:'Bearer '+token}})
   .then(r=>r.ok?r.json():Promise.reject(r.status))
   .then(rows=>{ORD=rows;stats();render();})
@@ -190,12 +230,18 @@ function render(){
       +(o.addr1?'['+esc(o.zipcode)+'] '+esc(o.addr1)+' '+esc(o.addr2)+'<br>':'')
       +(o.memo?'메모: '+esc(o.memo)+'<br>':'')
       +'상품: '+its+(o.pay_method?'<br>결제수단: '+esc(o.pay_method):'')
-      +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')+'</div>'
+      +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
+      +(o.refund_amount>0?'<br><b style="color:#C0395C">환불 ₩'+won(o.refund_amount)+'</b>'
+        +(o.refund_amount<o.pay_amount?' (부분) · 잔액 ₩'+won(o.pay_amount-o.refund_amount):' (전액)')
+        +(o.refund_reason?' · '+esc(o.refund_reason):''):'')+'</div>'
       +'<div class="o-act">'
       +'<select id="st'+o.id+'">'+Object.keys(ST).map(k=>'<option value="'+k+'"'+(k===o.status?' selected':'')+'>'+ST[k]+'</option>').join('')+'</select>'
       +'<input id="cr'+o.id+'" placeholder="택배사" value="'+esc(o.courier)+'" style="width:96px">'
       +'<input id="tn'+o.id+'" placeholder="운송장번호" value="'+esc(o.tracking_no)+'" style="width:150px">'
-      +'<button class="mini" onclick="save('+o.id+')">저장</button></div></div>';
+      +'<button class="mini" onclick="save('+o.id+')">저장</button>'
+      +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
+        ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
+      +'</div></div>';
   }).join('');
 }
 
@@ -207,6 +253,39 @@ function save(id){
   .then(r=>{if(r.ok)load();
     else alert(r.status===401?'로그인이 만료되었습니다.':'저장 권한이 없습니다. 운영자 계정으로 로그인해 주세요.');})
   .catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
+let rOrder=null;
+function openRefund(no,remain){
+  rOrder=no;
+  document.getElementById('rSub').textContent='주문 '+no+' · 환불 가능 잔액 ₩'+won(remain);
+  document.getElementById('rAmt').value=remain;
+  document.getElementById('rReason').value='';
+  document.getElementById('rMsg').textContent='';
+  document.getElementById('rGo').disabled=false;
+  document.getElementById('rdim').classList.add('on');
+}
+function closeRefund(){document.getElementById('rdim').classList.remove('on');rOrder=null;}
+function doRefund(){
+  if(!rOrder)return;
+  const amt=parseInt(String(document.getElementById('rAmt').value).replace(/[^0-9]/g,''),10);
+  const reason=document.getElementById('rReason').value.trim();
+  if(!amt||amt<=0)return document.getElementById('rMsg').textContent='환불 금액을 확인해 주세요.';
+  if(!confirm('₩'+won(amt)+'을 환불합니다. 되돌릴 수 없습니다. 진행할까요?'))return;
+  const btn=document.getElementById('rGo');btn.disabled=true;
+  document.getElementById('rMsg').textContent='환불 처리 중…';
+  const acc={bank:document.getElementById('rBank').value.trim(),
+    accountNumber:document.getElementById('rAccNo').value.replace(/[^0-9]/g,''),
+    holderName:document.getElementById('rHolder').value.trim()};
+  fetch(SB+'/functions/v1/order',{method:'POST',
+    headers:{'Content-Type':'application/json',apikey:KEY,Authorization:'Bearer '+token},
+    body:JSON.stringify({action:'cancel',orderId:rOrder,amount:amt,reason,
+      refundAccount:acc.accountNumber?acc:undefined})})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})))
+  .then(({ok,d})=>{
+    if(ok&&d.ok){document.getElementById('rMsg').textContent=
+      (d.full?'전액':'부분')+' 환불이 완료되었습니다.';setTimeout(()=>{closeRefund();load();},900);}
+    else{document.getElementById('rMsg').textContent=d.error||'환불에 실패했습니다.';btn.disabled=false;}
+  }).catch(()=>{document.getElementById('rMsg').textContent='네트워크 오류가 발생했습니다.';btn.disabled=false;});
 }
 sync();
 </script>
