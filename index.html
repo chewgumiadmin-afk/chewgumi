@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v35 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v36 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1049,7 +1049,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v35 · 2026-08-03</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v36 · 2026-08-04</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1285,6 +1285,93 @@ function productUrl(name){
 /* 상품 상세 페이지 */
 let dPrice = 0, dQty = 1;
 function won(n){ return '₩' + n.toLocaleString('ko-KR'); }
+/* 환율(EN 모드 달러 환산) */
+let cgUsdPerKrw = null;
+function cgLoadUsd(){
+  if (cgUsdPerKrw !== null) { cgUpdUsd(); return; }
+  fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
+    .then(r => r.json())
+    .then(d => { if (d && d.rates && d.rates.KRW) { cgUsdPerKrw = d.rates.KRW; cgUpdUsd(); } })
+    .catch(() => {});
+}
+function cgUpdUsd(){
+  const el = document.getElementById('dUsd');
+  if (!el) return;
+  el.textContent = (typeof cgLang !== 'undefined' && cgLang === 'en' && cgUsdPerKrw && dPrice > 0)
+    ? '≈ $' + (dPrice / cgUsdPerKrw).toFixed(2) : '';
+}
+
+/* 상품 구성(옵션) 데이터 — 공식몰 실제 상품번호·가격 */
+const CG_OPTIONS = {
+  travel: [
+    { k:'1',  label:'1봉 (40g)',      name:'[1봉] 트래블잇 Travel-it (40g)',  origin:3500,   sale:3500,  no:15 },
+    { k:'3',  label:'3봉 (40g×3)',    name:'[3봉] 트래블잇 Travel-it (40g)',  origin:18000,  sale:9900,  no:11 },
+    { k:'5',  label:'5봉 (40g×5)',    name:'[5봉] 트래블잇 Travel-it (40g)',  origin:30000,  sale:14900, no:12 },
+    { k:'10', label:'10봉 (40g×10)',  name:'[10봉] 트래블잇 Travel-it (40g)', origin:60000,  sale:27900, no:13 },
+    { k:'20', label:'20봉 (40g×20)',  name:'[20봉] 트래블잇 Travel-it (40g)', origin:120000, sale:52500, no:14 }
+  ],
+  doit: [
+    { k:'lemon', label:'레몬민트', name:'듀잇 레몬민트', origin:39000,  sale:19900, no:16 },
+    { k:'grape', label:'그레이프', name:'듀잇 그레이프', origin:39000,  sale:19900, no:17 },
+    { k:'4',  label:'4개입',  name:'듀잇 4개입',  origin:39000,  sale:19900, no:18 },
+    { k:'6',  label:'6개입',  name:'듀잇 6개입',  origin:54800,  sale:27900, no:19 },
+    { k:'10', label:'10개입', name:'듀잇 10개입', origin:84200,  sale:42900, no:20 },
+    { k:'20', label:'20개입', name:'듀잇 20개입', origin:158900, sale:81000, no:21 }
+  ]
+};
+function findOptIndex(line, name){
+  const list = CG_OPTIONS[line] || [];
+  const n = name || '';
+  for (let i = 0; i < list.length; i++) {
+    const o = list[i];
+    if (line === 'travel') { const m = n.match(/\[(\d+)봉\]/); if (m && m[1] === o.k) return i; }
+    else {
+      if ((o.k === 'lemon' && n.includes('레몬민트')) || (o.k === 'grape' && n.includes('그레이프'))
+          || n.includes(o.k + '개입')) return i;
+    }
+  }
+  return 0;
+}
+function applyOpt(){
+  const sel = document.getElementById('dOpt');
+  const o = (CG_OPTIONS[window._curLine] || [])[sel.selectedIndex];
+  if (!o) return;
+  window._curOpt = o;
+  document.getElementById('dOrigin').textContent = o.origin > o.sale ? '₩' + o.origin.toLocaleString() : '';
+  document.getElementById('dSale').textContent = '₩' + o.sale.toLocaleString();
+  dPrice = o.sale; renderQty();
+  document.getElementById('dBuy').href = 'checkout.html';
+  const df = document.getElementById('dFull');
+  if (df) df.href = 'product.html?no=' + o.no;
+  cgUpdUsd();
+}
+
+/* BUY NOW — 선택 구성·수량을 담고 주문서로 이동 */
+function buyNowDirect(ev){
+  ev.preventDefault();
+  const o = window._curOpt;
+  const name = (o && o.name) || (window._curCard && window._curCard.querySelector('.name').textContent.trim());
+  const price = (o && o.sale) || dPrice || 0;
+  if (name && price) {
+    try {
+      const c = JSON.parse(localStorage.getItem('cg_cart') || '[]');
+      const ex = c.find(i => i.name === name);
+      if (ex) ex.qty = dQty; else c.push({ name: name, price: price, qty: dQty });
+      localStorage.setItem('cg_cart', JSON.stringify(c));
+    } catch(e){}
+  }
+  location.href = 'checkout.html';
+  return false;
+}
+
+/* 히어로 배너 이동 */
+function heroGo(line){
+  if (typeof filterLine === 'function') filterLine(line || 'all');
+  const t = document.getElementById('all');
+  if (t) t.scrollIntoView({ behavior:'smooth', block:'start' });
+  return false;
+}
+
 function openDetail(card){
   const img = card.querySelector('.thumb img');
   document.getElementById('dImg').src = img.src;
