@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!-- ChewGumi Password Reset v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>비밀번호 재설정 | CHEWGUMI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ink:#000;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.16),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--main);margin-bottom:18px}
+.box{width:100%;max-width:400px;background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:26px;
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:0 18px 44px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+h1{font-size:21px;font-weight:700;margin-bottom:6px}
+p.d{font-size:12.5px;color:var(--gray);line-height:1.7;margin-bottom:16px}
+label{display:block;font-size:12.5px;font-weight:600;margin:10px 0 5px}
+input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+button{width:100%;margin-top:14px;padding:14px 0;border:0;border-radius:999px;font-family:inherit;
+  font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 10px 24px rgba(216,37,88,.3)}
+button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.msg{font-size:12.5px;margin-top:12px;min-height:18px;line-height:1.7;color:var(--gray)}
+.msg.err{color:var(--main)}
+.foot{margin-top:16px;text-align:center;font-size:12px;color:var(--gray)}
+.foot a{text-decoration:underline;text-underline-offset:3px}
+</style>
+</head>
+<body>
+<div class="logo">CHEW GUMI</div>
+<div class="box">
+  <h1>비밀번호 재설정</h1>
+  <p class="d" id="desc">새로 사용하실 비밀번호를 입력해 주세요.</p>
+  <div id="form">
+    <label>새 비밀번호</label>
+    <input id="p1" type="password" placeholder="6자 이상" autocomplete="new-password">
+    <label>새 비밀번호 확인</label>
+    <input id="p2" type="password" placeholder="한 번 더 입력" autocomplete="new-password">
+    <button id="go" onclick="doReset()">비밀번호 변경</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <div class="foot"><a href="login.html">← 로그인으로</a></div>
+</div>
+
+<script>
+const SB_URL='https://psynvpuedzjvytsgdhgg.supabase.co';
+const SB_KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+/* 재설정 링크의 토큰은 주소 # 뒤에 담겨 옵니다 */
+const hp=new URLSearchParams(location.hash.replace(/^#/,''));
+const token=hp.get('access_token');
+const errd=hp.get('error_description');
+
+if(!token){
+  $('form').style.display='none';
+  $('desc').textContent='';
+  $('msg').className='msg err';
+  $('msg').textContent = errd
+    ? '링크가 만료되었거나 이미 사용되었습니다. 로그인 화면에서 재설정 메일을 다시 요청해 주세요.'
+    : '유효한 재설정 링크로 접속해 주세요. 메일에 있는 링크를 눌러 주세요.';
+}
+
+function doReset(){
+  const a=$('p1').value, b=$('p2').value, m=$('msg');
+  m.className='msg';
+  if(a.length<6) { m.className='msg err'; return m.textContent='비밀번호는 6자 이상이어야 합니다.'; }
+  if(a!==b){ m.className='msg err'; return m.textContent='두 비밀번호가 일치하지 않습니다.'; }
+  $('go').disabled=true; m.textContent='변경하는 중…';
+  fetch(SB_URL+'/auth/v1/user',{method:'PUT',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({password:a})})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})))
+  .then(({ok,d})=>{
+    if(ok){
+      $('form').style.display='none';
+      m.textContent='비밀번호가 변경되었습니다. 잠시 후 로그인 화면으로 이동합니다.';
+      setTimeout(()=>location.href='login.html',1800);
+    } else {
+      $('go').disabled=false; m.className='msg err';
+      m.textContent=(d && (d.msg||d.error_description))||'변경에 실패했습니다. 링크가 만료되었을 수 있습니다.';
+    }
+  }).catch(()=>{$('go').disabled=false;m.className='msg err';m.textContent='네트워크 오류가 발생했습니다.';});
+}
+</script>
+</body>
+</html>
