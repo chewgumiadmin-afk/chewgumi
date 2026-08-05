@@ -59,6 +59,18 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
   box-shadow:0 0 60px rgba(255,255,255,.35); transform:translate(-50%,-50%) scale(0); opacity:.9;
   animation:rip .75s cubic-bezier(.2,.6,.3,1) forwards; mix-blend-mode:screen; }
 @keyframes rip { 60%{opacity:.5} 100%{transform:translate(-50%,-50%) scale(4.2); opacity:0} }
+
+.sso{margin-top:18px;padding-top:16px;border-top:1px solid rgba(0,0,0,.09)}
+.sso-t{font-size:11px;letter-spacing:1.5px;color:#797979;text-align:center;margin-bottom:12px}
+.sso-b{display:flex;flex-direction:column;gap:9px}
+.sso-b button{display:flex;align-items:center;justify-content:center;gap:9px;height:50px;border-radius:14px;
+  font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:1px solid rgba(0,0,0,.09);width:100%}
+.sso-g{background:#fff;color:#1a1a1a}
+.sso-k{background:#FEE500;color:#191600;border-color:transparent!important}
+.sso-n{background:#03C75A;color:#fff;border-color:transparent!important}
+.sso-ic{width:19px;height:19px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:13px;border-radius:4px}
+.sso-msg{font-size:11.5px;color:#797979;margin-top:10px;line-height:1.7;text-align:center}
 </style>
 </head>
 <body>
@@ -81,6 +93,16 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <button class="btn" type="submit">LOGIN</button>
     </form>
     <div id="lgMsg" style="font-size:12px;color:#D82558;margin-top:10px;min-height:16px"></div>
+    <div class="sso">
+      <div class="sso-t">SNS 계정으로 간편하게</div>
+      <div class="sso-b">
+        <button class="sso-g" onclick="sso('google')"><span class="sso-ic" style="background:#fff;color:#4285F4;border:1px solid #ddd">G</span>구글로 계속하기</button>
+        <button class="sso-k" onclick="sso('kakao')"><span class="sso-ic" style="background:#191600;color:#FEE500">K</span>카카오로 계속하기</button>
+        <button class="sso-n" onclick="sso('naver')"><span class="sso-ic" style="background:#fff;color:#03C75A">N</span>네이버로 계속하기</button>
+      </div>
+      <div class="sso-msg" id="ssoMsg"></div>
+    </div>
+
     <div id="resetBox" style="display:none;margin-top:14px;padding:16px;border-radius:16px;
       background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85)">
       <div id="rsTitle" style="font-size:13px;font-weight:700;margin-bottom:6px"></div>
@@ -108,6 +130,13 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 </div>
 
 <script>
+function sso(provider){
+  var m=document.getElementById('ssoMsg');
+  if(provider==='naver'){ if(m)m.textContent='네이버 로그인은 준비 중입니다. 구글 또는 카카오를 이용해 주세요.'; return; }
+  var back=encodeURIComponent(location.origin+location.pathname.replace(/[^/]*$/,'mypage.html'));
+  location.href=SB_URL+'/auth/v1/authorize?provider='+provider+'&redirect_to='+back;
+}
+
 const SB_URL='https://psynvpuedzjvytsgdhgg.supabase.co';
 const SB_KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 function toggleReset(kind){
