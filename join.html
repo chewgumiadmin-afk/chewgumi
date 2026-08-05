@@ -92,7 +92,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
   <div id="main">
     <h1>회원가입</h1>
     <p class="lead">가입 후 주문 시 배송지가 자동 입력되고, 결제 금액의 <b>1%가 적립</b>됩니다.</p>
-    <div class="steps"><div class="on">1. 정보입력</div><div class="on">2. 약관동의</div><div>3. 가입완료</div></div>
+    <div class="steps"><div class="on">1. 정보입력 · 약관동의</div><div id="st2">2. 가입완료</div></div>
 
     <div class="panel">
       <h2>ACCOUNT · 계정 정보</h2>
@@ -177,6 +177,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
   </div>
 
   <div id="done" class="hide">
+    <div class="steps"><div>1. 정보입력 · 약관동의</div><div class="on">2. 가입완료</div></div>
     <div class="panel done">
       <h2>가입이 완료되었습니다</h2>
       <p id="doneMsg"></p>
@@ -255,6 +256,7 @@ function saveProfile(token,email,needVerify){
 }
 function finish(email,needVerify){
   $('main').classList.add('hide'); $('done').classList.remove('hide');
+  var s2=document.getElementById('st2'); if(s2) s2.className='on';
   $('doneMsg').innerHTML = needVerify
     ? '<b>'+email+'</b> 으로 인증 메일을 보냈습니다.<br>메일의 링크를 눌러 인증을 완료하시면 로그인하실 수 있습니다.<br>(메일이 보이지 않으면 스팸함을 확인해 주세요)'
     : '<b>'+email+'</b> 님, 환영합니다!<br>이제 주문 시 배송지가 자동으로 입력됩니다.';
