@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v40 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v41 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -677,7 +677,21 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
 [GA4] analytics.google.com에서 속성 생성 → 측정 ID(G-XXXXXXX) 발급 후 아래 두 줄을 주석 밖으로
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXX');</script>
+<script>
+/* 인증 메일 링크 복귀 시 자동 로그인 */
+(function(){
+  try{
+    var hp=new URLSearchParams((location.hash||'').replace(/^#/,''));
+    var t=hp.get('access_token');
+    if(!t) return;
+    var payload=JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));
+    var em=(payload && payload.email) ? payload.email : '';
+    localStorage.setItem('cg_sb',JSON.stringify({t:t,u:em.split('@')[0]||'member'}));
+    history.replaceState(null,'',location.pathname+location.search);
+    if(typeof sync==='function') sync();
+  }catch(e){}
+})();
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXX');</script>
 
 [메타 픽셀] business.facebook.com 이벤트 관리자에서 픽셀 생성 → PIXEL_ID 교체 후 주석 밖으로
 <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','PIXEL_ID');fbq('track','PageView');</script>
@@ -1059,7 +1073,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v40 · 2026-08-05</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v41 · 2026-08-05</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
