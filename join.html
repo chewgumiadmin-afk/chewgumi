@@ -267,7 +267,20 @@ function check(){
 
   $('go').disabled = !(okEmail && okPw && okPw2 && name && phone.length>=9 && okAg);
 }
+function stashPending(email){
+  try{
+    localStorage.setItem('cg_pending', JSON.stringify({
+      email:email,
+      profile:{name:$('name').value.trim(),phone:$('phone').value.trim(),
+        zipcode:$('zip').value.trim(),addr1:$('addr1').value.trim(),addr2:$('addr2').value.trim(),
+        marketing_shop:$('m0').checked,marketing_sms:$('m1').checked,marketing_email:$('m2').checked},
+      consents:[['terms',$('a1').checked],['privacy',$('a2').checked],['age14',$('a3').checked],
+        ['marketing_shop',$('m0').checked],['marketing_sms',$('m1').checked],['marketing_email',$('m2').checked]]
+    }));
+  }catch(e){}
+}
 function signup(){
+  stashPending($('email').value.trim());
   const email=$('email').value.trim(), pw=$('pw1').value;
   $('go').disabled=true; $('msg').textContent='가입 처리 중…';
   fetch(SB+'/auth/v1/signup',{method:'POST',
@@ -310,6 +323,7 @@ function saveProfile(token,email,needVerify){
     headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
   .then(()=>logConsents(token,email))
+  .then(()=>{try{localStorage.removeItem('cg_pending');}catch(e){}})
   .then(()=>{
     try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:email.split('@')[0]}));}catch(e){}
     finish(email,needVerify);
