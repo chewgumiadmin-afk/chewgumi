@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v37 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v38 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -662,6 +662,16 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   padding:0 16px !important; margin-top:10px !important; }
 .d-npay.show { display:flex !important; }
 @media (max-width:640px){ .detail .d-acts a, .d-npay { min-height:46px; } }
+
+/* 가입 레이어 약관 동의 */
+.j-agree{display:flex;align-items:flex-start;gap:9px;margin-top:10px;font-size:12px;line-height:1.6;cursor:pointer}
+.j-agree input{width:19px;height:19px;flex:none;margin-top:1px;appearance:none;border-radius:6px;
+  border:1.5px solid rgba(0,0,0,.2);background:#fff;position:relative;cursor:pointer}
+.j-agree input:checked{background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+.j-agree input:checked::after{content:"";position:absolute;left:6px;top:2.5px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.j-agree a{text-decoration:underline;text-underline-offset:2px}
+.j-agree em{font-style:normal;color:var(--gray)}
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -1049,7 +1059,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v37 · 2026-08-05</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v38 · 2026-08-05</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1548,6 +1558,7 @@ function joinMsg(t){ document.getElementById('jMsg').textContent = t; }
 function joinSignup(){
   var email = document.getElementById('jEmail').value.trim(), pw = document.getElementById('jPw').value;
   if (!email || pw.length < 6) return joinMsg('이메일과 6자 이상 비밀번호를 입력해 주세요.');
+  if (!document.getElementById('jAgree').checked) return joinMsg('필수 약관에 동의해 주세요.');
   fetch(SB_URL + '/auth/v1/signup', { method:'POST', headers:{ apikey: SB_KEY, 'Content-Type':'application/json' },
     body: JSON.stringify({ email: email, password: pw }) })
     .then(function(r){ return r.json(); })
@@ -1809,22 +1820,23 @@ setHead();
     <button class="j-x" onclick="closeJoin()" aria-label="닫기">✕</button>
     <h3 id="jTitle">Join Us</h3>
     <div class="j-sub" id="jSub">가입하고 <b style="color:var(--main)">2,000원 할인쿠폰</b>을 받아보세요</div>
-    <div class="j-primary-box">
-      <a class="j-shop" href="join.html">
-        쇼핑몰 회원가입 · 2,000원 쿠폰 받기
-      </a>
-      <a class="j-shop-login" href="https://chewgumi.com/member/login.html" target="_blank" rel="noopener">이미 회원이신가요? 로그인</a>
-      <div class="j-hint">상품 구매·주문조회·쿠폰은 쇼핑몰 회원으로 이용하실 수 있어요.</div>
-    </div>
-    <div class="j-divider"><span>커뮤니티 회원 (리뷰·문의 작성용)</span></div>
+
     <div id="jForm">
       <input id="jEmail" type="email" placeholder="이메일" autocomplete="email">
       <input id="jPw" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="new-password">
+      <label class="j-agree"><input type="checkbox" id="jAgree">
+        <span><a href="https://chewgumi.com/member/mall_agreement.html" target="_blank" rel="noopener">이용약관</a> ·
+        <a href="https://chewgumi.com/member/privacy.html" target="_blank" rel="noopener">개인정보 수집·이용</a>에 동의합니다 <em>(필수)</em></span></label>
+      <label class="j-agree"><input type="checkbox" id="jMkt">
+        <span>쇼핑정보 수신에 동의합니다 <em>(선택)</em></span></label>
       <div class="j-row">
         <button class="j-primary" onclick="joinSignup()">회원가입</button>
         <button class="j-ghost" onclick="joinLogin()">로그인</button>
       </div>
+      <a class="j-shop-login" href="login.html">비밀번호를 잊으셨나요?</a>
+      <div class="j-hint">가입 후 주문 시 배송지가 자동 입력되고, 결제 금액의 1%가 적립됩니다.</div>
     </div>
+
     <div id="jDone" style="display:none; font-size:13px; line-height:1.8;"></div>
     <div class="j-msg" id="jMsg"></div>
 
