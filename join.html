@@ -144,16 +144,19 @@ function toggleAll(el){
 }
 function syncSub(){
   var on = document.getElementById('c3').checked;
-  document.querySelectorAll('.sub').forEach(c => c.checked = on);
+  document.querySelectorAll('input.sub').forEach(c => c.checked = on);
 }
+var touched = false;
 function sync(){
-  var reqs = [...document.querySelectorAll('.req')];
+  touched = true;
+  var reqs = [...document.querySelectorAll('input.req')];
   var ok = reqs.every(c => c.checked);
   document.getElementById('next').disabled = !ok;
   var boxes = [...document.querySelectorAll('.panel input[type=checkbox]')].filter(c => c.id !== 'all');
   document.getElementById('all').checked = boxes.every(c => c.checked);
-  document.getElementById('msg').textContent = ok ? '' : '필수 약관에 동의하셔야 다음 단계로 진행됩니다.';
+  document.getElementById('msg').textContent = ok ? '' : (touched ? '필수 약관에 동의하셔야 다음 단계로 진행됩니다.' : '');
 }
+(function(){ document.getElementById('next').disabled = true; })();
 function goNext(){
   document.getElementById('msg').textContent = '공식몰 가입 화면으로 이동합니다…';
   location.href = 'https://chewgumi.com/member/agreement.html';
