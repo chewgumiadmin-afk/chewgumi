@@ -365,6 +365,9 @@ const P = {
   18:{n:'듀잇 4개입', line:'doit', cate:47, o:39000, s:19900, img:'202512/2c58793be7f900d4997e26451366b9cb.png', d:'가볍게 시작하는 4개입 구성.'},
   19:{n:'듀잇 6개입', line:'doit', cate:47, o:54800, s:27900, img:'202512/4f3394ac34364fc0e1f88744141a8c99.png', d:'실속 있는 6개입 구성.'},
   20:{n:'듀잇 10개입', line:'doit', cate:47, o:84200, s:42900, img:'202512/f89d6da91dd672a5f25a7a295ebf3be6.png', d:'넉넉한 10개입 구성.'},
+  101:{n:'DREAM-IT 드림 잇 — 복숭아맛 젤리',l:'triple',c:42,o:0,s:0,i:'',d:'L-테아닌 200mg 함유. 하루의 끝을 편안하게 마무리하는 복숭아맛 젤리. 40g / 138kcal',soon:true,local:'assets/product-dream-it.png'},
+  102:{n:'SPARK-IT 스파크 잇 — 블루베리맛 젤리',l:'triple',c:42,o:0,s:0,i:'',d:'L-아르기닌 1000mg 함유. 활력이 필요한 순간을 위한 블루베리맛 젤리. 40g / 138kcal',soon:true,local:'assets/product-spark-it.png'},
+  103:{n:'RESET-IT 리셋 잇 — 청포도맛 젤리',l:'triple',c:42,o:0,s:0,i:'',d:'포스트바이오틱스 2억마리 배합. 속을 가볍게 리셋하는 청포도맛 젤리. 40g / 138kcal',soon:true,local:'assets/product-reset-it.png'},
   21:{n:'듀잇 20개입', line:'doit', cate:47, o:158900,s:81000, img:'202512/942a7d4949aa31bea2c60e76208c1b76.png', d:'가장 알뜰한 20개입 대용량 구성. 레몬민트·포도 맛을 원하는 수량으로 조합할 수 있습니다.'}
 };
 const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
@@ -425,6 +428,11 @@ function render(){
   document.getElementById('pOrigin').textContent = p.o > p.s ? won(p.o) : '';
   document.getElementById('pSale').textContent = won(p.s);
   document.getElementById('pOff').textContent = p.o > p.s ? Math.round((1 - p.s / p.o) * 100) + '% OFF' : '';
+  if(p.soon){
+    document.getElementById('pOrigin').textContent='';
+    document.getElementById('pSale').textContent='출시 예정';
+    document.getElementById('pOff').textContent='';
+  }
   document.getElementById('pSold').innerHTML = p.sold ? '<span class="soldout">SOLD OUT · 재입고 준비중</span>' : '';
 
   const sel = document.getElementById('pOpt');
