@@ -121,7 +121,17 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
     <div class="panel">
       <h2>ACCOUNT</h2>
       <div class="msg" id="who" style="margin-top:0"></div>
-      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+        <button class="btn ghost" onclick="showConsents()" style="max-width:170px">동의 내역 보기</button>
+        <button class="btn ghost" onclick="withdraw()" style="max-width:140px;color:#C0395C">회원 탈퇴</button>
+      </div>
+      <div id="cslist" style="margin-top:14px"></div>
+      <div class="msg" id="wmsg"></div>
+      <div class="msg" style="margin-top:8px;line-height:1.8">
+        탈퇴 시 회원 정보와 동의 내역은 즉시 파기됩니다.<br>
+        다만 전자상거래법에 따라 주문·결제 기록은 5년간 별도 보관되며, 회원 정보와 분리되어 관리됩니다.
+      </div>
     </div>
   </div>
 </div>
@@ -181,10 +191,49 @@ function saveProfile(){
   fetch(SB+'/rest/v1/profiles',{method:'PATCH',
     headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
-  .then(r=>{$('pmsg').textContent=r.ok?'저장되었습니다.':'저장에 실패했습니다.';})
+  .then(r=>{
+    $('pmsg').textContent=r.ok?'저장되었습니다.':'저장에 실패했습니다.';
+    if(r.ok){
+      const items=[['marketing_shop',$('mSms').checked||$('mEmail').checked],
+        ['marketing_sms',$('mSms').checked],['marketing_email',$('mEmail').checked]]
+        .map(([t,v])=>({consent_type:t,is_agreed:v,policy_version:'2026-08-05',source:'mypage'}));
+      fetch(SB+'/rest/v1/consents',{method:'POST',
+        headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify(items)}).catch(()=>{});
+    }
+  })
   .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
 }
 
+function showConsents(){
+  const box=$('cslist');
+  if(box.dataset.on==='1'){box.innerHTML='';box.dataset.on='0';return;}
+  fetch(SB+'/rest/v1/consents?select=consent_type,is_agreed,agreed_at,policy_version&order=agreed_at.desc',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    const NM={terms:'이용약관',privacy:'개인정보 수집·이용',age14:'만 14세 이상',
+      marketing_shop:'쇼핑정보 수신',marketing_sms:'SMS 수신',marketing_email:'이메일 수신'};
+    box.dataset.on='1';
+    box.innerHTML = rows.length
+      ? '<div style="font-size:12px;line-height:2">'+rows.map(c=>
+          '· '+(NM[c.consent_type]||c.consent_type)+' : <b>'+(c.is_agreed?'동의':'미동의')
+          +'</b> · '+new Date(c.agreed_at).toLocaleString('ko-KR')+' (v'+c.policy_version+')').join('<br>')+'</div>'
+      : '<div class="msg">기록된 동의 내역이 없습니다.</div>';
+  }).catch(()=>{box.innerHTML='<div class="msg">불러오지 못했습니다.</div>';});
+}
+function withdraw(){
+  if(!confirm('정말 탈퇴하시겠습니까?\n회원 정보와 적립금이 모두 삭제되며 복구할 수 없습니다.'))return;
+  if(!confirm('마지막 확인입니다. 탈퇴를 진행할까요?'))return;
+  $('wmsg').textContent='탈퇴 처리 중…';
+  fetch(SB+'/functions/v1/account',{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({action:'withdraw'})})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})))
+  .then(({ok,d})=>{
+    if(ok&&d.ok){ alert('탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.');
+      try{localStorage.removeItem('cg_sb');}catch(e){} location.href='index.html'; }
+    else $('wmsg').textContent=d.error||'탈퇴에 실패했습니다.';
+  }).catch(()=>$('wmsg').textContent='네트워크 오류가 발생했습니다.');
+}
 function loadOrders(){
   fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty)&order=created_at.desc',{headers:H()})
   .then(r=>r.ok?r.json():Promise.reject(r.status)).then(rows=>{
