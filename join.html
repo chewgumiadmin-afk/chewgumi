@@ -163,7 +163,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
           <label class="lb" for="m2"><span class="op">[선택]</span> 이메일 수신 동의</label>
         </div>
       </div>
-      <div class="hint">선택 항목에 동의하지 않아도 가입 및 서비스 이용에 제한이 없습니다.
+      <div class="hint">동의하신 내역(항목·일시)은 관계 법령에 따라 회원 탈퇴 시까지 보관됩니다.<br>선택 항목에 동의하지 않아도 가입 및 서비스 이용에 제한이 없습니다.
         수신 동의는 가입 후 마이페이지에서 언제든 변경하실 수 있습니다.</div>
 
       <div class="acts" style="margin-top:18px">
@@ -241,6 +241,16 @@ function signup(){
       $('msg').textContent = d.msg || d.error_description || '가입에 실패했습니다. 이미 가입된 이메일일 수 있습니다.'; }
   }).catch(()=>{$('go').disabled=false;$('msg').textContent='네트워크 오류가 발생했습니다.';});
 }
+const POLICY_VERSION='2026-08-05';
+function logConsents(token,email){
+  const items=[
+    ['terms',$('a1').checked],['privacy',$('a2').checked],['age14',$('a3').checked],
+    ['marketing_shop',$('m0').checked],['marketing_sms',$('m1').checked],['marketing_email',$('m2').checked]
+  ].map(([t,v])=>({email:email,consent_type:t,is_agreed:v,policy_version:POLICY_VERSION,source:'signup'}));
+  return fetch(SB+'/rest/v1/consents',{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(items)}).catch(()=>{});
+}
 function saveProfile(token,email,needVerify){
   const body={name:$('name').value.trim(),phone:$('phone').value.trim(),
     zipcode:$('zip').value.trim(),addr1:$('addr1').value.trim(),addr2:$('addr2').value.trim(),
@@ -249,6 +259,7 @@ function saveProfile(token,email,needVerify){
   fetch(SB+'/rest/v1/profiles',{method:'PATCH',
     headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
+  .then(()=>logConsents(token,email))
   .then(()=>{
     try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:email.split('@')[0]}));}catch(e){}
     finish(email,needVerify);
