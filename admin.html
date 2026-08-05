@@ -162,6 +162,11 @@ button{cursor:pointer;font-family:inherit}
 
     <div class="panel" id="memberPanel">
       <h2>회원 관리</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn ghost" onclick="checkConsentDue()" style="padding:10px 16px;font-size:12px">
+          수신동의 2년 확인 대상 조회</button>
+      </div>
+      <div class="msg" id="dueMsg" style="margin:0 0 10px"></div>
       <div id="memberList"><div class="empty">불러오는 중…</div></div>
     </div>
 
@@ -269,6 +274,20 @@ function saveStock(id){
   .then(r=>{msg('stMsg',r.ok?'저장되었습니다.':'저장 권한이 없습니다. 운영자로 로그인해 주세요.');
     if(r.ok)loadStock();})
   .catch(()=>msg('stMsg','네트워크 오류가 발생했습니다.'));
+}
+function checkConsentDue(){
+  msg('dueMsg','조회 중…');
+  fetch(SB_URL+'/functions/v1/account',{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({action:'consentDue'})})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})))
+  .then(({ok,d})=>{
+    if(!ok)return msg('dueMsg',d.error||'조회에 실패했습니다.');
+    if(!d.due.length)return msg('dueMsg','수신동의 마케팅 회원 '+d.total+'명 중, 2년 확인이 필요한 회원은 없습니다.');
+    msg('dueMsg','⚠ 확인 필요 '+d.due.length+'명 (정보통신망법 제50조 제8항) — '
+      +d.due.map(p=>esc(p.email)).join(', ')
+      +' · 이분들께 수신동의 유지 여부를 안내해 주세요.');
+  }).catch(()=>msg('dueMsg','네트워크 오류가 발생했습니다.'));
 }
 function loadMembers(){
   fetch(SB_URL+'/rest/v1/profiles?select=email,name,phone,points,created_at,marketing_shop,marketing_sms,marketing_email&order=created_at.desc&limit=200',
