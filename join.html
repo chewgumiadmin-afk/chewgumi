@@ -182,7 +182,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
       <h2>가입이 완료되었습니다</h2>
       <p id="doneMsg"></p>
       <div class="cp">🎉 2,000원 할인쿠폰이 지급되었습니다</div>
-      <br><a class="go" href="mypage.html">마이페이지로</a>
+      <br><a class="go" id="goBtn" href="mypage.html">마이페이지로</a>
     </div>
   </div>
 </div>
@@ -236,7 +236,7 @@ function signup(){
     body:JSON.stringify({email,password:pw})})
   .then(r=>r.json()).then(d=>{
     if(d.access_token){ saveProfile(d.access_token,email,false); }
-    else if(d.id || (d.user && d.user.id)){ finish(email,true); }
+    else if(d.id || (d.user && d.user.id)){ autoLogin(email,pw); }
     else { $('go').disabled=false;
       $('msg').textContent = d.msg || d.error_description || '가입에 실패했습니다. 이미 가입된 이메일일 수 있습니다.'; }
   }).catch(()=>{$('go').disabled=false;$('msg').textContent='네트워크 오류가 발생했습니다.';});
@@ -250,6 +250,17 @@ function logConsents(token,email){
   return fetch(SB+'/rest/v1/consents',{method:'POST',
     headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(items)}).catch(()=>{});
+}
+/* 가입 직후 자동 로그인 시도 (이메일 인증이 꺼져 있으면 즉시 로그인됨) */
+function autoLogin(email,pw){
+  $('msg').textContent='로그인 중…';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){ saveProfile(d.access_token,email,false); }
+    else { finish(email,true); }   /* 인증 필요 → 안내 화면 */
+  }).catch(()=>finish(email,true));
 }
 function saveProfile(token,email,needVerify){
   const body={name:$('name').value.trim(),phone:$('phone').value.trim(),
@@ -269,8 +280,10 @@ function finish(email,needVerify){
   $('main').classList.add('hide'); $('done').classList.remove('hide');
   var s2=document.getElementById('st2'); if(s2) s2.className='on';
   $('doneMsg').innerHTML = needVerify
-    ? '<b>'+email+'</b> 으로 인증 메일을 보냈습니다.<br>메일의 링크를 눌러 인증을 완료하시면 로그인하실 수 있습니다.<br>(메일이 보이지 않으면 스팸함을 확인해 주세요)'
+    ? '<b>'+email+'</b> 으로 인증 메일을 보냈습니다.<br>메일의 링크를 누르시면 <b>바로 로그인된 상태</b>로 이동합니다.<br>(메일이 보이지 않으면 스팸함을 확인해 주세요)'
     : '<b>'+email+'</b> 님, 환영합니다!<br>이제 주문 시 배송지가 자동으로 입력됩니다.';
+  const gb=$('goBtn');
+  if(gb && needVerify){ gb.href='login.html'; gb.textContent='메일 인증 후 로그인하기'; }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 check();
