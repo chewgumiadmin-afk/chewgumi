@@ -257,6 +257,20 @@ function loadOrders(){
     }).join('');
   }).catch(s=>{$('list').innerHTML='<div class="empty">'+(s===401?'로그인이 만료되었습니다.':'주문을 불러오지 못했습니다.')+'</div>';});
 }
+
+/* 인증 메일 링크 복귀 시 자동 로그인 */
+(function(){
+  try{
+    var hp=new URLSearchParams((location.hash||'').replace(/^#/,''));
+    var t=hp.get('access_token');
+    if(!t) return;
+    var payload=JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));
+    var em=(payload && payload.email) ? payload.email : '';
+    localStorage.setItem('cg_sb',JSON.stringify({t:t,u:em.split('@')[0]||'member'}));
+    history.replaceState(null,'',location.pathname+location.search);
+    if(typeof sync==='function') sync();
+  }catch(e){}
+})();
 sync();
 </script>
 </body>
