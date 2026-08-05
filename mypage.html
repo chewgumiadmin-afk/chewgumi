@@ -189,7 +189,7 @@ const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';loadProfile();loadOrders();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';flushPending().then(()=>{loadProfile();loadOrders();});}}
 
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
@@ -212,6 +212,19 @@ function findAddr(){
     $('fAddr1').value=d.roadAddress||d.jibunAddress;$('fAddr2').focus();}}).open();
 }
 
+function flushPending(){
+  let p=null; try{p=JSON.parse(localStorage.getItem('cg_pending')||'null');}catch(e){}
+  if(!p||!token) return Promise.resolve();
+  return fetch(SB+'/rest/v1/profiles',{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({...p.profile,updated_at:new Date().toISOString()})})
+  .then(()=>fetch(SB+'/rest/v1/consents',{method:'POST',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(p.consents.map(([t,v])=>({consent_type:t,is_agreed:v,
+      policy_version:'2026-08-05',source:'signup'})))}))
+  .then(()=>{try{localStorage.removeItem('cg_pending');}catch(e){}})
+  .catch(()=>{});
+}
 function loadProfile(){
   fetch(SB+'/rest/v1/profiles?select=*&limit=1',{headers:H()})
   .then(r=>r.ok?r.json():Promise.reject(r.status)).then(([p])=>{
