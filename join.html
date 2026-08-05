@@ -92,6 +92,20 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
 .sso-ic{width:19px;height:19px;flex:none;display:inline-flex;align-items:center;justify-content:center;
   font-weight:900;font-size:13px;border-radius:4px}
 .sso-msg{font-size:11.5px;color:#797979;margin-top:10px;line-height:1.7;text-align:center}
+
+.vbox{display:none;margin-top:10px;padding:13px 15px;border-radius:14px;
+  background:rgba(255,233,35,.16);border:1px solid rgba(216,37,88,.18)}
+.vbox.on{display:block}
+.vbox.done{background:rgba(42,160,96,.12);border-color:rgba(42,160,96,.3)}
+.vrow{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.7}
+.vdot{width:9px;height:9px;flex:none;margin-top:6px;border-radius:50%;background:var(--main);
+  animation:vpulse 1.4s infinite}
+.vbox.done .vdot{background:#2AA060;animation:none}
+@keyframes vpulse{0%,100%{opacity:1}50%{opacity:.25}}
+.vre{margin-top:9px;padding:8px 14px;border-radius:999px;font-family:inherit;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink);cursor:pointer}
+.btn-sm:disabled{opacity:.5;cursor:not-allowed}
+@media (prefers-reduced-motion:reduce){.vdot{animation:none}}
 </style>
 </head>
 <body>
@@ -104,14 +118,24 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
 <div class="wrap">
   <div id="main">
     <h1>회원가입</h1>
-    <p class="lead">가입 후 주문 시 배송지가 자동 입력되고, 결제 금액의 <b>1%가 적립</b>됩니다.</p>
+    <p class="lead">이메일 인증 후 가입이 완료됩니다.<br>가입 시 주문 배송지가 자동 입력되고, 결제 금액의 <b>1%가 적립</b>됩니다.</p>
     <div class="steps"><div class="on">1. 정보입력 · 약관동의</div><div id="st2">2. 가입완료</div></div>
 
     <div class="panel">
       <h2>ACCOUNT · 계정 정보</h2>
       <label class="f">아이디 (이메일) <em>*</em></label>
-      <input id="email" type="email" placeholder="example@email.com" autocomplete="email" oninput="check()">
+      <div class="row2">
+        <input id="email" type="email" placeholder="example@email.com" autocomplete="email" oninput="onEmailInput()">
+        <button class="btn-sm" id="vBtn" onclick="sendVerify()">인증 메일 받기</button>
+      </div>
       <div class="hint" id="hEmail">가입하신 이메일 주소가 로그인 아이디가 됩니다.</div>
+      <div class="vbox" id="vBox">
+        <div class="vrow">
+          <span class="vdot" id="vDot"></span>
+          <span id="vTxt">메일함에서 인증 링크를 눌러주세요. 인증이 확인되면 자동으로 다음 단계가 열립니다.</span>
+        </div>
+        <button class="vre" onclick="recheck()">인증 확인</button>
+      </div>
 
       <label class="f">비밀번호 <em>*</em></label>
       <input id="pw1" type="password" placeholder="6자 이상" autocomplete="new-password" oninput="check()">
@@ -244,6 +268,87 @@ function syncMkt(){
   const on=$('m0').checked;
   document.querySelectorAll('input.mk').forEach(c=>c.checked=on);
 }
+let vSent=false, vDone=false, vTimer=null, vEmail='';
+
+function onEmailInput(){
+  const e=$('email').value.trim();
+  if(e!==vEmail){ vSent=false; vDone=false; vEmail=e;
+    $('vBox').classList.remove('on','done');
+    if(vTimer){clearInterval(vTimer);vTimer=null;} }
+  check();
+}
+
+/* 1단계: 이메일 인증 메일 발송 (임시 비밀번호로 계정 선생성) */
+function sendVerify(){
+  const email=$('email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    $('hEmail').textContent='올바른 이메일을 입력해 주세요.'; $('hEmail').className='hint bad'; return; }
+  const pw=$('pw1').value;
+  if(pw.length<6){ $('hPw1').textContent='비밀번호를 먼저 입력해 주세요 (6자 이상).';
+    $('hPw1').className='hint bad'; $('pw1').focus(); return; }
+
+  $('vBtn').disabled=true; $('vBtn').textContent='발송 중…';
+  fetch(SB+'/auth/v1/signup',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    $('vBtn').disabled=false; $('vBtn').textContent='메일 재발송';
+    if(d.access_token){ /* 인증 불필요 설정 → 즉시 완료 */
+      vSent=true; vDone=true; vEmail=email;
+      window._preToken=d.access_token;
+      markVerified('이메일 확인이 완료되었습니다.');
+    } else if(d.id || (d.user && d.user.id)){
+      vSent=true; vEmail=email;
+      $('vBox').classList.add('on');
+      $('vTxt').innerHTML='<b>'+email+'</b> 으로 인증 메일을 보냈습니다.<br>메일함(스팸함 포함)에서 링크를 눌러주세요. 인증되면 자동으로 확인됩니다.';
+      startPoll(email);
+    } else if((d.msg||d.error_description||'').indexOf('already')>-1 || d.code==='user_already_exists'){
+      $('vBox').classList.add('on');
+      $('vTxt').innerHTML='이미 가입된 이메일입니다. <a href="login.html" style="text-decoration:underline">로그인하기</a>';
+    } else {
+      $('vBox').classList.add('on');
+      $('vTxt').textContent = d.msg || d.error_description || '메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+    }
+  }).catch(()=>{ $('vBtn').disabled=false; $('vBtn').textContent='인증 메일 받기';
+    $('vBox').classList.add('on'); $('vTxt').textContent='네트워크 오류가 발생했습니다.'; });
+}
+
+/* 2단계: 인증 완료 여부 확인 (로그인 시도로 판별) */
+function tryVerify(email,pw){
+  return fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){ window._preToken=d.access_token; return true; }
+    return false;
+  }).catch(()=>false);
+}
+function startPoll(email){
+  if(vTimer) clearInterval(vTimer);
+  let n=0;
+  vTimer=setInterval(()=>{
+    n++; if(n>60||vDone){clearInterval(vTimer);vTimer=null;return;}
+    tryVerify(email,$('pw1').value).then(ok=>{ if(ok){vDone=true;clearInterval(vTimer);vTimer=null;
+      markVerified('이메일 인증이 완료되었습니다.');} });
+  },5000);
+}
+function recheck(){
+  const email=$('email').value.trim();
+  $('vTxt').textContent='확인 중…';
+  tryVerify(email,$('pw1').value).then(ok=>{
+    if(ok){ vDone=true; if(vTimer){clearInterval(vTimer);vTimer=null;} markVerified('이메일 인증이 완료되었습니다.'); }
+    else $('vTxt').innerHTML='아직 인증되지 않았습니다. 메일함(스팸함 포함)의 링크를 눌러주신 뒤 다시 확인해 주세요.';
+  });
+}
+function markVerified(msg){
+  $('vBox').classList.add('on','done');
+  $('vTxt').innerHTML='<b>'+msg+'</b><br>아래 정보를 입력하고 가입을 완료해 주세요.';
+  $('hEmail').textContent='인증된 이메일입니다.'; $('hEmail').className='hint good';
+  $('email').readOnly=true; $('pw1').readOnly=true; $('pw2').readOnly=true;
+  $('vBtn').disabled=true; $('vBtn').textContent='인증 완료';
+  check();
+}
+
 function check(){
   const email=$('email').value.trim(), p1=$('pw1').value, p2=$('pw2').value;
   const name=$('name').value.trim(), phone=$('phone').value.trim();
@@ -265,7 +370,9 @@ function check(){
   const boxes=[...document.querySelectorAll('.panel input[type=checkbox]')].filter(c=>c.id!=='all');
   $('all').checked = boxes.length>0 && boxes.every(c=>c.checked);
 
-  $('go').disabled = !(okEmail && okPw && okPw2 && name && phone.length>=9 && okAg);
+  $('go').disabled = !(okEmail && okPw && okPw2 && name && phone.length>=9 && okAg && vDone);
+  const go=$('go');
+  if(go) go.textContent = vDone ? '가입하기' : '이메일 인증 후 가입 가능';
 }
 function stashPending(email){
   try{
@@ -281,6 +388,11 @@ function stashPending(email){
 }
 function signup(){
   stashPending($('email').value.trim());
+  const email=$('email').value.trim();
+  if(vDone && window._preToken){
+    $('go').disabled=true; $('msg').textContent='가입 처리 중…';
+    return saveProfile(window._preToken,email,false);
+  }
   const email=$('email').value.trim(), pw=$('pw1').value;
   $('go').disabled=true; $('msg').textContent='가입 처리 중…';
   fetch(SB+'/auth/v1/signup',{method:'POST',
