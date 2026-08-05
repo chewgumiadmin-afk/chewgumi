@@ -271,7 +271,7 @@ function saveStock(id){
   .catch(()=>msg('stMsg','네트워크 오류가 발생했습니다.'));
 }
 function loadMembers(){
-  fetch(SB_URL+'/rest/v1/profiles?select=email,name,phone,points,created_at&order=created_at.desc&limit=200',
+  fetch(SB_URL+'/rest/v1/profiles?select=email,name,phone,points,created_at,marketing_shop,marketing_sms,marketing_email&order=created_at.desc&limit=200',
     {headers:{apikey:SB_KEY,Authorization:'Bearer '+token}})
   .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
     const box=document.getElementById('memberList');
@@ -279,7 +279,8 @@ function loadMembers(){
     box.innerHTML='<div class="msg" style="margin:0 0 8px">총 '+rows.length+'명</div>'
       +rows.map(m=>'<div class="mrow"><span class="me">'+esc(m.name||'(이름 미등록)')
       +'<div class="mi">'+esc(m.email)+(m.phone?' · '+esc(m.phone):'')+'</div></span>'
-      +'<span class="mi">'+new Date(m.created_at).toLocaleDateString('ko-KR')+' 가입</span>'
+      +'<span class="mi">'+new Date(m.created_at).toLocaleDateString('ko-KR')+' 가입'
+      +'<br>수신동의: '+([m.marketing_shop?'쇼핑정보':null,m.marketing_sms?'SMS':null,m.marketing_email?'이메일':null].filter(Boolean).join(', ')||'없음')+'</span>'
       +'<span class="mp">'+Number(m.points||0).toLocaleString()+'P</span></div>').join('');
   }).catch(()=>{document.getElementById('memberList').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
 }
