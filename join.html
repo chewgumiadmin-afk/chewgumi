@@ -387,13 +387,12 @@ function stashPending(email){
   }catch(e){}
 }
 function signup(){
-  stashPending($('email').value.trim());
-  const email=$('email').value.trim();
+  const email=$('email').value.trim(), pw=$('pw1').value;
+  stashPending(email);
   if(vDone && window._preToken){
     $('go').disabled=true; $('msg').textContent='가입 처리 중…';
     return saveProfile(window._preToken,email,false);
   }
-  const email=$('email').value.trim(), pw=$('pw1').value;
   $('go').disabled=true; $('msg').textContent='가입 처리 중…';
   fetch(SB+'/auth/v1/signup',{method:'POST',
     headers:{apikey:KEY,'Content-Type':'application/json'},
