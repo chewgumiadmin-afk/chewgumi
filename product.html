@@ -249,8 +249,8 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
   <section class="pdetail" id="pDetailWrap" style="display:none">
     <h2>Product Detail</h2>
     <div id="pDetailImgs"></div>
-    <p class="pd-note">상세 정보는 공식몰 상품 페이지에서도 확인하실 수 있습니다.
-      <a id="pdLink" href="#" target="_blank" rel="noopener">공식몰 상세페이지 열기 →</a></p>
+    <p class="pd-note">더 궁금한 점이 있으신가요?
+      <a href="qna.html">문의하기</a> · <a href="faq.html">자주묻는질문</a></p>
   </section>
 
   <div class="rel">
@@ -381,11 +381,21 @@ const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
 const NN = 'https://chewgumi.com/web/upload/NNEditor/';
 const DETAIL_IMGS = {
   /* 트래블잇 5종 — 동일 제품 구성만 다름 */
-  15:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg' ],
-  11:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg' ],
-  12:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg' ],
-  13:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg' ],
-  14:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg' ],
+  15:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
+  11:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
+  12:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
+  13:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
+  14:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
   /* 듀잇 6종 — 상세 이미지 17장 공통 */
   16:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
        'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
@@ -543,7 +553,6 @@ function render(){
 
   const wrap = document.getElementById('pDetailWrap');
   const imgs = DETAIL_IMGS[no] || [];
-  document.getElementById('pdLink').href = detailUrl(no);
   if (imgs.length) {
     wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
@@ -552,7 +561,7 @@ function render(){
   } else {
     wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML =
-      '<div class="pd-empty">이 상품의 상세 이미지는 공식몰에서 확인하실 수 있습니다.</div>';
+      '<div class="pd-empty">상세 이미지를 준비 중입니다.</div>';
   }
 
   document.getElementById('rel').innerHTML = ORDER.filter(n => n !== no).slice(0, 4).map(n =>
