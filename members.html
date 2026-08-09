@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!-- ChewGumi Member Search v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>회원 조회 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--ink:#1a1a1a;--gray:#797979;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1120px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+.btn{padding:13px 24px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px}
+/* 통계 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:6px}
+.stat{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center}
+.stat .l{font-size:11px;color:var(--gray)}
+.stat .v{margin-top:5px;font-size:20px;font-weight:800;color:var(--main)}
+/* 필터 */
+.fg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 12px}
+.fg .f{display:flex;flex-direction:column}
+.fg label{font-size:11.5px;font-weight:600;color:#555;margin-bottom:5px}
+.fg .wide{grid-column:span 2}
+.range{display:flex;gap:6px;align-items:center}
+.range input{flex:1}
+.range span{font-size:12px;color:var(--gray)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{padding:9px 13px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.75);border:1px solid var(--line);color:var(--gray)}
+.chips button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+/* 목록 */
+.thead,.row{display:grid;grid-template-columns:1.7fr .8fr .9fr .7fr .8fr .9fr .7fr;gap:8px;align-items:center}
+.thead{padding:10px 4px;border-bottom:1.5px solid rgba(0,0,0,.12);font-size:11.5px;font-weight:700;color:var(--gray)}
+.row{padding:12px 4px;border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px}
+.row .em{font-weight:600;word-break:break-all}
+.row .em small{display:block;color:var(--gray);font-weight:400;margin-top:2px}
+.row .amt{font-weight:700;color:var(--main)}
+.gr{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(216,37,88,.1);color:var(--main)}
+.mk{font-size:10.5px;color:var(--gray)}
+.empty{padding:40px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:900px){
+  .fg{grid-template-columns:repeat(2,1fr)}.fg .wide{grid-column:span 2}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .thead{display:none}
+  .row{grid-template-columns:1fr 1fr;gap:4px 8px;padding:14px 4px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Members</h1><div class="s">회원 정보 조회</div></div>
+    <div><a href="admin.html">통합 관리</a> · <a href="orders.html">주문 관리</a> · <a href="index.html">사이트</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>회원 현황</h2>
+      <div class="stats">
+        <div class="stat"><div class="l">전체 회원</div><div class="v" id="cAll">0</div></div>
+        <div class="stat"><div class="l">구매 회원</div><div class="v" id="cBuy">0</div></div>
+        <div class="stat"><div class="l">마케팅 동의</div><div class="v" id="cMkt">0</div></div>
+        <div class="stat"><div class="l">누적 구매액</div><div class="v" id="cAmt">0</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>검색 조건</h2>
+      <div class="fg">
+        <div class="f wide"><label>아이디(이메일) · 이름 · 연락처</label>
+          <input id="q" placeholder="일부만 입력해도 검색됩니다" onkeydown="if(event.key==='Enter')search()"></div>
+        <div class="f"><label>회원등급</label>
+          <select id="grade"><option value="">전체</option><option>일반</option><option>우수</option><option>VIP</option></select></div>
+        <div class="f"><label>성별</label>
+          <select id="gender"><option value="">전체</option><option value="M">남</option><option value="F">여</option></select></div>
+
+        <div class="f"><label>가입일 (시작)</label><input type="date" id="d1"></div>
+        <div class="f"><label>가입일 (종료)</label><input type="date" id="d2"></div>
+        <div class="f"><label>구매금액 (원)</label>
+          <div class="range"><input id="a1" inputmode="numeric" placeholder="최소"><span>~</span><input id="a2" inputmode="numeric" placeholder="최대"></div></div>
+        <div class="f"><label>구매건수</label>
+          <div class="range"><input id="n1" inputmode="numeric" placeholder="최소"><span>~</span><input id="n2" inputmode="numeric" placeholder="최대"></div></div>
+
+        <div class="f wide"><label>마케팅 수신 동의</label>
+          <div class="chips" id="mkt">
+            <button class="on" data-m="">전체</button>
+            <button data-m="shop">쇼핑정보</button>
+            <button data-m="sms">SMS</button>
+            <button data-m="email">이메일</button>
+            <button data-m="none">미동의</button>
+          </div></div>
+        <div class="f"><label>구매 이력</label>
+          <select id="buy"><option value="">전체</option><option value="y">구매 있음</option><option value="n">구매 없음</option></select></div>
+        <div class="f"><label>정렬</label>
+          <select id="sort">
+            <option value="created_at">가입일 최신순</option>
+            <option value="total_amount">구매금액 높은순</option>
+            <option value="order_count">구매건수 많은순</option>
+            <option value="points">적립금 많은순</option>
+          </select></div>
+      </div>
+      <div class="acts">
+        <button class="btn" onclick="search()">검색</button>
+        <button class="btn ghost" onclick="resetF()">초기화</button>
+        <button class="btn ghost" onclick="exportCsv()">엑셀(CSV) 내려받기</button>
+      </div>
+      <div class="msg" id="smsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>검색 결과 <span id="cnt" style="color:var(--main)"></span></h2>
+      <div class="thead">
+        <div>아이디 / 이름</div><div>등급</div><div>연락처</div>
+        <div>구매건수</div><div>구매금액</div><div>가입일</div><div>적립금</div>
+      </div>
+      <div id="list"><div class="empty">검색 조건을 선택하고 [검색]을 눌러주세요.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const won=v=>Number(v||0).toLocaleString();
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+let token=null, who='', ROWS=[], mkt='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+document.querySelectorAll('#mkt button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mkt button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); mkt=b.dataset.m;});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';search();}}
+
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+function resetF(){
+  ['q','d1','d2','a1','a2','n1','n2'].forEach(x=>$(x).value='');
+  ['grade','gender','buy'].forEach(x=>$(x).value='');
+  document.querySelectorAll('#mkt button').forEach((b,i)=>b.classList.toggle('on',i===0));
+  mkt=''; search();
+}
+
+function search(){
+  $('smsg').textContent='조회 중…';
+  fetch(SB+'/rest/v1/member_stats?select=*&order='+$('sort').value+'.desc&limit=500',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject(r.status)).then(rows=>{
+    const q=$('q').value.trim().toLowerCase();
+    const g=$('grade').value, gd=$('gender').value, buy=$('buy').value;
+    const d1=$('d1').value, d2=$('d2').value;
+    const a1=+($('a1').value||0), a2=+($('a2').value||0);
+    const n1=+($('n1').value||0), n2=+($('n2').value||0);
+    ROWS=rows.filter(r=>{
+      if(q){
+        const hay=((r.email||'')+' '+(r.name||'')+' '+(r.phone||'')).toLowerCase();
+        if(hay.indexOf(q)<0) return false;
+      }
+      if(g && r.grade!==g) return false;
+      if(gd && r.gender!==gd) return false;
+      if(d1 && new Date(r.created_at) < new Date(d1)) return false;
+      if(d2){const e=new Date(d2);e.setDate(e.getDate()+1);if(new Date(r.created_at)>=e)return false;}
+      if(a1 && (r.total_amount||0) < a1) return false;
+      if(a2 && (r.total_amount||0) > a2) return false;
+      if(n1 && (r.order_count||0) < n1) return false;
+      if(n2 && (r.order_count||0) > n2) return false;
+      if(buy==='y' && !(r.order_count>0)) return false;
+      if(buy==='n' && r.order_count>0) return false;
+      if(mkt==='shop' && !r.marketing_shop) return false;
+      if(mkt==='sms' && !r.marketing_sms) return false;
+      if(mkt==='email' && !r.marketing_email) return false;
+      if(mkt==='none' && (r.marketing_shop||r.marketing_sms||r.marketing_email)) return false;
+      return true;
+    });
+    stats(rows); render();
+    $('smsg').textContent='';
+  }).catch(s=>{
+    $('list').innerHTML='<div class="empty">'+(s===401?'로그인이 만료되었습니다.':'운영자만 조회할 수 있습니다.')+'</div>';
+    $('smsg').textContent='';
+  });
+}
+function stats(all){
+  $('cAll').textContent=all.length;
+  $('cBuy').textContent=all.filter(r=>r.order_count>0).length;
+  $('cMkt').textContent=all.filter(r=>r.marketing_shop||r.marketing_sms||r.marketing_email).length;
+  $('cAmt').textContent=won(all.reduce((s,r)=>s+(r.total_amount||0),0));
+}
+function render(){
+  $('cnt').textContent='('+ROWS.length+'명)';
+  if(!ROWS.length){$('list').innerHTML='<div class="empty">조건에 맞는 회원이 없습니다.</div>';return;}
+  $('list').innerHTML=ROWS.map(r=>{
+    const m=[r.marketing_shop?'쇼핑':null,r.marketing_sms?'SMS':null,r.marketing_email?'메일':null].filter(Boolean).join('·');
+    return '<div class="row">'
+      +'<div class="em">'+esc(r.email)+'<small>'+esc(r.name||'이름 미등록')
+      +(m?' · 수신 '+m:'')+'</small></div>'
+      +'<div><span class="gr">'+esc(r.grade||'일반')+'</span></div>'
+      +'<div>'+esc(r.phone||'-')+'</div>'
+      +'<div>'+(r.order_count||0)+'건</div>'
+      +'<div class="amt">'+won(r.total_amount)+'</div>'
+      +'<div class="mk">'+new Date(r.created_at).toLocaleDateString('ko-KR')+'</div>'
+      +'<div>'+won(r.points)+'P</div>'
+      +'</div>';
+  }).join('');
+}
+function exportCsv(){
+  if(!ROWS.length) return alert('내려받을 결과가 없습니다.');
+  const head=['이메일','이름','연락처','등급','구매건수','구매금액','적립금','쇼핑정보','SMS','이메일수신','가입일'];
+  const body=ROWS.map(r=>[r.email,r.name,r.phone,r.grade,r.order_count||0,r.total_amount||0,r.points,
+    r.marketing_shop?'Y':'N',r.marketing_sms?'Y':'N',r.marketing_email?'Y':'N',
+    new Date(r.created_at).toLocaleDateString('ko-KR')]
+    .map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(','));
+  const csv='\uFEFF'+[head.join(','),...body].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='chewgumi_members_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+sync();
+</script>
+</body>
+</html>
