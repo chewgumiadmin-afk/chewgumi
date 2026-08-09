@@ -140,6 +140,11 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
     </div>
 
     <div class="panel">
+      <h2>COUPON · 보유 쿠폰</h2>
+      <div id="cplist"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
       <h2>ORDERS · 주문 내역</h2>
       <div id="list"><div class="empty">불러오는 중…</div></div>
     </div>
@@ -189,7 +194,7 @@ const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';flushPending().then(()=>{loadProfile();loadOrders();});}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';flushPending().then(()=>{loadProfile();loadOrders();issueWelcome();});}}
 
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
@@ -285,6 +290,25 @@ function withdraw(){
       try{localStorage.removeItem('cg_sb');}catch(e){} location.href='index.html'; }
     else $('wmsg').textContent=d.error||'탈퇴에 실패했습니다.';
   }).catch(()=>$('wmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function loadCoupons(){
+  fetch(SB+'/functions/v1/coupon',{method:'POST',
+    headers:{...H(),'Content-Type':'application/json'},body:JSON.stringify({action:'myCoupons'})})
+  .then(r=>r.json()).then(d=>{
+    const box=$('cplist'), cs=d.coupons||[];
+    if(!cs.length){box.innerHTML='<div class="empty">보유한 쿠폰이 없습니다.</div>';return;}
+    box.innerHTML=cs.map(c=>'<div class="o"><div class="o-h">'
+      +'<div><span class="o-no">'+esc(c.name)+'</span><br>'
+      +'<span class="o-d">'+(c.min_amount?won(c.min_amount)+' 이상 구매 시':'제한 없음')
+      +(c.ends_at?' · ~'+new Date(c.ends_at).toLocaleDateString('ko-KR'):'')+'</span></div>'
+      +'<div class="o-amt">'+(c.kind==='shipping'?'배송비 무료':
+        (c.kind==='percent'?c.value+'%':won(c.value)))+'</div></div></div>').join('');
+  }).catch(()=>{$('cplist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function issueWelcome(){
+  fetch(SB+'/functions/v1/coupon',{method:'POST',
+    headers:{...H(),'Content-Type':'application/json'},body:JSON.stringify({action:'issueWelcome'})})
+  .then(()=>loadCoupons()).catch(()=>{});
 }
 function loadOrders(){
   fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty)&order=created_at.desc',{headers:H()})
