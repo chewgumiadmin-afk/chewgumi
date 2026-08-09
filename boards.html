@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!-- ChewGumi Board Manager v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>게시판 관리 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--gray:#797979;--ink:#1a1a1a;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+label{display:block;font-size:11.5px;font-weight:600;margin:9px 0 5px;color:#555}
+.btn{padding:12px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px;line-height:1.7}
+.fg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 12px}
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+/* 목록 */
+.thead,.row{display:grid;grid-template-columns:.7fr 1.5fr .8fr 1fr .8fr .8fr .9fr;gap:8px;align-items:center}
+.thead{padding:10px 4px;border-bottom:1.5px solid rgba(0,0,0,.12);font-size:11.5px;font-weight:700;color:var(--gray)}
+.row{padding:12px 4px;border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px}
+.row:last-child{border-bottom:0}
+.cat{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(216,37,88,.1);color:var(--main)}
+.nm{font-weight:600}
+.nm small{display:block;color:var(--gray);font-weight:400;margin-top:2px;font-size:10.5px}
+.vis{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;text-align:center}
+.vis.on{background:var(--ok)}.vis.off{background:#aaa}
+.cnt b{color:var(--main)}
+.mini{padding:7px 12px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.empty{padding:34px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:900px){.fg{grid-template-columns:repeat(2,1fr)}.thead{display:none}
+  .row{grid-template-columns:1fr 1fr;gap:5px 8px;padding:14px 4px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Boards</h1><div class="s">게시판 관리</div></div>
+    <div><a href="admin.html">통합 관리</a> · <a href="members.html">회원 조회</a> · <a href="message.html">메시지</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>게시판 목록 <span id="cnt" style="color:var(--main)"></span></h2>
+      <div class="thead">
+        <div>분류</div><div>게시판 제목</div><div>게시판 ID</div>
+        <div>권한 (쓰기/읽기)</div><div>새글/총갯수</div><div>표시</div><div>관리</div>
+      </div>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="lmsg2"></div>
+    </div>
+
+    <div class="panel">
+      <h2>새 게시판 등록</h2>
+      <div class="fg">
+        <div><label>게시판 ID (영문)</label><input id="nCode" placeholder="예) event2"></div>
+        <div><label>게시판 제목</label><input id="nName" placeholder="예) 이벤트 게시판"></div>
+        <div><label>분류</label>
+          <select id="nCat"><option>운영</option><option>상품</option><option selected>일반</option>
+            <option>갤러리</option><option>1:1상담</option><option>자료실</option><option>한줄메모</option></select></div>
+        <div><label>표시 여부</label>
+          <select id="nVis"><option value="true">표시</option><option value="false">표시 안함</option></select></div>
+        <div><label>쓰기 권한</label>
+          <select id="nW"><option value="admin">관리자</option><option value="member" selected>회원</option>
+            <option value="guest">비회원</option></select></div>
+        <div><label>읽기 권한</label>
+          <select id="nR"><option value="admin">관리자</option><option value="member">회원</option>
+            <option value="guest" selected>비회원</option></select></div>
+      </div>
+      <div class="acts"><button class="btn" onclick="addBoard()">게시판 등록</button></div>
+      <div class="msg" id="amsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const ROLE={admin:'관리자',member:'회원',guest:'비회원'};
+const PAGE={notice:'notice.html',review:'review.html',qna:'qna.html',faq:'faq.html'};
+let token=null,who='',ROWS=[];
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';load();}}
+
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function load(){
+  fetch(SB+'/rest/v1/board_stats?select=*&order=sort_order',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{ROWS=rows;render();})
+  .catch(()=>{$('list').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
+}
+function render(){
+  $('cnt').textContent='(총 '+ROWS.length+'개)';
+  if(!ROWS.length){$('list').innerHTML='<div class="empty">등록된 게시판이 없습니다.</div>';return;}
+  $('list').innerHTML=ROWS.map(b=>{
+    const link=PAGE[b.code];
+    return '<div class="row">'
+      +'<div><span class="cat">'+esc(b.category)+'</span></div>'
+      +'<div class="nm">'+esc(b.name)+'<small>'+(link?'/'+link:'페이지 미연결')+'</small></div>'
+      +'<div>'+esc(b.code)+'</div>'
+      +'<div>'+ROLE[b.write_role]+' / '+ROLE[b.read_role]+'</div>'
+      +'<div class="cnt"><b>'+(b.new_posts||0)+'</b> / '+(b.total_posts||0)+'</div>'
+      +'<div><span class="vis '+(b.visible?'on':'off')+'">'+(b.visible?'표시':'표시안함')+'</span></div>'
+      +'<div style="display:flex;gap:5px;flex-wrap:wrap">'
+      +(link?'<a class="mini" href="'+link+'" target="_blank" rel="noopener">글보기</a>':'')
+      +'<button class="mini" onclick="toggleVis('+b.id+','+(!b.visible)+')">'+(b.visible?'숨김':'표시')+'</button>'
+      +'</div></div>';
+  }).join('');
+}
+function toggleVis(id,v){
+  fetch(SB+'/rest/v1/boards?id=eq.'+id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({visible:v})})
+  .then(r=>{if(r.ok){load();$('lmsg2').textContent='변경되었습니다.';}
+    else $('lmsg2').textContent='변경 권한이 없습니다.';})
+  .catch(()=>$('lmsg2').textContent='네트워크 오류가 발생했습니다.');
+}
+function addBoard(){
+  const code=$('nCode').value.trim(), name=$('nName').value.trim();
+  if(!/^[a-z0-9_]{2,20}$/.test(code)) return $('amsg').textContent='게시판 ID는 영문 소문자·숫자 2~20자로 입력해 주세요.';
+  if(!name) return $('amsg').textContent='게시판 제목을 입력해 주세요.';
+  $('amsg').textContent='등록 중…';
+  fetch(SB+'/rest/v1/boards',{method:'POST',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({code,name,category:$('nCat').value,
+      write_role:$('nW').value,read_role:$('nR').value,
+      visible:$('nVis').value==='true',sort_order:ROWS.length+1})})
+  .then(r=>{
+    if(r.ok){$('amsg').textContent='등록되었습니다. 페이지 연결이 필요하면 알려주세요.';
+      ['nCode','nName'].forEach(x=>$(x).value=''); load();}
+    else $('amsg').textContent='등록에 실패했습니다. ID가 중복되었을 수 있습니다.';
+  }).catch(()=>$('amsg').textContent='네트워크 오류가 발생했습니다.');
+}
+sync();
+</script>
+</body>
+</html>
