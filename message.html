@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<!-- ChewGumi Message Service v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>메시지 서비스 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1000px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,textarea,select{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:96px;line-height:1.75}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:12px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.stat{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center}
+.stat .l{font-size:11px;color:var(--gray)}
+.stat .v{margin-top:5px;font-size:20px;font-weight:800;color:var(--main)}
+.warn{background:rgba(233,162,59,.14);border:1px solid rgba(233,162,59,.35);border-radius:14px;
+  padding:14px 16px;font-size:12.5px;line-height:1.8;margin-bottom:14px}
+.warn b{color:#9a6414}
+/* 템플릿 */
+.tpl{padding:15px 2px;border-bottom:1px solid rgba(0,0,0,.07)}
+.tpl:last-child{border-bottom:0}
+.tpl-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tpl-n{flex:1;min-width:150px;font-size:14px;font-weight:700}
+.sw{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--gray)}
+.sw input{width:19px;height:19px;flex:none;appearance:none;border-radius:6px;border:1.5px solid rgba(0,0,0,.2);
+  background:#fff;position:relative;cursor:pointer;padding:0}
+.sw input:checked{background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+.sw input:checked::after{content:"";position:absolute;left:6px;top:2.5px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.ad{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(192,57,92,.12);color:var(--bad)}
+.vars{font-size:11px;color:var(--gray);margin-top:6px;line-height:1.7}
+.vars code{background:rgba(0,0,0,.05);padding:2px 6px;border-radius:5px;font-size:10.5px}
+/* 발송 내역 */
+.log{display:grid;grid-template-columns:.9fr 1fr 2.4fr .8fr;gap:8px;padding:11px 2px;
+  border-bottom:1px solid rgba(0,0,0,.06);font-size:12px;align-items:center}
+.log:last-child{border-bottom:0}
+.log .b{white-space:pre-wrap;word-break:break-word;color:#555;line-height:1.6}
+.st{font-size:10px;font-weight:700;padding:4px 9px;border-radius:999px;color:#fff;white-space:nowrap;text-align:center}
+.st.sent{background:var(--ok)}.st.queued{background:#999}.st.failed{background:var(--bad)}
+.empty{padding:34px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.log{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Message</h1><div class="s">메시지 서비스</div></div>
+    <div><a href="admin.html">통합 관리</a> · <a href="members.html">회원 조회</a> · <a href="orders.html">주문 관리</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>발송 현황</h2>
+      <div class="stats">
+        <div class="stat"><div class="l">발송 완료</div><div class="v" id="cSent">0</div></div>
+        <div class="stat"><div class="l">대기</div><div class="v" id="cQueue">0</div></div>
+        <div class="stat"><div class="l">실패</div><div class="v" id="cFail">0</div></div>
+        <div class="stat"><div class="l">이번 달 비용</div><div class="v" id="cCost">0</div></div>
+      </div>
+      <div class="msg" id="setupMsg" style="margin-top:12px"></div>
+    </div>
+
+    <div class="panel">
+      <h2>자동 알림 메시지</h2>
+      <div class="warn">
+        <b>마케팅 메시지 주의</b> — 광고성 메시지는 수신 동의한 회원에게만 발송해야 하며,
+        본문 앞에 <b>(광고)</b> 표기와 <b>무료 수신거부 방법</b>을 반드시 넣어야 합니다.
+        오후 9시~오전 8시 문자 발송은 별도 야간 동의가 필요합니다. (정보통신망법 제50조)
+      </div>
+      <div id="tpls"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="tmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>발송 내역</h2>
+      <div id="logs"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=v=>Number(v||0).toLocaleString();
+const ST={sent:'발송',queued:'대기',failed:'실패'};
+const KIND={order_bank:'주문접수',paid:'결제완료',deposit_ok:'입금확인',shipping:'발송',
+  delivered:'배송완료',refund:'환불',welcome:'가입',promo:'마케팅'};
+let token=null,who='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';loadTpls();loadLogs();}}
+
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function loadTpls(){
+  fetch(SB+'/rest/v1/msg_templates?select=*&order=key',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    $('tpls').innerHTML=rows.map(t=>
+      '<div class="tpl"><div class="tpl-h">'
+      +'<span class="tpl-n">'+esc(t.name)+'</span>'
+      +(t.is_ad?'<span class="ad">광고성</span>':'')
+      +'<label class="sw"><input type="checkbox" id="en_'+t.key+'"'+(t.enabled?' checked':'')+'> 사용</label>'
+      +'</div>'
+      +'<textarea id="bd_'+t.key+'">'+esc(t.body)+'</textarea>'
+      +'<div class="vars">치환 변수: <code>{name}</code> <code>{orderNo}</code> <code>{amount}</code> '
+      +'<code>{courier}</code> <code>{trackingNo}</code> <code>{trackUrl}</code> <code>{bank}</code></div>'
+      +'<div style="margin-top:9px"><button class="btn ghost" onclick="saveTpl(\''+t.key+'\')" '
+      +'style="padding:9px 16px;font-size:11.5px">저장</button></div></div>').join('');
+  }).catch(()=>{$('tpls').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
+}
+function saveTpl(k){
+  fetch(SB+'/rest/v1/msg_templates?key=eq.'+k,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({body:$('bd_'+k).value,enabled:$('en_'+k).checked,
+      updated_at:new Date().toISOString()})})
+  .then(r=>{$('tmsg').textContent=r.ok?'저장되었습니다.':'저장 권한이 없습니다.';})
+  .catch(()=>$('tmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function loadLogs(){
+  fetch(SB+'/rest/v1/notifications?select=*&order=created_at.desc&limit=100',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    const m=new Date().toISOString().slice(0,7);
+    const sent=rows.filter(r=>r.status==='sent');
+    $('cSent').textContent=sent.length;
+    $('cQueue').textContent=rows.filter(r=>r.status==='queued').length;
+    $('cFail').textContent=rows.filter(r=>r.status==='failed').length;
+    $('cCost').textContent=won(sent.filter(r=>(r.created_at||'').slice(0,7)===m).length*20)+'원';
+    const q=rows.filter(r=>r.status==='queued').length;
+    $('setupMsg').innerHTML = q
+      ? '⚠ 발송 대기 '+q+'건 — 문자 발송 서비스(솔라피 등) 키가 등록되지 않아 실제 발송되지 않았습니다. 키를 전달해 주시면 연결하겠습니다.'
+      : '문자 발송이 정상 동작 중입니다. 요금은 건당 약 20원입니다.';
+    if(!rows.length){$('logs').innerHTML='<div class="empty">발송 내역이 없습니다.</div>';return;}
+    $('logs').innerHTML=rows.map(r=>
+      '<div class="log"><div>'+new Date(r.created_at).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>'
+      +'<div>'+(KIND[r.kind]||esc(r.kind))+'<br><span style="color:var(--gray);font-size:11px">'+esc(r.target)+'</span></div>'
+      +'<div class="b">'+esc(r.body).slice(0,160)+'</div>'
+      +'<div><span class="st '+r.status+'">'+(ST[r.status]||r.status)+'</span></div></div>').join('');
+  }).catch(()=>{$('logs').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
+}
+sync();
+</script>
+</body>
+</html>
