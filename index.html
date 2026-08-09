@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v45 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v46 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -684,6 +684,10 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 #all::before{ content:""; position:absolute; inset:0 -50vw; z-index:-1;
   background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(253,243,245,0)); }
 #best .sec-title, #all .sec-title, #userfilms .sec-title{ letter-spacing:-.02em; }
+
+/* 영상 iframe */
+.film iframe, .video-card iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.video-card{position:relative}
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -1034,9 +1038,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">Travel-it Film</h2></div>
     <div class="film" id="filmBox">
-      <img src="assets/banner-travel-cloud.png" alt="Travel-it" style="width:100%;height:100%;object-fit:cover;">
+      <iframe src="https://drive.google.com/file/d/1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv/preview"
+        allow="autoplay; fullscreen" allowfullscreen loading="lazy"
+        title="ChewGumi Travel-it 홍보영상"></iframe>
     </div>
-    <p class="video-note">홍보영상 파일을 저장소의 assets/videos/travel-it-film.mp4 로 올려주시면 이 자리에서 바로 재생됩니다.</p>
+    <p class="video-note">▶ 버튼을 누르면 재생됩니다.</p>
   </div>
 </section>
 
@@ -1045,7 +1051,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">User Films</h2><span class="sec-more kr" style="color:var(--gray)">사용 영상 모음</span></div>
     <div class="video-grid" id="ufilmGrid"></div>
-    <p class="video-note">사용자 사용 영상이 모이는 공간입니다. 영상 파일을 저장소의 assets/videos 폴더에 올려주시면 이 자리에 바로 재생됩니다.</p>
+    <p class="video-note">사용자 사용 영상이 모이는 공간입니다.</p>
   </div>
 </section>
 
@@ -1113,7 +1119,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v45 · 2026-08-09</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v46 · 2026-08-09</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1697,41 +1703,19 @@ function closeBoardLayer(){
   document.body.style.overflow = '';
 }
 
-/* Travel-it Film: 자체 호스팅 영상이 있으면 자동 표시 */
-(function(){
-  var box = document.getElementById('filmBox');
-  if (!box) return;
-  var v = document.createElement('video');
-  v.src = 'assets/videos/travel-it-film.mp4';
-  v.controls = true; v.playsInline = true; v.preload = 'metadata';
-  v.style.cssText = 'width:100%;height:100%;object-fit:cover;background:#000;';
-  v.addEventListener('loadedmetadata', function(){ box.innerHTML = ''; box.appendChild(v); });
-  v.addEventListener('error', function(){ /* 파일 없으면 기존 이미지 유지 */ });
-})();
-
 /* 사용자 사용 영상 목록 — assets/videos/ 에 올린 파일명만 적으면 됩니다.
    (구글 드라이브 임베드는 드라이브 UI 노출·주소 유출 문제로 사용하지 않습니다) */
 const USER_VIDEOS = [
-  // 'travel-it-1.mp4',
-  // 'travel-it-2.mp4',
+  '1x5V3DKvs2qWxiacrPYpNx2F9bm4PMUiG',
+  '14IpomqIc9lGBE-E3AoXGh9MEwZ_kF3kV'
 ];
 (function(){
   const g = document.getElementById('ufilmGrid');
   if (!g) return;
-  if (!USER_VIDEOS.length) {
-    g.innerHTML = '<div class="ufilm-empty">영상 준비 중입니다</div>'
-                + '<div class="ufilm-empty">+ 다음 영상 자리</div>';
-    return;
-  }
-  g.innerHTML = USER_VIDEOS.map(f => {
-    const src = 'assets/videos/' + f;
-    const poster = f.replace(/\.[^.]+$/, '.jpg');
-    return `<div class="video-card">
-      <video controls preload="metadata" playsinline poster="assets/videos/${poster}"
-             onerror="this.closest('.video-card').innerHTML='<div class=\'v-err\'>영상을 불러오지 못했습니다</div>'">
-        <source src="${src}" type="video/mp4">
-      </video></div>`;
-  }).join('') + '<div class="ufilm-empty">+ 다음 영상 자리</div>';
+  g.innerHTML = USER_VIDEOS.map(id =>
+    '<div class="video-card"><iframe src="https://drive.google.com/file/d/' + id +
+    '/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="ChewGumi 사용 영상"></iframe></div>'
+  ).join('') + '<div class="ufilm-empty">+ 다음 영상 자리</div>';
 })();
 
 /* Community 요약 카드: BOARDS에서 3건씩 자동 추림 */
