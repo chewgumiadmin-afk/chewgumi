@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!-- ChewGumi Issue Board v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>이슈 등록 | CHEWGUMI</title>
+<meta property="og:title" content="츄구미 이슈 등록">
+<meta property="og:description" content="홈페이지 수정 요청·오류 신고를 남겨주세요.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--gray:#797979;--ink:#1a1a1a;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding-bottom:60px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.topbar{height:45px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,var(--main2),var(--main));color:#fff;font-size:14px;font-weight:600}
+.wrap{max-width:620px;margin:0 auto;padding:20px}
+h1{font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;margin-bottom:4px}
+.lead{font-size:12.5px;color:var(--gray);line-height:1.7;margin-bottom:16px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{flex:1;padding:11px 0;border-radius:999px;font-size:13px;font-weight:600;
+  background:rgba(255,255,255,.6);border:1px solid var(--line);color:var(--gray)}
+.tabs button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;
+  backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%);
+  box-shadow:0 12px 28px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+label{display:block;font-size:12.5px;font-weight:600;margin:11px 0 5px}
+input,textarea,select{width:100%;padding:12px 13px;border-radius:12px;font-size:13.5px;font-family:inherit;color:var(--ink);
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:110px;line-height:1.7}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+.chips button{padding:9px 14px;border-radius:999px;font-size:12px;font-weight:600;
+  background:rgba(255,255,255,.75);border:1px solid var(--line);color:var(--gray)}
+.chips button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.btn{width:100%;margin-top:16px;padding:15px 0;border:0;border-radius:999px;font-size:14.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 10px 24px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.85);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12.5px;color:var(--main);margin-top:10px;min-height:17px;line-height:1.7}
+.hint{font-size:11.5px;color:var(--gray);margin-top:5px;line-height:1.6}
+/* 목록 */
+.it{padding:13px 2px;border-bottom:1px solid rgba(0,0,0,.07)}
+.it:last-child{border-bottom:0}
+.it-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.no{font-family:'Poppins',sans-serif;font-weight:700;font-size:12.5px;color:var(--gray)}
+.tt{flex:1;min-width:140px;font-size:14px;font-weight:600;line-height:1.4}
+.st{font-size:10px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+.st.open{background:var(--main)}.st.doing{background:var(--warn)}
+.st.done{background:var(--ok)}.st.hold{background:#999}
+.kd{font-size:10px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.06);color:#555}
+.it-b{margin-top:7px;font-size:12.5px;color:#555;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.it-m{margin-top:6px;font-size:11px;color:#aaa}
+.it-a{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.mini{padding:7px 12px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.cmt{margin-top:8px;padding-left:11px;border-left:2px solid rgba(216,37,88,.2)}
+.cmt div{font-size:12px;line-height:1.7;padding:4px 0}
+.cmt .a{font-weight:700}
+.empty{padding:34px 0;text-align:center;color:var(--gray);font-size:13px}
+.done-box{text-align:center;padding:30px 10px}
+.done-box h2{font-size:19px;font-weight:700;margin-bottom:8px}
+.done-box p{font-size:13px;color:var(--gray);line-height:1.9}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="topbar">츄구미 이슈 등록</div>
+<div class="wrap">
+  <h1>Issue Board</h1>
+  <p class="lead">홈페이지 오류·수정 요청을 남겨주세요. 로그인 없이 등록할 수 있습니다.</p>
+
+  <div class="tabs">
+    <button class="on" id="tNew" onclick="setTab('new')">이슈 등록</button>
+    <button id="tList" onclick="setTab('list')">등록된 이슈</button>
+  </div>
+
+  <!-- 등록 -->
+  <div id="paneNew">
+    <div class="panel" id="form">
+      <label>어떤 문제인가요? <span style="color:var(--main)">*</span></label>
+      <input id="title" placeholder="예) 장바구니에서 결제 버튼이 안 눌려요" maxlength="80">
+
+      <label>종류</label>
+      <div class="chips" id="kinds">
+        <button class="on" data-k="bug">오류</button>
+        <button data-k="design">디자인</button>
+        <button data-k="feature">기능 요청</button>
+        <button data-k="question">문의</button>
+        <button data-k="urgent">긴급</button>
+      </div>
+
+      <label>어느 화면인가요?</label>
+      <select id="page">
+        <option value="">선택 안 함</option>
+        <option>메인</option><option>상품 상세</option><option>장바구니</option>
+        <option>주문/결제</option><option>회원가입</option><option>로그인</option>
+        <option>마이페이지</option><option>배송조회</option><option>게시판</option>
+        <option>관리자</option><option>공식몰(카페24)</option><option>기타</option>
+      </select>
+
+      <label>자세한 내용</label>
+      <textarea id="body" placeholder="어떤 동작을 하셨고 무엇이 잘못됐는지 적어주세요.&#10;예) 상품 담고 주문서 작성하기를 눌렀는데 화면이 안 넘어감"></textarea>
+
+      <label>이미지 주소 (선택)</label>
+      <input id="img" placeholder="캡처 이미지 링크가 있으면 붙여넣기">
+      <div class="hint">카톡으로 캡처를 보내신 뒤 여기엔 설명만 적으셔도 됩니다.</div>
+
+      <label>작성자 <span style="color:var(--main)">*</span></label>
+      <input id="who" placeholder="이름 또는 닉네임" maxlength="20">
+
+      <button class="btn" id="go" onclick="submitIssue()">이슈 등록하기</button>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="panel hide" id="doneBox">
+      <div class="done-box">
+        <h2>등록되었습니다</h2>
+        <p id="doneMsg"></p>
+        <button class="btn ghost" onclick="reset()" style="max-width:200px;margin:16px auto 0">새 이슈 등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 목록 -->
+  <div id="paneList" class="hide">
+    <div class="panel">
+      <div class="chips" id="filters" style="margin-bottom:12px">
+        <button class="on" data-f="all">전체</button>
+        <button data-f="open">대기</button>
+        <button data-f="doing">진행중</button>
+        <button data-f="done">완료</button>
+      </div>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const ST={open:'대기',doing:'진행중',done:'완료',hold:'보류'};
+const KD={bug:'오류',design:'디자인',feature:'기능',question:'문의',urgent:'긴급'};
+let kind='bug', filt='all', ISSUES=[], token=null, isAdmin=false;
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s)token=s.t;}catch(e){}
+try{const n=localStorage.getItem('cg_reporter');if(n)$('who').value=n;}catch(e){}
+
+document.querySelectorAll('#kinds button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#kinds button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); kind=b.dataset.k;});
+document.querySelectorAll('#filters button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#filters button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filt=b.dataset.f; render();});
+
+function setTab(t){
+  $('tNew').classList.toggle('on',t==='new');
+  $('tList').classList.toggle('on',t==='list');
+  $('paneNew').classList.toggle('hide',t!=='new');
+  $('paneList').classList.toggle('hide',t!=='list');
+  if(t==='list') load();
+}
+function reset(){
+  ['title','body','img'].forEach(x=>$(x).value='');
+  $('page').value=''; $('form').classList.remove('hide'); $('doneBox').classList.add('hide');
+  $('go').disabled=false; $('msg').textContent='';
+}
+function submitIssue(){
+  const title=$('title').value.trim(), who=$('who').value.trim();
+  if(!title) return $('msg').textContent='어떤 문제인지 한 줄로 적어주세요.';
+  if(!who) return $('msg').textContent='작성자를 입력해 주세요.';
+  try{localStorage.setItem('cg_reporter',who);}catch(e){}
+  $('go').disabled=true; $('msg').textContent='등록 중…';
+  const dev=navigator.userAgent.slice(0,120);
+  fetch(SB+'/rest/v1/issues',{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=representation'},
+    body:JSON.stringify({title,body:$('body').value.trim(),page:$('page').value,
+      kind,reporter:who,device:dev,image_url:$('img').value.trim()})})
+  .then(r=>r.json()).then(d=>{
+    const row=Array.isArray(d)?d[0]:d;
+    if(row&&row.id){
+      $('form').classList.add('hide'); $('doneBox').classList.remove('hide');
+      $('doneMsg').innerHTML='이슈 <b>#'+(row.no||row.id)+'</b> 로 접수되었습니다.<br>확인 후 처리하겠습니다.';
+    } else { $('go').disabled=false; $('msg').textContent='등록에 실패했습니다. 잠시 후 다시 시도해 주세요.'; }
+  }).catch(()=>{$('go').disabled=false;$('msg').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function load(){
+  Promise.all([
+    fetch(SB+'/rest/v1/issues?select=*&order=created_at.desc&limit=100',
+      {headers:{apikey:KEY,Authorization:'Bearer '+KEY}}).then(r=>r.json()),
+    fetch(SB+'/rest/v1/issue_comments?select=*&order=created_at',
+      {headers:{apikey:KEY,Authorization:'Bearer '+KEY}}).then(r=>r.json()).catch(()=>[])
+  ]).then(([rows,cs])=>{
+    ISSUES=Array.isArray(rows)?rows:[];
+    window._CM={}; (Array.isArray(cs)?cs:[]).forEach(c=>{(window._CM[c.issue_id]=window._CM[c.issue_id]||[]).push(c);});
+    render();
+  }).catch(()=>{$('list').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function render(){
+  const rows=ISSUES.filter(i=>filt==='all'||i.status===filt);
+  if(!rows.length){$('list').innerHTML='<div class="empty">등록된 이슈가 없습니다.</div>';return;}
+  $('list').innerHTML=rows.map(i=>{
+    const cs=(window._CM&&window._CM[i.id])||[];
+    return '<div class="it"><div class="it-h">'
+      +'<span class="no">#'+(i.no||i.id)+'</span>'
+      +'<span class="tt">'+esc(i.title)+'</span>'
+      +'<span class="kd">'+(KD[i.kind]||i.kind)+'</span>'
+      +'<span class="st '+i.status+'">'+(ST[i.status]||i.status)+'</span></div>'
+      +(i.body?'<div class="it-b">'+esc(i.body)+'</div>':'')
+      +'<div class="it-m">'+(i.page?esc(i.page)+' · ':'')+esc(i.reporter)+' · '
+      +new Date(i.created_at).toLocaleString('ko-KR')+'</div>'
+      +(i.image_url?'<div class="it-a"><a class="mini" href="'+esc(i.image_url)+'" target="_blank" rel="noopener">이미지 보기</a></div>':'')
+      +(cs.length?'<div class="cmt">'+cs.map(c=>'<div><span class="a">'+esc(c.author)+'</span> · '
+        +esc(c.body)+'</div>').join('')+'</div>':'')
+      +'<div class="it-a"><button class="mini" onclick="addComment('+i.id+')">댓글 달기</button>'
+      +'<button class="mini" onclick="setStatus('+i.id+')">상태 변경</button></div>'
+      +'</div>';
+  }).join('');
+}
+function addComment(id){
+  const b=prompt('댓글을 입력하세요');
+  if(!b) return;
+  let who=''; try{who=localStorage.getItem('cg_reporter')||'';}catch(e){}
+  if(!who){ who=prompt('작성자 이름')||'익명'; try{localStorage.setItem('cg_reporter',who);}catch(e){} }
+  fetch(SB+'/rest/v1/issue_comments',{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({issue_id:id,author:who,body:b})})
+  .then(()=>load()).catch(()=>alert('등록에 실패했습니다.'));
+}
+function setStatus(id){
+  const s=prompt('상태를 입력하세요 (open / doing / done / hold)','doing');
+  if(!s||!['open','doing','done','hold'].includes(s)) return;
+  if(!token) return alert('상태 변경은 운영자 로그인 후 가능합니다.');
+  fetch(SB+'/rest/v1/issues?id=eq.'+id,{method:'PATCH',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({status:s,updated_at:new Date().toISOString()})})
+  .then(r=>{if(r.ok)load();else alert('운영자만 변경할 수 있습니다.');})
+  .catch(()=>alert('네트워크 오류'));
+}
+</script>
+</body>
+</html>
