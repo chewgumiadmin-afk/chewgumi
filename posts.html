@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<!-- ChewGumi Post Manager v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>게시물 관리 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --gray:#797979;--ink:#1a1a1a;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,textarea,select{width:100%;padding:10px 12px;border-radius:11px;font-size:12.5px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:92px;line-height:1.7}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:12px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{padding:7px 12px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.mini.d{color:var(--bad);border-color:rgba(192,57,92,.3)}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px;line-height:1.7}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{padding:8px 13px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.75);border:1px solid var(--line);color:var(--gray)}
+.chips button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.bar input,.bar select{width:auto;flex:1;min-width:130px}
+.tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;margin-right:5px}
+.tag.no{background:rgba(216,37,88,.12);color:var(--main)}
+.tag.pin{background:rgba(0,0,0,.07);color:#555}
+.st{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;text-align:center;white-space:nowrap}
+.st.done{background:var(--ok)}.st.waiting{background:var(--warn)}
+.st.doing{background:#3182F6}.st.none{background:#bbb}
+.prow{display:grid;grid-template-columns:2.4fr .8fr .9fr 1.4fr;gap:8px;padding:13px 4px;
+  border-bottom:1px solid rgba(0,0,0,.06);align-items:center;font-size:12.5px}
+.prow:last-child{border-bottom:0}
+.prow .t{font-weight:600;line-height:1.45}
+.prow .t small{display:block;color:var(--gray);font-weight:400;margin-top:3px;font-size:11px;line-height:1.6}
+.ans{margin-top:7px;padding:8px 11px;border-radius:10px;background:rgba(42,160,96,.09);
+  font-size:11.5px;line-height:1.7;color:#2c6b48}
+.bacts{display:flex;gap:5px;flex-wrap:wrap}
+.empty{padding:34px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+@media(max-width:860px){.prow{grid-template-columns:1fr 1fr;gap:5px 8px}.fg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Posts</h1><div class="s">게시물 관리</div></div>
+    <div><a href="boards.html">게시판 설정</a> · <a href="admin.html">통합 관리</a> · <a href="index.html">사이트</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>검색</h2>
+      <div class="bar">
+        <select id="fBoard" onchange="load()"><option value="">전체 게시판</option></select>
+        <input id="q" placeholder="제목·내용·작성자" onkeydown="if(event.key==='Enter')load()">
+        <input type="date" id="d1" onchange="load()">
+        <input type="date" id="d2" onchange="load()">
+        <button class="btn" onclick="load()" style="padding:10px 20px">검색</button>
+      </div>
+      <div class="chips" id="fAns" style="margin-bottom:10px">
+        <button class="on" data-a="" onclick="setAns('')">전체</button>
+        <button data-a="waiting" onclick="setAns('waiting')">답변 전</button>
+        <button data-a="doing" onclick="setAns('doing')">처리중</button>
+        <button data-a="done" onclick="setAns('done')">답변 완료</button>
+      </div>
+      <div class="chips">
+        <button class="on" id="tLive" onclick="setDel(false)">게시 중</button>
+        <button id="tDel" onclick="setDel(true)">삭제된 글 (30일 보관)</button>
+        <button class="mini" onclick="newPost()" style="margin-left:auto">새 글 등록</button>
+      </div>
+      <div class="msg" id="smsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>게시물 <span id="cnt" style="color:var(--main)"></span></h2>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="pmsg"></div>
+    </div>
+
+    <div class="panel hide" id="editPanel">
+      <h2>글 <span id="edMode">등록</span></h2>
+      <div class="fg">
+        <div><label>게시판</label><select id="edBoard"></select></div>
+        <div style="grid-column:span 2"><label>제목</label><input id="edTitle"></div>
+      </div>
+      <label>내용</label><textarea id="edBody"></textarea>
+      <div class="fg" style="margin-top:10px">
+        <div><label>작성자</label><input id="edAuthor" placeholder="관리자"></div>
+        <div><label>구분(뱃지)</label><input id="edBadge" placeholder="배송 / 섭취 / 보관"></div>
+        <div><label>표시 정보</label><input id="edMeta" placeholder="07.01 또는 출처"></div>
+      </div>
+      <label>출처 링크 (선택)</label><input id="edUrl" placeholder="https://">
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn" onclick="savePost()">저장</button>
+        <button class="btn ghost" onclick="closeEdit()">취소</button>
+      </div>
+      <div class="msg" id="emsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const AS={none:'-',waiting:'답변 전',doing:'처리중',done:'답변 완료'};
+let token=null,who='',BOARDS={},fAns='',showDel=false,curPost=null;
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';loadBoards();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function loadBoards(){
+  fetch(SB+'/rest/v1/boards?select=code,name&order=sort_order',{headers:H()})
+  .then(r=>r.ok?r.json():[]).then(bs=>{
+    bs.forEach(b=>BOARDS[b.code]=b.name);
+    const opts=bs.map(b=>'<option value="'+b.code+'">'+esc(b.name)+'</option>').join('');
+    $('fBoard').innerHTML='<option value="">전체 게시판</option>'+opts;
+    $('edBoard').innerHTML=opts;
+    load();
+  }).catch(()=>load());
+}
+function setAns(v){fAns=v;
+  document.querySelectorAll('#fAns button').forEach(b=>b.classList.toggle('on',b.dataset.a===v));load();}
+function setDel(v){showDel=v;
+  $('tLive').classList.toggle('on',!v);$('tDel').classList.toggle('on',v);load();}
+
+function load(){
+  $('smsg').textContent='조회 중…';
+  let u=SB+'/rest/v1/posts?select=*&deleted_at='+(showDel?'not.is.null':'is.null')
+    +'&order=is_notice.desc,created_at.desc&limit=300';
+  if($('fBoard').value) u+='&board=eq.'+$('fBoard').value;
+  fetch(u,{headers:H()}).then(r=>r.ok?r.json():Promise.reject(r.status)).then(rows=>{
+    const q=$('q').value.trim().toLowerCase(), d1=$('d1').value, d2=$('d2').value;
+    rows=rows.filter(p=>{
+      if(fAns && p.answer_status!==fAns) return false;
+      if(q){const hay=((p.title||'')+' '+(p.content||'')+' '+(p.author||'')).toLowerCase();
+        if(hay.indexOf(q)<0) return false;}
+      if(d1 && new Date(p.created_at)<new Date(d1)) return false;
+      if(d2){const e=new Date(d2);e.setDate(e.getDate()+1);if(new Date(p.created_at)>=e)return false;}
+      return true;
+    });
+    $('cnt').textContent='('+rows.length+'건)';
+    $('smsg').textContent='';
+    if(!rows.length){$('list').innerHTML='<div class="empty">'+(showDel?'삭제된 글이 없습니다.':'조건에 맞는 글이 없습니다.')+'</div>';return;}
+    $('list').innerHTML=rows.map(p=>
+      '<div class="prow"><div class="t">'
+      +(p.is_notice?'<span class="tag no">공지</span>':'')
+      +(p.pinned?'<span class="tag pin">고정</span>':'')
+      +esc(p.title)
+      +'<small>'+esc(BOARDS[p.board]||p.board)+' · '+esc(p.author||'익명')
+      +(p.content?' · '+esc(p.content.slice(0,60)):'')+'</small>'
+      +(p.answer_body?'<div class="ans">답변: '+esc(p.answer_body.slice(0,140))+'</div>':'')
+      +'</div>'
+      +'<div><span class="st '+(p.answer_status||'none')+'">'+(AS[p.answer_status]||'-')+'</span></div>'
+      +'<div>'+new Date(p.created_at).toLocaleDateString('ko-KR')
+      +'<br><span style="font-size:11px;color:var(--gray)">조회 '+(p.views||0)+'</span></div>'
+      +'<div class="bacts">'
+      +(showDel
+        ? '<button class="mini" onclick="restore('+p.id+')">복원</button>'
+          +'<button class="mini d" onclick="purge('+p.id+')">영구삭제</button>'
+        : '<button class="mini" onclick=\'edit('+JSON.stringify(JSON.stringify(p))+')\'>수정</button>'
+          +'<button class="mini" onclick="notice('+p.id+','+(!p.is_notice)+')">'+(p.is_notice?'공지해제':'공지')+'</button>'
+          +'<button class="mini" onclick=\'answer('+JSON.stringify(JSON.stringify(p))+')\'>답변</button>'
+          +'<button class="mini d" onclick="del('+p.id+')">삭제</button>')
+      +'</div></div>').join('');
+  }).catch(s=>{$('list').innerHTML='<div class="empty">'+(s===401?'로그인이 만료되었습니다.':'운영자만 조회할 수 있습니다.')+'</div>';$('smsg').textContent='';});
+}
+function patch(id,body,ok){
+  fetch(SB+'/rest/v1/posts?id=eq.'+id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(body)})
+  .then(r=>{if(r.ok){load();if(ok)$('pmsg').textContent=ok;}
+    else $('pmsg').textContent='권한이 없습니다.';})
+  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function notice(id,v){patch(id,{is_notice:v},v?'공지로 지정했습니다.':'공지를 해제했습니다.');}
+function del(id){
+  if(!confirm('삭제할까요?\n삭제된 글은 30일간 보관되며 복원할 수 있습니다.'))return;
+  patch(id,{deleted_at:new Date().toISOString()},'삭제했습니다. 30일 내 복원 가능합니다.');
+}
+function restore(id){patch(id,{deleted_at:null},'복원했습니다.');}
+function purge(id){
+  if(!confirm('영구 삭제하면 복원할 수 없습니다. 진행할까요?'))return;
+  fetch(SB+'/rest/v1/posts?id=eq.'+id,{method:'DELETE',headers:H()})
+  .then(r=>{if(r.ok){load();$('pmsg').textContent='영구 삭제했습니다.';}
+    else $('pmsg').textContent='권한이 없습니다.';});
+}
+function answer(js){
+  const p=JSON.parse(js);
+  const a=prompt('답변 내용을 입력하세요 (비우면 답변 대기로 변경)', p.answer_body||'');
+  if(a===null)return;
+  patch(p.id,{answer_body:a.trim(),answer_status:a.trim()?'done':'waiting',
+    answered_at:a.trim()?new Date().toISOString():null}, a.trim()?'답변을 등록했습니다.':'답변 대기로 변경했습니다.');
+}
+function newPost(){
+  curPost=null;$('edMode').textContent='등록';
+  ['edTitle','edBody','edBadge','edMeta','edUrl'].forEach(x=>$(x).value='');
+  $('edAuthor').value='관리자';
+  if($('fBoard').value)$('edBoard').value=$('fBoard').value;
+  $('editPanel').classList.remove('hide');$('emsg').textContent='';
+  $('editPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function edit(js){
+  const p=JSON.parse(js);curPost=p;$('edMode').textContent='수정';
+  $('edBoard').value=p.board;$('edTitle').value=p.title||'';$('edBody').value=p.content||'';
+  $('edAuthor').value=p.author||'관리자';$('edBadge').value=p.badge||'';
+  $('edMeta').value=p.meta||'';$('edUrl').value=p.source_url||'';
+  $('editPanel').classList.remove('hide');$('emsg').textContent='';
+  $('editPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeEdit(){$('editPanel').classList.add('hide');}
+function savePost(){
+  const t=$('edTitle').value.trim();
+  if(!t)return $('emsg').textContent='제목을 입력해 주세요.';
+  const body={board:$('edBoard').value,title:t,content:$('edBody').value.trim(),
+    author:$('edAuthor').value.trim()||'관리자',badge:$('edBadge').value.trim(),
+    meta:$('edMeta').value.trim(),source_url:$('edUrl').value.trim()};
+  const url=curPost?SB+'/rest/v1/posts?id=eq.'+curPost.id:SB+'/rest/v1/posts';
+  fetch(url,{method:curPost?'PATCH':'POST',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(body)})
+  .then(r=>{if(r.ok){closeEdit();load();}else $('emsg').textContent='저장 권한이 없습니다.';})
+  .catch(()=>$('emsg').textContent='네트워크 오류가 발생했습니다.');
+}
+sync();
+</script>
+</body>
+</html>
