@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v44 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v45 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -672,6 +672,18 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
 .j-agree a{text-decoration:underline;text-underline-offset:2px}
 .j-agree em{font-style:normal;color:var(--gray)}
+
+/* 섹션 배경 구분 (0713 요청 10번) */
+#best{ position:relative; }
+#best::before{ content:""; position:absolute; inset:0 -50vw; z-index:-1;
+  background:linear-gradient(180deg,rgba(255,228,230,.45),rgba(255,228,230,0)); }
+#userfilms{ position:relative; }
+#userfilms::before{ content:""; position:absolute; inset:0 -50vw; z-index:-1;
+  background:linear-gradient(180deg,rgba(255,233,35,.10),rgba(255,255,255,0)); }
+#all{ position:relative; }
+#all::before{ content:""; position:absolute; inset:0 -50vw; z-index:-1;
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(253,243,245,0)); }
+#best .sec-title, #all .sec-title, #userfilms .sec-title{ letter-spacing:-.02em; }
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -1101,7 +1113,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v44 · 2026-08-09</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v45 · 2026-08-09</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
