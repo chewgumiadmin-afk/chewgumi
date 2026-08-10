@@ -91,6 +91,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
 .sso-n{background:#03C75A;color:#fff;border-color:transparent!important}
 .sso-ic{width:19px;height:19px;flex:none;display:inline-flex;align-items:center;justify-content:center;
   font-weight:900;font-size:13px;border-radius:4px}
+.sso-msg.bad{color:var(--main);font-weight:600}
 .sso-msg{font-size:11.5px;color:#797979;margin-top:10px;line-height:1.7;text-align:center}
 
 .vbox{display:none;margin-top:10px;padding:13px 15px;border-radius:14px;
@@ -242,13 +243,24 @@ const SSO_BASE='https://psynvpuedzjvytsgdhgg.supabase.co';
 
 /* 소셜 로그인 (Supabase OAuth) */
 function sso(provider){
-  const m=document.getElementById('ssoMsg');
-  if(provider==='naver'){
-    if(m)m.textContent='네이버 로그인은 준비 중입니다. 구글 또는 카카오를 이용해 주세요.';
-    return;
-  }
-  const back=encodeURIComponent(location.origin+location.pathname.replace(/[^/]*$/,'mypage.html'));
-  location.href=SSO_BASE+'/auth/v1/authorize?provider='+provider+'&redirect_to='+back;
+  var m=document.getElementById('ssoMsg');
+  var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
+  if(m){m.className='sso-msg';m.textContent='연결 확인 중…';}
+  var base=(typeof SB_URL!=='undefined')?SB_URL:(typeof SSO_BASE!=='undefined'?SSO_BASE:SB);
+  fetch(base+'/auth/v1/settings',{headers:{apikey:(typeof SB_KEY!=='undefined')?SB_KEY:KEY}})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var ex=(d&&d.external)||{};
+    if(ex[provider]){
+      var back=encodeURIComponent(location.origin+location.pathname.replace(/[^/]*$/,'mypage.html'));
+      location.href=base+'/auth/v1/authorize?provider='+provider+'&redirect_to='+back;
+    } else {
+      if(m){m.className='sso-msg bad';
+        m.innerHTML=NAME[provider]+' 로그인은 아직 준비 중입니다.<br>이메일로 가입·로그인해 주세요.';}
+    }
+  }).catch(function(){
+    if(m){m.className='sso-msg bad';m.textContent='연결을 확인하지 못했습니다. 이메일로 로그인해 주세요.';}
+  });
 }
 
 const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
