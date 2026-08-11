@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v46 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v47 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -765,7 +765,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <a href="#all" onclick="filterLine('all')">SHOP ALL</a><a href="#best">BESTSELLERS</a><a href="#all" onclick="filterLine('travel')">TRAVEL-IT</a><a href="#all" onclick="filterLine('doit')">DEW-IT</a>
         </div>
       </li>
-      <li><a href="#about">ABOUT</a></li>
+      <li><a href="about.html">ABOUT</a></li>
       <li><a href="#arrivals">ARCHIVE</a></li>
       <li><a href="notice.html" onclick="openBoardLayer('notice');return false;">COMMUNITY</a>
         <div class="sub"><a href="notice.html" onclick="openBoardLayer('notice');return false;">NOTICE</a><a href="review.html" onclick="openBoardLayer('review');return false;">REVIEW</a><a href="qna.html" onclick="openBoardLayer('qna');return false;">Q&amp;A</a></div>
@@ -786,7 +786,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <a class="d-sub" href="#best" onclick="toggleDrawer(false)">BESTSELLERS</a>
     <a class="d-sub" href="#all" onclick="toggleDrawer(false);filterLine('travel')">TRAVEL-IT</a>
     <a class="d-sub" href="#all" onclick="toggleDrawer(false);filterLine('doit')">DEW-IT</a>
-    <a href="#about" onclick="toggleDrawer(false)">ABOUT</a>
+    <a href="about.html">ABOUT</a>
     <a href="#arrivals" onclick="toggleDrawer(false)">ARCHIVE</a>
     <a href="notice.html" onclick="toggleDrawer(false);openBoardLayer('notice');return false;">COMMUNITY</a>
   </nav>
@@ -1119,7 +1119,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v46 · 2026-08-09</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v47 · 2026-08-10</span>
       <a href="admin.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1508,7 +1508,22 @@ function cgUnlockIfIdle(){
 document.addEventListener('click', () => setTimeout(cgUnlockIfIdle, 60));
 setInterval(cgUnlockIfIdle, 1500);
 document.addEventListener('keyup', e => { if (e.key === 'Escape') setTimeout(cgUnlockIfIdle, 60); });
-window.addEventListener('pageshow', () => setTimeout(cgUnlockIfIdle, 60));
+window.addEventListener('pageshow', (e) => {
+  /* 뒤로가기로 복귀하면 브라우저가 이전 화면 상태를 그대로 되살려
+     드로어·레이어가 열린 채 남아 메뉴가 눌리지 않는 문제를 방지 */
+  try{
+    ['drawer','drawerDim'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.remove('open');
+    });
+    ['detail','boardLayer'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.add('hide');
+    });
+    const cp=document.getElementById('cartP'), cd=document.getElementById('cartDim');
+    if(cp) cp.classList.remove('open'); if(cd) cd.classList.remove('open');
+    document.body.style.overflow='';
+  }catch(err){}
+  setTimeout(cgUnlockIfIdle, 60);
+});
 
 function toggleDrawer(open){
   document.getElementById('drawer').classList.toggle('open', open);
