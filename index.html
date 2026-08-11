@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v48 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v49 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -694,6 +694,33 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 [GA4] analytics.google.com에서 속성 생성 → 측정 ID(G-XXXXXXX) 발급 후 아래 두 줄을 주석 밖으로
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
 <script>
+/* 인증 링크 오류 처리 — 만료·재사용 시 안내 */
+(function(){
+  try{
+    var hp=new URLSearchParams((location.hash||'').replace(/^#/,''));
+    var err=hp.get('error'), code=hp.get('error_code');
+    if(!err) return;
+    history.replaceState(null,'',location.pathname+location.search);
+    var msg = (code==='otp_expired')
+      ? '인증 링크가 만료되었거나 이미 사용되었습니다.<br>회원가입 화면에서 인증 메일을 다시 받아주세요.'
+      : '인증에 실패했습니다.<br>회원가입 화면에서 다시 시도해 주세요.';
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;inset:0;z-index:3000;display:flex;align-items:center;'
+      +'justify-content:center;padding:24px;background:rgba(20,10,14,.5);backdrop-filter:blur(6px)';
+    d.innerHTML='<div style="max-width:380px;width:100%;background:#fff;border-radius:22px;padding:28px;'
+      +'text-align:center;box-shadow:0 22px 54px rgba(0,0,0,.24)">'
+      +'<div style="font-size:17px;font-weight:700;margin-bottom:10px">인증 링크가 만료되었습니다</div>'
+      +'<div style="font-size:13.5px;line-height:1.85;color:#666">'+msg+'</div>'
+      +'<a href="join.html" style="display:block;margin-top:20px;padding:14px 0;border-radius:999px;'
+      +'font-size:14px;font-weight:700;color:#fff;text-decoration:none;'
+      +'background:linear-gradient(135deg,#E95073,#D82558)">인증 메일 다시 받기</a>'
+      +'<button style="margin-top:9px;width:100%;padding:12px 0;border-radius:999px;font-family:inherit;'
+      +'font-size:13px;font-weight:700;background:rgba(0,0,0,.05);border:0;cursor:pointer">닫기</button></div>';
+    d.querySelector('button').onclick=function(){d.remove();document.body.style.overflow='';};
+    document.body.appendChild(d);
+  }catch(e){}
+})();
+
 /* 인증 메일 링크 복귀 시 자동 로그인 */
 (function(){
   try{
@@ -1119,7 +1146,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v48 · 2026-08-10</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v49 · 2026-08-11</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
