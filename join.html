@@ -103,8 +103,12 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
   animation:vpulse 1.4s infinite}
 .vbox.done .vdot{background:#2AA060;animation:none}
 @keyframes vpulse{0%,100%{opacity:1}50%{opacity:.25}}
-.vre{margin-top:9px;padding:8px 14px;border-radius:999px;font-family:inherit;font-size:11.5px;font-weight:700;
-  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink);cursor:pointer}
+.vre{display:block;margin:14px auto 2px;padding:11px 26px;border-radius:999px;font-family:inherit;
+  font-size:12.5px;font-weight:700;background:rgba(255,255,255,.92);border:1px solid var(--line);
+  color:var(--ink);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.vre:hover{background:#fff}
+.vbox{text-align:left}
+.vbox .vrow{text-align:left}
 .btn-sm:disabled{opacity:.5;cursor:not-allowed}
 @media (prefers-reduced-motion:reduce){.vdot{animation:none}}
 </style>
