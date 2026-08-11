@@ -304,9 +304,10 @@ function sendVerify(){
     $('hPw1').className='hint bad'; $('pw1').focus(); return; }
 
   $('vBtn').disabled=true; $('vBtn').textContent='발송 중…';
-  fetch(SB+'/auth/v1/signup',{method:'POST',
+  const BACK = location.origin + location.pathname.replace(/[^/]*$/, 'mypage.html');
+  fetch(SB+'/auth/v1/signup?redirect_to='+encodeURIComponent(BACK),{method:'POST',
     headers:{apikey:KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({email,password:pw})})
+    body:JSON.stringify({email,password:pw,options:{emailRedirectTo:BACK}})})
   .then(r=>r.json()).then(d=>{
     $('vBtn').disabled=false; $('vBtn').textContent='메일 재발송';
     if(d.access_token){ /* 인증 불필요 설정 → 즉시 완료 */
@@ -431,9 +432,10 @@ function signup(){
     return saveProfile(window._preToken,email,false);
   }
   $('go').disabled=true; $('msg').textContent='가입 처리 중…';
-  fetch(SB+'/auth/v1/signup',{method:'POST',
+  const BACK = location.origin + location.pathname.replace(/[^/]*$/, 'mypage.html');
+  fetch(SB+'/auth/v1/signup?redirect_to='+encodeURIComponent(BACK),{method:'POST',
     headers:{apikey:KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({email,password:pw})})
+    body:JSON.stringify({email,password:pw,options:{emailRedirectTo:BACK}})})
   .then(r=>r.json()).then(d=>{
     if(d.access_token){ saveProfile(d.access_token,email,false); }
     else if(d.id || (d.user && d.user.id)){ autoLogin(email,pw); }
