@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<!-- ChewGumi Admin Dashboard v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>관리자 | CHEWGUMI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:0 0 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    radial-gradient(700px 460px at 95% 10%,rgba(255,233,35,.12),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+
+/* 로그인 화면 */
+.auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-box{width:100%;max-width:400px}
+.auth-logo{text-align:center;margin-bottom:22px}
+.auth-logo .l{font-family:'Poppins',sans-serif;font-weight:800;font-size:26px;color:var(--main);letter-spacing:-.02em}
+.auth-logo .s{margin-top:6px;font-size:11px;letter-spacing:4px;color:var(--gray)}
+.auth-card{background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:28px;
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:0 20px 48px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+.auth-card h1{font-size:19px;font-weight:700;margin-bottom:5px}
+.auth-card .d{font-size:12.5px;color:var(--gray);line-height:1.7;margin-bottom:18px}
+label{display:block;font-size:12.5px;font-weight:600;margin:12px 0 5px}
+input{width:100%;padding:13px 14px;border-radius:13px;font-size:13.5px;font-family:inherit;color:var(--ink);
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+.btn{width:100%;margin-top:18px;padding:15px 0;border:0;border-radius:999px;font-size:14px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 10px 24px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.85);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12.5px;color:var(--main);margin-top:11px;min-height:17px;line-height:1.7}
+.auth-foot{margin-top:16px;text-align:center;font-size:11.5px;color:var(--gray);line-height:1.8}
+.auth-foot a{text-decoration:underline;text-underline-offset:3px}
+
+/* 대시보드 */
+.hide{display:none}
+.top{background:rgba(255,255,255,.72);border-bottom:1px solid rgba(0,0,0,.06);
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  position:sticky;top:0;z-index:100}
+.top-in{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;color:var(--main)}
+.brand small{display:block;font-family:inherit;font-size:10px;letter-spacing:3px;color:var(--gray);font-weight:600;margin-top:2px}
+.who{font-size:12px;color:var(--gray)}
+.who b{color:var(--ink)}
+.top button{padding:9px 16px;border-radius:999px;font-size:12px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 20px}
+h2.sec{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin:26px 0 12px}
+h2.sec:first-of-type{margin-top:0}
+/* 요약 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;
+  backdrop-filter:blur(18px) saturate(120%);box-shadow:0 10px 26px rgba(0,0,0,.06)}
+.stat .l{font-size:11.5px;color:var(--gray)}
+.stat .v{margin-top:7px;font-size:24px;font-weight:800;color:var(--main)}
+.stat .u{font-size:12px;color:var(--gray);font-weight:500;margin-left:2px}
+.stat.alert{border-color:rgba(233,162,59,.5);background:rgba(233,162,59,.12)}
+.stat.alert .v{color:#9a6414}
+/* 메뉴 */
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.item{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:20px;
+  backdrop-filter:blur(18px) saturate(120%);box-shadow:0 10px 26px rgba(0,0,0,.06);
+  transition:transform .2s ease,box-shadow .2s ease;display:block}
+.item:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(0,0,0,.1)}
+.item .ic{font-size:19px}
+.item b{display:block;margin-top:9px;font-size:15px;font-weight:700}
+.item span{display:block;margin-top:5px;font-size:12px;color:var(--gray);line-height:1.65}
+.item .badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;padding:3px 9px;
+  border-radius:999px;background:rgba(216,37,88,.1);color:var(--main)}
+.note{font-size:12px;color:var(--gray);line-height:1.8;margin-top:14px}
+@media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}.menu{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="auth" id="auth">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="l">CHEW GUMI</div>
+      <div class="s">ADMIN CONSOLE</div>
+    </div>
+    <div class="auth-card">
+      <h1>관리자 로그인</h1>
+      <div class="d">운영자로 등록된 계정만 접속할 수 있습니다.</div>
+      <label>이메일</label>
+      <input id="em" type="email" placeholder="admin@example.com" autocomplete="email"
+        onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
+      <label>비밀번호</label>
+      <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn" id="go" onclick="doLogin()">로그인</button>
+      <div class="msg" id="lmsg"></div>
+      <div class="auth-foot">
+        계정이 없으신가요? <a href="join.html">회원가입</a> 후 운영자 등록이 필요합니다.<br>
+        비밀번호를 잊으셨다면 <a href="login.html">재설정</a>해 주세요.
+      </div>
+    </div>
+    <div class="auth-foot" style="margin-top:18px"><a href="index.html">← 사이트로 돌아가기</a></div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div id="dash" class="hide">
+  <div class="top"><div class="top-in">
+    <div class="brand">CHEW GUMI<small>ADMIN CONSOLE</small></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="who"><b id="uname"></b> 님</span>
+      <a href="index.html" style="font-size:12px;color:var(--gray);text-decoration:underline">사이트 보기</a>
+      <button onclick="doLogout()">로그아웃</button>
+    </div>
+  </div></div>
+
+  <div class="wrap">
+    <h2 class="sec">오늘의 현황</h2>
+    <div class="stats">
+      <div class="stat"><div class="l">오늘 주문</div><div class="v"><span id="sToday">0</span><span class="u">건</span></div></div>
+      <div class="stat"><div class="l">이번 달 매출</div><div class="v"><span id="sMonth">0</span><span class="u">원</span></div></div>
+      <div class="stat" id="boxWait"><div class="l">처리 대기</div><div class="v"><span id="sWait">0</span><span class="u">건</span></div></div>
+      <div class="stat" id="boxStock"><div class="l">품절 상품</div><div class="v"><span id="sStock">0</span><span class="u">개</span></div></div>
+    </div>
+    <div class="note" id="alertMsg"></div>
+
+    <h2 class="sec">판매 관리</h2>
+    <div class="menu">
+      <a class="item" href="orders.html">
+        <div class="ic">📦</div><b>주문 · 배송</b>
+        <span>매출 현황, 송장 등록, 배송조회, 환불 처리</span>
+        <span class="badge" id="bOrder"></span></a>
+      <a class="item" href="admin.html">
+        <div class="ic">🏷️</div><b>상품 · 재고</b>
+        <span>재고 수량, 판매 여부, 가격 관리</span></a>
+      <a class="item" href="members.html">
+        <div class="ic">👥</div><b>회원 조회</b>
+        <span>다중 조건 검색, 구매 이력, CSV 내려받기</span>
+        <span class="badge" id="bMember"></span></a>
+    </div>
+
+    <h2 class="sec">콘텐츠 관리</h2>
+    <div class="menu">
+      <a class="item" href="posts.html">
+        <div class="ic">📝</div><b>게시물 관리</b>
+        <span>공지·리뷰·Q&amp;A 글 등록, 답변 처리, 삭제 복원</span>
+        <span class="badge" id="bPost"></span></a>
+      <a class="item" href="boards.html">
+        <div class="ic">🗂️</div><b>게시판 설정</b>
+        <span>게시판 권한, 표시 여부, 분류 관리</span></a>
+      <a class="item" href="message.html">
+        <div class="ic">💬</div><b>메시지 서비스</b>
+        <span>자동 알림 문구, 발송 내역, 비용 확인</span>
+        <span class="badge" id="bMsg"></span></a>
+    </div>
+
+    <h2 class="sec">운영 · 확장</h2>
+    <div class="menu">
+      <a class="item" href="issue.html">
+        <div class="ic">🐞</div><b>이슈 게시판</b>
+        <span>수정 요청·오류 신고 접수 및 처리</span>
+        <span class="badge" id="bIssue"></span></a>
+      <a class="item" href="exports.html">
+        <div class="ic">🌏</div><b>수출 · 인증</b>
+        <span>증명서 진행 상황, HS코드, 서류 이력</span></a>
+      <a class="item" href="qa.html">
+        <div class="ic">✅</div><b>QA 점검</b>
+        <span>페이지·기능·보안 자동 검사</span></a>
+    </div>
+
+    <h2 class="sec">도구</h2>
+    <div class="menu">
+      <a class="item" href="preview.html">
+        <div class="ic">📱</div><b>모바일 미리보기</b>
+        <span>기기별 화면 확인, 점검 체크리스트</span></a>
+      <a class="item" href="https://supabase.com/dashboard/project/psynvpuedzjvytsgdhgg" target="_blank" rel="noopener">
+        <div class="ic">🗄️</div><b>데이터베이스</b>
+        <span>Supabase 대시보드 — 원본 데이터 직접 조회</span></a>
+      <a class="item" href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener">
+        <div class="ic">🛒</div><b>카페24 관리자</b>
+        <span>공식몰 주문·상품 (네이버페이 등 외부 채널)</span></a>
+    </div>
+
+    <div class="note">
+      주문·회원·게시물 데이터는 츄구미 자체 서버에 저장됩니다.
+      공식몰(카페24)로 들어온 주문은 카페24 관리자에서 별도로 확인해 주세요.
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const won=v=>Number(v||0).toLocaleString();
+let token=null,who='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+function sync(){
+  const on=!!token;
+  $('auth').classList.toggle('hide',on);
+  $('dash').classList.toggle('hide',!on);
+  if(on){ $('uname').textContent=who; loadStats(); }
+}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  $('go').disabled=true; $('lmsg').textContent='로그인 중…';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    $('go').disabled=false;
+    if(!d.access_token){
+      $('lmsg').textContent='로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.';
+      return;
+    }
+    /* 운영자 여부 확인 */
+    fetch(SB+'/rest/v1/admins?select=email&email=eq.'+encodeURIComponent(email),
+      {headers:{apikey:KEY,Authorization:'Bearer '+d.access_token}})
+    .then(r=>r.json()).then(rows=>{
+      if(!Array.isArray(rows)||!rows.length){
+        $('lmsg').textContent='운영자로 등록되지 않은 계정입니다. 관리자에게 문의해 주세요.';
+        return;
+      }
+      token=d.access_token; who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent=''; sync();
+    }).catch(()=>{$('lmsg').textContent='권한 확인에 실패했습니다.';});
+  }).catch(()=>{$('go').disabled=false;$('lmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function loadStats(){
+  const today=new Date().toISOString().slice(0,10);
+  const month=today.slice(0,7);
+  const paid=['paid','preparing','shipping','delivered'];
+  Promise.all([
+    fetch(SB+'/rest/v1/orders?select=status,pay_amount,refund_amount,created_at,paid_at&limit=500',{headers:H()})
+      .then(r=>r.ok?r.json():[]),
+    fetch(SB+'/rest/v1/products?select=name,stock,active',{headers:H()}).then(r=>r.ok?r.json():[]),
+    fetch(SB+'/rest/v1/posts?select=answer_status,deleted_at',{headers:H()}).then(r=>r.ok?r.json():[]),
+    fetch(SB+'/rest/v1/issues?select=status',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+      .then(r=>r.ok?r.json():[]),
+    fetch(SB+'/rest/v1/profiles?select=id',{headers:H()}).then(r=>r.ok?r.json():[]),
+    fetch(SB+'/rest/v1/notifications?select=status',{headers:H()}).then(r=>r.ok?r.json():[])
+  ]).then(([os,ps,posts,iss,mem,noti])=>{
+    const t=os.filter(o=>(o.created_at||'').slice(0,10)===today).length;
+    const m=os.filter(o=>paid.includes(o.status)&&((o.paid_at||o.created_at||'').slice(0,7)===month))
+      .reduce((s,o)=>s+(o.pay_amount||0)-(o.refund_amount||0),0);
+    const wait=os.filter(o=>o.status==='pending'||o.status==='paid').length;
+    const sold=ps.filter(p=>p.active&&p.stock<=0);
+    $('sToday').textContent=t; $('sMonth').textContent=won(m);
+    $('sWait').textContent=wait; $('sStock').textContent=sold.length;
+    $('boxWait').classList.toggle('alert',wait>0);
+    $('boxStock').classList.toggle('alert',sold.length>0);
+
+    const alerts=[];
+    if(sold.length) alerts.push('품절 상품 '+sold.length+'개: '+sold.map(p=>p.name).join(', '));
+    if(wait) alerts.push('처리 대기 주문 '+wait+'건이 있습니다.');
+    const qWait=posts.filter(p=>!p.deleted_at&&p.answer_status==='waiting').length;
+    if(qWait) alerts.push('답변 대기 문의 '+qWait+'건이 있습니다.');
+    const nq=noti.filter(n=>n.status==='queued').length;
+    if(nq) alerts.push('발송 대기 문자 '+nq+'건 (문자 서비스 키 미등록).');
+    $('alertMsg').innerHTML = alerts.length
+      ? '⚠ '+alerts.join('<br>⚠ ')
+      : '처리할 항목이 없습니다. 모든 상태가 정상입니다.';
+
+    if(wait) $('bOrder').textContent='대기 '+wait;
+    if(mem.length) $('bMember').textContent='회원 '+mem.length;
+    if(qWait) $('bPost').textContent='답변 대기 '+qWait;
+    if(nq) $('bMsg').textContent='대기 '+nq;
+    const io=iss.filter(i=>i.status==='open').length;
+    if(io) $('bIssue').textContent='미처리 '+io;
+  }).catch(()=>{$('alertMsg').textContent='현황을 불러오지 못했습니다.';});
+}
+sync();
+</script>
+</body>
+</html>
