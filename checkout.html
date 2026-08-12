@@ -349,7 +349,12 @@ $('payBtn').addEventListener('click',async()=>{
         payType, depositor:$('depositor').value.trim()})});
     od=await res.json();
     if(!res.ok){$('msg').textContent=od.error||'주문 생성에 실패했습니다.';$('payBtn').disabled=false;return;}
-  }catch(e){$('msg').textContent='서버 연결에 실패했습니다.';$('payBtn').disabled=false;return;}
+  }catch(e){
+    $('payBtn').disabled=false;
+    $('msg').textContent='주문 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+    console.error('order error:', e);
+    return;
+  }
 
   $('msg').textContent='';
   if(payType==='card'){
