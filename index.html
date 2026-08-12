@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v63 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v64 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1357,7 +1357,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v63 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v64 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2529,5 +2529,58 @@ setHead();
   mark();
 })();
 </script>
+
+<style>
+/* ══ 상품 카드 크기 통일 ══ */
+.grid .card{display:flex;flex-direction:column;height:100%}
+.grid .card .thumb{aspect-ratio:1/1;overflow:hidden;border-radius:16px;background:#FFF1F4}
+.grid .card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.grid .card .name{
+  margin-top:11px;font-size:13.5px;line-height:1.5;font-weight:600;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;min-height:calc(1.5em * 2);word-break:keep-all}
+.grid .card .price-row{margin-top:auto;padding-top:9px}
+
+/* ══ 섹션 제목 · 더보기 가운데 정렬 ══ */
+.sec-head{
+  flex-direction:column !important;align-items:center !important;
+  text-align:center;gap:12px !important}
+.sec-title{text-align:center}
+.sec-more{margin:0 auto}
+.ar-lead,.tri-lead{text-align:center;margin-left:auto;margin-right:auto}
+
+/* 구독 배너 */
+.sc-box{flex-direction:column;text-align:center;gap:14px}
+.sc-t{width:100%;text-align:center}
+.sc-go{margin:0 auto}
+
+/* 하단 CTA */
+.ar-cta,.tri-cta,.comm-more{text-align:center}
+
+/* ══ 전체보기·구독 버튼 글래스 ══ */
+.sec-more,.ar-cta a,.comm-more{
+  border:1px solid rgba(255,255,255,.85) !important;
+  background:linear-gradient(160deg,rgba(255,255,255,.86),rgba(255,255,255,.66)) !important;
+  backdrop-filter:blur(18px) saturate(170%) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(170%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),
+             0 6px 18px rgba(0,0,0,.07) !important;
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),box-shadow .2s !important}
+.sec-more:hover,.ar-cta a:hover,.comm-card:hover .comm-more{
+  transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),
+             0 12px 26px rgba(216,37,88,.16) !important}
+
+/* 구독 배너 버튼도 유리 질감 더하기 */
+.sc-go{
+  border:1px solid rgba(255,255,255,.42) !important;
+  box-shadow:0 10px 24px rgba(216,37,88,.3),
+             inset 0 1px 0 rgba(255,255,255,.5) !important}
+
+@media (max-width:640px){
+  .grid .card .name{font-size:12.5px;-webkit-line-clamp:2}
+  .sec-head{gap:10px !important;margin-bottom:22px !important}
+}
+</style>
 </body>
 </html>
