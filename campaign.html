@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<!-- ChewGumi Campaign v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>마케팅 발송 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --kko:#FEE500;--ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1000px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:130px;line-height:1.8}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:13px 24px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{padding:8px 13px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.msg{font-size:12.5px;color:var(--gray);margin-top:10px;min-height:17px;line-height:1.8}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+/* 채널 탭 */
+.chs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ch{padding:15px 14px;border-radius:16px;text-align:left;background:rgba(255,255,255,.72);
+  border:1px solid var(--line);cursor:pointer;transition:.18s}
+.ch:hover{transform:translateY(-2px)}
+.ch.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.ch.on.kko{background:linear-gradient(135deg,#FFE95C,#FEE500);color:#191600}
+.ch b{display:block;font-size:14px;font-weight:700}
+.ch span{display:block;margin-top:4px;font-size:11.5px;opacity:.82;line-height:1.6}
+.ch .rdy{display:inline-block;margin-top:7px;font-size:10px;font-weight:700;padding:3px 9px;
+  border-radius:999px;background:rgba(0,0,0,.08)}
+.ch.on .rdy{background:rgba(255,255,255,.25)}
+/* 상품 선택 */
+.plist{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:250px;overflow-y:auto;padding:2px}
+.pit{display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;
+  background:rgba(255,255,255,.75);border:1px solid var(--line);cursor:pointer;font-size:12px}
+.pit input{width:17px;height:17px;flex:none;accent-color:var(--main)}
+.pit b{font-weight:600}
+.pit small{display:block;color:var(--gray);font-size:10.5px;margin-top:2px}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+.warn{background:rgba(233,162,59,.14);border:1px solid rgba(233,162,59,.35);border-radius:14px;
+  padding:13px 15px;font-size:12.5px;line-height:1.85;margin-bottom:14px}
+.warn b{color:#9a6414}
+.prev{background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:16px;padding:16px 18px;
+  white-space:pre-wrap;font-size:13px;line-height:1.85;min-height:80px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;
+  background:rgba(216,37,88,.09);color:var(--main)}
+.hrow{display:grid;grid-template-columns:1.8fr .7fr .8fr .9fr;gap:9px;padding:12px 4px;
+  border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px;align-items:center}
+.hrow:last-child{border-bottom:0}
+.st{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;text-align:center}
+.st.draft{background:#999}.st.ready{background:var(--warn)}
+.st.sent{background:var(--ok)}.st.failed{background:var(--bad)}
+.empty{padding:30px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:860px){.chs,.plist,.fg{grid-template-columns:1fr}.hrow{grid-template-columns:1fr 1fr;gap:5px 9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Campaign</h1><div class="s">마케팅 발송</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="message.html">메시지 설정</a> · <a href="members.html">회원</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>1. 발송 채널</h2>
+      <div class="chs" id="chs">
+        <button class="ch on" data-c="sms"><b>문자 (SMS)</b>
+          <span>휴대폰으로 바로 도착</span><span class="rdy" id="rdySms">확인 중</span></button>
+        <button class="ch" data-c="email"><b>이메일</b>
+          <span>내용을 길게 담을 수 있음</span><span class="rdy" id="rdyMail">확인 중</span></button>
+        <button class="ch kko" data-c="kakao"><b>카카오톡</b>
+          <span>채널 친구에게 발송</span><span class="rdy" id="rdyKko">확인 중</span></button>
+      </div>
+      <div class="warn">
+        <b>광고 발송 규정</b> — 수신 동의한 회원에게만 발송되며, (광고) 표기와 무료 수신거부 안내가
+        자동으로 붙습니다. <b>오후 9시~오전 8시 발송은 차단</b>됩니다. (정보통신망법 제50조)
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>2. 상품 선택</h2>
+      <div class="plist" id="plist"><div class="empty">불러오는 중…</div></div>
+      <div class="fg" style="margin-top:14px">
+        <div><label>안내 유형</label>
+          <select id="kind" onchange="compose()">
+            <option value="newproduct">신제품 출시</option>
+            <option value="sale">할인 안내</option>
+            <option value="restock">재입고</option>
+            <option value="freeship">무료배송</option>
+            <option value="review">후기 이벤트</option>
+          </select></div>
+        <div><label>받는 대상</label>
+          <select id="target" onchange="compose()">
+            <option value="all">전체 (수신 동의자)</option>
+            <option value="buyer">구매 이력 있는 회원</option>
+            <option value="nonbuyer">아직 구매 안 한 회원</option>
+          </select></div>
+        <div><label>&nbsp;</label>
+          <button class="btn" onclick="compose()" style="width:100%">문구 자동 작성</button></div>
+      </div>
+      <div class="msg" id="cmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>3. 내용 확인 · 수정</h2>
+      <div id="subjBox" class="hide">
+        <label>제목 (이메일)</label><input id="subject">
+      </div>
+      <label>내용</label>
+      <textarea id="bodyTx" oninput="recount()"></textarea>
+      <div class="meta">
+        <span class="tag" id="tgLen">0자</span>
+        <span class="tag" id="tgType">SMS</span>
+        <span class="tag" id="tgCnt">대상 0명</span>
+      </div>
+      <label style="margin-top:14px">미리보기</label>
+      <div class="prev" id="prev">문구를 자동 작성하거나 직접 입력해 주세요.</div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+        <button class="btn" onclick="send()">지금 발송</button>
+        <button class="btn ghost" onclick="exportList()">대상 명단 내려받기</button>
+        <button class="btn ghost" onclick="copyBody()">문구 복사</button>
+      </div>
+      <div class="msg" id="smsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>발송 이력</h2>
+      <div id="hist"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=v=>Number(v||0).toLocaleString();
+const CH={sms:'문자',email:'이메일',kakao:'카카오톡'};
+const ST={draft:'작성중',ready:'준비됨',sent:'발송됨',failed:'실패'};
+let token=null,who='',channel='sms',PRODUCTS=[],SEL=[],counts={};
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const call=p=>fetch(SB+'/functions/v1/campaign',{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+document.querySelectorAll('#chs .ch').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#chs .ch').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); channel=b.dataset.c;
+  $('subjBox').classList.toggle('hide',channel!=='email');
+  compose();
+});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function init(){ loadStatus(); loadProducts(); loadHist(); }
+
+function loadStatus(){
+  call({action:'status'}).then(({ok,d})=>{
+    if(!ok) return;
+    counts=d.counts||{};
+    $('rdySms').textContent = d.smsReady?'발송 가능':'명단 내려받기';
+    $('rdyMail').textContent = d.emailReady?'발송 가능':'명단 내려받기';
+    $('rdyKko').textContent = '명단 내려받기';
+    recount();
+  }).catch(()=>{});
+}
+function loadProducts(){
+  fetch(SB+'/rest/v1/products?select=id,name,price_sale,line,active,stock&order=sort_order',
+    {headers:{apikey:KEY,Authorization:'Bearer '+token}})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    PRODUCTS=rows||[];
+    $('plist').innerHTML=PRODUCTS.map(p=>
+      '<label class="pit"><input type="checkbox" value="'+p.id+'" onchange="pick()">'
+      +'<span><b>'+esc(p.name)+'</b><small>'+won(p.price_sale)+'원'
+      +(p.active?'':' · 판매안함')+(p.stock<=0?' · 품절':'')+'</small></span></label>').join('');
+  }).catch(()=>{$('plist').innerHTML='<div class="empty">상품을 불러오지 못했습니다.</div>';});
+}
+function pick(){
+  SEL=[...document.querySelectorAll('#plist input:checked')].map(i=>+i.value);
+}
+function compose(){
+  pick();
+  if(!SEL.length){ $('cmsg').className='msg'; $('cmsg').textContent='상품을 하나 이상 골라주세요.'; return; }
+  $('cmsg').className='msg'; $('cmsg').textContent='문구를 만드는 중…';
+  call({action:'compose',productIds:SEL,kind:$('kind').value,
+    channel,target:$('target').value}).then(({ok,d})=>{
+    if(!ok){ $('cmsg').className='msg bad'; $('cmsg').textContent=d.error||'만들지 못했습니다.'; return; }
+    $('subject').value=d.subject||'';
+    $('bodyTx').value=d.body||'';
+    $('cmsg').className='msg ok'; $('cmsg').textContent='문구가 준비되었습니다. 확인하고 수정하셔도 됩니다.';
+    recount();
+  }).catch(()=>{$('cmsg').className='msg bad';$('cmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function recount(){
+  const t=$('bodyTx').value||'';
+  $('tgLen').textContent=t.length+'자';
+  $('tgType').textContent = channel==='sms'
+    ? (t.length<=90?'SMS (1건 차감)':'LMS (3건 차감)') : CH[channel];
+  $('tgCnt').textContent='대상 '+(counts[channel]||0)+'명';
+  $('prev').textContent = channel==='sms'
+    ? '(광고)'+t+'\n무료수신거부 [발신번호]'
+    : (channel==='email' ? '제목: (광고) '+($('subject').value||'')+'\n\n'+t : t);
+}
+function send(){
+  const t=$('bodyTx').value.trim();
+  if(!t) return $('smsg').textContent='내용을 입력해 주세요.';
+  if(!confirm('수신 동의 회원 '+(counts[channel]||0)+'명에게 발송할까요?')) return;
+  $('smsg').className='msg'; $('smsg').textContent='저장 후 발송 중…';
+  call({action:'save',title:$('kind').options[$('kind').selectedIndex].text,
+    channel,productIds:SEL,subject:$('subject').value,body:t,target:$('target').value})
+  .then(({ok,d})=>{
+    if(!ok) throw 0;
+    return call({action:'send',id:d.id});
+  }).then(({ok,d})=>{
+    if(!ok){
+      $('smsg').className='msg bad';
+      $('smsg').innerHTML=esc(d.error||'발송에 실패했습니다.')
+        +(d.needKey?'<br>키가 등록되면 바로 발송됩니다. 지금은 <b>[대상 명단 내려받기]</b>로 카페24에서 보내주세요.':'');
+      loadHist(); return;
+    }
+    $('smsg').className='msg ok';
+    $('smsg').textContent='발송 완료: '+d.sent+'건'+(d.failed?' (실패 '+d.failed+'건)':'');
+    loadHist();
+  }).catch(()=>{$('smsg').className='msg bad';$('smsg').textContent='발송 처리 중 오류가 발생했습니다.';});
+}
+function exportList(){
+  call({action:'export',channel,target:$('target').value}).then(({ok,d})=>{
+    if(!ok||!d.rows.length) return alert('내려받을 대상이 없습니다.');
+    const csv='\uFEFF'+[d.head.join(','),...d.rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','))].join('\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    a.download='chewgumi_'+channel+'_대상_'+new Date().toISOString().slice(0,10)+'.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+    $('smsg').className='msg ok'; $('smsg').textContent=d.count+'명 명단을 내려받았습니다.';
+  }).catch(()=>alert('내려받지 못했습니다.'));
+}
+function copyBody(){
+  const t=$('bodyTx').value; if(!t) return alert('내용이 없습니다.');
+  navigator.clipboard.writeText(t).then(()=>alert('복사되었습니다.')).catch(()=>alert('복사에 실패했습니다.'));
+}
+function loadHist(){
+  call({action:'history'}).then(({ok,d})=>{
+    if(!ok||!d.items.length){$('hist').innerHTML='<div class="empty">발송 이력이 없습니다.</div>';return;}
+    $('hist').innerHTML=d.items.map(c=>
+      '<div class="hrow"><div><b>'+esc(c.title||'-')+'</b>'
+      +'<br><span style="color:var(--gray);font-size:11px">'+esc((c.body||'').slice(0,50))+'</span></div>'
+      +'<div>'+(CH[c.channel]||c.channel)+'</div>'
+      +'<div><span class="st '+c.status+'">'+(ST[c.status]||c.status)+'</span></div>'
+      +'<div style="font-size:11.5px;color:var(--gray)">'+(c.sent_count||0)+'/'+(c.target_count||0)+'명'
+      +'<br>'+new Date(c.created_at).toLocaleDateString('ko-KR')+'</div></div>').join('');
+  }).catch(()=>{$('hist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+sync();
+</script>
+</body>
+</html>
