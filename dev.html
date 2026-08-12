@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<!-- ChewGumi Dev Agent v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1000px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:110px;line-height:1.75}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:13px 24px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.go{background:linear-gradient(135deg,#37B26B,#2AA060);box-shadow:0 8px 20px rgba(42,160,96,.28)}
+.mini{padding:8px 13px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.mini.d{color:var(--bad);border-color:rgba(192,57,92,.3)}
+.msg{font-size:12.5px;color:var(--gray);margin-top:10px;min-height:17px;line-height:1.75}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+.warn{background:rgba(233,162,59,.14);border:1px solid rgba(233,162,59,.35);border-radius:14px;
+  padding:14px 16px;font-size:12.5px;line-height:1.85;margin-bottom:14px}
+.warn b{color:#9a6414}
+.danger{background:rgba(192,57,92,.1);border:1px solid rgba(192,57,92,.3)}
+.danger b{color:var(--bad)}
+.fg{display:grid;grid-template-columns:1.3fr 1fr;gap:10px 12px}
+.sum{background:rgba(42,160,96,.09);border:1px solid rgba(42,160,96,.25);border-radius:16px;
+  padding:16px 18px;font-size:13.5px;line-height:1.9;white-space:pre-wrap}
+.ex{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ex button{padding:8px 12px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.8);border:1px solid var(--line);color:#555}
+.hrow{display:grid;grid-template-columns:2.2fr .9fr .9fr 1.1fr;gap:9px;padding:12px 4px;
+  border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px;align-items:center}
+.hrow:last-child{border-bottom:0}
+.hrow .t{line-height:1.5}
+.hrow .t small{display:block;color:var(--gray);font-size:11px;margin-top:3px}
+.st{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;text-align:center;white-space:nowrap}
+.st.draft{background:#999}.st.deployed{background:var(--ok)}
+.st.reverted{background:var(--warn)}.st.failed{background:var(--bad)}
+.empty{padding:32px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:820px){.fg{grid-template-columns:1fr}.hrow{grid-template-columns:1fr 1fr;gap:5px 9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Dev Agent</h1><div class="s">AI 개발 도우미</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="index.html" target="_blank" rel="noopener">사이트 보기</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>수정 요청</h2>
+
+      <div class="warn danger" id="setupWarn" style="display:none"></div>
+      <div class="warn">
+        <b>안전 절차</b> — AI가 만든 수정안은 <b>바로 반영되지 않습니다.</b>
+        요약을 확인하고 <b>[사이트에 반영]</b>을 누르셔야 실제로 적용됩니다.
+        반영 전 원본이 자동 보관되어 <b>언제든 되돌릴 수 있습니다.</b>
+      </div>
+
+      <div class="fg">
+        <div>
+          <label>어느 화면을 고칠까요?</label>
+          <select id="path"></select>
+        </div>
+        <div>
+          <label>사용할 AI 모델</label>
+          <select id="model" onchange="setModel()"></select>
+        </div>
+      </div>
+
+      <label>무엇을 바꾸고 싶으신가요?</label>
+      <textarea id="req" placeholder="예) 메인 화면 히어로 배너 아래에 '전 상품 무료배송 5만원 이상' 문구를 핑크색 띠로 추가해줘"></textarea>
+      <div class="ex">
+        <button onclick="setEx('메인 상단 알림바 문구를 신제품 출시 안내로 바꿔줘')">알림바 문구 변경</button>
+        <button onclick="setEx('FAQ에 배송 기간 관련 질문 3개를 추가해줘')">FAQ 항목 추가</button>
+        <button onclick="setEx('푸터에 인스타그램 링크를 추가해줘')">푸터 링크 추가</button>
+        <button onclick="setEx('상품 카드의 글자 크기를 조금 키워줘')">글자 크기 조정</button>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+        <button class="btn" id="go" onclick="draft()">수정안 만들기</button>
+      </div>
+      <div class="msg" id="dmsg"></div>
+
+      <div id="result" class="hide" style="margin-top:16px">
+        <div class="sum" id="summary"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+          <button class="btn go" onclick="deploy()">사이트에 반영</button>
+          <button class="btn ghost" onclick="preview()">미리보기</button>
+          <button class="btn ghost" onclick="discard()">취소</button>
+        </div>
+        <div class="msg" id="rmsg"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>변경 이력 · 되돌리기</h2>
+      <div id="hist"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="hmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/dev-agent';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const ST={draft:'검토 대기',deployed:'반영됨',reverted:'되돌림',failed:'실패'};
+let token=null,who='',curId=null;
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+function call(p){
+  return fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
+    .then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function setEx(t){ $('req').value=t; $('req').focus(); }
+
+function init(){
+  call({action:'status'}).then(({ok,d})=>{
+    if(!ok) return;
+    const miss=[];
+    if(!d.aiReady) miss.push('AI 키(ANTHROPIC_API_KEY)');
+    if(!d.ghReady) miss.push('GitHub 토큰(GITHUB_TOKEN)');
+    if(miss.length){
+      $('setupWarn').style.display='block';
+      $('setupWarn').innerHTML='<b>설정이 필요합니다.</b> Supabase → Edge Functions → Secrets 에 '
+        +miss.join(', ')+' 를 등록해 주세요. 등록 전까지는 수정안을 만들 수 없습니다.';
+    } else $('setupWarn').style.display='none';
+    $('path').innerHTML=(d.paths||[]).map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+    loadModels(d.model);
+  }).catch(()=>{});
+  loadHist();
+}
+function loadModels(cur){
+  call({action:'models'}).then(({ok,d})=>{
+    const sel=$('model');
+    if(!ok||!d.models||!d.models.length){
+      sel.innerHTML='<option value="'+esc(cur||'')+'">'+esc(cur||'기본 모델')+'</option>';
+      return;
+    }
+    sel.innerHTML=d.models.map(m=>'<option value="'+esc(m.id)+'"'
+      +(m.id===(d.current||cur)?' selected':'')+'>'+esc(m.name)+'</option>').join('');
+  }).catch(()=>{});
+}
+function setModel(){ call({action:'setModel',model:$('model').value}).catch(()=>{}); }
+
+function draft(){
+  const req=$('req').value.trim();
+  if(!req) return $('dmsg').textContent='무엇을 바꾸고 싶으신지 적어주세요.';
+  $('go').disabled=true; $('dmsg').className='msg';
+  $('dmsg').textContent='수정안을 만드는 중입니다… 30초에서 1분 정도 걸립니다.';
+  $('result').classList.add('hide');
+  call({action:'draft',path:$('path').value,request:req}).then(({ok,d})=>{
+    $('go').disabled=false;
+    if(!ok){ $('dmsg').className='msg bad';
+      $('dmsg').innerHTML=esc(d.error||'만들지 못했습니다.')+(d.help?'<br>필요 항목: '+esc(d.help):''); return; }
+    curId=d.id;
+    $('dmsg').className='msg ok';
+    $('dmsg').textContent='수정안이 준비되었습니다. 내용을 확인하고 반영해 주세요.';
+    $('summary').textContent=(d.summary||'요약이 없습니다.')
+      +'\n\n(문서 크기 '+d.sizeBefore.toLocaleString()+' → '+d.sizeAfter.toLocaleString()+'자)';
+    $('result').classList.remove('hide');
+    $('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }).catch(()=>{$('go').disabled=false;$('dmsg').className='msg bad';
+    $('dmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function preview(){
+  if(!curId) return;
+  call({action:'preview',id:curId}).then(({ok,d})=>{
+    if(!ok) return alert(d.error||'미리보기를 열 수 없습니다.');
+    const w=window.open('','_blank');
+    if(!w) return alert('팝업이 차단되었습니다. 허용 후 다시 시도해 주세요.');
+    w.document.open(); w.document.write(d.html); w.document.close();
+  }).catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
+function deploy(){
+  if(!curId) return;
+  if(!confirm('이 수정안을 실제 사이트에 반영할까요?\n반영 후에도 [되돌리기]로 복구할 수 있습니다.')) return;
+  $('rmsg').className='msg'; $('rmsg').textContent='반영 중…';
+  call({action:'deploy',id:curId}).then(({ok,d})=>{
+    if(!ok){ $('rmsg').className='msg bad'; $('rmsg').textContent=d.error||'반영에 실패했습니다.'; return; }
+    $('rmsg').className='msg ok';
+    $('rmsg').textContent='반영되었습니다. 사이트에 보이기까지 1~2분 걸립니다.';
+    curId=null; $('result').classList.add('hide'); $('req').value=''; loadHist();
+  }).catch(()=>{$('rmsg').className='msg bad';$('rmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function discard(){ curId=null; $('result').classList.add('hide'); $('dmsg').textContent=''; }
+
+function loadHist(){
+  call({action:'history'}).then(({ok,d})=>{
+    const box=$('hist');
+    if(!ok||!d.items||!d.items.length){
+      box.innerHTML='<div class="empty">변경 이력이 없습니다.</div>'; return; }
+    box.innerHTML=d.items.map(it=>
+      '<div class="hrow"><div class="t"><b>'+esc(it.path)+'</b>'
+      +'<small>'+esc((it.summary||it.request||'').split('\n')[0].slice(0,70))+'</small></div>'
+      +'<div><span class="st '+it.status+'">'+(ST[it.status]||it.status)+'</span></div>'
+      +'<div style="font-size:11.5px;color:var(--gray)">'
+        +new Date(it.created_at).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})
+        +'<br>'+esc(it.actor||'')+'</div>'
+      +'<div>'+(it.status==='deployed'
+        ?'<button class="mini d" onclick="revert('+it.id+')">되돌리기</button>':'')
+        +(it.error?'<span style="font-size:11px;color:var(--bad)">'+esc(it.error.slice(0,40))+'</span>':'')
+      +'</div></div>').join('');
+  }).catch(()=>{$('hist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function revert(id){
+  if(!confirm('이 수정을 되돌릴까요?\n수정 직전 상태로 사이트가 복구됩니다.')) return;
+  $('hmsg').className='msg'; $('hmsg').textContent='되돌리는 중…';
+  call({action:'revert',id}).then(({ok,d})=>{
+    if(!ok){ $('hmsg').className='msg bad'; $('hmsg').textContent=d.error||'되돌리기에 실패했습니다.'; return; }
+    $('hmsg').className='msg ok'; $('hmsg').textContent='되돌렸습니다. 1~2분 후 사이트에 반영됩니다.';
+    loadHist();
+  }).catch(()=>{$('hmsg').className='msg bad';$('hmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+sync();
+</script>
+</body>
+</html>
