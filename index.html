@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v51 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v52 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -154,7 +154,7 @@
   max-width:1160px !important; background:#FFE4E6 !important; }
 @media (max-width:640px){ .hero { aspect-ratio:1568/756 !important; } }
 .hero .slide { background-color:#FFE4E6 !important; background-size:cover; background-position:center; display:block; }
-.hero .slide-4 { background-image:url('assets/hero-dew-green.png'); }
+.hero .slide-4 { background-image:url('assets/hero-2.png'); }
 .hero::after { display:none; }
 @media (max-width:640px) { .hero { aspect-ratio:1568/756 !important; } }
 
@@ -348,11 +348,11 @@ header:not(.solid) .gnb > li:hover > a { background:rgba(255,255,255,.22);
 .hero .slide { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .8s ease;
   background:#121314 center/cover no-repeat; }
 .hero .slide.on { opacity:1; pointer-events:auto; }
-.hero .slide-1 { background-image:url('assets/hero-triple.png'); }
-.hero .slide-2 { background-image:url('assets/hero-travel.png'); }
+.hero .slide-1 { background-image:url('assets/hero-4.png'); }
+.hero .slide-2 { background-image:url('assets/hero-1.png'); }
 .hero .slide-2 .slide-prd { position:absolute; right:6%; bottom:0; height:92%; width:auto; object-fit:contain;
   filter:drop-shadow(0 18px 34px rgba(120,10,40,.28)); }
-.hero .slide-3 { background-image:url('assets/hero-dew-purple.png'); }
+.hero .slide-3 { background-image:url('assets/hero-3.png'); }
 .hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:5; width:40px; height:40px; border-radius:50%;
   display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; cursor:pointer;
   background:rgba(255,255,255,.16); backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%);
@@ -710,6 +710,20 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 .ar-cta{margin-top:18px;text-align:right}
 .ar-cta a{font-size:13px;font-weight:700;color:var(--main);text-decoration:underline;text-underline-offset:4px}
 @media(max-width:640px){#arrivals .rail figure{flex:0 0 76vw}}
+
+/* New Arrivals 카드 흐름 */
+.ar-view{position:relative}
+.ar-view .rail{scroll-behavior:smooth;scroll-snap-type:x mandatory}
+.ar-view .rail figure{scroll-snap-align:center}
+.ar-nav{position:absolute;top:38%;z-index:5;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--main);
+  font-size:22px;line-height:1;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.ar-nav.prev{left:-6px}.ar-nav.next{right:-6px}
+.ar-nav:hover{background:#fff}
+.ar-dots{display:flex;gap:7px;justify-content:center;margin-top:14px}
+.ar-dots span{width:7px;height:7px;border-radius:50%;background:rgba(0,0,0,.15);cursor:pointer;transition:.2s}
+.ar-dots span.on{width:22px;border-radius:999px;background:var(--main)}
+@media(max-width:640px){.ar-nav{display:none}}
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -779,7 +793,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
 <div class="popup-dim" id="popup">
   <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
-    <img class="p-illust" src="assets/popup-illust.png" alt="" aria-hidden="true">
+    <img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true">
     <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
     <div class="p-desc" data-en="Join now and get a &lt;b&gt;₩2,000&lt;/b&gt; coupon you can use right away!">지금 가입하시면 즉시 사용 가능한 <b>2000원</b> 할인쿠폰을 드려요!</div>
     <div class="p-acts">
@@ -862,7 +876,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <div class="nl-grid">
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/product-dream-it.png" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
+          <img src="assets/new-dream.png" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Dream-it, <span class="kr">드림 잇</span></div>
@@ -870,7 +884,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/product-spark-it.png" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
+          <img src="assets/new-spark.png" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Spark-it, <span class="kr">스파크 잇</span></div>
@@ -878,7 +892,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/product-reset-it.png" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
+          <img src="assets/new-reset.png" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Reset-it, <span class="kr">리셋 잇</span></div>
@@ -892,7 +906,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- 신제품 배너 (디자이너 제공) -->
 <section class="mid-banner">
   <a href="#all" onclick="filterLine('all')" aria-label="신제품 보기">
-    <img src="assets/banner-new-product.png" alt="NEW PRODUCT — 츄구미의 3번째 여정, 세가지 맛으로 즐기는 트리플 잇" loading="lazy">
+    <img src="assets/banner-triple.png" alt="NEW PRODUCT — 츄구미의 3번째 여정, 세가지 맛으로 즐기는 트리플 잇" loading="lazy">
   </a>
 </section>
 
@@ -1113,38 +1127,39 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </div>
         <p class="ar-lead kr" data-en="Six moments that make Dew-it part of your day.">
           듀잇이 일상에 스며드는 여섯 장면.</p>
-        <div class="rail">
-        <figure>
-          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/f89d6da91dd672a5f25a7a295ebf3be6.png" alt="상쾌한 하루의 시작" loading="lazy"
-            onerror="this.onerror=null;this.closest('figure').remove()">
-          <figcaption><span class="no">01</span><b>상쾌한 하루의 시작</b><span class="d">아침 첫 한 알. 입 안이 개운해지면 하루의 기분도 달라집니다.</span></figcaption>
-        </figure>
-        <figure>
-          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/942a7d4949aa31bea2c60e76208c1b76.png" alt="핀란드산 자일리톨 93%" loading="lazy"
-            onerror="this.onerror=null;this.closest('figure').remove()">
-          <figcaption><span class="no">02</span><b>핀란드산 자일리톨 93%</b><span class="d">설탕 대신 자일리톨. 달콤함은 그대로, 부담은 덜었습니다.</span></figcaption>
-        </figure>
-        <figure>
-          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/afad3d6dddd247af314c05157948d298.png" alt="레몬민트 · 산뜻하게" loading="lazy"
-            onerror="this.onerror=null;this.closest('figure').remove()">
-          <figcaption><span class="no">03</span><b>레몬민트 · 산뜻하게</b><span class="d">레몬의 상큼함과 민트의 시원함이 만나 입 안을 정리합니다.</span></figcaption>
-        </figure>
-        <figure>
-          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/55a36711d9dc4b14c9ee46972c6afc3c.png" alt="그레이프 · 달콤하게" loading="lazy"
-            onerror="this.onerror=null;this.closest('figure').remove()">
-          <figcaption><span class="no">04</span><b>그레이프 · 달콤하게</b><span class="d">포도의 진한 단맛. 무설탕이라는 걸 잊게 되는 맛입니다.</span></figcaption>
-        </figure>
-        <figure>
-          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/2c58793be7f900d4997e26451366b9cb.png" alt="언제 어디서나" loading="lazy"
-            onerror="this.onerror=null;this.closest('figure').remove()">
-          <figcaption><span class="no">05</span><b>언제 어디서나</b><span class="d">가방에도 주머니에도. 물 없이 한 알이면 충분합니다.</span></figcaption>
-        </figure>
-        <figure>
-          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/4f3394ac34364fc0e1f88744141a8c99.png" alt="매일의 습관으로" loading="lazy"
-            onerror="this.onerror=null;this.closest('figure').remove()">
-          <figcaption><span class="no">06</span><b>매일의 습관으로</b><span class="d">식후에, 만나기 전에, 자기 전에. 챙기기 쉬운 건강 습관.</span></figcaption>
-        </figure>
+
+        <div class="ar-view">
+          <button class="ar-nav prev" onclick="arMove(-1)" aria-label="이전">‹</button>
+          <div class="rail" id="arRail">
+          <figure>
+            <img src="assets/hero-2.png" alt="상쾌한 하루의 시작" loading="lazy">
+            <figcaption><span class="no">01</span><b>상쾌한 하루의 시작</b><span class="d">아침 첫 한 알. 입 안이 개운해지면 하루의 기분도 달라집니다.</span></figcaption>
+          </figure>
+          <figure>
+            <img src="assets/banner-dew.png" alt="핀란드산 자일리톨 93%" loading="lazy">
+            <figcaption><span class="no">02</span><b>핀란드산 자일리톨 93%</b><span class="d">설탕 대신 자일리톨. 달콤함은 그대로, 부담은 덜었습니다.</span></figcaption>
+          </figure>
+          <figure>
+            <img src="assets/hero-3.png" alt="레몬민트 · 산뜻하게" loading="lazy">
+            <figcaption><span class="no">03</span><b>레몬민트 · 산뜻하게</b><span class="d">레몬의 상큼함과 민트의 시원함이 만나 입 안을 정리합니다.</span></figcaption>
+          </figure>
+          <figure>
+            <img src="assets/review-main.png" alt="실제로 즐기는 사람들" loading="lazy">
+            <figcaption><span class="no">04</span><b>실제로 즐기는 사람들</b><span class="d">매일 챙기는 습관이 된 이유를 후기에서 확인해 보세요.</span></figcaption>
+          </figure>
+          <figure>
+            <img src="assets/banner-travel.png" alt="언제 어디서나" loading="lazy">
+            <figcaption><span class="no">05</span><b>언제 어디서나</b><span class="d">가방에도 주머니에도. 물 없이 한 알이면 충분합니다.</span></figcaption>
+          </figure>
+          <figure>
+            <img src="assets/hero-1.png" alt="매일의 습관으로" loading="lazy">
+            <figcaption><span class="no">06</span><b>매일의 습관으로</b><span class="d">식후에, 만나기 전에, 자기 전에. 챙기기 쉬운 건강 습관.</span></figcaption>
+          </figure>
+          </div>
+          <button class="ar-nav next" onclick="arMove(1)" aria-label="다음">›</button>
         </div>
+        <div class="ar-dots" id="arDots"></div>
+
         <div class="ar-cta">
           <a href="index.html#all" onclick="filterLine('doit')">듀잇 전체 보기 →</a>
         </div>
@@ -1159,10 +1174,10 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <section class="btm-banner">
   <div class="bb-wrap">
     <a class="bb-slide on" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기">
-      <img src="assets/banner-travel-cloud.png" alt="설레는 여행, 컨디션까지 완벽하게 TRAVEL-IT과 함께 떠나요" loading="lazy">
+      <img src="assets/banner-travel.png" alt="설레는 여행, 컨디션까지 완벽하게 TRAVEL-IT과 함께 떠나요" loading="lazy">
     </a>
     <a class="bb-slide" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기">
-      <img src="assets/banner-dew-bottom.png" alt="당 걱정 없이 개운하게, dew-it" loading="lazy">
+      <img src="assets/banner-dew.png" alt="당 걱정 없이 개운하게, dew-it" loading="lazy">
     </a>
     <div class="bb-count"><span id="bbNow">1</span> / <span id="bbAll">2</span></div>
   </div>
@@ -1194,7 +1209,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v51 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v52 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2022,6 +2037,44 @@ setHead();
       addKakao();
     });
   };
+})();
+
+/* New Arrivals 카드 자동 흐름 */
+(function(){
+  const rail=document.getElementById('arRail');
+  const dots=document.getElementById('arDots');
+  if(!rail||!dots) return;
+  const figs=[...rail.querySelectorAll('figure')];
+  dots.innerHTML=figs.map((_,i)=>'<span'+(i?'':' class="on"')+'></span>').join('');
+  const ds=[...dots.children];
+  let idx=0, timer=null;
+
+  function go(i){
+    idx=(i+figs.length)%figs.length;
+    const f=figs[idx];
+    rail.scrollTo({left:f.offsetLeft-rail.offsetLeft-16,behavior:'smooth'});
+    ds.forEach((d,k)=>d.classList.toggle('on',k===idx));
+  }
+  window.arMove=function(d){ stop(); go(idx+d); start(); };
+  ds.forEach((d,i)=>d.onclick=()=>{stop();go(i);start();});
+
+  function start(){ if(timer)return; timer=setInterval(()=>go(idx+1),4500); }
+  function stop(){ if(timer){clearInterval(timer);timer=null;} }
+  rail.addEventListener('mouseenter',stop);
+  rail.addEventListener('mouseleave',start);
+  rail.addEventListener('touchstart',stop,{passive:true});
+  /* 사용자가 직접 스크롤하면 현재 위치를 점에 반영 */
+  let t=null;
+  rail.addEventListener('scroll',()=>{
+    clearTimeout(t);
+    t=setTimeout(()=>{
+      const c=rail.scrollLeft+rail.clientWidth/2;
+      let best=0,bd=1e9;
+      figs.forEach((f,i)=>{const d=Math.abs(f.offsetLeft+f.clientWidth/2-c); if(d<bd){bd=d;best=i;}});
+      idx=best; ds.forEach((d,k)=>d.classList.toggle('on',k===idx));
+    },120);
+  },{passive:true});
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) start();
 })();
 </script>
 </body>
