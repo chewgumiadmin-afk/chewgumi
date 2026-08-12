@@ -186,12 +186,12 @@ function sso(provider){
   var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
   var base=(typeof SB_URL!=='undefined')?SB_URL:(typeof SSO_BASE!=='undefined'?SSO_BASE:SB);
   var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
-  var back=encodeURIComponent(location.origin+location.pathname.replace(/[^/]*$/,'mypage.html'));
+  var back=location.origin+location.pathname.replace(/[^/]*$/,'mypage.html');
 
-  /* 네이버는 Supabase 기본 제공자가 아니므로 별도 안내 */
+  /* 네이버는 자체 서버(Edge Function)로 처리 */
   if(provider==='naver'){
-    if(m){m.className='sso-msg bad';
-      m.innerHTML='네이버 로그인은 준비 중입니다.<br>구글·카카오 또는 이메일로 로그인해 주세요.';}
+    if(m){m.className='sso-msg';m.textContent='네이버로 이동합니다…';}
+    location.href=base+'/functions/v1/naver?redirect_to='+encodeURIComponent(back);
     return;
   }
 
@@ -209,7 +209,8 @@ function sso(provider){
     if(done)return; done=true; clearTimeout(timer);
     var ex=(d&&d.external)||{};
     if(ex[provider]){
-      location.href=base+'/auth/v1/authorize?provider='+provider+'&redirect_to='+back;
+      location.href=base+'/auth/v1/authorize?provider='+provider
+        +'&redirect_to='+encodeURIComponent(back);
     } else {
       if(m){m.className='sso-msg bad';
         m.innerHTML=NAME[provider]+' 로그인은 아직 준비 중입니다.<br>이메일로 가입·로그인해 주세요.';}
