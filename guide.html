@@ -149,15 +149,21 @@ h1{font-family:'Poppins',sans-serif;font-size:30px;font-weight:700;margin-bottom
   <span>문의하기</span>
 </a>
 <style>
-.kko-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:1200;
-  display:inline-flex;align-items:center;gap:7px;padding:12px 17px;border-radius:999px;
-  background:#FEE500;color:#191600;font-family:inherit;font-size:13.5px;font-weight:700;
-  text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.2);transition:transform .18s}
+.kko-fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:1990;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  width:58px;height:58px;border-radius:50%;padding:0;
+  background:#FEE500;color:#191600;font-family:inherit;font-size:13px;font-weight:700;
+  text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.22);transition:transform .18s}
+.kko-fab span{display:none}
 .kko-fab:hover{transform:translateY(-2px)}
-.kko-fab svg{width:19px;height:19px;flex:none}
+.kko-fab svg{width:26px;height:26px;flex:none}
 @media(max-width:640px){
-  .kko-fab{bottom:calc(74px + env(safe-area-inset-bottom));padding:11px 15px;font-size:12.5px}
+  .kko-fab{bottom:calc(78px + env(safe-area-inset-bottom));width:52px;height:52px}
+  .kko-fab svg{width:23px;height:23px}
 }
+
+
+
 </style>
 </body>
 </html>
