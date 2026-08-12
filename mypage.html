@@ -132,7 +132,7 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
         <div class="sc"><div class="l">총 주문</div><div class="v"><span id="oc">0</span>건</div></div>
         <div class="sc"><div class="l">누적 구매액</div><div class="v"><span id="oa">0</span>원</div></div>
       </div>
-      <div class="msg" style="margin-top:12px">구매 확정 시 결제 금액의 1%가 적립됩니다.</div>
+      <div class="msg" style="margin-top:12px" id="sumNote">구매 확정 시 결제 금액의 1%가 적립됩니다.</div>
     </div>
 
     <div class="panel">
@@ -354,8 +354,14 @@ function loadOrders(){
   fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty)&order=created_at.desc',{headers:H()})
   .then(r=>r.ok?r.json():Promise.reject(r.status)).then(rows=>{
     const paid=rows.filter(o=>['paid','preparing','shipping','delivered'].includes(o.status));
-    $('oc').textContent=paid.length;
+    const wait=rows.filter(o=>o.status==='pending');
+    $('oc').innerHTML = paid.length + (wait.length
+      ? '<span style="font-size:12px;color:var(--gray);font-weight:500"> (대기 '+wait.length+')</span>' : '');
     $('oa').textContent=won(paid.reduce((s,o)=>s+o.pay_amount-(o.refund_amount||0),0));
+    const note=document.getElementById('sumNote');
+    if(note) note.innerHTML = wait.length
+      ? '<b style="color:var(--main)">입금 대기 '+wait.length+'건</b>이 있습니다. 입금이 확인되면 주문이 확정되고 적립금이 지급됩니다.'
+      : '구매 확정 시 결제 금액의 1%가 적립됩니다.';
     if(!rows.length){$('list').innerHTML='<div class="empty">주문 내역이 없습니다.</div>';return;}
     $('list').innerHTML=rows.map(o=>{
       const its=(o.order_items||[]).map(i=>esc(i.product_name)+' × '+i.qty).join(', ');
