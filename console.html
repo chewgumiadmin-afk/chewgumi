@@ -71,7 +71,10 @@ h2.sec:first-of-type{margin-top:0}
   backdrop-filter:blur(18px) saturate(120%);box-shadow:0 10px 26px rgba(0,0,0,.06);
   transition:transform .2s ease,box-shadow .2s ease;display:block}
 .item:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(0,0,0,.1)}
-.item .ic{font-size:19px}
+.item .ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(233,80,115,.14),rgba(216,37,88,.10));color:var(--main)}
+.item .ic svg{width:20px;height:20px}
+.item:hover .ic{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
 .item b{display:block;margin-top:9px;font-size:15px;font-weight:700}
 .item span{display:block;margin-top:5px;font-size:12px;color:var(--gray);line-height:1.65}
 .item .badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;padding:3px 9px;
@@ -133,15 +136,15 @@ h2.sec:first-of-type{margin-top:0}
     <h2 class="sec">판매 관리</h2>
     <div class="menu">
       <a class="item" href="orders.html">
-        <div class="ic">📦</div><b>주문 · 배송</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v8a2 2 0 0 1-1 1.7l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.7l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div><b>주문 · 배송</b>
         <span>매출 현황, 송장 등록, 배송조회, 환불 처리</span>
         <span class="badge" id="bOrder"></span></a>
       <a class="item" href="stock.html">
-        <div class="ic">🏷️</div><b>재고 · 품절 관리</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2a2 2 0 0 1-.6-1.4V4a1 1 0 0 1 1-1h8a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg></div><b>재고 · 품절 관리</b>
         <span>품절 경보, 일괄 채우기, 판매 여부 전환</span>
         <span class="badge" id="bStock2"></span></a>
       <a class="item" href="members.html">
-        <div class="ic">👥</div><b>회원 조회</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div><b>회원 조회</b>
         <span>다중 조건 검색, 구매 이력, CSV 내려받기</span>
         <span class="badge" id="bMember"></span></a>
     </div>
@@ -149,14 +152,14 @@ h2.sec:first-of-type{margin-top:0}
     <h2 class="sec">콘텐츠 관리</h2>
     <div class="menu">
       <a class="item" href="posts.html">
-        <div class="ic">📝</div><b>게시물 관리</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></div><b>게시물 관리</b>
         <span>공지·리뷰·Q&amp;A 글 등록, 답변 처리, 삭제 복원</span>
         <span class="badge" id="bPost"></span></a>
       <a class="item" href="boards.html">
-        <div class="ic">🗂️</div><b>게시판 설정</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.5L10 3.5H4a2 2 0 0 0-2 2V18a2 2 0 0 0 2 2z"/><path d="M2 11h20"/></svg></div><b>게시판 설정</b>
         <span>게시판 권한, 표시 여부, 분류 관리</span></a>
       <a class="item" href="message.html">
-        <div class="ic">💬</div><b>메시지 서비스</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z"/><path d="M8.5 11.5h7M8.5 8h5"/></svg></div><b>메시지 서비스</b>
         <span>자동 알림 문구, 발송 내역, 비용 확인</span>
         <span class="badge" id="bMsg"></span></a>
     </div>
@@ -164,27 +167,27 @@ h2.sec:first-of-type{margin-top:0}
     <h2 class="sec">운영 · 확장</h2>
     <div class="menu">
       <a class="item" href="issue.html">
-        <div class="ic">🐞</div><b>이슈 게시판</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a6 6 0 0 0 6-6v-3a6 6 0 0 0-12 0v3a6 6 0 0 0 6 6z"/><path d="M12 8V20M6 12H2M22 12h-4M5 7l2.5 2M19 7l-2.5 2M5 18l2.5-2M19 18l-2.5-2"/></svg></div><b>이슈 게시판</b>
         <span>수정 요청·오류 신고 접수 및 처리</span>
         <span class="badge" id="bIssue"></span></a>
       <a class="item" href="exports.html">
-        <div class="ic">🌏</div><b>수출 · 인증</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg></div><b>수출 · 인증</b>
         <span>증명서 진행 상황, HS코드, 서류 이력</span></a>
       <a class="item" href="qa.html">
-        <div class="ic">✅</div><b>QA 점검</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><b>QA 점검</b>
         <span>페이지·기능·보안 자동 검사</span></a>
     </div>
 
     <h2 class="sec">도구</h2>
     <div class="menu">
       <a class="item" href="preview.html">
-        <div class="ic">📱</div><b>모바일 미리보기</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg></div><b>모바일 미리보기</b>
         <span>기기별 화면 확인, 점검 체크리스트</span></a>
       <a class="item" href="https://supabase.com/dashboard/project/psynvpuedzjvytsgdhgg" target="_blank" rel="noopener">
-        <div class="ic">🗄️</div><b>데이터베이스</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div><b>데이터베이스</b>
         <span>Supabase 대시보드 — 원본 데이터 직접 조회</span></a>
       <a class="item" href="https://eclogin.cafe24.com/Shop/" target="_blank" rel="noopener">
-        <div class="ic">🛒</div><b>카페24 관리자</b>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 7H6"/></svg></div><b>카페24 관리자</b>
         <span>공식몰 주문·상품 (네이버페이 등 외부 채널)</span></a>
     </div>
 
