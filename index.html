@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v53 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v54 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -726,6 +726,83 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 @media(max-width:640px){.ar-nav{display:none}}
 
 #arrivals .rail figure img{aspect-ratio:1/1;object-fit:cover;background:#FFF1F4}
+
+/* ── New Arrivals · Triple-it ─────────────────────── */
+.tri-sec{position:relative;padding:76px 0 84px;overflow:hidden;isolation:isolate}
+.tri-sec::before{content:"";position:absolute;inset:0;z-index:-2;
+  background:linear-gradient(165deg,#1B0B14 0%,#2E0F22 45%,#3A1128 100%)}
+.tri-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.tri-bg .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5}
+.tri-bg .o1{width:38vw;height:38vw;left:-8%;top:-12%;background:#E95073;animation:triFloat 15s ease-in-out infinite}
+.tri-bg .o2{width:30vw;height:30vw;right:-6%;top:22%;background:#8E5BD8;animation:triFloat 19s ease-in-out infinite reverse}
+.tri-bg .o3{width:26vw;height:26vw;left:38%;bottom:-14%;background:#B6D94C;opacity:.28;animation:triFloat 23s ease-in-out infinite}
+@keyframes triFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(4%,-6%)}}
+
+.tri-marquee{position:absolute;top:20px;left:0;right:0;z-index:-1;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.tri-track{display:flex;align-items:center;gap:26px;width:max-content;
+  animation:triScroll 26s linear infinite}
+.tri-track span{font-family:'Poppins',sans-serif;font-size:clamp(38px,7vw,84px);font-weight:800;
+  letter-spacing:-.03em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.13);white-space:nowrap}
+.tri-track i{width:9px;height:9px;border-radius:50%;background:rgba(255,233,35,.35);flex:none}
+@keyframes triScroll{to{transform:translateX(-50%)}}
+
+.tri-in{position:relative;z-index:1}
+.tri-head{text-align:center;max-width:660px;margin:0 auto 44px}
+.tri-badge{display:inline-block;padding:7px 16px;border-radius:999px;font-size:11px;font-weight:700;
+  letter-spacing:2.5px;color:#FFE923;background:rgba(255,233,35,.12);
+  border:1px solid rgba(255,233,35,.32)}
+.tri-title{margin-top:18px;font-size:clamp(28px,5.2vw,52px);font-weight:800;line-height:1.2;
+  letter-spacing:-.04em;color:#fff}
+.tri-title .l{display:block}
+.tri-title .accent{background:linear-gradient(100deg,#FF8FB1,#FFE923 55%,#B6D94C);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.tri-lead{margin-top:16px;font-size:clamp(13.5px,1.6vw,16px);line-height:1.9;
+  color:rgba(255,255,255,.66);word-break:keep-all}
+
+.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;perspective:1200px}
+.tri-card{position:relative;border-radius:24px;padding:22px 20px 24px;overflow:hidden;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.3,1),border-color .3s;
+  opacity:0;translate:0 26px}
+.tri-card.in{opacity:1;translate:0 0;transition:opacity .7s ease,translate .7s cubic-bezier(.2,.7,.3,1),
+  transform .5s cubic-bezier(.2,.7,.3,1),border-color .3s}
+.tri-card:hover{border-color:rgba(255,255,255,.3)}
+.tri-glow{position:absolute;inset:-1px;border-radius:24px;opacity:0;transition:opacity .4s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),
+    color-mix(in srgb,var(--c1) 40%,transparent),transparent 62%);pointer-events:none}
+.tri-card:hover .tri-glow{opacity:1}
+.tri-tag{display:inline-block;padding:5px 12px;border-radius:999px;font-family:'Poppins',sans-serif;
+  font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#1B0B14;
+  background:linear-gradient(120deg,var(--c1),var(--c2))}
+.tri-img{margin:16px 0 4px;border-radius:18px;overflow:hidden;aspect-ratio:1/1;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c1) 22%,transparent),transparent)}
+.tri-img img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.tri-card:hover .tri-img img{transform:scale(1.06)}
+.tri-en{font-family:'Poppins',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.02em;color:#fff}
+.tri-kr{margin-top:5px;font-size:13px;color:rgba(255,255,255,.7)}
+.tri-spec{margin-top:11px;display:inline-block;padding:6px 11px;border-radius:8px;font-size:11.5px;
+  font-weight:600;color:var(--c1);background:rgba(255,255,255,.07)}
+
+.tri-cta{margin-top:38px;text-align:center}
+.tri-btn{display:inline-flex;align-items:center;gap:9px;padding:16px 30px;border-radius:999px;
+  font-size:14.5px;font-weight:700;color:#1B0B14;text-decoration:none;
+  background:linear-gradient(100deg,#FFE923,#FF8FB1);
+  box-shadow:0 12px 30px rgba(255,143,177,.28);transition:transform .22s,box-shadow .22s}
+.tri-btn:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,143,177,.4)}
+.tri-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;transition:transform .22s}
+.tri-btn:hover svg{transform:translateX(3px)}
+
+@media(max-width:880px){.tri-grid{grid-template-columns:1fr;gap:16px}
+  .tri-bg .orb{filter:blur(50px)}}
+@media(prefers-reduced-motion:reduce){
+  .tri-track,.tri-bg .orb{animation:none}
+  .tri-card{opacity:1;translate:none;transition:none}
+}
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -1121,49 +1198,68 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 </section>
 
 <!-- NEW ARRIVALS : 듀잇 신규 화보 (드라이브 사진 레일) -->
-<section id="arrivals" style="padding-top:0;">
-      <div class="wrap">
-        <div class="sec-head">
-          <h2 class="sec-title">New Arrivals · Triple-it</h2>
-          <span class="sec-more kr" data-en="Coming Soon">출시 예정</span>
-        </div>
-        <p class="ar-lead kr" data-en="Three flavors for three moments.">
-          세 가지 순간을 위한 세 가지 맛.</p>
+<section id="arrivals" class="tri-sec">
+      <div class="tri-bg" aria-hidden="true">
+        <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+      </div>
 
-        <div class="ar-view">
-          <button class="ar-nav prev" onclick="arMove(-1)" aria-label="이전">‹</button>
-          <div class="rail" id="arRail">
-          <figure>
-            <img src="assets/new-dream.png" alt="드림 잇 · 복숭아맛" loading="lazy">
-            <figcaption><span class="no">DREAM-IT</span><b>드림 잇 · 복숭아맛</b><span class="d">L-테아닌 200mg. 편안한 밤을 준비하는 복숭아맛 젤리입니다.</span></figcaption>
-          </figure>
-          <figure>
-            <img src="assets/new-spark.png" alt="스파크 잇 · 블루베리맛" loading="lazy">
-            <figcaption><span class="no">SPARK-IT</span><b>스파크 잇 · 블루베리맛</b><span class="d">L-아르기닌 1000mg. 활력이 필요한 순간을 위한 블루베리맛 젤리입니다.</span></figcaption>
-          </figure>
-          <figure>
-            <img src="assets/new-reset.png" alt="리셋 잇 · 청포도맛" loading="lazy">
-            <figcaption><span class="no">RESET-IT</span><b>리셋 잇 · 청포도맛</b><span class="d">포스트바이오틱스 2억 마리. 속을 가볍게 정리하는 청포도맛 젤리입니다.</span></figcaption>
-          </figure>
-          <figure>
-            <img src="assets/banner-triple.png" alt="세 가지 맛, 한 상자" loading="lazy">
-            <figcaption><span class="no">TRIPLE-IT</span><b>세 가지 맛, 한 상자</b><span class="d">드림 잇 · 스파크 잇 · 리셋 잇을 상황에 맞게 골라 드세요.</span></figcaption>
-          </figure>
-          <figure>
-            <img src="assets/hero-1.png" alt="여행갈 땐 트리플 잇" loading="lazy">
-            <figcaption><span class="no">TRAVEL</span><b>여행갈 땐 트리플 잇</b><span class="d">기내에서도 물 없이. 40g 한 봉으로 가볍게 챙기실 수 있습니다.</span></figcaption>
-          </figure>
-          <figure>
-            <img src="assets/hero-2.png" alt="함께 챙기는 듀잇" loading="lazy">
-            <figcaption><span class="no">DEW-IT</span><b>함께 챙기는 듀잇</b><span class="d">한 알로 입안을 촉촉하게. 무설탕 자일리톨 캔디도 만나보세요.</span></figcaption>
-          </figure>
-          </div>
-          <button class="ar-nav next" onclick="arMove(1)" aria-label="다음">›</button>
+      <div class="tri-marquee" aria-hidden="true">
+        <div class="tri-track">
+          <span>DREAM-IT</span><i></i><span>SPARK-IT</span><i></i><span>RESET-IT</span><i></i>
+          <span>TRIPLE-IT</span><i></i><span>DREAM-IT</span><i></i><span>SPARK-IT</span><i></i>
+          <span>RESET-IT</span><i></i><span>TRIPLE-IT</span><i></i>
         </div>
-        <div class="ar-dots" id="arDots"></div>
+      </div>
 
-        <div class="ar-cta">
-          <a href="product.html?no=101">트리플 잇 미리 보기 →</a>
+      <div class="wrap tri-in">
+        <div class="tri-head">
+          <span class="tri-badge kr" data-en="COMING SOON">출시 예정</span>
+          <h2 class="tri-title">
+            <span class="l">세 가지 순간을 위한</span>
+            <span class="l accent">세 가지 맛</span>
+          </h2>
+          <p class="tri-lead kr" data-en="Choose what the moment needs — rest, spark, or reset.">
+            쉬어갈 때, 힘낼 때, 비워낼 때.<br>필요한 순간에 맞춰 고르세요.</p>
+        </div>
+
+        <div class="tri-grid" id="triGrid">
+          <article class="tri-card" data-i="0" style="--c1:#F6A8C0;--c2:#8E5BD8">
+            <div class="tri-glow"></div>
+            <div class="tri-tag">BOARDING</div>
+            <div class="tri-img"><img src="assets/new-dream.png" alt="DREAM-IT" loading="lazy"></div>
+            <div class="tri-body">
+              <div class="tri-en">DREAM-IT</div>
+              <div class="tri-kr">드림 잇 · 복숭아맛</div>
+              <div class="tri-spec">L-테아닌 200mg</div>
+            </div>
+          </article>
+          <article class="tri-card" data-i="1" style="--c1:#5AB6E8;--c2:#F2A93B">
+            <div class="tri-glow"></div>
+            <div class="tri-tag">IN FLIGHT</div>
+            <div class="tri-img"><img src="assets/new-spark.png" alt="SPARK-IT" loading="lazy"></div>
+            <div class="tri-body">
+              <div class="tri-en">SPARK-IT</div>
+              <div class="tri-kr">스파크 잇 · 블루베리맛</div>
+              <div class="tri-spec">L-아르기닌 1000mg</div>
+            </div>
+          </article>
+          <article class="tri-card" data-i="2" style="--c1:#B6D94C;--c2:#E8E33C">
+            <div class="tri-glow"></div>
+            <div class="tri-tag">LANDING</div>
+            <div class="tri-img"><img src="assets/new-reset.png" alt="RESET-IT" loading="lazy"></div>
+            <div class="tri-body">
+              <div class="tri-en">RESET-IT</div>
+              <div class="tri-kr">리셋 잇 · 청포도맛</div>
+              <div class="tri-spec">포스트바이오틱스 2억</div>
+            </div>
+          </article>
+        </div>
+
+        <div class="tri-cta">
+          <a href="product.html?no=101" class="tri-btn">
+            <span>트리플 잇 미리 보기</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
         </div>
       </div>
     </section>
@@ -1211,7 +1307,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v53 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v54 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2077,6 +2173,39 @@ setHead();
     },120);
   },{passive:true});
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) start();
+})();
+
+/* Triple-it 카드 등장 + 포인터 반응 */
+(function(){
+  const grid=document.getElementById('triGrid');
+  if(!grid) return;
+  const cards=[...grid.querySelectorAll('.tri-card')];
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(reduce){ cards.forEach(c=>c.classList.add('in')); return; }
+
+  /* 스크롤 진입 시 순차 등장 */
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const i=+e.target.dataset.i||0;
+      setTimeout(()=>e.target.classList.add('in'), i*120);
+      io.unobserve(e.target);
+    });
+  },{threshold:.2});
+  cards.forEach(c=>io.observe(c));
+
+  /* 마우스 위치에 따라 살짝 기울기 */
+  cards.forEach(c=>{
+    c.addEventListener('pointermove',ev=>{
+      const r=c.getBoundingClientRect();
+      const x=(ev.clientX-r.left)/r.width, y=(ev.clientY-r.top)/r.height;
+      c.style.setProperty('--mx',(x*100)+'%');
+      c.style.setProperty('--my',(y*100)+'%');
+      c.style.transform=`rotateY(${(x-.5)*7}deg) rotateX(${(.5-y)*7}deg) translateZ(8px)`;
+    });
+    c.addEventListener('pointerleave',()=>{ c.style.transform=''; });
+  });
 })();
 </script>
 
