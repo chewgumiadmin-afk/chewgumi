@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v50 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v51 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -694,6 +694,22 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 /* 영상 iframe */
 .film iframe, .video-card iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
 .video-card{position:relative}
+
+/* New Arrivals 화보 캡션 */
+.ar-lead{margin:-4px 0 16px;font-size:14px;color:var(--gray);line-height:1.8;word-break:keep-all}
+#arrivals .rail figure{position:relative;flex:0 0 clamp(230px,26vw,300px)}
+#arrivals .rail figure img{border-radius:18px 18px 0 0}
+#arrivals figcaption{display:block;padding:15px 16px 18px;background:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.85);border-top:0;border-radius:0 0 18px 18px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#arrivals figcaption .no{display:block;font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:2px;color:var(--main)}
+#arrivals figcaption b{display:block;margin-top:6px;font-size:15px;font-weight:700;letter-spacing:-.02em}
+#arrivals figcaption .d{display:block;margin-top:6px;font-size:12.5px;line-height:1.75;color:#666;
+  word-break:keep-all}
+.ar-cta{margin-top:18px;text-align:right}
+.ar-cta a{font-size:13px;font-weight:700;color:var(--main);text-decoration:underline;text-underline-offset:4px}
+@media(max-width:640px){#arrivals .rail figure{flex:0 0 76vw}}
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -1090,24 +1106,50 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
 <!-- NEW ARRIVALS : 듀잇 신규 화보 (드라이브 사진 레일) -->
 <section id="arrivals" style="padding-top:0;">
-  <div class="wrap">
-    <div class="sec-head"><h2 class="sec-title">New Arrivals · Dew-it Editorial</h2><span class="sec-more kr">드라이브 촬영본</span></div>
-    <div class="rail">
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/f89d6da91dd672a5f25a7a295ebf3be6.png" alt="듀잇 화보 CGM27816" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/942a7d4949aa31bea2c60e76208c1b76.png" alt="듀잇 화보 CGM27832" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/afad3d6dddd247af314c05157948d298.png" alt="듀잇 화보 CGM27851" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/55a36711d9dc4b14c9ee46972c6afc3c.png" alt="듀잇 화보 CGM27867" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/2c58793be7f900d4997e26451366b9cb.png" alt="듀잇 화보 CGM27900" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/4f3394ac34364fc0e1f88744141a8c99.png" alt="듀잇 화보 CGM27920" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/f89d6da91dd672a5f25a7a295ebf3be6.png" alt="듀잇 라이프스타일 cgm1356" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/942a7d4949aa31bea2c60e76208c1b76.png" alt="듀잇 라이프스타일 cgm1396" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/afad3d6dddd247af314c05157948d298.png" alt="듀잇 라이프스타일 cgm1466" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/55a36711d9dc4b14c9ee46972c6afc3c.png" alt="듀잇 라이프스타일 cgm1561" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/2c58793be7f900d4997e26451366b9cb.png" alt="듀잇 라이프스타일 cgm1632" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-      <figure><img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/4f3394ac34364fc0e1f88744141a8c99.png" alt="듀잇 라이프스타일 cgm1682" loading="lazy" onerror="this.onerror=null;this.closest('figure').remove()"></figure>
-    </div>
-  </div>
-</section>
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 class="sec-title">New Arrivals · Dew-it</h2>
+          <span class="sec-more kr" data-en="Sugar-free Xylitol Candy">무설탕 자일리톨 캔디</span>
+        </div>
+        <p class="ar-lead kr" data-en="Six moments that make Dew-it part of your day.">
+          듀잇이 일상에 스며드는 여섯 장면.</p>
+        <div class="rail">
+        <figure>
+          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/f89d6da91dd672a5f25a7a295ebf3be6.png" alt="상쾌한 하루의 시작" loading="lazy"
+            onerror="this.onerror=null;this.closest('figure').remove()">
+          <figcaption><span class="no">01</span><b>상쾌한 하루의 시작</b><span class="d">아침 첫 한 알. 입 안이 개운해지면 하루의 기분도 달라집니다.</span></figcaption>
+        </figure>
+        <figure>
+          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/942a7d4949aa31bea2c60e76208c1b76.png" alt="핀란드산 자일리톨 93%" loading="lazy"
+            onerror="this.onerror=null;this.closest('figure').remove()">
+          <figcaption><span class="no">02</span><b>핀란드산 자일리톨 93%</b><span class="d">설탕 대신 자일리톨. 달콤함은 그대로, 부담은 덜었습니다.</span></figcaption>
+        </figure>
+        <figure>
+          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/afad3d6dddd247af314c05157948d298.png" alt="레몬민트 · 산뜻하게" loading="lazy"
+            onerror="this.onerror=null;this.closest('figure').remove()">
+          <figcaption><span class="no">03</span><b>레몬민트 · 산뜻하게</b><span class="d">레몬의 상큼함과 민트의 시원함이 만나 입 안을 정리합니다.</span></figcaption>
+        </figure>
+        <figure>
+          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/55a36711d9dc4b14c9ee46972c6afc3c.png" alt="그레이프 · 달콤하게" loading="lazy"
+            onerror="this.onerror=null;this.closest('figure').remove()">
+          <figcaption><span class="no">04</span><b>그레이프 · 달콤하게</b><span class="d">포도의 진한 단맛. 무설탕이라는 걸 잊게 되는 맛입니다.</span></figcaption>
+        </figure>
+        <figure>
+          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/2c58793be7f900d4997e26451366b9cb.png" alt="언제 어디서나" loading="lazy"
+            onerror="this.onerror=null;this.closest('figure').remove()">
+          <figcaption><span class="no">05</span><b>언제 어디서나</b><span class="d">가방에도 주머니에도. 물 없이 한 알이면 충분합니다.</span></figcaption>
+        </figure>
+        <figure>
+          <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/medium/202512/4f3394ac34364fc0e1f88744141a8c99.png" alt="매일의 습관으로" loading="lazy"
+            onerror="this.onerror=null;this.closest('figure').remove()">
+          <figcaption><span class="no">06</span><b>매일의 습관으로</b><span class="d">식후에, 만나기 전에, 자기 전에. 챙기기 쉬운 건강 습관.</span></figcaption>
+        </figure>
+        </div>
+        <div class="ar-cta">
+          <a href="index.html#all" onclick="filterLine('doit')">듀잇 전체 보기 →</a>
+        </div>
+      </div>
+    </section>
 
 <!-- COMMUNITY 요약 (BOARDS에서 자동 추림 · 클릭 시 대형 레이어) -->
 
@@ -1152,7 +1194,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v50 · 2026-08-11</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v51 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
