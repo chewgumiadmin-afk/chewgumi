@@ -245,6 +245,10 @@ function render(){
       +'<select id="cc'+o.id+'" style="width:118px">'+COURIERS.map(c=>'<option value="'+c.c+'"'+(c.c===o.courier_code?' selected':'')+'>'+c.n+'</option>').join('')+'</select>'
       +'<input id="tn'+o.id+'" placeholder="운송장번호" value="'+esc(o.tracking_no)+'" style="width:150px">'
       +'<button class="mini" onclick="save('+o.id+')">저장</button>'
+      +'<button class="mini" onclick="editAddr(\''+o.order_no+'\')">배송지수정</button>'
+      +'<button class="mini" onclick="showLogs(\''+o.order_no+'\')">수정이력</button>'
+      +(['pending','paid','preparing'].includes(o.status)
+        ?'<button class="mini rf" onclick="doCancel(\''+o.order_no+'\')">주문취소</button>':'')
       +'<button class="mini sh" onclick="ship(\''+o.order_no+'\','+o.id+')">발송처리+알림</button>'
       +(o.tracking_no?'<button class="mini" onclick="track(\''+o.order_no+'\')">배송조회</button>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no
@@ -257,6 +261,7 @@ function render(){
 }
 
 function save(id){
+  /* 운송장·택배사 변경은 서버에 이력이 함께 기록됩니다 */
   const cc=$('cc'+id).value;
   const body={status:$('st'+id).value,courier_code:cc,
     courier:(COURIERS.find(c=>c.c===cc)||{}).n||'',tracking_no:$('tn'+id).value.trim()};
@@ -303,6 +308,50 @@ function openCash(no){
   .catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
 let rOrder=null;
+const FN_EDIT = SB_URL + '/functions/v1/order-edit';
+function omsg(t){ const e=$('msg')||$('omsg'); if(e) e.textContent=t; else alert(t); }
+function callEdit(payload){
+  return fetch(FN_EDIT,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify(payload)}).then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function doCancel(no){
+  const r=prompt('주문 '+no+' 취소\n취소 사유를 입력해 주세요.','고객 요청');
+  if(r===null) return;
+  if(!confirm('정말 취소할까요?\n재고·적립금·쿠폰이 원상 복구되고 고객에게 안내 문자가 발송됩니다.')) return;
+  omsg('취소 처리 중…');
+  callEdit({action:'cancel',orderId:no,reason:r}).then(({ok,d})=>{
+    if(ok&&d.ok){ omsg('주문이 취소되었습니다.'); load(); }
+    else omsg(d.error||'취소에 실패했습니다.');
+  }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
+}
+function editAddr(no){
+  const o=(ORD||[]).find(x=>x.order_no===no); if(!o) return;
+  const name=prompt('받는 분 이름', o.buyer_name||''); if(name===null)return;
+  const phone=prompt('연락처', o.buyer_phone||''); if(phone===null)return;
+  const zip=prompt('우편번호', o.zipcode||''); if(zip===null)return;
+  const a1=prompt('주소', o.addr1||''); if(a1===null)return;
+  const a2=prompt('상세주소', o.addr2||''); if(a2===null)return;
+  const memo=prompt('배송 메모', o.memo||''); if(memo===null)return;
+  omsg('변경 중…');
+  callEdit({action:'editAddress',orderId:no,buyer_name:name,buyer_phone:phone,
+    zipcode:zip,addr1:a1,addr2:a2,memo:memo}).then(({ok,d})=>{
+    if(ok&&d.ok){ omsg('배송지가 변경되었습니다.'); load(); }
+    else omsg(d.error||'변경에 실패했습니다.');
+  }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
+}
+function showLogs(no){
+  callEdit({action:'logs',orderId:no}).then(({ok,d})=>{
+    if(!ok||!d.ok) return omsg(d.error||'이력을 불러오지 못했습니다.');
+    if(!d.logs.length) return alert('수정 이력이 없습니다.');
+    const A={cancel:'주문취소',address:'배송지변경',shipping:'운송장수정'};
+    alert('주문 '+no+' 수정 이력\n\n'+d.logs.map(l=>
+      new Date(l.created_at).toLocaleString('ko-KR')+'  '+(A[l.action]||l.action)
+      +(l.before_val?'\n  이전: '+l.before_val:'')
+      +(l.after_val?'\n  변경: '+l.after_val:'')
+      +'\n  처리자: '+l.actor).join('\n\n'));
+  }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
+}
 function openRefund(no,remain){
   rOrder=no;
   document.getElementById('rSub').textContent='주문 '+no+' · 환불 가능 잔액 ₩'+won(remain);
