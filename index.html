@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v57 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v58 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1344,7 +1344,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v57 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v58 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2419,5 +2419,98 @@ setHead();
   .m-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
 }
 </style>
+
+<style>
+/* ══ VIEW ALL 가시성 (모바일) ══ */
+@media (max-width:640px){
+  .sec-head{flex-wrap:wrap !important;gap:8px 10px !important;
+    align-items:center !important;margin-bottom:22px !important}
+  .sec-title{flex:1 1 100% !important;font-size:clamp(19px,5.4vw,26px) !important}
+  .sec-more{flex:none !important;display:inline-flex !important;align-items:center;
+    min-height:36px;padding:8px 16px !important;font-size:11.5px !important;
+    white-space:nowrap;background:rgba(255,255,255,.92) !important;
+    border:1px solid rgba(216,37,88,.25) !important;color:var(--main) !important}
+}
+
+/* ══ 경량 모드 ══ */
+.lite .tri-bg,.lite .tri-marquee{display:none !important}
+.lite .tri-sec::before{background:linear-gradient(165deg,#2A1220,#3A1128) !important}
+.lite *{animation:none !important;transition:none !important}
+.lite .glass,.lite .panel,.lite .card,.lite .tri-card,
+.lite header,.lite .cartp,.lite .drawer{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  background:rgba(255,255,255,.94) !important}
+.lite .tri-card{background:rgba(255,255,255,.1) !important}
+.lite iframe{display:none !important}
+.lite .film,.lite .video-card{display:flex;align-items:center;justify-content:center;
+  background:#F3E6EA;border-radius:16px;min-height:150px}
+.lite .film::after,.lite .video-card::after{content:"영상 · 경량 모드에서는 재생하지 않습니다";
+  font-size:12px;color:#8a6a74;padding:16px;text-align:center}
+.lite .slide:not(.on){display:none !important}
+.lite .ripple{display:none !important}
+
+.lite-bar{position:fixed;left:0;right:0;bottom:0;z-index:1300;
+  padding:9px 16px calc(9px + env(safe-area-inset-bottom));
+  background:rgba(27,11,20,.94);color:#fff;font-size:12px;
+  display:none;align-items:center;justify-content:space-between;gap:10px}
+.lite .lite-bar,body.lite-offer .lite-bar{display:flex}
+.lite-bar b{color:#FFE923;font-weight:700}
+.lite-bar button{height:32px;padding:0 14px;border-radius:999px;border:0;
+  font-family:inherit;font-size:11.5px;font-weight:700;
+  background:#fff;color:#1B0B14;cursor:pointer;flex:none}
+@media (max-width:640px){ .lite .m-nav{background:#fff !important;backdrop-filter:none !important} }
+</style>
+
+<div class="lite-bar" id="liteBar">
+  <span id="liteTxt">연결이 느립니다. <b>경량 모드</b>로 빠르게 볼 수 있어요.</span>
+  <button id="liteBtn" onclick="toggleLite()">켜기</button>
+</div>
+
+<script>
+/* 느린 연결 감지 → 경량 모드 제안 · 수동 전환 가능 */
+(function(){
+  var KEY='cg_lite';
+  var saved=null; try{saved=localStorage.getItem(KEY);}catch(e){}
+  var c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  var slow=false;
+  if(c){
+    var t=c.effectiveType||'';
+    slow = c.saveData===true || t==='slow-2g' || t==='2g' || t==='3g';
+  }
+
+  function apply(on){
+    document.documentElement.classList.toggle('lite',on);
+    document.body.classList.toggle('lite',on);
+    var b=document.getElementById('liteBtn'), t=document.getElementById('liteTxt');
+    if(b) b.textContent = on?'끄기':'켜기';
+    if(t) t.innerHTML = on
+      ? '<b>경량 모드</b>가 켜져 있습니다. 영상과 효과를 줄였습니다.'
+      : '연결이 느립니다. <b>경량 모드</b>로 빠르게 볼 수 있어요.';
+    document.body.classList.toggle('lite-offer', !on && slow);
+  }
+
+  window.toggleLite=function(){
+    var on=!document.body.classList.contains('lite');
+    try{localStorage.setItem(KEY,on?'1':'0');}catch(e){}
+    apply(on);
+    if(!on && !slow) document.body.classList.remove('lite-offer');
+  };
+
+  if(saved==='1') apply(true);
+  else if(saved==='0') apply(false);
+  else if(slow){ apply(false); document.body.classList.add('lite-offer'); }
+
+  /* 연결 상태가 바뀌면 다시 판단 */
+  if(c && c.addEventListener){
+    c.addEventListener('change',function(){
+      var t=c.effectiveType||'';
+      slow = c.saveData===true || t==='slow-2g' || t==='2g' || t==='3g';
+      var cur=document.body.classList.contains('lite');
+      var s=null; try{s=localStorage.getItem(KEY);}catch(e){}
+      if(s===null) document.body.classList.toggle('lite-offer', slow && !cur);
+    });
+  }
+})();
+</script>
 </body>
 </html>
