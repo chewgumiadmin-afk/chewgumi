@@ -124,6 +124,20 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
         <button data-s="pending" onclick="setS('pending')">미결제</button>
       </div>
       <div class="panel" style="margin-bottom:16px">
+      <h2>무통장입금 계좌</h2>
+      <div class="msg" id="bkMsg" style="margin-top:0">주문서에 표시되는 계좌 정보입니다.</div>
+      <div style="display:grid;grid-template-columns:1fr 1.6fr 1fr .7fr;gap:9px;margin-top:10px">
+        <input id="bkName" placeholder="은행명">
+        <input id="bkNo" placeholder="계좌번호">
+        <input id="bkHolder" placeholder="예금주">
+        <input id="bkDays" type="number" min="1" placeholder="입금기한(일)">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <button class="mini" onclick="bankSave()">저장</button>
+        <button class="mini" onclick="bankSync()">공식몰에서 가져오기</button>
+      </div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
       <h2>CAFE24 · 공식몰 주문</h2>
       <div id="c24Status" class="msg" style="margin-top:0">연동 상태 확인 중…</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
@@ -181,7 +195,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();load();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();bankLoad();load();}}
 
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
@@ -319,6 +333,36 @@ function openCash(no){
   .catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
 let rOrder=null;
+function bankLoad(){
+  fetch(SB_URL+'/rest/v1/shop_settings?select=key,value&key=in.(bank_name,bank_account,bank_holder,deposit_days)',
+    {headers:{apikey:SB_KEY,Authorization:'Bearer '+token}})
+  .then(r=>r.ok?r.json():[]).then(rows=>{
+    const o={}; (rows||[]).forEach(r=>o[r.key]=r.value);
+    $('bkName').value=o.bank_name||''; $('bkNo').value=o.bank_account||'';
+    $('bkHolder').value=o.bank_holder||''; $('bkDays').value=o.deposit_days||3;
+  }).catch(()=>{});
+}
+function bankSave(){
+  $('bkMsg').textContent='저장 중…';
+  c24Call({action:'bankSave',bank_name:$('bkName').value.trim(),
+    bank_account:$('bkNo').value.trim(),bank_holder:$('bkHolder').value.trim(),
+    deposit_days:$('bkDays').value||3}).then(({ok,d})=>{
+    $('bkMsg').textContent=ok?'저장되었습니다. 주문서에 바로 반영됩니다.':(d.error||'저장에 실패했습니다.');
+  }).catch(()=>{$('bkMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function bankSync(){
+  $('bkMsg').textContent='공식몰에서 계좌 정보를 가져오는 중…';
+  c24Call({action:'bankSync'}).then(({ok,d})=>{
+    if(!ok){
+      if(d.needAuth){ $('bkMsg').innerHTML='카페24 연동이 필요합니다. 아래 [카페24 연동하기]를 먼저 눌러주세요.'; return; }
+      $('bkMsg').textContent=d.error||'가져오지 못했습니다.'; return;
+    }
+    if(!d.found){ $('bkMsg').textContent=d.message||'공식몰에 등록된 계좌를 찾지 못했습니다. 직접 입력해 주세요.'; return; }
+    $('bkName').value=d.bank_name||''; $('bkNo').value=d.bank_account||'';
+    $('bkHolder').value=d.bank_holder||'';
+    $('bkMsg').textContent='공식몰 계좌 정보를 가져왔습니다.'+(d.count>1?' (등록된 계좌 '+d.count+'개 중 첫 번째)':'');
+  }).catch(()=>{$('bkMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
 const FN_C24 = SB_URL + '/functions/v1/cafe24';
 function c24Call(p){
   return fetch(FN_C24,{method:'POST',
