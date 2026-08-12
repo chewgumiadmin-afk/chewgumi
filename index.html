@@ -839,51 +839,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   background:rgba(255,255,255,.9);border:1px solid var(--line);color:var(--ink)}
 .cgbot-order .ob.primary{background:linear-gradient(135deg,#E95073,#D82558);color:#fff;border-color:transparent}
 
-/* ══ 모바일 대응 보강 (v57) ══ */
-@media (max-width:640px){
-  /* 가로 스크롤 원천 차단 */
-  html,body{max-width:100%;overflow-x:hidden}
-  img,video,iframe,table{max-width:100%}
 
-  /* 고정폭 요소를 화면 폭에 맞춤 */
-  .popup{width:calc(100vw - 32px) !important;max-width:405px}
-  .popup .p-illust{width:min(72vw,250px) !important}
-  .popup .p-acts{display:flex;gap:8px;flex-wrap:wrap}
-  .popup .p-acts button{width:auto !important;flex:1;min-width:120px}
-  .join-box{width:calc(100vw - 32px) !important;max-width:380px}
-  .ripple{width:min(60vw,240px) !important}
-
-  /* 본문 여백 */
-  .wrap{padding-left:16px;padding-right:16px}
-
-  /* 히어로: 세로 화면에서 너무 납작해지지 않도록 */
-  .hero{border-radius:18px}
-  .hero-arrow{width:34px;height:34px;font-size:18px}
-
-  /* 가로 스크롤 영역은 스냅으로 부드럽게 */
-  .rail,.video-grid,.tabs,.chips{
-    -webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .rail::-webkit-scrollbar,.video-grid::-webkit-scrollbar{display:none}
-
-  /* 터치 목표 크기 확보 */
-  .gnb a,.tabs a,.sec-more{min-height:40px;display:inline-flex;align-items:center}
-
-  /* 하단 탭바에 가리지 않도록 */
-  body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
-
-  /* 트리플잇 섹션 */
-  .tri-sec{padding:52px 0 60px}
-  .tri-title{font-size:clamp(24px,7vw,34px)}
-  .tri-card{padding:18px 16px 20px}
-}
-@media (max-width:400px){
-  .tri-track span{font-size:34px}
-  .popup .p-acts button{min-width:100%}
-}
-/* 아이폰 노치 대응 */
-@supports(padding:max(0px)){
-  .m-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
-}
 </style>
 
 <!-- ═══ 분석 도구 (리서치 권고 a그룹) — 각 ID 발급 후 주석 해제하면 즉시 활성화 ═══
@@ -2412,6 +2368,56 @@ setHead();
 
 
 
+</style>
+
+<style>
+/* ══ 모바일 대응 (최종 · 다른 스타일보다 뒤에 위치) ══ */
+@media (max-width:640px){
+  html,body{max-width:100%;overflow-x:hidden}
+  img,video,iframe,table{max-width:100%}
+
+  /* 팝업 — 화면 폭에 맞추고 세로도 넘치지 않게 */
+  .popup{width:calc(100vw - 32px) !important;max-width:400px !important;
+    max-height:86vh !important;overflow-y:auto !important}
+  .popup .p-illust{width:min(66vw,230px) !important;height:auto !important}
+  .popup .p-acts{display:flex !important;gap:8px !important;flex-wrap:wrap !important;
+    padding:0 18px !important}
+  .popup .p-acts button,.popup .p-acts a{width:auto !important;flex:1 1 46% !important;
+    min-width:130px !important;height:44px !important}
+
+  /* 가입 유도 박스 */
+  .join-box{width:calc(100vw - 32px) !important;max-width:380px !important;
+    max-height:86vh !important;overflow-y:auto !important}
+
+  /* 상세·장바구니 패널 */
+  .detail{width:100% !important;max-width:100% !important;
+    border-radius:20px 20px 0 0 !important}
+  .cartp{width:min(92vw,360px) !important}
+  .drawer{width:min(84vw,320px) !important}
+
+  .ripple{width:min(58vw,220px) !important;height:auto !important}
+  .wrap{padding-left:16px !important;padding-right:16px !important}
+
+  .hero{border-radius:18px}
+  .hero-arrow{width:34px;height:34px;font-size:18px}
+
+  .rail,.video-grid,.tabs,.chips{-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .rail::-webkit-scrollbar,.video-grid::-webkit-scrollbar,
+  .tabs::-webkit-scrollbar{display:none}
+
+  body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+
+  .tri-sec{padding:52px 0 60px}
+  .tri-title{font-size:clamp(24px,7vw,34px)}
+  .tri-card{padding:18px 16px 20px}
+}
+@media (max-width:400px){
+  .tri-track span{font-size:32px}
+  .popup .p-acts button,.popup .p-acts a{flex:1 1 100% !important}
+}
+@supports(padding:max(0px)){
+  .m-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
+}
 </style>
 </body>
 </html>
