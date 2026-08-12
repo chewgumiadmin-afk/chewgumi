@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<!-- ChewGumi Stock Manager v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>재고 관리 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1060px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select{width:100%;padding:10px 12px;border-radius:11px;font-size:12.5px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+.btn{padding:12px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{padding:8px 13px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.stat{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center}
+.stat .l{font-size:11px;color:var(--gray)}
+.stat .v{margin-top:5px;font-size:20px;font-weight:800;color:var(--main)}
+.stat.alert{border-color:rgba(233,162,59,.5);background:rgba(233,162,59,.12)}
+.stat.alert .v{color:#9a6414}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{padding:9px 14px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.75);border:1px solid var(--line);color:var(--gray)}
+.chips button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.thead,.row{display:grid;grid-template-columns:2fr .8fr .9fr .9fr 1.2fr;gap:9px;align-items:center}
+.thead{padding:10px 4px;border-bottom:1.5px solid rgba(0,0,0,.12);font-size:11.5px;font-weight:700;color:var(--gray)}
+.row{padding:12px 4px;border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px}
+.row:last-child{border-bottom:0}
+.nm{font-weight:600;line-height:1.45}
+.nm small{display:block;color:var(--gray);font-weight:400;font-size:11px;margin-top:2px}
+.stk{font-weight:800;font-size:15px}
+.stk.zero{color:var(--bad)}.stk.low{color:var(--warn)}.stk.ok{color:var(--ok)}
+.badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:999px;color:#fff;text-align:center;white-space:nowrap}
+.badge.on{background:var(--ok)}.badge.off{background:#999}
+.qa{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.qa input{width:74px;padding:8px 9px;text-align:center}
+.empty{padding:34px 0;text-align:center;color:var(--gray);font-size:13px}
+.warn{background:rgba(233,162,59,.14);border:1px solid rgba(233,162,59,.35);border-radius:14px;
+  padding:13px 15px;font-size:12.5px;line-height:1.8;margin-bottom:14px}
+.warn b{color:#9a6414}
+.hide{display:none}
+@media(max-width:820px){.stats{grid-template-columns:repeat(2,1fr)}.thead{display:none}
+  .row{grid-template-columns:1fr 1fr;gap:6px 9px;padding:14px 4px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Stock</h1><div class="s">재고 · 품절 관리</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="orders.html">주문</a> · <a href="index.html">사이트</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>재고 현황</h2>
+      <div class="stats">
+        <div class="stat"><div class="l">판매중</div><div class="v" id="cOn">0</div></div>
+        <div class="stat" id="bSold"><div class="l">품절</div><div class="v" id="cZero">0</div></div>
+        <div class="stat" id="bLow"><div class="l">재고 부족</div><div class="v" id="cLow">0</div></div>
+        <div class="stat"><div class="l">전체 재고</div><div class="v" id="cTotal">0</div></div>
+      </div>
+      <div class="msg" id="alertMsg" style="margin-top:12px"></div>
+    </div>
+
+    <div class="panel">
+      <h2>일괄 작업</h2>
+      <div class="warn" id="warnBox" style="display:none">
+        <b>품절 상품이 있습니다.</b> 고객이 상품을 봐도 구매할 수 없는 상태입니다.
+        아래 <b>[품절 상품 재고 채우기]</b>로 한 번에 해결하실 수 있습니다.
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" onclick="fillSold()">품절 상품 재고 채우기</button>
+        <input id="fillQty" type="number" value="100" min="1" style="width:100px">
+        <span style="font-size:12px;color:var(--gray)">개씩</span>
+        <button class="btn ghost" onclick="exportCsv()">엑셀(CSV) 내려받기</button>
+      </div>
+      <div class="msg" id="bmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>상품별 재고</h2>
+      <div class="chips" id="filters">
+        <button class="on" data-f="all">전체</button>
+        <button data-f="zero">품절만</button>
+        <button data-f="low">재고 부족</button>
+        <button data-f="travel">트래블잇</button>
+        <button data-f="doit">듀잇</button>
+        <button data-f="off">판매 안함</button>
+      </div>
+      <div class="thead">
+        <div>상품명</div><div>재고</div><div>안전재고</div><div>판매</div><div>재고 조정</div>
+      </div>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="pmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=v=>Number(v||0).toLocaleString();
+const LOW=20;                       /* 안전재고 기준 */
+let token=null,who='',ROWS=[],filt='all';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+document.querySelectorAll('#filters button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#filters button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filt=b.dataset.f; render();});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';load();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function load(){
+  fetch(SB+'/rest/v1/products?select=*&order=sort_order',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject(r.status)).then(rows=>{
+    ROWS=rows; stats(); render();
+  }).catch(s=>{$('list').innerHTML='<div class="empty">'
+    +(s===401?'로그인이 만료되었습니다.':'운영자만 조회할 수 있습니다.')+'</div>';});
+}
+function stats(){
+  const on=ROWS.filter(p=>p.active);
+  const zero=on.filter(p=>p.stock<=0);
+  const low=on.filter(p=>p.stock>0&&p.stock<=LOW);
+  $('cOn').textContent=on.length;
+  $('cZero').textContent=zero.length;
+  $('cLow').textContent=low.length;
+  $('cTotal').textContent=won(ROWS.reduce((s,p)=>s+(p.stock||0),0));
+  $('bSold').classList.toggle('alert',zero.length>0);
+  $('bLow').classList.toggle('alert',low.length>0);
+  $('warnBox').style.display=zero.length?'block':'none';
+  const a=[];
+  if(zero.length) a.push('⚠ 품절: '+zero.map(p=>esc(p.name)).join(', '));
+  if(low.length) a.push('· 재고 부족('+LOW+'개 이하): '+low.map(p=>esc(p.name)+' '+p.stock+'개').join(', '));
+  $('alertMsg').innerHTML=a.length?a.join('<br>'):'모든 상품의 재고가 충분합니다.';
+}
+function render(){
+  let rows=ROWS.filter(p=>{
+    if(filt==='zero') return p.active&&p.stock<=0;
+    if(filt==='low')  return p.active&&p.stock>0&&p.stock<=LOW;
+    if(filt==='off')  return !p.active;
+    if(filt==='travel'||filt==='doit') return p.line===filt;
+    return true;
+  });
+  if(!rows.length){$('list').innerHTML='<div class="empty">해당 상품이 없습니다.</div>';return;}
+  $('list').innerHTML=rows.map(p=>{
+    const cls=p.stock<=0?'zero':(p.stock<=LOW?'low':'ok');
+    return '<div class="row">'
+      +'<div class="nm">'+esc(p.name)+'<small>'+esc(p.line||'')+' · ₩'+won(p.price_sale)+'</small></div>'
+      +'<div class="stk '+cls+'">'+won(p.stock)+'</div>'
+      +'<div style="color:var(--gray)">'+LOW+'개</div>'
+      +'<div><span class="badge '+(p.active?'on':'off')+'" onclick="toggleActive('+p.id+','+(!p.active)+')" '
+        +'style="cursor:pointer">'+(p.active?'판매중':'판매안함')+'</span></div>'
+      +'<div class="qa">'
+        +'<button class="mini" onclick="adj('+p.id+',-10)">−10</button>'
+        +'<input id="q'+p.id+'" type="number" value="'+p.stock+'" min="0">'
+        +'<button class="mini" onclick="adj('+p.id+',10)">+10</button>'
+        +'<button class="mini" onclick="setStock('+p.id+')">저장</button>'
+      +'</div></div>';
+  }).join('');
+}
+function adj(id,d){
+  const el=$('q'+id); el.value=Math.max(0,(+el.value||0)+d); setStock(id);
+}
+function setStock(id){
+  const v=Math.max(0,+$('q'+id).value||0);
+  fetch(SB+'/rest/v1/products?id=eq.'+id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({stock:v})})
+  .then(r=>{if(r.ok){$('pmsg').textContent='재고가 저장되었습니다.';load();}
+    else $('pmsg').textContent='저장 권한이 없습니다.';})
+  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function toggleActive(id,v){
+  fetch(SB+'/rest/v1/products?id=eq.'+id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({active:v})})
+  .then(r=>{if(r.ok)load();else $('pmsg').textContent='변경 권한이 없습니다.';})
+  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function fillSold(){
+  const qty=Math.max(1,+$('fillQty').value||100);
+  const zero=ROWS.filter(p=>p.active&&p.stock<=0);
+  if(!zero.length) return $('bmsg').textContent='품절 상품이 없습니다.';
+  if(!confirm('품절 상품 '+zero.length+'개의 재고를 각각 '+qty+'개로 채울까요?')) return;
+  $('bmsg').textContent='처리 중…';
+  Promise.all(zero.map(p=>fetch(SB+'/rest/v1/products?id=eq.'+p.id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({stock:qty})})))
+  .then(()=>{$('bmsg').textContent=zero.length+'개 상품의 재고를 채웠습니다.';load();})
+  .catch(()=>$('bmsg').textContent='일부 처리에 실패했습니다.');
+}
+function exportCsv(){
+  if(!ROWS.length) return alert('내려받을 자료가 없습니다.');
+  const head=['상품번호','상품명','라인','판매가','재고','판매여부'];
+  const body=ROWS.map(p=>[p.id,p.name,p.line,p.price_sale,p.stock,p.active?'판매중':'판매안함']
+    .map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(','));
+  const csv='\uFEFF'+[head.join(','),...body].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='chewgumi_stock_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+sync();
+</script>
+</body>
+</html>
