@@ -146,20 +146,38 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 function sso(provider){
   var m=document.getElementById('ssoMsg');
   var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
-  if(m){m.className='sso-msg';m.textContent='연결 확인 중…';}
   var base=(typeof SB_URL!=='undefined')?SB_URL:(typeof SSO_BASE!=='undefined'?SSO_BASE:SB);
-  fetch(base+'/auth/v1/settings',{headers:{apikey:(typeof SB_KEY!=='undefined')?SB_KEY:KEY}})
+  var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
+  var back=encodeURIComponent(location.origin+location.pathname.replace(/[^/]*$/,'mypage.html'));
+
+  /* 네이버는 Supabase 기본 제공자가 아니므로 별도 안내 */
+  if(provider==='naver'){
+    if(m){m.className='sso-msg bad';
+      m.innerHTML='네이버 로그인은 준비 중입니다.<br>구글·카카오 또는 이메일로 로그인해 주세요.';}
+    return;
+  }
+
+  if(m){m.className='sso-msg';m.textContent='연결 확인 중…';}
+  var done=false;
+  var timer=setTimeout(function(){
+    if(done)return; done=true;
+    if(m){m.className='sso-msg bad';
+      m.innerHTML=NAME[provider]+' 로그인 연결이 지연되고 있습니다.<br>잠시 후 다시 시도해 주세요.';}
+  },6000);
+
+  fetch(base+'/auth/v1/settings',{headers:{apikey:key}})
   .then(function(r){return r.json();})
   .then(function(d){
+    if(done)return; done=true; clearTimeout(timer);
     var ex=(d&&d.external)||{};
     if(ex[provider]){
-      var back=encodeURIComponent(location.origin+location.pathname.replace(/[^/]*$/,'mypage.html'));
       location.href=base+'/auth/v1/authorize?provider='+provider+'&redirect_to='+back;
     } else {
       if(m){m.className='sso-msg bad';
         m.innerHTML=NAME[provider]+' 로그인은 아직 준비 중입니다.<br>이메일로 가입·로그인해 주세요.';}
     }
   }).catch(function(){
+    if(done)return; done=true; clearTimeout(timer);
     if(m){m.className='sso-msg bad';m.textContent='연결을 확인하지 못했습니다. 이메일로 로그인해 주세요.';}
   });
 }
