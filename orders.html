@@ -150,15 +150,24 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
       <h2>알림 · 카카오톡 채널</h2>
       <div class="msg" id="ntMsg" style="margin-top:0">설정을 불러오는 중…</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px">
-        <div><label style="font-size:12px;font-weight:600">사장님 휴대폰 (주문 알림 수신)</label>
+        <div><label style="font-size:12px;font-weight:600">알림 받을 이메일 <b style="color:var(--ok)">무료</b></label>
+          <input id="ntMail" type="email" placeholder="chewgumi24@gmail.com"></div>
+        <div><label style="font-size:12px;font-weight:600">알림 받을 휴대폰 (문자)</label>
           <input id="ntPhone" placeholder="010-0000-0000"></div>
         <div><label style="font-size:12px;font-weight:600">카카오톡 채널 주소</label>
           <input id="ntKko" placeholder="https://pf.kakao.com/_xxxxx"></div>
+        <div><label style="font-size:12px;font-weight:600">보내는 사람 (이메일)</label>
+          <input id="ntFrom" placeholder="ChewGumi &lt;onboarding@resend.dev&gt;"></div>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;align-items:center">
+        <label class="ntsw"><input type="checkbox" id="ntOn"> 주문 알림 켜기</label>
+        <label class="ntsw"><input type="checkbox" id="ntMailOn"> 이메일로 받기</label>
+        <label class="ntsw"><input type="checkbox" id="ntSmsOn"> 문자로 받기</label>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center">
-        <label class="ntsw"><input type="checkbox" id="ntOn"> 주문 들어오면 문자 받기</label>
         <button class="mini" onclick="ntSave()">저장</button>
-        <button class="mini" onclick="ntTest()">테스트 발송</button>
+        <button class="mini" onclick="ntTest('email')">이메일 테스트</button>
+        <button class="mini" onclick="ntTest('sms')">문자 테스트</button>
         <a class="mini kko" id="ntKkoLink" href="#" target="_blank" rel="noopener">채널 열기</a>
       </div>
       <div class="msg" id="ntRes"></div>
@@ -478,32 +487,45 @@ function ntCall(p){
 function ntLoad(){
   ntCall({action:'getSettings'}).then(({ok,d})=>{
     if(!ok) return $('ntMsg').textContent='설정을 불러오지 못했습니다.';
+    $('ntMail').value=d.owner_email||'';
     $('ntPhone').value=d.owner_phone||'';
     $('ntKko').value=d.kakao_channel_url||'';
+    $('ntFrom').value=d.mail_from||'';
     $('ntOn').checked=(d.owner_notify==='on');
+    $('ntMailOn').checked=(d.owner_notify_email==='on');
+    $('ntSmsOn').checked=(d.owner_notify_sms==='on');
     $('ntKkoLink').href=d.kakao_channel_url||'#';
-    var s='';
-    if(d.c24 && d.smsUse) s='카페24 SMS 사용 중 · 잔액 '+(d.smsBal||0)+'건';
-    else if(d.c24) s='카페24는 연동됐지만 SMS 사용이 꺼져 있습니다.';
-    else s='카페24 연동 전입니다. 문자는 발송 대기로만 쌓입니다.';
-    $('ntMsg').textContent=s;
+    var s=[];
+    s.push(d.mailReady?'이메일 발송 준비됨 (월 3,000통 무료)'
+      :'이메일 키(RESEND_API_KEY) 미등록 — 등록하면 무료로 알림을 받으실 수 있습니다.');
+    if(d.c24&&d.smsUse) s.push('카페24 SMS 사용 중 · 잔액 '+(d.smsBal||0)+'건');
+    else if(d.c24) s.push('카페24 SMS 사용이 꺼져 있습니다.');
+    else s.push('카페24 미연동 — 문자는 발송 대기로만 쌓입니다.');
+    $('ntMsg').innerHTML=s.join('<br>');
   }).catch(()=>{$('ntMsg').textContent='설정을 불러오지 못했습니다.';});
 }
 function ntSave(){
   $('ntRes').textContent='저장 중…';
-  ntCall({action:'saveSettings',owner_phone:$('ntPhone').value.trim(),
+  ntCall({action:'saveSettings',
+    owner_email:$('ntMail').value.trim(),
+    owner_phone:$('ntPhone').value.trim(),
     kakao_channel_url:$('ntKko').value.trim(),
-    owner_notify:$('ntOn').checked?'on':'off'}).then(({ok,d})=>{
+    mail_from:$('ntFrom').value.trim(),
+    owner_notify:$('ntOn').checked?'on':'off',
+    owner_notify_email:$('ntMailOn').checked?'on':'off',
+    owner_notify_sms:$('ntSmsOn').checked?'on':'off'}).then(({ok,d})=>{
     $('ntRes').textContent=ok?'저장되었습니다.':(d.error||'저장에 실패했습니다.');
     if(ok) ntLoad();
   }).catch(()=>{$('ntRes').textContent='네트워크 오류가 발생했습니다.';});
 }
-function ntTest(){
-  $('ntRes').textContent='테스트 문자를 보내는 중…';
-  ntCall({action:'test',phone:$('ntPhone').value.trim()}).then(({ok,d})=>{
-    $('ntRes').textContent = (ok&&d.ok)
-      ? ('발송했습니다. ('+(d.via==='cafe24'?'카페24 SMS':'솔라피')+') 휴대폰을 확인해 주세요.')
-      : (d.error||'발송하지 못했습니다. 카페24 SMS 사용 설정과 충전을 확인해 주세요.');
+function ntTest(ch){
+  $('ntRes').textContent=(ch==='email'?'테스트 메일':'테스트 문자')+'을 보내는 중…';
+  ntCall({action:'test',channel:ch,
+    email:$('ntMail').value.trim(),phone:$('ntPhone').value.trim()}).then(({ok,d})=>{
+    var r = ch==='email' ? d.email : d.sms;
+    if(r==='sent') $('ntRes').textContent='메일을 보냈습니다. 받은편지함(스팸함도)을 확인해 주세요.';
+    else if(r==='cafe24'||r==='solapi') $('ntRes').textContent='문자를 보냈습니다. 휴대폰을 확인해 주세요.';
+    else $('ntRes').textContent=r||'보내지 못했습니다.';
   }).catch(()=>{$('ntRes').textContent='네트워크 오류가 발생했습니다.';});
 }
 
