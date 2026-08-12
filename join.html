@@ -318,6 +318,7 @@ function onEmailInput(){
   const e=$('email').value.trim();
   if(e!==vEmail){ vSent=false; vDone=false; vEmail=e;
     $('vBox').classList.remove('on','done');
+    const re=document.querySelector('.vre'); if(re) re.style.display='';
     if(vTimer){clearInterval(vTimer);vTimer=null;} }
   check();
 }
@@ -408,7 +409,9 @@ window.addEventListener('beforeunload', function(e){
 });
 function markVerified(msg){
   $('vBox').classList.add('on','done');
-  $('vTxt').innerHTML='<b>'+msg+'</b><br>아래 정보를 입력하고 가입을 완료해 주세요.';
+  const re=document.querySelector('.vre');
+  if(re) re.style.display='none';          /* 인증 끝나면 [인증 확인] 숨김 */
+  $('vTxt').innerHTML='<b>'+msg+'</b><br>아래 <b>이름·휴대전화</b>를 입력하고 약관에 동의하신 뒤<br><b>[가입하기]</b>를 눌러 완료해 주세요.';
   $('hEmail').textContent='인증된 이메일입니다.'; $('hEmail').className='hint good';
   $('email').readOnly=true; $('pw1').readOnly=true; $('pw2').readOnly=true;
   $('vBtn').disabled=true; $('vBtn').textContent='인증 완료';
