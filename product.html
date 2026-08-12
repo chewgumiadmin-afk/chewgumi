@@ -815,5 +815,94 @@ loadWish();
 
 </style>
 <script src="assets/lite.js" defer></script>
+
+<section class="rv-sec" id="rvSec">
+  <div class="rv-head">
+    <h2>REVIEW <span id="rvCount"></span></h2>
+    <div class="rv-stars" id="rvStars"></div>
+  </div>
+  <div id="rvList"><div class="rv-empty">후기를 불러오는 중…</div></div>
+  <button class="rv-more" id="rvMore" onclick="rvLoad()" style="display:none">후기 더 보기</button>
+</section>
+<style>
+.rv-sec{max-width:900px;margin:44px auto 0;padding:0 20px}
+.rv-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  flex-wrap:wrap;padding-bottom:14px;border-bottom:2px solid rgba(0,0,0,.1)}
+.rv-head h2{font-family:'Poppins',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.02em}
+.rv-head h2 span{color:var(--main);font-size:16px}
+.rv-stars{font-size:13px;color:var(--gray)}
+.rv-stars b{color:#F5A623;letter-spacing:1px}
+.rv-item{padding:18px 2px;border-bottom:1px solid rgba(0,0,0,.07)}
+.rv-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--gray)}
+.rv-top .nm{font-weight:700;color:var(--ink);font-size:13px}
+.rv-top .st{color:#F5A623;letter-spacing:1px}
+.rv-top .src{font-size:10.5px;padding:3px 8px;border-radius:999px;
+  background:rgba(216,37,88,.08);color:var(--main);font-weight:700}
+.rv-body{margin-top:9px;font-size:13.5px;line-height:1.85;color:#444;
+  word-break:keep-all;white-space:pre-wrap}
+.rv-img{margin-top:10px;border-radius:12px;max-width:220px;width:100%;display:block}
+.rv-more{display:block;width:100%;margin-top:20px;padding:14px 0;border-radius:999px;
+  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.1);color:var(--ink)}
+.rv-empty{padding:34px 0;text-align:center;color:var(--gray);font-size:13px}
+@media(max-width:640px){.rv-sec{margin-top:32px}.rv-body{font-size:13px}}
+</style>
+<script>
+(function(){
+  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var no = new URLSearchParams(location.search).get('no') || '';
+  var off = 0, PAGE = 10, total = 0;
+
+  window.rvLoad = function(){
+    if(!no) return;
+    fetch(SB+'/rest/v1/product_reviews?select=*&product_id=eq.'+no
+      +'&visible=eq.true&order=written_at.desc&limit='+PAGE+'&offset='+off,
+      {headers:{apikey:KEY,Authorization:'Bearer '+KEY,Prefer:'count=exact'}})
+    .then(function(r){
+      var cr=r.headers.get('content-range')||'';
+      var m=cr.match(/\/(\d+)$/); if(m) total=+m[1];
+      return r.ok?r.json():[];
+    })
+    .then(function(rows){
+      var box=document.getElementById('rvList');
+      if(off===0){
+        if(!rows.length){
+          box.innerHTML='<div class="rv-empty">아직 등록된 후기가 없습니다.</div>';
+          document.getElementById('rvCount').textContent='';
+          return;
+        }
+        box.innerHTML='';
+        document.getElementById('rvCount').textContent='('+total+')';
+        document.getElementById('rvStars').innerHTML='<b>★★★★★</b> 5.0 · 후기 '+total+'건';
+      }
+      rows.forEach(function(v){
+        var d=document.createElement('div');
+        d.className='rv-item';
+        d.innerHTML='<div class="rv-top">'
+          +'<span class="nm">'+esc(v.author)+'</span>'
+          +'<span class="st">'+'★'.repeat(v.rating||5)+'</span>'
+          +'<span>'+(v.written_at||'')+'</span>'
+          +(v.source?'<span class="src">'+esc(v.source)+'</span>':'')
+          +'</div>'
+          +'<div class="rv-body">'+esc(v.body)+'</div>'
+          +(v.image_url?'<img class="rv-img" src="'+esc(v.image_url)+'" alt="후기 사진" loading="lazy">':'');
+        box.appendChild(d);
+      });
+      off += rows.length;
+      document.getElementById('rvMore').style.display = off < total ? 'block' : 'none';
+    })
+    .catch(function(){
+      document.getElementById('rvList').innerHTML=
+        '<div class="rv-empty">후기를 불러오지 못했습니다.</div>';
+    });
+  };
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', window.rvLoad);
+  else window.rvLoad();
+})();
+</script>
 </body>
 </html>
