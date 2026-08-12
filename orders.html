@@ -84,6 +84,28 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 
 .mini.sh{color:#2AA060;border-color:rgba(42,160,96,.35)}
 .o-act a.mini{display:inline-flex;align-items:center;text-decoration:none}
+
+.mini.kko{background:#FEE500 !important;color:#191600 !important;border-color:transparent !important}
+.ntsw{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;cursor:pointer}
+.ntsw input{width:19px;height:19px;accent-color:var(--main);cursor:pointer}
+.kko-pop{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(20,10,14,.5);backdrop-filter:blur(6px)}
+.kko-box{max-width:440px;width:100%;background:#fff;border-radius:22px;padding:24px;
+  box-shadow:0 22px 54px rgba(0,0,0,.24);max-height:86vh;overflow-y:auto}
+.kko-box h3{font-size:16px;font-weight:800;margin-bottom:6px}
+.kko-box .who{font-size:12.5px;color:var(--gray);margin-bottom:13px}
+.kko-box textarea{width:100%;min-height:190px;padding:14px;border-radius:14px;font-family:inherit;
+  font-size:13px;line-height:1.85;border:1px solid var(--line);background:rgba(255,255,255,.9);resize:vertical}
+.kko-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.kko-tabs button{padding:8px 13px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(0,0,0,.05);border:0;cursor:pointer;color:#555}
+.kko-tabs button.on{background:#FEE500;color:#191600}
+.kko-act{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
+.kko-act button,.kko-act a{flex:1;min-width:110px;padding:13px 0;border-radius:999px;text-align:center;
+  font-size:13px;font-weight:700;border:0;cursor:pointer;text-decoration:none}
+.kko-act .go{background:#FEE500;color:#191600}
+.kko-act .cp{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+.kko-act .cl{background:rgba(0,0,0,.06);color:#333}
 </style>
 </head>
 <body>
@@ -124,6 +146,23 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
         <button data-s="pending" onclick="setS('pending')">미결제</button>
       </div>
       <div class="panel" style="margin-bottom:16px">
+      <h2>알림 · 카카오톡 채널</h2>
+      <div class="msg" id="ntMsg" style="margin-top:0">설정을 불러오는 중…</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px">
+        <div><label style="font-size:12px;font-weight:600">사장님 휴대폰 (주문 알림 수신)</label>
+          <input id="ntPhone" placeholder="010-0000-0000"></div>
+        <div><label style="font-size:12px;font-weight:600">카카오톡 채널 주소</label>
+          <input id="ntKko" placeholder="https://pf.kakao.com/_xxxxx"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center">
+        <label class="ntsw"><input type="checkbox" id="ntOn"> 주문 들어오면 문자 받기</label>
+        <button class="mini" onclick="ntSave()">저장</button>
+        <button class="mini" onclick="ntTest()">테스트 발송</button>
+        <a class="mini kko" id="ntKkoLink" href="#" target="_blank" rel="noopener">채널 열기</a>
+      </div>
+      <div class="msg" id="ntRes"></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
       <h2>무통장입금 계좌</h2>
       <div class="msg" id="bkMsg" style="margin-top:0">주문서에 표시되는 계좌 정보입니다.</div>
       <div style="display:grid;grid-template-columns:1fr 1.6fr 1fr .7fr;gap:9px;margin-top:10px">
@@ -195,7 +234,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();bankLoad();load();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();bankLoad();ntLoad();load();}}
 
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
@@ -272,6 +311,7 @@ function render(){
       +'<button class="mini" onclick="save('+o.id+')">저장</button>'
       +'<button class="mini" onclick="editAddr(\''+o.order_no+'\')">배송지수정</button>'
       +'<button class="mini" onclick="showLogs(\''+o.order_no+'\')">수정이력</button>'
+      +'<button class="mini kko" onclick="kkoSend(\''+o.order_no+'\')">카톡 안내</button>'
       +(['pending','paid','preparing'].includes(o.status)
         ?'<button class="mini rf" onclick="doCancel(\''+o.order_no+'\')">주문취소</button>':'')
       +'<button class="mini sh" onclick="ship(\''+o.order_no+'\','+o.id+')">발송처리+알림</button>'
@@ -427,6 +467,92 @@ function c24Ship(id){
     if(ok&&d.ok){ $('c24Status').textContent='공식몰에 송장이 등록되었습니다.'; c24List(); }
     else $('c24Status').textContent=d.error||'등록에 실패했습니다.';
   }).catch(()=>{$('c24Status').textContent='네트워크 오류가 발생했습니다.';});
+}
+const FN_NT = SB_URL + '/functions/v1/notify';
+function ntCall(p){
+  return fetch(FN_NT,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify(p)}).then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function ntLoad(){
+  ntCall({action:'getSettings'}).then(({ok,d})=>{
+    if(!ok) return $('ntMsg').textContent='설정을 불러오지 못했습니다.';
+    $('ntPhone').value=d.owner_phone||'';
+    $('ntKko').value=d.kakao_channel_url||'';
+    $('ntOn').checked=(d.owner_notify==='on');
+    $('ntKkoLink').href=d.kakao_channel_url||'#';
+    var s='';
+    if(d.c24 && d.smsUse) s='카페24 SMS 사용 중 · 잔액 '+(d.smsBal||0)+'건';
+    else if(d.c24) s='카페24는 연동됐지만 SMS 사용이 꺼져 있습니다.';
+    else s='카페24 연동 전입니다. 문자는 발송 대기로만 쌓입니다.';
+    $('ntMsg').textContent=s;
+  }).catch(()=>{$('ntMsg').textContent='설정을 불러오지 못했습니다.';});
+}
+function ntSave(){
+  $('ntRes').textContent='저장 중…';
+  ntCall({action:'saveSettings',owner_phone:$('ntPhone').value.trim(),
+    kakao_channel_url:$('ntKko').value.trim(),
+    owner_notify:$('ntOn').checked?'on':'off'}).then(({ok,d})=>{
+    $('ntRes').textContent=ok?'저장되었습니다.':(d.error||'저장에 실패했습니다.');
+    if(ok) ntLoad();
+  }).catch(()=>{$('ntRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function ntTest(){
+  $('ntRes').textContent='테스트 문자를 보내는 중…';
+  ntCall({action:'test',phone:$('ntPhone').value.trim()}).then(({ok,d})=>{
+    $('ntRes').textContent = (ok&&d.ok)
+      ? ('발송했습니다. ('+(d.via==='cafe24'?'카페24 SMS':'솔라피')+') 휴대폰을 확인해 주세요.')
+      : (d.error||'발송하지 못했습니다. 카페24 SMS 사용 설정과 충전을 확인해 주세요.');
+  }).catch(()=>{$('ntRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+/* 카톡 안내 문구 만들기 */
+function kkoSend(no){
+  ntCall({action:'kakaoText',orderId:no,kind:'ship'}).then(({ok,d})=>{
+    if(!ok) return omsg(d.error||'문구를 만들지 못했습니다.');
+    kkoPop(no,d);
+  }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
+}
+function kkoPop(no,d){
+  var wrap=document.createElement('div');
+  wrap.className='kko-pop';
+  wrap.innerHTML='<div class="kko-box">'
+    +'<h3>카카오톡 안내 보내기</h3>'
+    +'<div class="who">'+esc(d.name||'')+' · '+esc(d.phone||'')+' · 주문 '+esc(no)+'</div>'
+    +'<div class="kko-tabs">'
+    +'<button data-k="deposit">입금 안내</button>'
+    +'<button data-k="paid">입금 확인</button>'
+    +'<button class="on" data-k="ship">발송 안내</button>'
+    +'<button data-k="done">수령 확인</button></div>'
+    +'<textarea id="kkoTx">'+esc(d.text)+'</textarea>'
+    +'<div class="kko-act">'
+    +'<button class="cp" id="kkoCp">문구 복사</button>'
+    +'<a class="go" href="'+esc(d.channel||'#')+'" target="_blank" rel="noopener">카톡 열기</a>'
+    +'<button class="cl" id="kkoCl">닫기</button></div></div>';
+  document.body.appendChild(wrap);
+
+  wrap.querySelectorAll('.kko-tabs button').forEach(function(b){
+    b.onclick=function(){
+      wrap.querySelectorAll('.kko-tabs button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      ntCall({action:'kakaoText',orderId:no,kind:b.dataset.k}).then(({ok,r})=>{}).catch(()=>{});
+      ntCall({action:'kakaoText',orderId:no,kind:b.dataset.k}).then(function(res){
+        if(res.ok) wrap.querySelector('#kkoTx').value=res.d.text;
+      });
+    };
+  });
+  wrap.querySelector('#kkoCp').onclick=function(){
+    var t=wrap.querySelector('#kkoTx').value;
+    navigator.clipboard.writeText(t).then(function(){
+      wrap.querySelector('#kkoCp').textContent='복사됨 ✓';
+      setTimeout(function(){wrap.querySelector('#kkoCp').textContent='문구 복사';},1600);
+    }).catch(function(){
+      var a=wrap.querySelector('#kkoTx'); a.select(); document.execCommand('copy');
+      alert('복사되었습니다.');
+    });
+  };
+  wrap.querySelector('#kkoCl').onclick=function(){ wrap.remove(); };
+  wrap.onclick=function(e){ if(e.target===wrap) wrap.remove(); };
 }
 const FN_EDIT = SB_URL + '/functions/v1/order-edit';
 function omsg(t){ const e=$('msg')||$('omsg'); if(e) e.textContent=t; else alert(t); }
