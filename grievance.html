@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!-- ChewGumi Grievance v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>규제 · 민원 대응 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1020px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:78px;line-height:1.8}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:13px 24px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{display:inline-flex;align-items:center;height:32px;padding:0 13px;border-radius:999px;
+  font-size:11.5px;font-weight:700;background:rgba(255,255,255,.85);
+  border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.msg{font-size:12.5px;color:var(--gray);margin-top:10px;min-height:17px;line-height:1.8}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+.legal{background:rgba(192,57,92,.08);border:1px solid rgba(192,57,92,.28);border-radius:16px;
+  padding:15px 17px;font-size:12.5px;line-height:1.9;margin-bottom:16px}
+.legal b{color:var(--bad)}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+.fg .w2{grid-column:span 2}
+.kinds{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+.kind{padding:13px 12px;border-radius:14px;text-align:left;background:rgba(255,255,255,.72);
+  border:1px solid var(--line);cursor:pointer;transition:.18s}
+.kind.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.kind b{display:block;font-size:13px;font-weight:700}
+.kind span{display:block;margin-top:3px;font-size:11px;opacity:.82;line-height:1.55}
+.gitem{padding:14px 4px;border-bottom:1px solid rgba(0,0,0,.06)}
+.gitem:last-child{border-bottom:0}
+.gh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gh .tt{flex:1;min-width:160px;font-size:14px;font-weight:700}
+.cat{font-size:10px;font-weight:700;padding:4px 10px;border-radius:999px;
+  background:rgba(0,0,0,.06);color:#555}
+.st{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff}
+.st.open{background:#999}.st.drafted{background:var(--warn)}
+.st.submitted{background:#3182F6}.st.answered{background:var(--ok)}.st.closed{background:#bbb}
+.gb{margin-top:8px;font-size:12.5px;line-height:1.8;color:#555}
+.ga{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.out{white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.9;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:16px;padding:18px;
+  max-height:520px;overflow-y:auto;margin-top:12px}
+.empty{padding:30px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:860px){.fg,.kinds{grid-template-columns:1fr}.fg .w2{grid-column:span 1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Grievance</h1><div class="s">규제 · 민원 대응</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="exports.html">수출 · 인증</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <div class="legal">
+        <b>반드시 읽어주세요.</b> 이 도구는 문서 <b>초안</b>을 만들어 드리는 것이며,
+        법률 자문이 아닙니다. 저희는 변호사가 아니므로 법적 효력이나 승소 가능성을 판단할 수 없습니다.<br>
+        <b>제출 전에 반드시</b> ① 사실관계가 정확한지 직접 확인하시고
+        ② 이의신청·행정심판처럼 <b>기한과 서식이 정해진 절차</b>는 해당 기관에 요건을 확인하시고
+        ③ 다툼의 소지가 있는 사안은 <b>변호사·법무사 또는 중소기업 옴부즈만</b> 상담을 거쳐 주세요.<br>
+        <span style="color:var(--gray)">무료 상담: 중소기업 옴부즈만 1670-1122 · 대한법률구조공단 132 · 소상공인마당 1357</span>
+      </div>
+
+      <h2>어디에 제기할까요</h2>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <a class="mini" href="https://www.better.go.kr/" target="_blank" rel="noopener">규제개혁신문고</a>
+        <a class="mini" href="https://www.epeople.go.kr/" target="_blank" rel="noopener">국민신문고</a>
+        <a class="mini" href="https://www.ombudsman.go.kr/" target="_blank" rel="noopener">중소기업 옴부즈만</a>
+        <a class="mini" href="https://www.ftc.go.kr/" target="_blank" rel="noopener">공정거래위원회</a>
+        <a class="mini" href="https://www.kca.go.kr/" target="_blank" rel="noopener">한국소비자원</a>
+        <a class="mini" href="https://www.mfds.go.kr/" target="_blank" rel="noopener">식품의약품안전처</a>
+        <a class="mini" href="https://unipass.customs.go.kr/" target="_blank" rel="noopener">관세청 유니패스</a>
+      </div>
+      <div class="msg">규제 개선 건의는 <b>규제개혁신문고</b>, 기관 처분 관련은 <b>국민신문고</b>,
+        소상공인 애로는 <b>중소기업 옴부즈만</b>이 적합합니다.</div>
+    </div>
+
+    <div class="panel">
+      <h2>문서 만들기</h2>
+      <div class="kinds" id="kinds">
+        <button class="kind on" data-k="complaint"><b>기업 개선요청</b><span>플랫폼·거래처에 보내는 공식 메일</span></button>
+        <button class="kind" data-k="petition"><b>규제 건의</b><span>규제개혁신문고 · 국민신문고</span></button>
+        <button class="kind" data-k="inquiry"><b>사실 확인 문의</b><span>기관에 유권해석 요청</span></button>
+        <button class="kind" data-k="objection"><b>이의신청</b><span>처분·결정에 대한 이의</span></button>
+      </div>
+
+      <div class="fg">
+        <div class="w2"><label>제목</label><input id="title" placeholder="예) 카페24 자동메시지 API 사용 제한 개선 요청"></div>
+        <div><label>구분</label>
+          <select id="category">
+            <option value="platform">플랫폼·거래처</option>
+            <option value="regulation">법령·규제</option>
+            <option value="tax">세무·관세</option>
+            <option value="etc">기타</option>
+          </select></div>
+        <div><label>받는 곳</label><input id="target" placeholder="예) 카페24 / 식품의약품안전처"></div>
+        <div><label>제출 경로</label><input id="channel" placeholder="예) 규제개혁신문고"></div>
+        <div><label>경로 주소</label><input id="channelUrl" placeholder="https://"></div>
+      </div>
+
+      <label>무슨 일이 있었나요 (사실만)</label>
+      <textarea id="situation" placeholder="언제, 무엇을 하려 했고, 어떻게 막혔는지 구체적으로 적어주세요."></textarea>
+      <label>근거·쟁점 (아는 만큼만)</label>
+      <textarea id="basis" placeholder="관련 법령이나 약관을 아시면 적어주세요. 모르시면 비워두셔도 됩니다."></textarea>
+      <label>무엇을 요청하시나요</label>
+      <textarea id="ask" placeholder="상대방이 해주었으면 하는 일을 구체적으로 적어주세요."></textarea>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+        <button class="btn" id="go" onclick="draft()">초안 만들기</button>
+        <button class="btn ghost" onclick="saveItem()">목록에 저장</button>
+        <button class="btn ghost" onclick="copyOut()">복사</button>
+        <button class="btn ghost" onclick="downloadOut()">파일로 저장</button>
+      </div>
+      <div class="msg" id="dmsg"></div>
+      <div id="outBox"></div>
+    </div>
+
+    <div class="panel">
+      <h2>진행 중인 사안</h2>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="lmsg2"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const CAT={platform:'플랫폼',regulation:'규제',tax:'세무',etc:'기타'};
+const ST={open:'검토중',drafted:'초안 완료',submitted:'제출함',answered:'회신 받음',closed:'종료'};
+let token=null,who='',kind='complaint',curId=null,lastOut='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const call=p=>fetch(SB+'/functions/v1/grievance',{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+document.querySelectorAll('#kinds .kind').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#kinds .kind').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); kind=b.dataset.k;});
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';loadList();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function ctx(){return{
+  title:$('title').value.trim(), target:$('target').value.trim(),
+  situation:$('situation').value.trim(), basis:$('basis').value.trim(),
+  ask:$('ask').value.trim()
+};}
+function draft(){
+  const c=ctx();
+  if(!c.title||!c.situation) return $('dmsg').textContent='제목과 상황을 입력해 주세요.';
+  $('go').disabled=true; $('dmsg').className='msg';
+  $('dmsg').textContent='초안을 만드는 중입니다… 20~30초 걸립니다.';
+  call({action:'draft',kind,ctx:c,id:curId}).then(({ok,d})=>{
+    $('go').disabled=false;
+    if(!ok){$('dmsg').className='msg bad';$('dmsg').textContent=d.error||'만들지 못했습니다.';return;}
+    lastOut=d.text;
+    $('outBox').innerHTML='<div class="out">'+esc(d.text)+'</div>';
+    $('dmsg').className='msg ok';
+    $('dmsg').textContent='초안이 준비되었습니다. 내용을 확인하고 필요하면 수정해 주세요.';
+    loadList();
+  }).catch(()=>{$('go').disabled=false;$('dmsg').className='msg bad';
+    $('dmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function saveItem(){
+  const c=ctx();
+  if(!c.title) return $('dmsg').textContent='제목을 입력해 주세요.';
+  call({action:'save',id:curId,title:c.title,category:$('category').value,
+    target:c.target,channel:$('channel').value.trim(),channel_url:$('channelUrl').value.trim(),
+    situation:c.situation,basis:c.basis,ask:c.ask}).then(({ok,d})=>{
+    if(!ok) return $('dmsg').textContent=d.error||'저장에 실패했습니다.';
+    curId=d.id; $('dmsg').className='msg ok'; $('dmsg').textContent='목록에 저장되었습니다.';
+    loadList();
+  }).catch(()=>{$('dmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function copyOut(){
+  if(!lastOut) return alert('만들어진 초안이 없습니다.');
+  navigator.clipboard.writeText(lastOut).then(()=>alert('복사되었습니다.')).catch(()=>alert('복사 실패'));
+}
+function downloadOut(){
+  if(!lastOut) return alert('만들어진 초안이 없습니다.');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+lastOut],{type:'text/plain;charset=utf-8'}));
+  a.download='chewgumi_'+kind+'_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+function loadList(){
+  call({action:'list'}).then(({ok,d})=>{
+    if(!ok||!d.items.length){$('list').innerHTML='<div class="empty">등록된 사안이 없습니다.</div>';return;}
+    $('list').innerHTML=d.items.map(g=>
+      '<div class="gitem"><div class="gh">'
+      +'<span class="tt">'+esc(g.title)+'</span>'
+      +'<span class="cat">'+(CAT[g.category]||g.category)+'</span>'
+      +'<span class="st '+g.status+'">'+(ST[g.status]||g.status)+'</span></div>'
+      +'<div class="gb">'+esc(g.situation||'').slice(0,140)
+      +(g.target?'<br><b>받는 곳</b> '+esc(g.target):'')
+      +(g.channel?' · '+esc(g.channel):'')+'</div>'
+      +'<div class="ga">'
+      +'<button class="mini" onclick="pick('+g.id+')">불러오기</button>'
+      +(g.channel_url?'<a class="mini" href="'+esc(g.channel_url)+'" target="_blank" rel="noopener">제출처 열기</a>':'')
+      +(g.draft?'<button class="mini" onclick="showDraft('+g.id+')">초안 보기</button>':'')
+      +'<button class="mini" onclick="mark('+g.id+')">상태 변경</button>'
+      +'</div></div>').join('');
+    window._G=d.items;
+  }).catch(()=>{$('list').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function pick(id){
+  const g=(window._G||[]).find(x=>x.id===id); if(!g) return;
+  curId=id;
+  $('title').value=g.title||''; $('category').value=g.category||'platform';
+  $('target').value=g.target||''; $('channel').value=g.channel||'';
+  $('channelUrl').value=g.channel_url||''; $('situation').value=g.situation||'';
+  $('basis').value=g.basis||''; $('ask').value=g.ask||'';
+  if(g.draft){ lastOut=g.draft; $('outBox').innerHTML='<div class="out">'+esc(g.draft)+'</div>'; }
+  $('dmsg').className='msg'; $('dmsg').textContent='불러왔습니다. 수정 후 초안을 다시 만드실 수 있습니다.';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showDraft(id){
+  const g=(window._G||[]).find(x=>x.id===id); if(!g||!g.draft) return;
+  lastOut=g.draft;
+  $('outBox').innerHTML='<div class="out">'+esc(g.draft)+'</div>';
+  $('outBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function mark(id){
+  const s=prompt('상태를 입력하세요 (open / drafted / submitted / answered / closed)','submitted');
+  if(!s||!['open','drafted','submitted','answered','closed'].includes(s)) return;
+  call({action:'setStatus',id,status:s}).then(({ok,d})=>{
+    $('lmsg2').textContent=ok?'상태가 변경되었습니다.':(d.error||'변경에 실패했습니다.');
+    if(ok) loadList();
+  }).catch(()=>{$('lmsg2').textContent='네트워크 오류가 발생했습니다.';});
+}
+sync();
+</script>
+</body>
+</html>
