@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!-- ChewGumi Export AI Assistant v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AI 수출 비서 | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+textarea{resize:vertical;min-height:96px;line-height:1.7}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:13px 24px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{padding:8px 13px;border-radius:999px;font-size:11.5px;font-weight:700;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
+.msg{font-size:12px;color:var(--gray);margin-top:9px;min-height:16px;line-height:1.7}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+.fg .w2{grid-column:span 2}
+.kinds{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.kind{padding:15px 14px;border-radius:16px;text-align:left;background:rgba(255,255,255,.72);
+  border:1px solid var(--line);cursor:pointer;transition:.18s}
+.kind:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
+.kind.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.kind b{display:block;font-size:13.5px;font-weight:700}
+.kind span{display:block;margin-top:4px;font-size:11.5px;line-height:1.6;opacity:.8}
+.out{white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.85;
+  background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:16px;padding:18px;
+  max-height:560px;overflow-y:auto}
+.warn{background:rgba(233,162,59,.14);border:1px solid rgba(233,162,59,.35);border-radius:14px;
+  padding:13px 15px;font-size:12.5px;line-height:1.8;margin-bottom:14px}
+.warn b{color:#9a6414}
+.brow{display:grid;grid-template-columns:1.6fr 1fr .9fr 1.1fr;gap:9px;padding:12px 4px;
+  border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px;align-items:center}
+.brow:last-child{border-bottom:0}
+.brow .nm{font-weight:600}
+.brow .nm small{display:block;color:var(--gray);font-weight:400;font-size:11px;margin-top:2px}
+.st{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;text-align:center;white-space:nowrap}
+.st.lead{background:#999}.st.contacted{background:#3182F6}.st.quoted{background:var(--warn)}
+.st.sampling{background:#7B61FF}.st.negotiating{background:var(--main2)}
+.st.won{background:var(--ok)}.st.lost{background:#bbb}
+.trow{display:grid;grid-template-columns:1.8fr .8fr .8fr .9fr;gap:9px;padding:11px 4px;
+  border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px;align-items:center}
+.trow.due{background:rgba(233,162,59,.1);border-radius:10px}
+.empty{padding:32px 0;text-align:center;color:var(--gray);font-size:13px}
+.hide{display:none}
+@media(max-width:860px){.fg,.kinds{grid-template-columns:1fr}.fg .w2{grid-column:span 1}
+  .brow,.trow{grid-template-columns:1fr 1fr;gap:5px 9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Export AI</h1><div class="s">AI 수출 비서</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="exports.html">인증 관리</a> · <a href="index.html">사이트</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>문서 만들기</h2>
+      <div class="warn" id="aiWarn" style="display:none">
+        <b>AI 키가 등록되지 않았습니다.</b> Supabase → Edge Functions → Secrets 에
+        <b>ANTHROPIC_API_KEY</b> 를 추가해 주세요. 등록 전까지는 문서 생성이 동작하지 않습니다.
+      </div>
+
+      <div class="kinds" id="kinds">
+        <button class="kind on" data-k="email"><b>바이어 메일</b><span>영문 제안·소개 메일 + 한글 번역</span></button>
+        <button class="kind" data-k="quote"><b>견적서</b><span>Quotation · HS Code·MOQ 포함</span></button>
+        <button class="kind" data-k="intro"><b>제품소개서</b><span>Company &amp; Product Profile</span></button>
+        <button class="kind" data-k="checklist"><b>인증 체크리스트</b><span>국가별 필요 서류·기관·기간</span></button>
+        <button class="kind" data-k="reply"><b>메일 답장</b><span>받은 메일 요약 + 영문 답장</span></button>
+        <button class="kind" data-k="plan"><b>수출 일정 세우기</b><span>8주 계획 · 일정 자동 등록</span></button>
+      </div>
+
+      <div class="fg">
+        <div><label>바이어 선택</label>
+          <select id="buyer" onchange="fillBuyer()"><option value="">직접 입력</option></select></div>
+        <div><label>회사명</label><input id="company" placeholder="ABC Trading"></div>
+        <div><label>담당자</label><input id="contact" placeholder="John Smith"></div>
+        <div><label>국가</label><input id="country" placeholder="United States"></div>
+        <div><label>관심 품목</label><input id="interest" placeholder="Travel-it / Dew-it"></div>
+        <div><label>현재 단계</label>
+          <select id="stage">
+            <option>초기 접촉</option><option>견적 발송</option><option>샘플 발송</option>
+            <option>조건 협의</option><option>계약 직전</option>
+          </select></div>
+      </div>
+
+      <div id="extraBox">
+        <label id="exLabel">추가 요청 사항</label>
+        <textarea id="extra" placeholder="예) 최소주문수량 5,000봉 기준으로 안내, 샘플 발송 가능하다고 언급"></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center">
+        <button class="btn" id="go" onclick="generate()">문서 생성</button>
+        <button class="btn ghost" onclick="copyOut()">복사</button>
+        <button class="btn ghost" onclick="downloadOut()">파일로 저장</button>
+      </div>
+      <div class="msg" id="gmsg"></div>
+      <div id="outBox" style="margin-top:14px"></div>
+    </div>
+
+    <div class="panel">
+      <h2>바이어 관리</h2>
+      <div class="fg" style="margin-bottom:12px">
+        <div><label>회사명</label><input id="nCompany"></div>
+        <div><label>담당자</label><input id="nContact"></div>
+        <div><label>이메일</label><input id="nEmail" type="email"></div>
+        <div><label>국가</label><input id="nCountry"></div>
+        <div><label>관심 품목</label><input id="nInterest"></div>
+        <div><label>상태</label>
+          <select id="nStatus">
+            <option value="lead">신규</option><option value="contacted">접촉</option>
+            <option value="quoted">견적</option><option value="sampling">샘플</option>
+            <option value="negotiating">협의</option><option value="won">성사</option>
+            <option value="lost">종료</option></select></div>
+      </div>
+      <button class="btn" onclick="addBuyer()">바이어 등록</button>
+      <div class="msg" id="bmsg"></div>
+      <div id="blist" style="margin-top:12px"></div>
+    </div>
+
+    <div class="panel">
+      <h2>수출 일정</h2>
+      <div id="tlist"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="tmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/export-ai';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const BST={lead:'신규',contacted:'접촉',quoted:'견적',sampling:'샘플',negotiating:'협의',won:'성사',lost:'종료'};
+let token=null,who='',kind='email',BUYERS=[],lastOut='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
+
+document.querySelectorAll('#kinds .kind').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#kinds .kind').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); kind=b.dataset.k; setLabels();});
+
+function setLabels(){
+  const L={
+    email:['추가 요청 사항','예) 최소주문수량 5,000봉 기준 안내, 샘플 발송 가능 언급'],
+    quote:['품목·수량·단가','예) Travel-it 3봉 / 5,000 sets / USD 6.50\nDew-it 4개입 / 3,000 sets / USD 12.00'],
+    intro:['강조하고 싶은 점','예) HACCP 인증, 비건, 물 없이 섭취'],
+    checklist:['특이사항','예) 온라인 판매 예정, 소량 우선 진행'],
+    reply:['받은 메일 원문','바이어에게 받은 메일을 그대로 붙여넣어 주세요.'],
+    plan:['상황 설명','예) 지난주 견적 발송, 샘플 요청받은 상태']
+  }[kind]||['추가 요청 사항',''];
+  $('exLabel').textContent=L[0]; $('extra').placeholder=L[1];
+}
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';
+    checkAI();loadBuyers();loadTasks();setLabels();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+function call(p){
+  return fetch(FN,{method:'POST',
+    headers:{...H(),'Content-Type':'application/json'},
+    body:JSON.stringify(p)}).then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function checkAI(){
+  call({action:'status'}).then(({ok,d})=>{
+    $('aiWarn').style.display=(ok&&d.aiReady)?'none':'block';
+  }).catch(()=>{});
+}
+
+function generate(){
+  const ctx={
+    company:$('company').value.trim(), contact:$('contact').value.trim(),
+    country:$('country').value.trim(), interest:$('interest').value.trim(),
+    stage:$('stage').value, extra:$('extra').value.trim(),
+    items:$('extra').value.trim(), received:$('extra').value.trim(),
+    purpose:$('extra').value.trim(), stance:$('extra').value.trim()
+  };
+  $('go').disabled=true; $('gmsg').textContent='생성 중입니다… 20초 정도 걸립니다.';
+  $('outBox').innerHTML='';
+  call({action:'generate',kind,ctx,buyerId:$('buyer').value||null,
+    title:(ctx.company||'')+' '+kind}).then(({ok,d})=>{
+    $('go').disabled=false;
+    if(!ok){ $('gmsg').innerHTML=esc(d.error||'생성에 실패했습니다.')
+      +(d.help?'<br>'+esc(d.help):''); return; }
+    lastOut=d.text;
+    $('outBox').innerHTML='<div class="out">'+esc(d.text)+'</div>';
+    $('gmsg').textContent='생성되었습니다.'+(d.tasksCreated?' 일정 '+d.tasksCreated+'건이 등록되었습니다.':'');
+    if(d.tasksCreated) loadTasks();
+  }).catch(()=>{$('go').disabled=false;$('gmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function copyOut(){
+  if(!lastOut) return alert('생성된 문서가 없습니다.');
+  navigator.clipboard.writeText(lastOut).then(()=>alert('복사되었습니다.'))
+  .catch(()=>{const t=document.createElement('textarea');t.value=lastOut;
+    document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('복사되었습니다.');});
+}
+function downloadOut(){
+  if(!lastOut) return alert('생성된 문서가 없습니다.');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+lastOut],{type:'text/plain;charset=utf-8'}));
+  a.download='chewgumi_'+kind+'_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+function loadBuyers(){
+  fetch(SB+'/rest/v1/buyers?select=*&order=created_at.desc',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    BUYERS=rows;
+    $('buyer').innerHTML='<option value="">직접 입력</option>'
+      +rows.map(b=>'<option value="'+b.id+'">'+esc(b.company)+' ('+esc(b.country||'-')+')</option>').join('');
+    $('blist').innerHTML=rows.length?rows.map(b=>
+      '<div class="brow"><div class="nm">'+esc(b.company)
+      +'<small>'+esc(b.contact_name||'-')+' · '+esc(b.email||'-')+'</small></div>'
+      +'<div>'+esc(b.country||'-')+'<br><span style="color:var(--gray);font-size:11px">'+esc(b.interest||'')+'</span></div>'
+      +'<div><span class="st '+b.status+'">'+(BST[b.status]||b.status)+'</span></div>'
+      +'<div><select onchange="setStatus('+b.id+',this.value)" style="padding:7px 9px;font-size:11.5px">'
+        +Object.keys(BST).map(k=>'<option value="'+k+'"'+(k===b.status?' selected':'')+'>'+BST[k]+'</option>').join('')
+      +'</select></div></div>').join('')
+      :'<div class="empty">등록된 바이어가 없습니다.</div>';
+  }).catch(()=>{$('blist').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
+}
+function fillBuyer(){
+  const b=BUYERS.find(x=>String(x.id)===$('buyer').value);
+  if(!b) return;
+  $('company').value=b.company||''; $('contact').value=b.contact_name||'';
+  $('country').value=b.country||''; $('interest').value=b.interest||'';
+}
+function addBuyer(){
+  const c=$('nCompany').value.trim();
+  if(!c) return $('bmsg').textContent='회사명을 입력해 주세요.';
+  fetch(SB+'/rest/v1/buyers',{method:'POST',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({company:c,contact_name:$('nContact').value.trim(),
+      email:$('nEmail').value.trim(),country:$('nCountry').value.trim(),
+      interest:$('nInterest').value.trim(),status:$('nStatus').value})})
+  .then(r=>{if(r.ok){$('bmsg').textContent='등록되었습니다.';
+    ['nCompany','nContact','nEmail','nCountry','nInterest'].forEach(x=>$(x).value='');
+    loadBuyers();} else $('bmsg').textContent='등록 권한이 없습니다.';})
+  .catch(()=>$('bmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function setStatus(id,v){
+  fetch(SB+'/rest/v1/buyers?id=eq.'+id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({status:v,last_contact_at:new Date().toISOString()})})
+  .then(r=>{if(r.ok)loadBuyers();}).catch(()=>{});
+}
+
+function loadTasks(){
+  fetch(SB+'/rest/v1/export_tasks?select=*&order=due_date',{headers:H()})
+  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
+    const open=rows.filter(t=>t.status!=='done');
+    if(!open.length){$('tlist').innerHTML='<div class="empty">등록된 일정이 없습니다. '
+      +'[수출 일정 세우기]로 8주 계획을 만들어 보세요.</div>';return;}
+    const today=new Date().toISOString().slice(0,10);
+    $('tlist').innerHTML=open.map(t=>{
+      const due=t.due_date&&t.due_date<=today;
+      const b=BUYERS.find(x=>x.id===t.buyer_id);
+      return '<div class="trow'+(due?' due':'')+'">'
+        +'<div><b>'+esc(t.title)+'</b>'
+        +(t.detail?'<br><span style="color:var(--gray);font-size:11.5px">'+esc(t.detail.slice(0,80))+'</span>':'')+'</div>'
+        +'<div>'+(b?esc(b.company):'-')+'</div>'
+        +'<div'+(due?' style="color:var(--main);font-weight:700"':'')+'>'+(t.due_date||'-')+'</div>'
+        +'<div><button class="mini" onclick="doneTask('+t.id+')">완료</button></div></div>';
+    }).join('');
+  }).catch(()=>{$('tlist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function doneTask(id){
+  fetch(SB+'/rest/v1/export_tasks?id=eq.'+id,{method:'PATCH',
+    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({status:'done'})})
+  .then(r=>{if(r.ok)loadTasks();}).catch(()=>{});
+}
+sync();
+</script>
+</body>
+</html>
