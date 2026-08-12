@@ -147,6 +147,43 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 </nav>
 <h1>Review</h1>
 <div class="subtit">실제 소비자들의 생생한 후기</div>
+
+<div class="admbar" id="admBar" hidden>
+  <span class="a-tag">운영자</span>
+  <a class="a-btn" href="posts.html">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+    글 관리
+  </a>
+  <a class="a-btn" href="console.html">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    관리자 홈
+  </a>
+</div>
+<style>
+.admbar{max-width:900px;margin:0 auto 14px;padding:0 20px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.admbar .a-tag{font-size:10.5px;font-weight:700;letter-spacing:1.5px;padding:5px 11px;
+  border-radius:999px;background:rgba(216,37,88,.1);color:var(--main)}
+.admbar .a-btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;
+  border-radius:999px;font-size:12.5px;font-weight:700;line-height:1;
+  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink);
+  text-decoration:none;transition:.18s}
+.admbar .a-btn:hover{background:#fff;transform:translateY(-1px)}
+.admbar .a-btn svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<script>
+(function(){
+  var t=null; try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s) t=s.t;}catch(e){}
+  if(!t) return;
+  fetch('https://psynvpuedzjvytsgdhgg.supabase.co/rest/v1/admins?select=email',
+    {headers:{apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',Authorization:'Bearer '+t}})
+  .then(function(r){return r.ok?r.json():null;})
+  .then(function(d){ if(Array.isArray(d)&&d.length){ var b=document.getElementById('admBar'); if(b) b.hidden=false; } })
+  .catch(function(){});
+})();
+</script>
+
 <div class="wrap"><div class="panel">
 <div class="item open">
   <div class="i-head"><span class="i-title"><span class="stars">★★★★★</span> 새콤달콤 맛있어요!</span><span class="i-meta">김O연 · Travel-it</span></div>
