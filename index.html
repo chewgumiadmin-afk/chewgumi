@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v58 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v59 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -404,7 +404,7 @@ section { padding:80px 0; }
 
 /* ---------- 상품 카드 (레퍼런스: 호버 이미지 전환) ---------- */
 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:22px 18px; }
-#best .grid { grid-template-columns:repeat(3,1fr); }   /* 베스트 3종은 3열 유지 */
+#best .grid { grid-template-columns:repeat(4,1fr); }   /* 베스트 3종은 3열 유지 */
 @media (max-width:1100px){ .grid { grid-template-columns:repeat(3,1fr); } }
 @media (max-width:900px){ .grid{grid-template-columns:repeat(2,1fr)} }
 .card .thumb { position:relative; overflow:hidden; background:#f4f4f6; aspect-ratio:1/1; border-radius:20px; }
@@ -1344,7 +1344,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v58 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v59 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2432,6 +2432,14 @@ setHead();
     border:1px solid rgba(216,37,88,.25) !important;color:var(--main) !important}
 }
 
+
+/* Best Items 배치 (카드 4개 기준) */
+@media (max-width:1000px){ #best .grid{grid-template-columns:repeat(2,1fr) !important} }
+@media (max-width:640px){
+  #best .grid{grid-template-columns:repeat(2,1fr) !important;gap:12px !important}
+  #best .card .name{font-size:12.5px !important;line-height:1.45 !important}
+  #best .card .desc{display:none}
+}
 </style>
 
 
