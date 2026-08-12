@@ -98,7 +98,7 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
       <h2>1. 발송 채널</h2>
       <div class="chs" id="chs">
         <button class="ch on" data-c="sms"><b>문자 (SMS)</b>
-          <span>휴대폰으로 바로 도착</span><span class="rdy" id="rdySms">확인 중</span></button>
+          <span>카페24 충전 SMS로 바로 발송</span><span class="rdy" id="rdySms">확인 중</span></button>
         <button class="ch" data-c="email"><b>이메일</b>
           <span>내용을 길게 담을 수 있음</span><span class="rdy" id="rdyMail">확인 중</span></button>
         <button class="ch kko" data-c="kakao"><b>카카오톡</b>
@@ -215,7 +215,15 @@ function loadStatus(){
   call({action:'status'}).then(({ok,d})=>{
     if(!ok) return;
     counts=d.counts||{};
-    $('rdySms').textContent = d.smsReady?'발송 가능':'명단 내려받기';
+    const c=d.c24sms||{};
+    $('rdySms').textContent = c.ready
+      ? ('카페24 잔액 '+(c.balance||0)+'건')
+      : (d.solapi ? '발송 가능' : '명단 내려받기');
+    if(!c.ready && c.msg){
+      const b=document.querySelector('#chs .ch[data-c="sms"]');
+      if(b) b.title=c.msg;
+    }
+    window._C24=c;
     $('rdyMail').textContent = d.emailReady?'발송 가능':'명단 내려받기';
     $('rdyKko').textContent = '명단 내려받기';
     recount();
@@ -272,11 +280,14 @@ function send(){
     if(!ok){
       $('smsg').className='msg bad';
       $('smsg').innerHTML=esc(d.error||'발송에 실패했습니다.')
-        +(d.needKey?'<br>키가 등록되면 바로 발송됩니다. 지금은 <b>[대상 명단 내려받기]</b>로 카페24에서 보내주세요.':'');
+        +(d.hint?'<br>'+esc(d.hint):'')
+        +(d.needKey&&!d.hint?'<br>키가 등록되면 바로 발송됩니다. 지금은 <b>[대상 명단 내려받기]</b>로 카페24에서 보내주세요.':'');
       loadHist(); return;
     }
     $('smsg').className='msg ok';
-    $('smsg').textContent='발송 완료: '+d.sent+'건'+(d.failed?' (실패 '+d.failed+'건)':'');
+    const VIA={cafe24:'카페24 SMS',solapi:'솔라피',resend:'이메일'}[d.via]||'';
+    $('smsg').textContent='발송 완료: '+d.sent+'건'
+      +(d.failed?' (실패 '+d.failed+'건)':'')+(VIA?' · '+VIA+' 이용':'');
     loadHist();
   }).catch(()=>{$('smsg').className='msg bad';$('smsg').textContent='발송 처리 중 오류가 발생했습니다.';});
 }
