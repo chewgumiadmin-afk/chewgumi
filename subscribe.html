@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<!-- ChewGumi Subscribe v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>정기구독 | ChewGumi 츄구미</title>
+<meta name="description" content="매달 알아서 도착하는 츄구미. 필요한 만큼 골라 구독하세요.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ChewGumi 츄구미">
+<meta property="og:title" content="정기구독 | ChewGumi 츄구미">
+<meta property="og:description" content="매달 알아서 도착하는 츄구미 정기구독">
+<meta property="og:image" content="https://hyunjeongshin83.github.io/chewgumi/assets/og-image.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--light:#FFE4E6;--sub:#FFE923;--ok:#2AA060;
+  --ink:#111;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.64)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.15),transparent 60%),
+    radial-gradient(700px 460px at 95% 12%,rgba(255,233,35,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:10px}
+img{display:block;max-width:100%}
+
+.topbar{height:45px;display:flex;align-items:center;justify-content:center;padding:0 16px;
+  background:linear-gradient(90deg,var(--main2),var(--main));color:#fff;font-size:14px;font-weight:600}
+.topbar b{color:var(--sub);font-weight:800}
+header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.76);
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  border-bottom:1px solid rgba(0,0,0,.06)}
+.hbar{max-width:1060px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px}
+.logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:var(--main);letter-spacing:-.02em}
+nav{display:flex;gap:3px;flex-wrap:wrap}
+nav a{padding:9px 13px;border-radius:999px;font-size:12.5px;font-weight:600;color:#444}
+nav a.on,nav a:hover{background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(0,0,0,.07)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+
+/* 탭 */
+.tabs{display:flex;gap:7px;margin:26px 0 6px;overflow-x:auto;padding-bottom:3px}
+.tabs a{flex:none;padding:12px 20px;border-radius:999px;font-size:13.5px;font-weight:700;
+  background:rgba(255,255,255,.82);border:1px solid var(--line);color:var(--gray);white-space:nowrap}
+.tabs a small{display:block;font-size:10.5px;font-weight:500;margin-top:2px;opacity:.75}
+.tabs a.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+
+.head{padding:26px 0 8px}
+.head .eb{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:3.5px;color:var(--main)}
+.head h1{margin-top:11px;font-size:clamp(25px,4.6vw,40px);font-weight:800;letter-spacing:-.035em;line-height:1.28}
+.head p{margin-top:14px;font-size:clamp(13.5px,1.6vw,16px);line-height:1.9;color:#4a4a4a;
+  max-width:640px;word-break:keep-all}
+
+/* 혜택 */
+.perks{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:24px 0 8px}
+.perk{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:15px 16px;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.perk b{display:block;font-size:13.5px;font-weight:700}
+.perk span{display:block;margin-top:5px;font-size:12px;line-height:1.7;color:#555}
+
+/* 구독 카드 */
+.plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:26px}
+.plan{background:var(--glass);border:1px solid var(--line);border-radius:24px;overflow:hidden;
+  backdrop-filter:blur(18px) saturate(120%);-webkit-backdrop-filter:blur(18px) saturate(120%);
+  box-shadow:0 14px 34px rgba(0,0,0,.08);display:flex;flex-direction:column;transition:.22s}
+.plan:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(0,0,0,.12)}
+.plan .th{aspect-ratio:16/7;background:var(--light);overflow:hidden;position:relative}
+.plan .th img{width:100%;height:100%;object-fit:cover}
+.plan .badge{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:999px;
+  font-size:10.5px;font-weight:700;background:rgba(255,255,255,.95);color:var(--main)}
+.plan .b{padding:20px;display:flex;flex-direction:column;flex:1}
+.plan .en{font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--main)}
+.plan h3{margin-top:6px;font-size:19px;font-weight:800;letter-spacing:-.02em}
+.plan .tag{margin-top:5px;font-size:13px;color:var(--gray)}
+.plan .desc{margin-top:11px;font-size:12.5px;line-height:1.8;color:#555;word-break:keep-all}
+.plan ul{margin-top:13px;padding:13px 15px;border-radius:13px;background:rgba(255,255,255,.6);
+  list-style:none}
+.plan ul li{font-size:12.5px;line-height:1.9;color:#444;padding-left:14px;position:relative}
+.plan ul li::before{content:"·";position:absolute;left:3px;color:var(--main);font-weight:700}
+.plan .price{margin-top:15px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.plan .price .now{font-size:23px;font-weight:800;color:var(--main)}
+.plan .price .unit{font-size:12.5px;color:var(--gray);font-weight:600}
+.plan .price .was{font-size:13px;color:#bbb;text-decoration:line-through}
+.plan .price .off{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:rgba(216,37,88,.1);color:var(--main)}
+.plan .go{margin-top:auto;padding-top:16px}
+.plan .go button{width:100%;padding:15px 0;border:0;border-radius:999px;font-size:14px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 10px 24px rgba(216,37,88,.28)}
+
+/* 신청 폼 */
+.form{background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:24px;
+  margin-top:26px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 14px 34px rgba(0,0,0,.08)}
+.form h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+.form .pick{padding:14px 16px;border-radius:14px;background:rgba(255,233,35,.16);
+  border:1px solid rgba(216,37,88,.18);font-size:13.5px;line-height:1.8;margin-bottom:14px}
+.form .pick b{color:var(--main)}
+label{display:block;font-size:12.5px;font-weight:600;margin:11px 0 5px}
+input,select,textarea{width:100%;padding:12px 13px;border-radius:12px;font-size:13.5px;font-family:inherit;
+  color:var(--ink);border:1px solid var(--line);background:rgba(255,255,255,.88)}
+textarea{resize:vertical;min-height:70px;line-height:1.7}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.fg .w2{grid-column:span 2}
+.btn{width:100%;margin-top:18px;padding:16px 0;border:0;border-radius:999px;font-size:15px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 12px 28px rgba(216,37,88,.3)}
+.btn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.btn.ghost{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.msg{font-size:12.5px;color:var(--main);margin-top:11px;min-height:17px;line-height:1.8}
+.hint{font-size:11.5px;color:var(--gray);margin-top:6px;line-height:1.7}
+.done{text-align:center;padding:34px 12px}
+.done h2{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px}
+.done p{font-size:13.5px;line-height:1.95;color:#555}
+.faq{margin-top:30px}
+.faq .q{padding:15px 2px;border-bottom:1px solid rgba(0,0,0,.07)}
+.faq .q b{display:block;font-size:14px;font-weight:700}
+.faq .q p{margin-top:7px;font-size:12.5px;line-height:1.85;color:#555;word-break:keep-all}
+.foot{max-width:1060px;margin:36px auto 0;padding:22px 20px;border-top:1px solid rgba(0,0,0,.07);
+  display:flex;flex-wrap:wrap;gap:13px;justify-content:center;font-size:11.5px;color:var(--gray)}
+.foot a{text-decoration:underline;text-underline-offset:3px}
+.hide{display:none}
+@media(max-width:860px){.plans,.perks{grid-template-columns:1fr}.fg{grid-template-columns:1fr}
+  .fg .w2{grid-column:span 1}}
+</style>
+</head>
+<body>
+<div class="topbar">회원 가입 하고 <b>&nbsp;2000원 할인 쿠폰&nbsp;</b> 받기!</div>
+
+<header>
+  <div class="hbar">
+    <a class="logo" href="index.html">CHEW GUMI</a>
+    <nav>
+      <a href="index.html#all">SHOP</a>
+      <a class="on" href="subscribe.html">SUBSCRIBE</a>
+      <a href="about.html">ABOUT</a>
+      <a href="review.html">REVIEW</a>
+      <a href="mypage.html">MY PAGE</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs">
+    <a href="index.html#all">전체 상품<small>SHOP ALL</small></a>
+    <a href="index.html#all">개별 상품<small>SINGLE</small></a>
+    <a class="on" href="subscribe.html">정기 구독<small>SUBSCRIBE</small></a>
+  </div>
+
+  <div class="head">
+    <div class="eb">SUBSCRIBE</div>
+    <h1>매달 알아서 도착하는<br>츄구미</h1>
+    <p>챙기는 걸 잊어도 괜찮도록. 필요한 만큼 골라 구독하시면
+      매달 정해진 날짜에 보내 드립니다. 언제든 쉬거나 그만두실 수 있습니다.</p>
+  </div>
+
+  <div class="perks">
+    <div class="perk"><b>매달 자동 배송</b><span>주문할 필요 없이 정해진 날짜에 도착합니다.</span></div>
+    <div class="perk"><b>구독가 적용</b><span>낱개로 사실 때보다 더 합리적입니다.</span></div>
+    <div class="perk"><b>부담 없이 조정</b><span>쉬거나 그만두는 데 위약금이 없습니다.</span></div>
+  </div>
+
+  <div class="plans" id="plans"><div class="msg">구독 상품을 불러오는 중…</div></div>
+
+  <div class="form hide" id="form">
+    <h2>구독 신청</h2>
+    <div class="pick" id="pick"></div>
+
+    <div id="optBox" class="hide">
+      <label>구성 선택</label>
+      <select id="opt"></select>
+    </div>
+
+    <div class="fg" style="margin-top:6px">
+      <div><label>받는 분 이름 <span style="color:var(--main)">*</span></label><input id="fName"></div>
+      <div><label>휴대전화 <span style="color:var(--main)">*</span></label><input id="fPhone" inputmode="numeric" placeholder="010-0000-0000"></div>
+      <div class="w2"><label>이메일</label><input id="fEmail" type="email"></div>
+      <div><label>우편번호</label><input id="fZip" inputmode="numeric"></div>
+      <div><label>주소 <span style="color:var(--main)">*</span></label><input id="fAddr1"></div>
+      <div class="w2"><label>상세주소</label><input id="fAddr2"></div>
+      <div class="w2"><label>배송 메모</label><textarea id="fMemo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea></div>
+    </div>
+
+    <button class="btn" id="goBtn" onclick="apply()">구독 신청하기</button>
+    <div class="hint">신청 후 안내되는 계좌로 입금해 주시면 구독이 시작됩니다.
+      결제 수단은 추후 자동결제로 확대될 예정입니다.</div>
+    <div class="msg" id="msg"></div>
+    <button class="btn ghost" onclick="closeForm()" style="margin-top:8px">다른 구독 보기</button>
+  </div>
+
+  <div class="form hide" id="done">
+    <div class="done">
+      <h2>구독 신청이 접수되었습니다</h2>
+      <p id="doneTxt"></p>
+      <button class="btn ghost" onclick="location.href='mypage.html'"
+        style="max-width:220px;margin:20px auto 0">마이페이지로</button>
+    </div>
+  </div>
+
+  <div class="faq">
+    <div class="q"><b>언제든 그만둘 수 있나요?</b>
+      <p>네. 위약금 없이 언제든 중단하실 수 있습니다. 마이페이지에서 신청하시거나
+        카카오톡으로 문의해 주세요.</p></div>
+    <div class="q"><b>배송 날짜를 바꿀 수 있나요?</b>
+      <p>가능합니다. 다음 배송 3일 전까지 알려주시면 원하시는 날짜로 조정해 드립니다.</p></div>
+    <div class="q"><b>구성을 중간에 바꿀 수 있나요?</b>
+      <p>맛 조합은 매달 변경 가능합니다. 구독 상품 자체를 바꾸시려면 기존 구독을 중단하고
+        새로 신청해 주세요.</p></div>
+    <div class="q"><b>결제는 어떻게 하나요?</b>
+      <p>현재는 무통장입금으로 매달 안내드립니다. 자동결제는 준비 중입니다.</p></div>
+  </div>
+</div>
+
+<div class="foot">
+  <a href="index.html">홈</a>
+  <a href="about.html">회사소개</a>
+  <a href="guide.html">이용안내</a>
+  <a href="faq.html">자주묻는질문</a>
+  <a href="terms.html">이용약관</a>
+  <a href="privacy.html">개인정보처리방침</a>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/subscribe';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=v=>Number(v||0).toLocaleString();
+let PLANS=[], cur=null;
+
+function hd(){
+  const h={'Content-Type':'application/json',apikey:KEY};
+  try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+    if(s&&s.t) h.Authorization='Bearer '+s.t;}catch(e){}
+  return h;
+}
+const call=p=>fetch(FN,{method:'POST',headers:hd(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+function load(){
+  call({action:'plans'}).then(({ok,d})=>{
+    if(!ok||!d.plans.length){
+      $('plans').innerHTML='<div class="msg">구독 상품을 준비 중입니다.</div>'; return;
+    }
+    PLANS=d.plans;
+    $('plans').innerHTML=PLANS.map(p=>{
+      const off=p.price_origin>p.price_month
+        ? Math.round((1-p.price_month/p.price_origin)*100) : 0;
+      const items=(p.items||[]).map(i=>'<li>'+esc(i)+'</li>').join('');
+      return '<div class="plan"><div class="th">'
+        +(p.badge?'<span class="badge">'+esc(p.badge)+'</span>':'')
+        +'<img src="'+esc(p.image)+'" alt="'+esc(p.name_kr)+'" loading="lazy"></div>'
+        +'<div class="b">'
+        +'<div class="en">'+esc(p.name_en)+'</div>'
+        +'<h3>'+esc(p.name_kr)+'</h3>'
+        +'<div class="tag">'+esc(p.tagline)+'</div>'
+        +'<div class="desc">'+esc(p.description)+'</div>'
+        +(items?'<ul>'+items+'</ul>':'')
+        +'<div class="price"><span class="now">'+won(p.price_month)+'원</span>'
+        +'<span class="unit">/ '+(p.months>1?'월 (12개월)':'월')+'</span>'
+        +(off?'<span class="was">'+won(p.price_origin)+'원</span>'
+             +'<span class="off">'+off+'% 할인</span>':'')+'</div>'
+        +'<div class="go"><button onclick="pick(\''+p.code+'\')">이 구독 신청하기</button></div>'
+        +'</div></div>';
+    }).join('');
+  }).catch(()=>{$('plans').innerHTML='<div class="msg">불러오지 못했습니다.</div>';});
+}
+
+function pick(code){
+  cur=PLANS.find(p=>p.code===code); if(!cur) return;
+  $('pick').innerHTML='<b>'+esc(cur.name_kr)+'</b> · '+esc(cur.name_en)
+    +'<br>월 <b>'+won(cur.price_month)+'원</b>'
+    +(cur.months>1?' · 12개월 약정':'');
+  const opts=cur.options||[];
+  $('optBox').classList.toggle('hide',!opts.length);
+  if(opts.length) $('opt').innerHTML=opts.map(o=>'<option>'+esc(o)+'</option>').join('');
+  $('form').classList.remove('hide'); $('done').classList.add('hide');
+  $('msg').textContent='';
+  fillMe();
+  $('form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeForm(){ $('form').classList.add('hide'); cur=null;
+  document.querySelector('.plans').scrollIntoView({behavior:'smooth',block:'start'}); }
+
+function fillMe(){
+  let t=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)t=s.t;}catch(e){}
+  if(!t) return;
+  fetch(SB+'/rest/v1/profiles?select=name,phone,email,zipcode,addr1,addr2&limit=1',
+    {headers:{apikey:KEY,Authorization:'Bearer '+t}})
+  .then(r=>r.ok?r.json():[]).then(rows=>{
+    const p=(rows||[])[0]; if(!p) return;
+    if(!$('fName').value) $('fName').value=p.name||'';
+    if(!$('fPhone').value) $('fPhone').value=p.phone||'';
+    if(!$('fEmail').value) $('fEmail').value=p.email||'';
+    if(!$('fZip').value) $('fZip').value=p.zipcode||'';
+    if(!$('fAddr1').value) $('fAddr1').value=p.addr1||'';
+    if(!$('fAddr2').value) $('fAddr2').value=p.addr2||'';
+  }).catch(()=>{});
+}
+
+function apply(){
+  if(!cur) return;
+  const buyer={name:$('fName').value.trim(),phone:$('fPhone').value.trim(),
+    email:$('fEmail').value.trim(),zipcode:$('fZip').value.trim(),
+    addr1:$('fAddr1').value.trim(),addr2:$('fAddr2').value.trim(),memo:$('fMemo').value.trim()};
+  if(!buyer.name||!buyer.phone) return $('msg').textContent='이름과 휴대전화를 입력해 주세요.';
+  if(!buyer.addr1) return $('msg').textContent='배송지 주소를 입력해 주세요.';
+  $('goBtn').disabled=true; $('msg').textContent='신청을 처리하는 중…';
+  call({action:'apply',plan:cur.code,buyer,
+    option:$('optBox').classList.contains('hide')?'':$('opt').value})
+  .then(({ok,d})=>{
+    $('goBtn').disabled=false;
+    if(!ok){ $('msg').textContent=d.error||'신청에 실패했습니다.'; return; }
+    const b=d.bank||{};
+    $('form').classList.add('hide'); $('done').classList.remove('hide');
+    $('doneTxt').innerHTML='구독번호 <b>'+esc(d.subNo)+'</b><br><br>'
+      +'아래 계좌로 첫 달 <b>'+won(d.price)+'원</b>을 입금해 주세요.<br>'
+      +'<b>'+esc(b.name||'')+' '+esc(b.no||'')+'</b><br>예금주 '+esc(b.holder||'')+'<br><br>'
+      +'입금이 확인되면 구독이 시작되며,<br>매달 정해진 날짜에 보내 드립니다.';
+    $('done').scrollIntoView({behavior:'smooth',block:'start'});
+  }).catch(()=>{$('goBtn').disabled=false;$('msg').textContent='네트워크 오류가 발생했습니다.';});
+}
+load();
+</script>
+</body>
+</html>
