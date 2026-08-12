@@ -1228,11 +1228,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">User Films</h2><span class="sec-more kr" style="color:var(--gray)">사용 영상 모음</span></div>
     <div class="video-grid" id="ufilmGrid"></div>
-    <p class="video-note">사용자 사용 영상이 모이는 공간입니다.</p>
+    <p class="video-note kr" data-en="Real moments shared by ChewGumi users.">츄구미를 즐기는 분들의 실제 사용 영상입니다.</p>
   </div>
 </section>
 
-<!-- NEW ARRIVALS : 듀잇 신규 화보 (드라이브 사진 레일) -->
+<!-- NEW ARRIVALS : 트리플잇 신제품 -->
 <section id="arrivals" class="tri-sec">
       <div class="tri-bg" aria-hidden="true">
         <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
@@ -1967,10 +1967,14 @@ const USER_VIDEOS = [
 (function(){
   const g = document.getElementById('ufilmGrid');
   if (!g) return;
+  if (!USER_VIDEOS.length) {
+    g.innerHTML = '<div class="ufilm-empty">아직 등록된 영상이 없습니다.</div>';
+    return;
+  }
   g.innerHTML = USER_VIDEOS.map(id =>
     '<div class="video-card"><iframe src="https://drive.google.com/file/d/' + id +
     '/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="ChewGumi 사용 영상"></iframe></div>'
-  ).join('') + '<div class="ufilm-empty">+ 다음 영상 자리</div>';
+  ).join('') ;
 })();
 
 /* Community 요약 카드: BOARDS에서 3건씩 자동 추림 */
