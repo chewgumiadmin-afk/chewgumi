@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v61 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v62 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1356,7 +1356,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v61 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v62 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2500,5 +2500,87 @@ setHead();
   .ar-cta,.tri-cta{text-align:center !important}
 }
 </style>
+
+<style>
+/* ══ 모바일 탭바 — 리퀴드 글래스 ══ */
+@media (max-width:900px){
+  .m-nav{
+    left:12px !important; right:12px !important;
+    bottom:calc(10px + env(safe-area-inset-bottom)) !important;
+    padding:6px !important;
+    border-radius:26px !important;
+    border:1px solid rgba(255,255,255,.75) !important;
+    background:linear-gradient(160deg,rgba(255,255,255,.72),rgba(255,255,255,.52)) !important;
+    backdrop-filter:blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter:blur(28px) saturate(180%) !important;
+    box-shadow:0 12px 34px rgba(216,37,88,.16),
+               0 2px 10px rgba(0,0,0,.06),
+               inset 0 1px 0 rgba(255,255,255,.95),
+               inset 0 -1px 0 rgba(255,255,255,.4) !important;
+    overflow:hidden;
+  }
+  /* 위쪽 하이라이트 — 유리에 맺힌 빛 */
+  .m-nav::before{
+    content:"";position:absolute;left:10%;top:-42%;
+    width:56%;height:74%;border-radius:50%;pointer-events:none;
+    background:radial-gradient(ellipse at center,rgba(255,255,255,.85),rgba(255,255,255,0) 66%);
+  }
+  .m-nav a{
+    position:relative;z-index:1;
+    margin:0 !important;padding:9px 4px 8px !important;
+    border-radius:20px !important;
+    font-size:9.5px !important;letter-spacing:1.2px !important;
+    color:#5a5257 !important;
+    transition:transform .2s cubic-bezier(.2,.7,.3,1),background .2s,color .2s !important;
+  }
+  .m-nav a span{
+    font-size:19px !important;margin-bottom:3px !important;
+    transition:transform .22s cubic-bezier(.2,.7,.3,1);
+  }
+  .m-nav a:active{transform:scale(.94)}
+  .m-nav a:active span{transform:scale(1.08)}
+
+  /* 현재 위치 */
+  .m-nav a.on{
+    color:var(--main) !important;
+    background:linear-gradient(150deg,rgba(255,255,255,.95),rgba(255,228,230,.7)) !important;
+    box-shadow:0 4px 14px rgba(216,37,88,.14),
+               inset 0 1px 0 rgba(255,255,255,1) !important;
+  }
+  .m-nav a.on span{transform:translateY(-1px)}
+}
+/* 경량 모드에서는 흐림 제거 */
+.lite .m-nav{
+  background:rgba(255,255,255,.97) !important;
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+.lite .m-nav::before{display:none}
+</style>
+<script>
+/* 스크롤 위치에 따라 탭 강조 */
+(function(){
+  var nav=document.querySelector('.m-nav');
+  if(!nav) return;
+  var links=[].slice.call(nav.querySelectorAll('a'));
+  function mark(){
+    var y=window.scrollY||0;
+    var best=0;
+    var best_ = document.getElementById('best');
+    if(best_ && y >= best_.offsetTop-160) best=1;
+    links.forEach(function(a,i){ a.classList.toggle('on', i===best); });
+  }
+  links.forEach(function(a){
+    a.addEventListener('click',function(){
+      links.forEach(function(x){x.classList.remove('on');});
+      a.classList.add('on');
+    });
+  });
+  var t=null;
+  window.addEventListener('scroll',function(){
+    clearTimeout(t); t=setTimeout(mark,90);
+  },{passive:true});
+  mark();
+})();
+</script>
 </body>
 </html>
