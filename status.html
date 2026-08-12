@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<!-- ChewGumi Status App v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>츄구미 운영 현황</title>
+<meta name="theme-color" content="#D82558">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta property="og:title" content="츄구미 운영 현황">
+<meta property="og:description" content="지금 되는 것, 준비 중인 것, 해야 할 일을 한눈에.">
+<meta property="og:image" content="https://hyunjeongshin83.github.io/chewgumi/assets/og-image.jpg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.66)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom));
+  background:radial-gradient(700px 420px at 15% -5%,rgba(236,94,134,.16),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:10px}
+
+.hd{position:sticky;top:0;z-index:50;padding:calc(14px + env(safe-area-inset-top)) 18px 13px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(0,0,0,.05)}
+.hd h1{font-family:'Poppins',sans-serif;font-size:19px;color:var(--main)}
+.hd .s{margin-top:2px;font-size:11px;letter-spacing:2.5px;color:var(--gray)}
+.hd .pg{margin-top:10px;height:6px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden}
+.hd .pg i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--main2),var(--main));transition:width .5s}
+.hd .pgt{margin-top:6px;font-size:11.5px;color:var(--gray)}
+
+.wrap{max-width:600px;margin:0 auto;padding:16px 16px 0}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.tabs button{flex:none;padding:10px 15px;border-radius:999px;font-size:12.5px;font-weight:700;
+  background:rgba(255,255,255,.8);border:1px solid var(--line);color:var(--gray);white-space:nowrap}
+.tabs button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+
+.card{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:16px 17px;margin-bottom:11px;
+  backdrop-filter:blur(16px) saturate(120%);-webkit-backdrop-filter:blur(16px) saturate(120%);
+  box-shadow:0 8px 22px rgba(0,0,0,.06)}
+.card.done{opacity:.62}
+.ch{display:flex;gap:11px;align-items:flex-start}
+.ch input{width:23px;height:23px;flex:none;margin-top:1px;appearance:none;border-radius:8px;
+  border:1.8px solid rgba(0,0,0,.18);background:#fff;position:relative;cursor:pointer}
+.ch input:checked{background:linear-gradient(135deg,var(--main2),var(--main));border-color:transparent}
+.ch input:checked::after{content:"";position:absolute;left:7.5px;top:3px;width:6px;height:12px;
+  border:solid #fff;border-width:0 2.6px 2.6px 0;transform:rotate(45deg)}
+.ch .bd{flex:1;min-width:0}
+.tt{font-size:14.5px;font-weight:700;line-height:1.45}
+.card.done .tt{text-decoration:line-through;color:var(--gray)}
+.ds{margin-top:6px;font-size:12.5px;line-height:1.8;color:#555;word-break:keep-all}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.tag{font-size:10px;font-weight:700;padding:4px 9px;border-radius:999px}
+.tag.now{background:rgba(42,160,96,.13);color:var(--ok)}
+.tag.wait{background:rgba(233,162,59,.16);color:#9a6414}
+.tag.no{background:rgba(192,57,92,.11);color:var(--bad)}
+.tag.t{background:rgba(0,0,0,.06);color:#666}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.acts a,.acts button{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;
+  font-size:11.5px;font-weight:700;background:rgba(255,255,255,.9);
+  border:1px solid var(--line);color:var(--ink)}
+.acts a.go{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.acts a.tel{background:#2AA060;color:#fff;border-color:transparent}
+
+.note{font-size:12px;color:var(--gray);line-height:1.85;padding:4px 4px 18px}
+.sec-t{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin:20px 4px 10px}
+
+.fab{position:fixed;left:0;right:0;bottom:0;z-index:60;
+  padding:11px 16px calc(11px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid rgba(0,0,0,.06);display:flex;gap:8px;max-width:600px;margin:0 auto}
+.fab button{flex:1;height:46px;border-radius:999px;font-size:13px;font-weight:700;border:0}
+.fab .kko{background:#FEE500;color:#191600}
+.fab .ml{background:rgba(255,255,255,.9);border:1px solid var(--line);color:var(--ink)}
+.fab .ad{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>ChewGumi</h1>
+  <div class="s">운영 현황 · 할 일</div>
+  <div class="pg"><i id="pgBar" style="width:0%"></i></div>
+  <div class="pgt" id="pgTxt">불러오는 중…</div>
+</div>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="on" data-f="todo">해야 할 일</button>
+    <button data-f="now">지금 되는 것</button>
+    <button data-f="wait">준비 중</button>
+    <button data-f="no">불가</button>
+    <button data-f="all">전체</button>
+  </div>
+  <div id="list"></div>
+  <div class="note" id="foot"></div>
+</div>
+
+<div class="fab">
+  <button class="kko" onclick="shareKakao()">카톡 공유</button>
+  <button class="ml" onclick="shareMail()">메일 보내기</button>
+  <button class="ad" onclick="location.href='console.html'">관리자</button>
+</div>
+
+<script>
+const SITE='https://hyunjeongshin83.github.io/chewgumi/';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+/* state: now(되는 것) / wait(준비 중) / no(불가) / todo(해야 할 일) */
+const ITEMS=[
+ /* ── 해야 할 일 ── */
+ {id:'ezpay',state:'todo',t:'이지페이 본계약 전화',
+  d:'지금은 신용카드만 됩니다. 전화 한 통이면 계좌이체·가상계좌가 열립니다. 추가 비용 없습니다.',
+  tags:['가장 급함','5분'],tel:'16001234',doc:'01'},
+ {id:'hs',state:'todo',t:'HS코드 사전심사 신청',
+  d:'수출 시 통관 지연·관세 추징을 막습니다. 무료이고 30일 내 회신됩니다.',
+  tags:['무료','수출 준비'],url:'https://unipass.customs.go.kr/',doc:'05'},
+ {id:'soldout',state:'todo',t:'공식몰 품절 확인',
+  d:'재고관리를 켠 3개 상품(트래블잇 3봉·듀잇 레몬민트·듀잇 20개입)의 옵션별 재고를 확인해 주세요.',
+  tags:['매출 직결'],url:'https://chewgumi.cafe24.com/admin'},
+ {id:'bank2',state:'todo',t:'공식몰 계좌 표기 확인',
+  d:'결제수단 노출설정에 3333-32-3479428(카카오뱅크 형식)이 남아 있습니다. 국민은행을 쓰신다면 수정이 필요합니다.',
+  tags:['돈 관련'],url:'https://chewgumi.cafe24.com/admin'},
+ {id:'holder',state:'todo',t:'예금주 오타 수정',
+  d:'공식몰 예금주가 "추구미"로 되어 있습니다. "츄구미"로 바꿔주세요.',
+  tags:['5분'],url:'https://chewgumi.cafe24.com/admin'},
+ {id:'pw',state:'todo',t:'비밀번호 변경',
+  d:'카페24·카카오 계정 비밀번호가 대화 중 노출되었습니다. 서로 다른 비밀번호로 바꿔주세요.',
+  tags:['보안']},
+ {id:'video',state:'todo',t:'영상 파일 업로드 (선택)',
+  d:'드라이브 대신 mp4를 올리시면 재생 화면이 깔끔해집니다.',
+  tags:['선택'],url:'https://github.com/hyunjeongshin83/chewgumi/tree/main/assets'},
+
+ /* ── 지금 되는 것 ── */
+ {id:'sell',state:'now',t:'무통장입금 주문 받기',
+  d:'국민은행 38183704010801 (윤소호(츄구미)) · 입금기한 7일. 주문서에 자동 표시됩니다.',
+  tags:['자체 사이트'],url:SITE+'checkout.html'},
+ {id:'c24pay',state:'now',t:'카드·네이버페이 결제',
+  d:'주문서에서 [카드·간편결제]를 고르면 공식몰로 연결됩니다.',
+  tags:['공식몰 경유'],url:'https://chewgumi.com'},
+ {id:'admin',state:'now',t:'관리자 콘솔',
+  d:'주문·재고·회원·게시물·마케팅을 한 곳에서 관리합니다.',
+  tags:['13개 메뉴'],url:SITE+'console.html'},
+ {id:'ai1',state:'now',t:'AI 수출 비서',
+  d:'바이어 정보만 넣으면 영문 메일·견적서·인증 체크리스트가 만들어집니다.',
+  tags:['AI'],url:SITE+'export-ai.html'},
+ {id:'ai2',state:'now',t:'AI 개발 도우미',
+  d:'말로 화면 수정을 요청하고, 승인 후 반영하거나 되돌릴 수 있습니다.',
+  tags:['AI'],url:SITE+'dev.html'},
+ {id:'camp',state:'now',t:'마케팅 발송 준비',
+  d:'상품을 고르면 문구가 자동 작성됩니다. 대상 명단을 내려받아 카페24에서 보내시면 됩니다.',
+  tags:['광고'],url:SITE+'campaign.html'},
+ {id:'kko',state:'now',t:'카카오톡 상담',
+  d:'사이트 우측 하단 버튼으로 고객 문의가 들어옵니다.',
+  tags:['무료'],url:'https://pf.kakao.com/_lxjxjiX'},
+ {id:'qr',state:'now',t:'QR 코드',
+  d:'chewgumi.com으로 연결되는 인쇄용 QR이 준비되어 있습니다.',
+  tags:['패키지용']},
+ {id:'track',state:'now',t:'배송 조회',
+  d:'운송장 번호만 넣으면 택배사가 자동 인식되고 고객도 조회할 수 있습니다.',
+  tags:['자동'],url:SITE+'tracking.html'},
+ {id:'grv',state:'now',t:'규제·민원 문서 작성',
+  d:'개선요청·규제건의 초안을 만들어 줍니다. 제출은 직접 하셔야 합니다.',
+  tags:['AI'],url:SITE+'grievance.html'},
+
+ /* ── 준비 중 ── */
+ {id:'c24api',state:'wait',t:'공식몰 주문 통합',
+  d:'카페24 앱에서 Redirect URI와 권한(주문·상품·고객)을 저장한 뒤 연동 승인이 필요합니다.',
+  tags:['설정 필요'],url:SITE+'integrations.html'},
+ {id:'social',state:'wait',t:'소셜 로그인',
+  d:'구글·카카오는 키가 준비되었고 Supabase에서 켜기만 하면 됩니다. 네이버는 서버까지 만들어 두었습니다.',
+  tags:['설정 필요']},
+ {id:'sms',state:'wait',t:'문자 자동 발송',
+  d:'서버는 완성되어 있습니다. 솔라피 키를 넣으면 바로 작동합니다. 현재는 사용하지 않기로 하셨습니다.',
+  tags:['보류']},
+ {id:'mail',state:'wait',t:'브랜드 이메일 발송',
+  d:'템플릿은 완성했습니다. Gmail 앱 비밀번호로 SMTP를 설정하면 적용됩니다.',
+  tags:['설정 필요']},
+
+ /* ── 불가 ── */
+ {id:'no1',state:'no',t:'카톡으로 주문 처리 자동화',
+  d:'카카오톡은 받은 메시지를 외부로 넘겨주지 않습니다. 상담 API는 별도 심사가 필요하고, 메시지로 주문 상태를 바꾸는 연동은 만들 수 없습니다.',
+  tags:['플랫폼 제약']},
+ {id:'no2',state:'no',t:'카페24 문자 API 사용',
+  d:'자동메시지 API가 특정 클라이언트로 제한되어 있습니다. 개선 요청 문서를 준비해 두었습니다.',
+  tags:['문의 필요'],doc:'02'},
+ {id:'no3',state:'no',t:'택배 접수 문자로 하기',
+  d:'택배사는 문자로 접수를 받지 않습니다. 계약 후 전용 시스템이나 API를 써야 합니다.',
+  tags:['업계 표준']},
+ {id:'no4',state:'no',t:'카카오톡 광고 직접 발송',
+  d:'친구톡은 비즈니스 인증과 템플릿 심사가 필요합니다. 명단과 문구를 내려받아 카페24에서 보내시면 됩니다.',
+  tags:['심사 필요'],doc:'04'},
+ {id:'no5',state:'no',t:'애플 로그인',
+  d:'연회비 99달러가 필요하고 비밀키가 6개월마다 만료됩니다. iOS 앱을 만들 때 붙이시는 것을 권합니다.',
+  tags:['비용 발생']},
+ {id:'no6',state:'no',t:'스마트스토어 주문 통합',
+  d:'네이버는 별도 커머스API를 씁니다. 카페24 연동으로는 잡히지 않습니다.',
+  tags:['별도 연동']}
+];
+
+let filt='todo', done={};
+try{done=JSON.parse(localStorage.getItem('cg_todo')||'{}');}catch(e){}
+
+function save(){try{localStorage.setItem('cg_todo',JSON.stringify(done));}catch(e){}}
+
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filt=b.dataset.f; render();
+});
+
+function toggle(id){ done[id]=!done[id]; save(); render(); }
+window.toggle=toggle;
+
+function render(){
+  const todos=ITEMS.filter(i=>i.state==='todo');
+  const fin=todos.filter(i=>done[i.id]).length;
+  const pct=todos.length?Math.round(fin/todos.length*100):0;
+  $('pgBar').style.width=pct+'%';
+  $('pgTxt').textContent='해야 할 일 '+fin+' / '+todos.length+'건 완료 ('+pct+'%)';
+
+  let rows=ITEMS.filter(i=>filt==='all'||i.state===filt);
+  if(filt==='todo') rows=[...rows].sort((a,b)=>(done[a.id]?1:0)-(done[b.id]?1:0));
+
+  $('list').innerHTML=rows.map(i=>{
+    const isTodo=i.state==='todo', d=!!done[i.id];
+    const stTag={now:['now','지금 됩니다'],wait:['wait','준비 중'],no:['no','현재 불가']}[i.state];
+    return '<div class="card'+(d?' done':'')+'">'
+      +'<div class="ch">'
+      +(isTodo?'<input type="checkbox" '+(d?'checked':'')+' onchange="toggle(\''+i.id+'\')">':'')
+      +'<div class="bd"><div class="tt">'+esc(i.t)+'</div>'
+      +'<div class="ds">'+esc(i.d)+'</div>'
+      +'<div class="tags">'
+      +(stTag?'<span class="tag '+stTag[0]+'">'+stTag[1]+'</span>':'')
+      +(i.tags||[]).map(t=>'<span class="tag t">'+esc(t)+'</span>').join('')
+      +'</div>'
+      +((i.url||i.tel)?'<div class="acts">'
+        +(i.tel?'<a class="tel" href="tel:'+i.tel+'">전화 걸기</a>':'')
+        +(i.url?'<a class="go" href="'+esc(i.url)+'" target="_blank" rel="noopener">열기</a>':'')
+        +'</div>':'')
+      +'</div></div></div>';
+  }).join('') || '<div class="note">해당 항목이 없습니다.</div>';
+
+  $('foot').innerHTML='마지막 확인 '+new Date().toLocaleDateString('ko-KR')
+    +'<br>체크 상태는 이 기기에만 저장됩니다.'
+    +'<br><br>문의 · MedIT';
+}
+
+function summary(){
+  const todos=ITEMS.filter(i=>i.state==='todo'&&!done[i.id]);
+  return '[츄구미 운영 현황]\n\n'
+    +'해야 할 일 '+todos.length+'건\n'
+    +todos.slice(0,6).map((i,n)=>(n+1)+'. '+i.t).join('\n')
+    +'\n\n자세히 보기\n'+location.href;
+}
+function shareKakao(){
+  const t=summary();
+  if(navigator.share){ navigator.share({title:'츄구미 운영 현황',text:t,url:location.href})
+    .catch(()=>copy(t)); return; }
+  copy(t);
+}
+function shareMail(){
+  const todos=ITEMS.filter(i=>i.state==='todo'&&!done[i.id]);
+  const body='대표님 안녕하세요.\n\n츄구미 운영 현황을 정리해 드립니다.\n\n'
+    +'[해야 할 일]\n'
+    +todos.map((i,n)=>(n+1)+'. '+i.t+'\n   '+i.d).join('\n\n')
+    +'\n\n[현황 페이지]\n'+location.href
+    +'\n\n감사합니다.\nMedIT';
+  location.href='mailto:?subject='
+    +encodeURIComponent('[츄구미] 운영 현황 · 해야 할 일 '+todos.length+'건')
+    +'&body='+encodeURIComponent(body);
+}
+function copy(t){
+  navigator.clipboard.writeText(t)
+    .then(()=>alert('복사되었습니다.\n카톡 대화창에 붙여넣어 주세요.'))
+    .catch(()=>{
+      const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);
+      a.select();document.execCommand('copy');a.remove();
+      alert('복사되었습니다.\n카톡 대화창에 붙여넣어 주세요.');
+    });
+}
+render();
+</script>
+</body>
+</html>
