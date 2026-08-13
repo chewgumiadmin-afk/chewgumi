@@ -73,7 +73,21 @@
     }
   }
 
+
+  /* OG·canonical 주소 자동 보정 — 도메인이 바뀌어도 따라갑니다 */
+  function fixMeta() {
+    var base = CFG.SITE_OVERRIDE || (location.origin + location.pathname.replace(/[^/]*$/, '')).replace(/\/+$/, '');
+    var m = document.querySelectorAll('meta[property="og:url"],meta[property="og:image"],link[rel="canonical"]');
+    for (var i = 0; i < m.length; i++) {
+      var attr = m[i].tagName === 'LINK' ? 'href' : 'content';
+      var v = m[i].getAttribute(attr) || '';
+      var tail = v.replace(/^https?:\/\/[^/]+\/chewgumi\/?/, '');
+      if (tail !== v) m[i].setAttribute(attr, base + '/' + tail);
+    }
+  }
+
+  function run() { apply(); fixMeta(); }
   if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', apply);
-  else apply();
+    document.addEventListener('DOMContentLoaded', run);
+  else run();
 })();
