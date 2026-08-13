@@ -69,8 +69,12 @@ textarea{resize:vertical;min-height:70px}
 @media(max-width:820px){.cols{grid-template-columns:1fr}}
 
 .cpbox{padding-bottom:12px;margin-bottom:8px;border-bottom:1px solid rgba(0,0,0,.08)}
-.cpbox select{width:100%;padding:12px 14px;border-radius:13px;font-size:13px;font-family:inherit;
-  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+.cpbox select{width:100%;padding:12px 40px 12px 14px;border-radius:13px;font-size:14px;
+    font-family:inherit;border:1px solid var(--line);
+    background-color:rgba(255,255,255,.9);
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 15px center;background-size:12px 8px;
+    -webkit-appearance:none;-moz-appearance:none;appearance:none;cursor:pointer}
 .cphint{font-size:11.5px;color:var(--gray);margin-top:6px;line-height:1.6;min-height:15px}
 .cphint.ok{color:#2AA060}.cphint.bad{color:var(--main)}
 
@@ -343,31 +347,14 @@ const BANK_CODE={ '국민':'004','신한':'088','우리':'020','하나':'081','�
 
 /* 은행 · 페이 앱 (Android package / iOS scheme) */
 const BANK_APPS=[
-  {n:'토스',    s:'supertoss://',  a:'viva.republica.toss', pay:1},
-  {n:'카카오페이',s:'kakaotalk://', a:'com.kakao.talk',      pay:1},
-  {n:'네이버페이',s:'naversearchapp://', a:'com.nhn.android.search', pay:1},
-  {n:'국민',    s:'kbbank://',     a:'com.kbstar.kbbank'},
-  {n:'신한',    s:'shinhan-sr-ansimclick://', a:'com.shinhan.sbanking'},
-  {n:'우리',    s:'NewSmartPib://',a:'com.wooribank.smart.npib'},
-  {n:'하나',    s:'hanamysmart://',a:'com.hanabank.ebk.channel.android.hananbank'},
-  {n:'농협',    s:'nhallonepay://',a:'nh.smart'},
-  {n:'기업',    s:'ibk-i-one://',  a:'com.ibk.neobanking'},
-  {n:'카카오뱅크',s:'kakaobank://',a:'com.kakaobank.channel'},
-  {n:'케이뱅크',s:'kbank://',      a:'com.kbankwith.smartbank'},
-  {n:'토스뱅크',s:'supertoss://',  a:'viva.republica.toss'},
-  {n:'SC제일',  s:'scbankm://',    a:'com.scbank.mbanking'},
-  {n:'씨티',    s:'citimobileapp://', a:'com.citibank.cnb'},
-  {n:'부산',    s:'busanbank://',  a:'com.bnk.bs.mobile'},
-  {n:'대구',    s:'dgbbank://',    a:'com.dgb.mbanking'},
-  {n:'경남',    s:'knbanksmart://',a:'com.knb.psb'},
-  {n:'광주',    s:'kjbank://',     a:'com.kjbank.smart'},
-  {n:'전북',    s:'jbbank://',     a:'kr.co.jbbank'},
-  {n:'제주',    s:'jejubank://',   a:'com.jejubank.smart'},
-  {n:'새마을',  s:'kfccmobile://', a:'com.kfcc.mbanking'},
-  {n:'신협',    s:'cuonebank://',  a:'com.cu.cubank'},
-  {n:'우체국',  s:'postbank://',   a:'com.epost.psf.sdsi'},
-  {n:'수협',    s:'shbank://',     a:'com.sh.shbankm'},
-  {n:'산업',    s:'kdbbank://',    a:'com.kdb.smart'}
+  {n:'토스', s:'supertoss://', a:'viva.republica.toss', pay:1},
+  {n:'카카오페이',s:'kakaotalk://', a:'com.kakao.talk', pay:1},
+  {n:'국민', s:'kbbank://', a:'com.kbstar.kbbank'},
+  {n:'신한', s:'shinhan-sr-ansimclick://', a:'com.shinhan.sbanking'},
+  {n:'우리', s:'NewSmartPib://', a:'com.wooribank.smart.npib'},
+  {n:'하나', s:'hanapush://', a:'com.hanabank.ebk.channel.android.hananbank'},
+  {n:'농협', s:'nhallonepay://', a:'nh.smart.banking'},
+  {n:'카카오뱅크',s:'kakaobank://', a:'com.kakaobank.channel'}
 ];
 
 /* 계좌 정보로 은행 코드 찾기 */
@@ -434,7 +421,7 @@ function openBankPick(){
   w.innerHTML='<div class="bk-box">'
     +'<h3>은행 앱 열기</h3>'
     +'<p><b>토스</b>는 계좌와 금액이 자동으로 채워집니다.<br>'
-    +'다른 앱은 계좌번호가 복사되어 있으니 붙여넣어 주세요.</p>'
+    +'계좌번호는 이미 복사되어 있습니다. 앱에서 붙여넣어 주세요.</p>'
     +'<div class="bk-acc">'+esc(BANK.bank_name||'')+' '+esc(BANK.bank_account||'')
     +'<br>예금주 '+esc(BANK.bank_holder||'')+'</div>'
     +'<div id="bkMine"></div>'
@@ -719,6 +706,25 @@ $('payBtn').addEventListener('click',async()=>{
     .acts::-webkit-scrollbar,.chips::-webkit-scrollbar,
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
+  }
+
+  /* 화살표가 겹쳐 보이지 않도록 — 기본 화살표 제거 */
+  select::-ms-expand{display:none}
+  select{background-repeat:no-repeat !important}
+  @media(max-width:640px){
+    select{font-size:16px;padding-right:38px}
+  }
+  /* 은행 앱 격자 — 8개만 */
+  .bank-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+  .bank-apps button{padding:13px 4px;border-radius:14px;font-size:12.5px;font-weight:600;
+    background:rgba(255,255,255,.9);border:1px solid var(--line);color:var(--ink);cursor:pointer}
+  .bank-apps button.pay{background:linear-gradient(135deg,#FFE923,#FFD84D);
+    border-color:transparent;font-weight:700}
+  .bank-more{display:block;width:100%;margin-top:9px;padding:11px 0;border-radius:12px;
+    font-size:12.5px;color:var(--gray);background:transparent;border:1px dashed rgba(0,0,0,.15);
+    cursor:pointer;font-family:inherit}
+  @media(max-width:640px){
+    .bank-apps{grid-template-columns:repeat(3,1fr)}
   }
 </style>
 <script src="assets/lite.js" defer></script>
