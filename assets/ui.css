@@ -60,10 +60,28 @@
 .tabs a:active{transform:scale(.96) !important}
 
 /* ── 입력 ── */
-input,select,textarea{
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+select,textarea{
   min-height:var(--h-md);
   padding:0 14px;border-radius:14px !important;
   font-size:var(--fs-md) !important;font-family:inherit}
+
+/* ── 체크박스 · 라디오 ── */
+input[type=checkbox],input[type=radio]{
+  width:20px !important;height:20px !important;
+  min-height:0 !important;min-width:0 !important;
+  flex:none !important;margin:0 !important;padding:0 !important;
+  accent-color:var(--main,#D82558);
+  cursor:pointer;vertical-align:middle}
+input[type=radio]{border-radius:50% !important}
+/* 라벨과 나란히 놓이도록 */
+label:has(input[type=checkbox]),
+label:has(input[type=radio]){
+  display:inline-flex;align-items:center;gap:8px;
+  min-height:0;font-weight:500;cursor:pointer}
+@media(max-width:640px){
+  input[type=checkbox],input[type=radio]{width:22px !important;height:22px !important}
+}
 textarea{padding:12px 14px;min-height:80px;line-height:1.7}
 label{font-size:var(--fs-sm) !important;font-weight:600 !important}
 
