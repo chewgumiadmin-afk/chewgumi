@@ -79,3 +79,57 @@ label{font-size:var(--fs-sm) !important;font-weight:600 !important}
   .tabs a{min-height:52px !important;padding:8px 15px !important}
   .btn,.plan .go button{padding:0 18px !important}
 }
+
+/* ── 세그먼트 탭 (게시판·구독 공통) ── */
+.bl-tabs,.ptab{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:0 !important;
+  border-radius:15px !important;overflow:hidden !important;
+  border:.5px solid rgba(255,255,255,.85) !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.68)) !important;
+  backdrop-filter:blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter:blur(20px) saturate(180%) !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 22px rgba(0,0,0,.07),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+  margin-bottom:16px !important}
+
+.bl-tabs button,.ptab a{
+  position:relative;overflow:hidden;
+  display:flex !important;flex-direction:column !important;
+  align-items:center !important;justify-content:center !important;gap:2px !important;
+  min-height:54px !important;height:auto !important;padding:9px 6px !important;
+  border:0 !important;border-radius:0 !important;
+  background:transparent !important;box-shadow:none !important;
+  font-family:inherit;font-size:12.5px !important;font-weight:700 !important;
+  letter-spacing:0 !important;color:#3a3035 !important;line-height:1.25;
+  text-decoration:none;cursor:pointer;white-space:nowrap;
+  transition:background .3s var(--ease),color .3s var(--ease) !important;
+  transform:none !important}
+
+.bl-tabs button small,.ptab a small{
+  font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:1.5px;
+  color:#a09298;transition:color .3s}
+.ptab a b{font-size:inherit;font-weight:inherit;color:inherit}
+
+/* 칸 사이 세로선 */
+.bl-tabs button:not(:last-child)::before,
+.ptab a:not(:last-child)::after{
+  content:"";position:absolute;right:0;top:24%;height:52%;width:.5px;
+  background:rgba(0,0,0,.07);z-index:1}
+
+.bl-tabs button:hover,.ptab a:hover{background:rgba(255,255,255,.55) !important}
+.bl-tabs button:active,.ptab a:active{background:rgba(216,37,88,.06) !important}
+
+.bl-tabs button.on,.ptab a.on{
+  background:linear-gradient(135deg,var(--main2),var(--main)) !important;
+  color:#fff !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.26) !important}
+.bl-tabs button.on small,.ptab a.on small{color:rgba(255,255,255,.82)}
+.bl-tabs button.on::before,.ptab a.on::after{display:none}
+
+@media(max-width:640px){
+  .bl-tabs,.ptab{border-radius:13px !important;margin-bottom:13px !important}
+  .bl-tabs button,.ptab a{min-height:48px !important;font-size:11.5px !important}
+  .bl-tabs button small,.ptab a small{font-size:8.5px;letter-spacing:1.1px}
+}
