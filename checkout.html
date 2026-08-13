@@ -386,6 +386,23 @@ function copyAcc(){
   });
 }
 
+/* 실제로 열린 은행을 기억해 다음에 먼저 보여준다 */
+function bankUsed(){
+  try{ return JSON.parse(localStorage.getItem('cg_banks')||'{}'); }catch(e){ return {}; }
+}
+function markBank(name){
+  var u=bankUsed(); u[name]=(u[name]||0)+1;
+  try{ localStorage.setItem('cg_banks',JSON.stringify(u)); }catch(e){}
+}
+/* 앱이 실제로 열렸는지 확인 — 화면이 가려지면 설치된 것으로 본다 */
+function watchOpen(name){
+  var opened=false;
+  function hide(){ if(document.hidden){ opened=true; markBank(name); } }
+  document.addEventListener('visibilitychange',hide,{once:true});
+  window.addEventListener('blur',function(){ opened=true; markBank(name); },{once:true});
+  setTimeout(function(){ document.removeEventListener('visibilitychange',hide); },2500);
+}
+
 function openBankPick(){
   /* 먼저 계좌번호를 복사해 둔다 */
   const num=(BANK.bank_account||'').replace(/\D/g,'');
@@ -406,22 +423,50 @@ function openBankPick(){
     +'다른 앱은 계좌번호가 복사되어 있으니 붙여넣어 주세요.</p>'
     +'<div class="bk-acc">'+esc(BANK.bank_name||'')+' '+esc(BANK.bank_account||'')
     +'<br>예금주 '+esc(BANK.bank_holder||'')+'</div>'
+    +'<div id="bkMine"></div>'
     +'<div class="bk-sect">간편결제 · 송금</div>'
     +'<div class="bk-grid pay">'
     + BANK_APPS.map((b,i)=>b.pay
         ?'<button type="button" class="pay" data-i="'+i+'">'+esc(b.n)+'</button>':'').join('')
     +'</div>'
-    +'<div class="bk-sect">은행 앱</div>'
-    +'<div class="bk-grid">'
+    +'<div class="bk-sect" id="bkAllSect">은행 앱 <button type="button" class="bk-toggle" id="bkMore">모두 보기</button></div>'
+    +'<div class="bk-grid" id="bkAll">'
     + BANK_APPS.map((b,i)=>!b.pay
         ?'<button type="button" data-i="'+i+'">'+esc(b.n)+'</button>':'').join('')
     +'</div>'
     +'<button type="button" class="bk-close">닫기</button></div>';
   document.body.appendChild(w);
 
+  /* 자주 쓰신 은행을 위에 */
+  (function(){
+    const u=bankUsed();
+    const mine=BANK_APPS.map((b,i)=>({b,i,n:u[b.n]||0}))
+      .filter(x=>x.n>0).sort((a,b2)=>b2.n-a.n).slice(0,4);
+    const box=w.querySelector('#bkMine');
+    if(mine.length && box){
+      box.innerHTML='<div class="bk-sect">내 은행</div><div class="bk-grid mine">'
+        + mine.map(x=>'<button type="button" class="mine" data-i="'+x.i+'">'
+            +esc(x.b.n)+'</button>').join('')
+        +'</div>';
+      /* 전체 목록은 접어둔다 */
+      const all=w.querySelector('#bkAll');
+      if(all) all.classList.add('fold');
+    } else {
+      const t=w.querySelector('#bkMore'); if(t) t.style.display='none';
+    }
+    const more=w.querySelector('#bkMore');
+    if(more) more.onclick=function(){
+      const all=w.querySelector('#bkAll');
+      if(!all) return;
+      all.classList.toggle('fold');
+      more.textContent=all.classList.contains('fold')?'모두 보기':'접기';
+    };
+  })();
+
   w.querySelectorAll('.bk-grid button').forEach(btn=>{
     btn.onclick=function(){
       const b=BANK_APPS[+btn.dataset.i];
+      watchOpen(b.n);
       const ua=navigator.userAgent;
       /* 토스는 은행·계좌·금액을 미리 채워서 연다 */
       if(b.n==='토스'||b.n==='토스뱅크'){
@@ -637,6 +682,13 @@ $('payBtn').addEventListener('click',async()=>{
 .bk-grid.pay button{background:linear-gradient(160deg,#FFF6D6,#FFE923);
   border-color:transparent;font-weight:800}
 .bk-box{max-height:82vh;overflow-y:auto}
+
+.bk-sect{display:flex;align-items:center;justify-content:space-between}
+.bk-toggle{padding:5px 11px;border-radius:999px;border:1px solid rgba(0,0,0,.1);
+  background:#fff;font-family:inherit;font-size:10.5px;font-weight:700;color:#666;cursor:pointer}
+.bk-grid.fold{display:none}
+.bk-grid.mine button{background:linear-gradient(160deg,#FFF1F4,#FFE4E6);
+  border-color:rgba(216,37,88,.22);color:var(--main);font-weight:800}
 </style>
 <script src="assets/lite.js" defer></script>
 </body>
