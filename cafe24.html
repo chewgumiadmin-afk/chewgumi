@@ -106,19 +106,20 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
         <button class="mini" onclick="alimtalk()">알림톡 상태 확인</button>
         <button class="mini go" onclick="alimtalkOn(true)">알림톡 켜기</button>
         <button class="mini" onclick="alimtalkOn(false)">알림톡 끄기</button>
-        <button class="mini go" onclick="smsOn(true)">문자(SMS) 켜기</button>
-        <button class="mini" onclick="smsOn(false)">문자 끄기</button>
+        <button class="mini" onclick="smsInfo()">문자(SMS) 설정 확인</button>
       </div>
       <div class="msg" id="aRes"></div>
     </div>
 
     <div class="panel">
-      <h2>결제 · 정산</h2>
+      <h2>결제 · 정산 · 통계</h2>
       <div class="acts">
-        <button class="mini" onclick="payments()">결제수단 조회</button>
+        <button class="mini" onclick="dash()">대시보드 (매출·품절·회원)</button>
         <button class="mini" onclick="bankSync()">무통장 계좌 가져오기</button>
-        <button class="mini" onclick="unpaid()">미입금 주문 조회</button>
-        <button class="mini" onclick="receipts()">현금영수증 조회 (30일)</button>
+        <button class="mini" onclick="unpaid()">미입금 주문</button>
+        <button class="mini" onclick="receipts()">현금영수증 (30일)</button>
+        <button class="mini" onclick="sales()">매출 통계 (30일)</button>
+        <button class="mini" onclick="reviews()">공식몰 리뷰</button>
       </div>
       <div class="msg" id="pRes"></div>
     </div>
@@ -142,13 +143,13 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
         <button onclick="setEp('orders/count')">주문 수</button>
         <button onclick="setEp('products?limit=3')">상품 목록</button>
         <button onclick="setEp('customers?limit=3')">회원 목록</button>
-        <button onclick="setEp('paymentmethods')">결제수단</button>
+        <button onclick="setEp('dashboard')">대시보드</button>
         <button onclick="setEp('sms/balance')">SMS 잔액</button>
         <button onclick="setEp('kakaoalimtalk/setting')">알림톡 설정</button>
-        <button onclick="setEp('subscription/products')">정기배송 상품</button>
+        <button onclick="setEp('subscription/shipments/setting')">정기배송</button>
         <button onclick="setEp('coupons?limit=3')">쿠폰</button>
-        <button onclick="setEp('customersgroup')">회원등급</button>
-        <button onclick="setEp('shipping')">배송 설정</button>
+        <button onclick="setEp('store/accounts')">무통장 계좌</button>
+        <button onclick="setEp('shipping')">배송 설정</button><button onclick="setEp('reviews?limit=3')">리뷰</button><button onclick="setEp('boards')">게시판</button>
       </div>
       <label>요청 경로 (v2/admin/ 뒤에 올 부분)</label>
       <input id="ep" placeholder="예) orders?limit=3" onkeydown="if(event.key==='Enter')runRaw()">
@@ -223,17 +224,19 @@ function status(){
 }
 
 const DG={
-  store:['상점 정보','내 쇼핑몰 기본 정보'],
-  bank:['무통장 계좌','등록된 입금 계좌'],
-  sms:['문자(SMS) 설정','사용 여부'],
-  smsBalance:['SMS 잔액','충전된 건수'],
-  alimtalk:['카카오 알림톡','자동 발송 설정'],
-  alimtalkKey:['알림톡 발신 프로필','채널 연결 키'],
-  paymentMethods:['결제수단','노출 중인 결제수단'],
-  paymentSetting:['결제 설정','PG·에스크로 등'],
-  restock:['재입고 알림','품절 시 알림 설정'],
-  subscription:['정기배송','카페24 구독 상품'],
-  financials:['PG 정보','정산 관련']
+  dashboard:'대시보드 — 매출·품절·신규회원',
+  store:'상점 기본정보',
+  accounts:'무통장 계좌',
+  sms:'SMS 설정 (조회 전용)',
+  smsSenders:'SMS 발신번호',
+  alimtalk:'카카오 알림톡',
+  shipping:'배송·반품 설정',
+  orderSetting:'취소·반품 재고복구 설정',
+  points:'적립금 설정',
+  coupons:'쿠폰 설정',
+  subscription:'정기배송 설정',
+  users:'운영자 목록',
+  dailyVisits:'일별 방문자'
 };
 function diagnose(){
   $('cRes').className='msg'; $('cRes').textContent='상점 정보를 확인하는 중… 10초 정도 걸립니다.';
@@ -244,15 +247,16 @@ function diagnose(){
     $('dPanel').style.display='';
     const r=d.result||{};
     $('diag').innerHTML=Object.keys(DG).map(k=>{
-      const v=r[k]||{}; const meta=DG[k];
-      const st=v.ok?['y','사용 가능']:(v.status===403||v.status===401?['n','권한 없음']:['e','오류 '+(v.status||'')]);
+      const v=r[k]||{};
+      const st=v.ok?['y','사용 가능']
+        :(v.status===403?['n','권한 없음']
+        :(v.status===404?['n','미지원']:['e','오류 '+(v.status||'')]));
       let txt='';
-      if(v.ok){
-        try{ txt=JSON.stringify(v.data).slice(0,150); }catch(e){ txt=''; }
-      } else txt=typeof v.data==='string'?v.data:JSON.stringify(v.data||{}).slice(0,120);
-      return '<div class="dg"><div class="t">'+esc(meta[0])
+      if(v.ok){ try{ txt=JSON.stringify(v.data).slice(0,140); }catch(e){} }
+      else txt=typeof v.data==='string'?v.data:JSON.stringify(v.data||{}).slice(0,110);
+      return '<div class="dg"><div class="t">'+esc(DG[k].split(' — ')[0])
         +'<span class="st '+st[0]+'">'+st[1]+'</span></div>'
-        +'<div class="d">'+esc(meta[1])+'<br>'+esc(txt)+'</div></div>';
+        +'<div class="d">'+esc(v.note||DG[k])+'<br>'+esc(txt)+'</div></div>';
     }).join('');
     show('cRes',r);
   }).catch(()=>{$('cRes').className='msg bad';$('cRes').textContent='네트워크 오류가 발생했습니다.';});
@@ -291,22 +295,42 @@ function alimtalkOn(on){
     if(d) show('aRes',d);
   }).catch(()=>{$('aRes').className='msg bad';$('aRes').textContent='네트워크 오류가 발생했습니다.';});
 }
-function smsOn(on){
-  $('aRes').className='msg'; $('aRes').textContent='설정을 변경하는 중…';
-  call({action:'smsOn',on}).then(({ok,d})=>{
-    $('aRes').className=ok?'msg ok':'msg bad';
-    $('aRes').textContent=ok?('문자를 '+(on?'켰습니다.':'껐습니다.')):(d.error||'변경에 실패했습니다.');
-    if(d) show('aRes',d);
+function smsInfo(){
+  $('aRes').className='msg'; $('aRes').textContent='SMS 설정을 확인하는 중…';
+  call({action:'smsInfo'}).then(({ok,d})=>{
+    if(!ok){ $('aRes').className='msg bad'; $('aRes').textContent=d.error||'확인 실패'; return; }
+    const s=d.setting||{};
+    $('aRes').className='msg';
+    $('aRes').innerHTML=(s.use_sms==='T'?'SMS 사용 중':'SMS 사용 안 함')
+      +(s.default_sender?' · 발신번호 '+esc(s.default_sender):'')
+      +'<br><span style="font-size:11.5px">'+esc(d.note||'')+'</span>';
+    show('aRes',d);
   }).catch(()=>{$('aRes').className='msg bad';$('aRes').textContent='네트워크 오류가 발생했습니다.';});
 }
-
-function payments(){
-  $('pRes').className='msg'; $('pRes').textContent='결제수단을 조회하는 중…';
-  call({action:'payments'}).then(({ok,d})=>{
+function dash(){
+  $('pRes').className='msg'; $('pRes').textContent='대시보드를 불러오는 중…';
+  call({action:'dashboard'}).then(({ok,d})=>{
     if(!ok){ $('pRes').className='msg bad'; $('pRes').textContent=d.error||'조회 실패'; return; }
-    const m=d.methods;
+    const v=d.data||{};
     $('pRes').className='msg ok';
-    $('pRes').textContent=Array.isArray(m)?('결제수단 '+m.length+'건을 읽었습니다.'):'결제 설정을 읽었습니다.';
+    $('pRes').innerHTML='품절 상품 <b>'+(v.sold_out_products_count??'-')+'</b>건 · '
+      +'신규회원 <b>'+(v.new_members_count??'-')+'</b>명';
+    show('pRes',v);
+  }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function sales(){
+  $('pRes').className='msg'; $('pRes').textContent='매출 통계를 불러오는 중…';
+  call({action:'sales',days:30}).then(({ok,d})=>{
+    $('pRes').className=ok?'msg ok':'msg bad';
+    $('pRes').textContent=ok?'최근 30일 매출 통계를 불러왔습니다.':(d.error||'조회 실패');
+    show('pRes',d);
+  }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function reviews(){
+  $('pRes').className='msg'; $('pRes').textContent='공식몰 리뷰를 불러오는 중…';
+  call({action:'reviews'}).then(({ok,d})=>{
+    $('pRes').className=ok?'msg ok':'msg bad';
+    $('pRes').textContent=ok?('리뷰 '+(d.items||[]).length+'건'):(d.error||'조회 실패');
     show('pRes',d);
   }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
 }
