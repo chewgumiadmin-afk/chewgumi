@@ -63,6 +63,27 @@ th{background:rgba(255,255,255,.7);font-weight:600}
   display:flex;flex-wrap:wrap;gap:12px;justify-content:center;font-size:11.5px;color:var(--gray)}
 .foot a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:600px){h1{font-size:22px}.panel{padding:18px}table{font-size:11.5px}th,td{padding:7px}}
+
+  /* 표 — 모바일에서 가로 스크롤 */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;
+    border-radius:12px;margin:12px 0}
+  .tbl-wrap table{min-width:480px;width:100%;border-collapse:collapse}
+  @media(max-width:640px){
+    table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;
+      white-space:normal;max-width:100%}
+  }
+
+  /* 모바일 — 긴 글자가 화면을 밀어내지 않도록 */
+  @media(max-width:640px){
+    body{overflow-x:hidden}
+    .msg,.hint,p,li,td,th,.rb,.ib,.sb,.d{word-break:keep-all;overflow-wrap:anywhere}
+    [style*="nowrap"],.nowrap{white-space:normal !important}
+    .acts,.chips,.tabs,.sug,.eps,.kinds{overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;padding-bottom:2px}
+    .acts::-webkit-scrollbar,.chips::-webkit-scrollbar,
+    .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
+    .out,pre,code{overflow-x:auto;word-break:break-all}
+  }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
