@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v65 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v66 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1021,7 +1021,19 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 </section>
 
 <!-- 신제품 배너 (디자이너 제공) -->
-<section class="mid-banner">
+<div class="qnav">
+      <div class="qnav-in">
+        <a class="qn" href="#all" onclick="filterLine('travel')">
+          <span class="ic">✈️</span><b>트래블 잇</b><span>여행용 비타민 젤리</span></a>
+        <a class="qn" href="#all" onclick="filterLine('doit')">
+          <span class="ic">🍬</span><b>듀 잇</b><span>무설탕 자일리톨 캔디</span></a>
+        <a class="qn" href="subscribe.html">
+          <span class="ic">📦</span><b>정기 구독</b><span>매달 알아서 배송</span></a>
+        <a class="qn" href="#all" onclick="filterLine('all')">
+          <span class="ic">🛍️</span><b>전체 상품</b><span>11개 상품 보기</span></a>
+      </div>
+    </div>
+    <section class="mid-banner">
   <a href="#all" onclick="filterLine('all')" aria-label="신제품 보기">
     <img src="assets/banner-triple.png" alt="NEW PRODUCT — 츄구미의 3번째 여정, 세가지 맛으로 즐기는 트리플 잇" loading="lazy">
   </a>
@@ -1111,18 +1123,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
 
 <!-- ALL PRODUCTS -->
-<section class="sub-cta">
-      <div class="wrap">
-        <a class="sc-box" href="subscribe.html">
-          <div class="sc-t">
-            <span class="sc-eb">SUBSCRIBE</span>
-            <b>매달 알아서 도착하는 츄구미</b>
-            <span class="sc-d">챙기는 걸 잊어도 괜찮도록. 구독가로 더 합리적으로 만나보세요.</span>
-          </div>
-          <span class="sc-go">정기구독 보기 →</span>
-        </a>
-      </div>
-    </section>
+
     <section id="all" style="background:var(--alt);">
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">All Products</h2><a class="sec-more" href="#all" onclick="filterLine('all')" data-en="ALL 11 PRODUCTS">전체 11개 상품</a></div>
@@ -1239,7 +1240,19 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 </section>
 
 <!-- USER FILMS : 사용자 사용 영상 존 -->
-<section id="userfilms" style="padding-top:24px;">
+<section class="sub-cta">
+      <div class="wrap">
+        <a class="sc-box" href="subscribe.html">
+          <div class="sc-t">
+            <span class="sc-eb">SUBSCRIBE</span>
+            <b>매달 알아서 도착하는 츄구미</b>
+            <span class="sc-d">챙기는 걸 잊어도 괜찮도록. 구독가로 더 합리적으로 만나보세요.</span>
+          </div>
+          <span class="sc-go">정기구독 보기 →</span>
+        </a>
+      </div>
+    </section>
+    <section id="userfilms" style="padding-top:24px;">
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">User Films</h2><span class="sec-more kr" style="color:var(--gray)">사용 영상 모음</span></div>
     <div class="video-grid" id="ufilmGrid"></div>
@@ -1357,7 +1370,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v65 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v66 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2697,6 +2710,128 @@ setHead();
     });
   },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
   els.forEach(function(e){ io.observe(e); });
+})();
+</script>
+
+<style>
+/* ═══ 첫 화면 · 쇼핑 동선 ═══ */
+
+/* 히어로 아래 바로 보이는 빠른 진입 */
+.qnav{max-width:1160px;margin:-6px auto 0;padding:0 20px}
+.qnav-in{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.qn{position:relative;overflow:hidden;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:7px;
+  padding:18px 10px;border-radius:20px;text-decoration:none;text-align:center;
+  border:1px solid rgba(255,255,255,.82);
+  background:linear-gradient(160deg,rgba(255,255,255,.86),rgba(255,255,255,.62));
+  backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 8px 22px rgba(0,0,0,.06);
+  transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .3s}
+.qn:hover{transform:translateY(-4px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 16px 34px rgba(216,37,88,.16)}
+.qn:active{transform:scale(.96)}
+.qn::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;
+  transform:translate(-50%,-50%) scale(0);background:rgba(216,37,88,.18);
+  pointer-events:none;transition:transform .55s ease-out,opacity .55s}
+.qn:active::after{transform:translate(-50%,-50%) scale(26);opacity:0;transition:0s}
+.qn .ic{font-size:24px;line-height:1}
+.qn b{font-size:13px;font-weight:700;letter-spacing:-.02em}
+.qn span{font-size:10.5px;color:var(--gray);letter-spacing:.5px}
+
+/* ═══ 섹션 진입 액팅 ═══ */
+.sec-head .sec-title{
+  opacity:0;translate:0 16px;
+  transition:opacity .7s ease,translate .7s cubic-bezier(.2,.7,.3,1)}
+.sec-head.in .sec-title{opacity:1;translate:0 0}
+.sec-head .sec-more{
+  opacity:0;translate:0 12px;
+  transition:opacity .6s ease .18s,translate .6s cubic-bezier(.2,.7,.3,1) .18s}
+.sec-head.in .sec-more{opacity:1;translate:0 0}
+
+/* 제목 아래 흐르는 선 */
+.sec-title{position:relative;display:inline-block;padding-bottom:12px}
+.sec-title::after{content:"";position:absolute;left:50%;bottom:0;
+  width:0;height:3px;border-radius:99px;transform:translateX(-50%);
+  background:linear-gradient(90deg,var(--main2),var(--main),#FFE923);
+  transition:width .9s cubic-bezier(.2,.7,.3,1) .25s}
+.sec-head.in .sec-title::after{width:56px}
+
+/* ═══ 구독 배너 — 크기·정렬 재조정 ═══ */
+.sub-cta{padding:8px 0 40px}
+.sc-box{
+  max-width:760px;margin:0 auto;
+  padding:34px 30px !important;
+  border-radius:26px !important;
+  gap:18px !important;
+  background:linear-gradient(135deg,#FFE9EE 0%,#FFD9E2 45%,#FFF3B8 100%) !important;
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 16px 40px rgba(216,37,88,.15),
+             inset 0 1px 0 rgba(255,255,255,.9) !important}
+.sc-t b{font-size:clamp(19px,2.6vw,25px) !important;line-height:1.35 !important}
+.sc-d{font-size:13px !important;margin-top:9px !important;max-width:420px;
+  margin-left:auto;margin-right:auto}
+.sc-go{padding:15px 30px !important;font-size:14px !important}
+
+/* ═══ 첫 글래스(팝업·헤더) 액팅 ═══ */
+.popup{
+  animation:popIn .55s cubic-bezier(.2,.9,.3,1.1) both}
+@keyframes popIn{
+  from{opacity:0;transform:translateY(22px) scale(.94)}
+  to{opacity:1;transform:none}}
+.popup-dim{animation:dimIn .35s ease both}
+@keyframes dimIn{from{opacity:0}to{opacity:1}}
+.popup .p-acts button{
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),box-shadow .2s}
+.popup .p-acts button:hover{transform:translateY(-2px)}
+.popup .p-acts button:active{transform:scale(.96)}
+
+header{transition:box-shadow .3s,background .3s}
+header.stuck{
+  box-shadow:0 4px 24px rgba(216,37,88,.1),0 1px 0 rgba(255,255,255,.8) !important}
+
+/* ═══ 크기 정리 ═══ */
+section{padding:44px 0}
+.sec-head{margin-bottom:26px !important}
+#best,#all{padding-top:40px}
+.mid-banner,.btm-banner{padding:0 0 34px}
+
+@media (max-width:860px){
+  .qnav-in{grid-template-columns:repeat(2,1fr);gap:9px}
+  .qn{padding:16px 8px}
+  .sc-box{padding:26px 20px !important}
+  section{padding:34px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .sec-head .sec-title,.sec-head .sec-more{opacity:1;translate:none;transition:none}
+  .sec-title::after{width:56px;transition:none}
+  .popup,.popup-dim{animation:none}
+}
+</style>
+<script>
+/* 섹션 제목 진입 효과 */
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var heads=[].slice.call(document.querySelectorAll('.sec-head'));
+  if(reduce){ heads.forEach(function(x){x.classList.add('in');}); }
+  else if(heads.length){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        e.target.classList.add('in'); io.unobserve(e.target);
+      });
+    },{threshold:.25,rootMargin:'0px 0px -50px 0px'});
+    heads.forEach(function(x){ io.observe(x); });
+  }
+
+  /* 헤더 그림자 */
+  var hd=document.querySelector('header');
+  if(hd){
+    var t=null;
+    window.addEventListener('scroll',function(){
+      clearTimeout(t);
+      t=setTimeout(function(){ hd.classList.toggle('stuck',(window.scrollY||0)>40); },60);
+    },{passive:true});
+  }
 })();
 </script>
 </body>
