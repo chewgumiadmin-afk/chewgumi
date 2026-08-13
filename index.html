@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v82 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v83 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -899,6 +899,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <meta name="apple-mobile-web-app-title" content="츄구미">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <link rel="stylesheet" href="assets/ui.css">
+<link rel="stylesheet" href="assets/stable.css">
 </head>
 <body>
 
@@ -1364,7 +1365,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v82 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v83 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2604,9 +2605,10 @@ setHead();
       a.classList.add('on');
     });
   });
-  var t=null;
+  var tick2=false;
   window.addEventListener('scroll',function(){
-    clearTimeout(t); t=setTimeout(mark,90);
+    if(tick2) return; tick2=true;
+    requestAnimationFrame(function(){ mark(); tick2=false; });
   },{passive:true});
   mark();
 })();
@@ -2873,10 +2875,13 @@ section{padding:44px 0}
   /* 헤더 그림자 */
   var hd=document.querySelector('header');
   if(hd){
-    var t=null;
+    var tick=false;
     window.addEventListener('scroll',function(){
-      clearTimeout(t);
-      t=setTimeout(function(){ hd.classList.toggle('stuck',(window.scrollY||0)>40); },60);
+      if(tick) return; tick=true;
+      requestAnimationFrame(function(){
+        hd.classList.toggle('stuck',(window.scrollY||0)>40);
+        tick=false;
+      });
     },{passive:true});
   }
 })();
