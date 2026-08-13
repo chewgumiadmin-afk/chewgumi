@@ -1,22 +1,19 @@
-/*! ChewGumi Scroll Stability v1 · MedIT
-    스크롤 중 화면이 흔들리던 문제를 잡는다 */
+/*! ChewGumi Scroll Stability v2 · MedIT
+    v1에서 html에 걸었던 overflow 설정이 스크롤을 막아 되돌림 */
 
-/* 스크롤바가 생겼다 없어지며 가로 폭이 변하는 것을 막는다 */
-html{
-  scrollbar-gutter:stable;
-  overflow-x:hidden;
-  overflow-y:scroll;
-  -webkit-text-size-adjust:100%;
-  text-size-adjust:100%}
-body{overflow-x:hidden;overscroll-behavior-y:none}
+/* 가로 넘침만 막는다. html에는 손대지 않는다 */
+body{overflow-x:clip}
+
+/* 스크롤바 자리를 고정해 가로 폭이 튀지 않게 한다 */
+@supports(scrollbar-gutter:stable){
+  html{scrollbar-gutter:stable}
+}
 
 /* 고정 헤더를 별도 레이어로 올려 다시 그리지 않게 한다 */
 header{
   transform:translateZ(0);
-  will-change:transform;
-  backface-visibility:hidden;
-  contain:layout paint}
-/* 그림자를 실제로 켜고 끄면 레이아웃이 흔들린다 → 항상 두고 투명도만 바꾼다 */
+  backface-visibility:hidden}
+/* 그림자를 켜고 끄면 흔들리므로 투명도만 바꾼다 */
 header::after{
   content:"";position:absolute;left:0;right:0;bottom:-14px;height:14px;
   pointer-events:none;opacity:0;transition:opacity .3s ease;
@@ -24,34 +21,26 @@ header::after{
 header.stuck::after{opacity:1}
 header.stuck{box-shadow:none !important}
 
-/* 하단 탭바·떠 있는 버튼도 별도 레이어로 */
+/* 떠 있는 요소도 별도 레이어로 */
 .m-nav,.kko-fab,.cgbot-fab,.cg-pwa,.cg-lite-bar{
   transform:translateZ(0);backface-visibility:hidden}
 
-/* 등장 효과가 높이를 바꾸지 않도록 — translate 대신 transform 사용 */
+/* 등장 효과가 높이에 영향을 주지 않도록 */
 .reveal{opacity:0;transform:translate3d(0,20px,0);transition:none}
 .reveal.in{opacity:1;transform:none;
   transition:opacity .7s ease,transform .7s cubic-bezier(.32,.72,0,1)}
-.sec-head .sec-title,.sec-head .sec-more{transform:translate3d(0,0,0)}
 
-/* 애니메이션 구간을 격리해 바깥 레이아웃 계산을 줄인다 */
-#best,#all,#arrivals,#userfilms,.tri-sec,.sub-cta{contain:layout style}
-
-/* 이미지가 늦게 떠서 페이지가 밀리는 것을 막는다 */
+/* 이미지가 늦게 떠서 페이지가 밀리는 것 방지 */
 img{max-width:100%}
-.card .thumb,.uf-card,.film,.hero,.plan .th{contain:paint}
 
-/* 모바일 주소창이 접혔다 펴질 때 높이가 튀는 것 방지 */
+/* 모바일 주소창 높이 변화 대응 */
 @supports(height:100dvh){
   .popup-dim,.kko-pop,.bk-pop,.uf-pop,.join-dim{height:100dvh}
 }
 
-/* 스크롤 중에는 hover 효과를 잠시 끈다 (터치 기기에서 떨림 원인) */
+/* 터치 기기에서 스크롤 중 hover가 떨림을 만드는 것 방지 */
 @media(hover:none){
-  .card:hover,.comm-card:hover,.plan:hover,.perk:hover,.uf-card:hover,.qn:hover{
-    transform:none !important;box-shadow:inherit}
+  .card:hover,.comm-card:hover,.plan:hover,.perk:hover,.uf-card:hover{
+    transform:none !important}
   .film:hover .film-poster{transform:none}
 }
-
-/* 폰트가 늦게 떠서 글자 크기가 바뀌는 것 완화 */
-body{font-synthesis-weight:none}
