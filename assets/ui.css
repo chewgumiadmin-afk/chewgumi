@@ -1,0 +1,81 @@
+/*! ChewGumi UI Tokens v1 · MedIT
+    페이지마다 달랐던 버튼·간격·글자 크기를 한 곳에서 맞춘다 */
+
+:root{
+  /* 버튼 높이 — 3단계만 쓴다 */
+  --h-lg:52px;   /* 주요 동작 (결제·신청) */
+  --h-md:44px;   /* 보조 동작 */
+  --h-sm:36px;   /* 작은 조작 */
+  /* 글자 */
+  --fs-lg:15px;
+  --fs-md:13.5px;
+  --fs-sm:12px;
+  /* 모서리 */
+  --r-card:22px;
+  --r-pill:999px;
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+
+/* ── 주요 버튼 ── */
+.btn,.plan .go button,.uf-act .go,.bk-b.open{
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  height:var(--h-lg) !important;padding:0 24px !important;
+  border-radius:var(--r-pill) !important;
+  font-family:inherit !important;font-size:var(--fs-lg) !important;font-weight:700 !important;
+  line-height:1 !important;border:0;cursor:pointer;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease) !important}
+.btn:active,.plan .go button:active,.uf-act .go:active{transform:scale(.97) !important}
+.btn:disabled{opacity:.45 !important;box-shadow:none !important;cursor:not-allowed;transform:none !important}
+
+/* 폭 100%가 필요한 자리 */
+.plan .go button,.form .btn,.uf-act button{width:100% !important}
+
+/* ── 보조 버튼 ── */
+.btn.ghost,.mini,.ct-b,.ps-btn,.bk-b,.acts a,.acts button,.fav-edit{
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  height:var(--h-md) !important;padding:0 18px !important;
+  border-radius:var(--r-pill) !important;
+  font-family:inherit !important;font-size:var(--fs-md) !important;font-weight:700 !important;
+  line-height:1 !important;cursor:pointer;
+  transition:transform .35s var(--ease) !important}
+.btn.ghost:active,.mini:active,.ct-b:active,.ps-btn:active{transform:scale(.96) !important}
+
+/* ── 작은 버튼 ── */
+.chips button,.tabs button,.h-dots button,.bl-tabs button{
+  font-family:inherit;line-height:1}
+.chips button,.bl-tabs button{
+  height:var(--h-sm) !important;padding:0 15px !important;
+  font-size:var(--fs-sm) !important;border-radius:var(--r-pill) !important}
+
+/* ── 탭 (구독 페이지 등) ── */
+.tabs a{
+  display:flex !important;flex-direction:column !important;
+  align-items:center !important;justify-content:center !important;
+  min-height:56px !important;padding:9px 20px !important;
+  border-radius:var(--r-pill) !important;
+  font-size:var(--fs-md) !important;font-weight:700 !important;line-height:1.25 !important;
+  transition:transform .3s var(--ease),background .3s,color .3s !important}
+.tabs a small{font-size:10px !important;font-weight:500 !important;
+  margin-top:3px !important;opacity:.72;letter-spacing:.3px}
+.tabs a:active{transform:scale(.96) !important}
+
+/* ── 입력 ── */
+input,select,textarea{
+  min-height:var(--h-md);
+  padding:0 14px;border-radius:14px !important;
+  font-size:var(--fs-md) !important;font-family:inherit}
+textarea{padding:12px 14px;min-height:80px;line-height:1.7}
+label{font-size:var(--fs-sm) !important;font-weight:600 !important}
+
+/* ── 카드 · 패널 모서리 통일 ── */
+.panel,.card,.plan,.form,.comm-card,.perk,.stat{border-radius:var(--r-card) !important}
+
+/* ── 섹션 여백 통일 ── */
+.head,.sec-head{margin-bottom:24px}
+
+/* ── 모바일 ── */
+@media(max-width:640px){
+  :root{--h-lg:50px;--h-md:42px;--fs-lg:14.5px;--fs-md:13px}
+  .tabs a{min-height:52px !important;padding:8px 15px !important}
+  .btn,.plan .go button{padding:0 18px !important}
+}
