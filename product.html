@@ -924,11 +924,20 @@ loadWish();
   var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
   var no = new URLSearchParams(location.search).get('no') || '';
+  function lineOf(n){
+    n=+n||0;
+    if(n>=11&&n<=15) return 'travel';
+    if(n>=16&&n<=21) return 'doit';
+    if(n>=101&&n<=103) return 'triple';
+    return '';
+  }
+  var LINE = lineOf(no);
+  var LINE_NM = {travel:'Travel-it',doit:'Dew-it',triple:'Triple-it'}[LINE]||'';
   var off = 0, PAGE = 10, total = 0;
 
   window.rvLoad = function(){
     if(!no) return;
-    fetch(SB+'/rest/v1/product_reviews?select=*&product_id=eq.'+no
+    fetch(SB+'/rest/v1/product_reviews?select=*&'+(LINE?('product_line=eq.'+LINE):('product_id=eq.'+no))
       +'&visible=eq.true&order=written_at.desc&limit='+PAGE+'&offset='+off,
       {headers:{apikey:KEY,Authorization:'Bearer '+KEY,Prefer:'count=exact'}})
     .then(function(r){
@@ -946,7 +955,8 @@ loadWish();
         }
         box.innerHTML='';
         document.getElementById('rvCount').textContent='('+total+')';
-        document.getElementById('rvStars').innerHTML='<b>★★★★★</b> 5.0 · 후기 '+total+'건';
+        document.getElementById('rvStars').innerHTML='<b>★★★★★</b> 5.0 · '
+          +(LINE_NM?LINE_NM+' ':'')+'후기 '+(total>999?'999+':total)+'건';
       }
       rows.forEach(function(v){
         var d=document.createElement('div');
