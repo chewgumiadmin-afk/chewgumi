@@ -1344,16 +1344,29 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- 푸터 (레퍼런스 폼 + 실제 정보) -->
 <!-- 하단 배너 (3초 자동 전환) -->
 <section class="btm-banner">
-  <div class="bb-wrap">
-    <a class="bb-slide on" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기">
-      <img src="assets/banner-travel.png" alt="설레는 여행, 컨디션까지 완벽하게 TRAVEL-IT과 함께 떠나요" loading="lazy">
-    </a>
-    <a class="bb-slide" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기">
-      <img src="assets/banner-dew.png" alt="당 걱정 없이 개운하게, dew-it" loading="lazy">
-    </a>
-    <div class="bb-dots" id="bbDots"></div>
-  </div>
-</section>
+      <div class="bb-head">
+        <span class="bb-eb">EXPLORE</span>
+        <h2>지금 만나보세요</h2>
+      </div>
+      <div class="bb-grid">
+        <a class="bb-card" href="#all" onclick="filterLine('travel')">
+          <div class="bb-img"><img src="assets/banner-travel.png" alt="Travel-it" loading="lazy"></div>
+          <div class="bb-txt">
+            <span class="en">TRAVEL-IT</span>
+            <b>설레는 여행, 컨디션까지</b>
+            <span class="go">보러 가기 →</span>
+          </div>
+        </a>
+        <a class="bb-card" href="#all" onclick="filterLine('doit')">
+          <div class="bb-img"><img src="assets/banner-dew.png" alt="Dew-it" loading="lazy"></div>
+          <div class="bb-txt">
+            <span class="en">DEW-IT</span>
+            <b>당 걱정 없이 개운하게</b>
+            <span class="go">보러 가기 →</span>
+          </div>
+        </a>
+      </div>
+    </section>
 
 <footer>
   <div class="wrap">
@@ -4347,6 +4360,97 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
     flex:1 1 100% !important;height:50px !important;min-height:50px !important;
     font-size:13.5px !important}
 }
+</style>
+
+<style>
+/* ═══ User Films — 배경 분리 ═══ */
+#userfilms{
+  position:relative;isolation:isolate;overflow:hidden;
+  margin-top:52px;padding:64px 0 70px}
+#userfilms::before{
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:linear-gradient(168deg,#1F0C18 0%,#31122A 48%,#3E1330 100%)}
+#userfilms .uf-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+#userfilms .uf-bg span{position:absolute;border-radius:50%;filter:blur(74px);opacity:.42}
+#userfilms .uf-bg .o1{width:36vw;height:36vw;left:-6%;top:-14%;background:#E95073;
+  animation:ufFloat 17s ease-in-out infinite}
+#userfilms .uf-bg .o2{width:30vw;height:30vw;right:-8%;bottom:-16%;background:#8E5BD8;
+  animation:ufFloat 21s ease-in-out infinite reverse}
+@keyframes ufFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(5%,-7%)}}
+
+/* 위아래 섹션과 부드럽게 이어지도록 */
+#userfilms::after{
+  content:"";position:absolute;left:0;right:0;top:0;height:80px;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(253,243,245,.5),transparent)}
+
+.uf-head{text-align:center;max-width:600px;margin:0 auto 34px}
+.uf-eb{display:inline-block;padding:6px 15px;border-radius:999px;
+  font-family:'Poppins',sans-serif;font-size:10px;font-weight:800;letter-spacing:3px;
+  color:#FFE923;background:rgba(255,233,35,.12);
+  border:.5px solid rgba(255,233,35,.3)}
+.uf-head h2{margin-top:16px;font-size:clamp(24px,4.4vw,42px);font-weight:800;
+  line-height:1.24;letter-spacing:-.04em;color:#fff}
+.uf-head p{margin-top:14px;font-size:clamp(13px,1.6vw,15px);line-height:1.9;
+  color:rgba(255,255,255,.68);word-break:keep-all}
+
+/* 어두운 배경에 맞춘 카드 */
+#userfilms .uf-card{background:rgba(255,255,255,.06);
+  border:.5px solid rgba(255,255,255,.14)}
+#userfilms .uf-add{
+  border:1.5px dashed rgba(255,255,255,.26);
+  background:linear-gradient(170deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+#userfilms .uf-add:hover{border-color:rgba(255,233,35,.5)}
+#userfilms .uf-add b{color:#fff}
+#userfilms .uf-add span{color:rgba(255,255,255,.6)}
+#userfilms .uf-add .rw{background:rgba(255,233,35,.2);color:#FFE923}
+
+/* ═══ 하단 배너 — 두 장 카드 ═══ */
+.btm-banner{
+  max-width:1160px !important;width:auto !important;
+  margin:56px auto 48px !important;padding:0 20px}
+.bb-head{text-align:center;margin-bottom:22px}
+.bb-eb{display:block;font-family:'Poppins',sans-serif;font-size:10px;font-weight:800;
+  letter-spacing:3.5px;color:var(--main)}
+.bb-head h2{margin-top:10px;font-size:clamp(20px,3vw,30px);font-weight:800;
+  letter-spacing:-.035em}
+.bb-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.bb-card{
+  position:relative;display:block;overflow:hidden;text-decoration:none;
+  border-radius:22px;
+  border:.5px solid rgba(255,255,255,.8);
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.72));
+  backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 30px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  transition:transform .5s cubic-bezier(.32,.72,0,1),box-shadow .5s}
+.bb-card:hover{transform:translateY(-5px);
+  box-shadow:0 22px 48px rgba(216,37,88,.16),inset 0 1px 0 rgba(255,255,255,1)}
+.bb-card:active{transform:scale(.985)}
+.bb-img{aspect-ratio:1568/224;overflow:hidden;background:#EAF4FF}
+.bb-img img{width:100%;height:100%;object-fit:fill;display:block;
+  transition:transform .7s cubic-bezier(.32,.72,0,1)}
+.bb-card:hover .bb-img img{transform:scale(1.04)}
+.bb-txt{padding:18px 20px 20px}
+.bb-txt .en{display:block;font-family:'Poppins',sans-serif;font-size:10px;
+  font-weight:800;letter-spacing:2.5px;color:var(--main)}
+.bb-txt b{display:block;margin-top:8px;font-size:clamp(14.5px,1.8vw,17px);
+  font-weight:700;letter-spacing:-.03em;line-height:1.4;word-break:keep-all}
+.bb-txt .go{display:inline-block;margin-top:11px;font-size:12px;font-weight:700;
+  color:var(--gray);transition:color .3s,transform .3s}
+.bb-card:hover .bb-txt .go{color:var(--main);transform:translateX(3px)}
+
+@media(max-width:860px){
+  #userfilms{margin-top:38px;padding:48px 0 54px}
+  .btm-banner{margin:40px auto 36px !important;padding:0 16px}
+  .bb-grid{grid-template-columns:1fr;gap:14px}
+  .bb-card{border-radius:18px}
+  .bb-txt{padding:15px 17px 17px}
+}
+@media (prefers-reduced-motion:reduce){
+  #userfilms .uf-bg span{animation:none}
+}
+.lite #userfilms .uf-bg{display:none}
 </style>
 </body>
 </html>
