@@ -4548,6 +4548,44 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
   .grid{gap:22px 10px !important}
   .grid .card .name{font-size:12px !important}
 }
+
+/* ══ 배너 잘림 해결 ══
+   이미지 원본이 1400×675 (약 2.07:1)인데
+   모바일에서 4:3(1.33)·16:9(1.78)로 잡혀 양옆이 크게 잘렸습니다.
+   원본 비율에 가깝게 맞추고, 잘리더라도 가운데가 남도록 합니다. */
+@media (max-width:1000px){
+  .hero{aspect-ratio:1400/675 !important;max-height:none !important}
+}
+@media (max-width:640px){
+  .hero{aspect-ratio:1400/720 !important;border-radius:0 !important;max-height:none !important}
+}
+@media (max-width:420px){
+  /* 아주 좁은 화면에서도 4:3까지 내리지 않음 */
+  .hero{aspect-ratio:1400/780 !important}
+}
+@media (max-width:560px){
+  .hero{aspect-ratio:1400/720 !important}
+}
+@media (max-height:520px) and (orientation:landscape){
+  .hero{aspect-ratio:1400/675 !important;height:auto !important}
+}
+
+/* 슬라이드 이미지 — 가운데 기준으로 담기 */
+.hslide{
+  background-size:cover !important;
+  background-position:center center !important;
+}
+@media (max-width:640px){
+  /* 인물이 있는 배너는 위쪽이 중요하므로 살짝 위 기준 */
+  .hslide{background-position:center 42% !important}
+}
+
+/* 배너 문구가 이미지를 가리지 않도록 */
+@media (max-width:640px){
+  .hero-txt{padding:0 18px !important}
+  .hero-txt .en{font-size:clamp(18px,5.2vw,26px) !important;letter-spacing:2px !important}
+  .hero-btn{margin-top:16px !important;padding:11px 26px !important}
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
