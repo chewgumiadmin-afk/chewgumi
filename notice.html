@@ -108,6 +108,12 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 @media (prefers-reduced-motion:reduce){ .ripple { display:none; } }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/pwa.css">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="츄구미">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 </head>
 <body>
 
@@ -371,5 +377,6 @@ document.addEventListener('click', e => {
 })();
 </script>
 <script src="assets/lite.js" defer></script>
+<script src="assets/pwa.js" defer></script>
 </body>
 </html>
