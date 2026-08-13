@@ -482,6 +482,14 @@ function c24Ship(id){
   }).catch(()=>{$('c24Status').textContent='네트워크 오류가 발생했습니다.';});
 }
 const SITE_URL='https://chewgumi.com';
+/* 카카오 JS 키 불러오기 */
+fetch(SB_URL+'/rest/v1/shop_settings?select=value&key=eq.kakao_js_key',
+  {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}})
+.then(function(r){return r.ok?r.json():[];})
+.then(function(rows){
+  var k=(rows||[])[0]&&rows[0].value;
+  if(k){ window._KKO_JS_KEY=k; kkoReady(); }
+}).catch(function(){});
 let KKO_OK=false;
 function kkoReady(){
   if(KKO_OK) return true;
@@ -513,7 +521,7 @@ function ntLoad(){
     $('ntMailOn').checked=(d.owner_notify_email==='on');
     $('ntSmsOn').checked=(d.owner_notify_sms==='on');
     $('ntKkoLink').href=d.kakao_channel_url||'#';
-    if(d.kakao_js_key){ window._KKO_JS_KEY=d.kakao_js_key; kkoReady(); }
+
     var s=[];
     s.push(d.mailReady?'이메일 발송 준비됨 (월 3,000통 무료)'
       :'이메일 키(RESEND_API_KEY) 미등록 — 등록하면 무료로 알림을 받으실 수 있습니다.');
