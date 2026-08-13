@@ -1,0 +1,33 @@
+{
+  "name": "ChewGumi 츄구미",
+  "short_name": "츄구미",
+  "description": "한입에 건강을 더하다 — 츄구미 공식 스토어",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FDF3F5",
+  "theme_color": "#D82558",
+  "lang": "ko",
+  "dir": "ltr",
+  "categories": ["shopping", "food", "health"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "전체 상품", "short_name": "상품",
+      "url": "./index.html#all",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "정기구독", "short_name": "구독",
+      "url": "./subscribe.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "배송 조회", "short_name": "배송",
+      "url": "./tracking.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "관리자", "short_name": "관리자",
+      "url": "./console.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
