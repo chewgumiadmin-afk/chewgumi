@@ -92,6 +92,22 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
   .pv-stage iframe{width:100% !important;height:380px}
   .pv-dev button{padding:6px 9px;font-size:10.5px}
 }
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.chips button{padding:9px 14px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.78);border:1px solid var(--line);color:var(--gray)}
+.chips button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.sw{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer}
+.sw input{width:18px;height:18px;accent-color:var(--main);cursor:pointer}
+.irow{padding:13px 4px;border-bottom:1px solid rgba(0,0,0,.06)}
+.irow:last-child{border-bottom:0}
+.ih{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ih .no{font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700;color:var(--gray)}
+.ih .tt{flex:1;min-width:140px;font-size:13.5px;font-weight:700}
+.ih .kd{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:rgba(0,0,0,.06);color:#555}
+.ib{margin-top:7px;font-size:12.5px;line-height:1.75;color:#555}
+.ia{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -113,6 +129,35 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
   </div>
 
   <div id="area" class="hide">
+    <div class="panel">
+      <h2>접수된 요청</h2>
+      <div class="msg" id="isCfg" style="margin-top:0">확인 중…</div>
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:9px;margin-top:11px">
+        <div><label style="font-size:12px;font-weight:600">알림 받을 이메일</label>
+          <input id="isMail" type="email" placeholder="hyunjeong.shin@sookmyung.ac.kr"></div>
+        <div><label style="font-size:12px;font-weight:600">&nbsp;</label>
+          <div style="display:flex;gap:12px;align-items:center;height:41px">
+            <label class="sw"><input type="checkbox" id="isMailOn"> 메일</label>
+            <label class="sw"><input type="checkbox" id="isGhOn"> GitHub</label>
+          </div></div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px">
+        <button class="mini" onclick="isSave()">저장</button>
+        <button class="mini" onclick="isTest()">메일 테스트</button>
+        <a class="mini" href="issue.html" target="_blank" rel="noopener">이슈 보드 열기</a>
+        <a class="mini" id="isGhLink" href="#" target="_blank" rel="noopener">GitHub 이슈</a>
+      </div>
+      <div class="msg" id="isMsg"></div>
+
+      <div class="chips" id="isTabs" style="margin-top:14px">
+        <button class="on" data-s="open">대기</button>
+        <button data-s="doing">진행중</button>
+        <button data-s="done">완료</button>
+        <button data-s="all">전체</button>
+      </div>
+      <div id="isList"><div class="empty">불러오는 중…</div></div>
+    </div>
+
     <div class="panel">
       <h2>수정 요청</h2>
 
@@ -234,7 +279,7 @@ const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'applicati
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();isInit();}}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
@@ -379,6 +424,93 @@ function revert(id){
 sync();
 </script>
 <script src="assets/lite.js" defer>
+
+/* ── 접수된 요청 ── */
+const FN_ISSUE = SB + '/functions/v1/issue';
+const IKIND = {bug:'오류',design:'디자인',feature:'기능 요청',content:'내용 수정',etc:'기타'};
+let isFilt = 'open';
+function isCall(p){
+  return fetch(FN_ISSUE,{method:'POST',headers:H(),body:JSON.stringify(p)})
+    .then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function isInit(){
+  document.querySelectorAll('#isTabs button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#isTabs button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); isFilt=b.dataset.s; isLoad();
+  });
+  isCall({action:'getSettings'}).then(({ok,d})=>{
+    if(!ok) return;
+    $('isMail').value=d.issue_email||'';
+    $('isMailOn').checked=(d.issue_notify_email==='on');
+    $('isGhOn').checked=(d.issue_to_github==='on');
+    $('isGhLink').href='https://github.com/'+(d.repo||'')+'/issues';
+    var s=[];
+    s.push(d.mailReady?'메일 발송 준비됨':'메일 키(RESEND_API_KEY) 미등록');
+    s.push(d.ghReady?('GitHub 연결됨 · '+esc(d.repo||'')):'GitHub 토큰 미등록');
+    $('isCfg').innerHTML='고객이 이슈 보드에 남긴 요청이 여기 모입니다.<br>'
+      +'<span style="font-size:11.5px">'+s.join(' · ')+'</span>';
+  }).catch(()=>{});
+  isLoad();
+}
+function isSave(){
+  $('isMsg').textContent='저장 중…';
+  isCall({action:'saveSettings',issue_email:$('isMail').value.trim(),
+    issue_notify_email:$('isMailOn').checked?'on':'off',
+    issue_to_github:$('isGhOn').checked?'on':'off'}).then(({ok,d})=>{
+    $('isMsg').textContent=ok?'저장되었습니다.':(d.error||'저장 실패');
+  }).catch(()=>{$('isMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function isTest(){
+  $('isMsg').textContent='테스트 메일을 보내는 중…';
+  isCall({action:'test',email:$('isMail').value.trim()}).then(({ok,d})=>{
+    $('isMsg').textContent=(ok&&d.ok)?'메일을 보냈습니다. 받은편지함을 확인해 주세요.'
+      :(d.error||'보내지 못했습니다. 메일 키를 확인해 주세요.');
+  }).catch(()=>{$('isMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function isLoad(){
+  isCall({action:'list',status:isFilt}).then(({ok,d})=>{
+    if(!ok||!d.items.length){
+      $('isList').innerHTML='<div class="empty">해당하는 요청이 없습니다.</div>'; return; }
+    $('isList').innerHTML=d.items.map(i=>
+      '<div class="irow"><div class="ih">'
+      +'<span class="no">#'+i.no+'</span>'
+      +'<span class="tt">'+esc(i.title)+'</span>'
+      +'<span class="kd">'+(IKIND[i.kind]||i.kind)+'</span>'
+      +(i.page?'<span class="kd">'+esc(i.page)+'</span>':'')+'</div>'
+      +'<div class="ib">'+esc((i.body||'').slice(0,140))
+      +'<br><span style="color:var(--gray);font-size:11.5px">'
+      +esc(i.reporter||'익명')+' · '
+      +new Date(i.created_at).toLocaleDateString('ko-KR')
+      +(i.gh_number?' · GitHub #'+i.gh_number:'')+'</span></div>'
+      +'<div class="ia">'
+      +'<button class="mini" onclick="isFix('+i.id+',\''+esc(i.page||'index.html')+'\','
+        +'\''+esc((i.title+' — '+(i.body||'')).replace(/[\n\r\\\']/g,' ').slice(0,180))+'\')">'
+      +'이 요청으로 수정안 만들기</button>'
+      +(i.status!=='doing'?'<button class="mini" onclick="isSt('+i.id+',\'doing\')">진행중</button>':'')
+      +(i.status!=='done'?'<button class="mini" onclick="isSt('+i.id+',\'done\')">완료</button>':'')
+      +(i.gh_url?'<a class="mini" href="'+esc(i.gh_url)+'" target="_blank" rel="noopener">GitHub</a>':'')
+      +'</div></div>').join('');
+  }).catch(()=>{$('isList').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function isSt(id,s){
+  isCall({action:'setStatus',id,status:s}).then(({ok,d})=>{
+    $('isMsg').textContent=ok?'상태가 변경되었습니다.':(d.error||'변경 실패');
+    if(ok) isLoad();
+  }).catch(()=>{});
+}
+/* 요청을 수정 요청칸으로 옮긴다 */
+function isFix(id,page,text){
+  var sel=$('path');
+  for(var i=0;i<sel.options.length;i++){
+    if(sel.options[i].value===page){ sel.selectedIndex=i; break; }
+  }
+  loadPrev();
+  $('req').value=text;
+  $('req').focus();
+  $('dmsg').className='msg';
+  $('dmsg').textContent='접수된 요청을 가져왔습니다. 내용을 다듬고 [수정안 만들기]를 눌러주세요.';
+  document.querySelector('#req').scrollIntoView({behavior:'smooth',block:'center'});
+}
 </script>
 </body>
 </html>
