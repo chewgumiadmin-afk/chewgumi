@@ -511,8 +511,11 @@ async function loadBank(){
         +' · 주문 후 '+(d.deposit_days||7)+'일 이내 입금</div>'
         +'<div class="bk-acts">'
         +'<button type="button" class="bk-b copy" onclick="copyAcc()">계좌번호 복사</button>'
-        +'<button type="button" class="bk-b open" onclick="openBankPick()">은행 앱 열기</button>'
-        +'</div>';
+        +(isMobile()
+            ? '<button type="button" class="bk-b open" onclick="openBankPick()">은행 앱 열기</button>'
+            : '')
+        +'</div>'
+        +(isMobile()?'':'<div class="bk-pc">휴대폰으로 접속하시면 은행 앱을 바로 여실 수 있습니다.</div>');
   }catch(e){ $('bankBox').textContent='계좌 정보를 불러오지 못했습니다.'; }
 }
 
@@ -697,6 +700,8 @@ $('payBtn').addEventListener('click',async()=>{
 .bk-grid.fold{display:none}
 .bk-grid.mine button{background:linear-gradient(160deg,#FFF1F4,#FFE4E6);
   border-color:rgba(216,37,88,.22);color:var(--main);font-weight:800}
+
+.bk-pc{margin-top:9px;font-size:11.5px;line-height:1.7;color:var(--gray)}
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
