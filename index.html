@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v64 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v65 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1357,7 +1357,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v64 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v65 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1422,7 +1422,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div id="wMsg" style="font-size:12px;color:var(--gray);margin-top:8px;"></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:14px;">
-      <button id="blWriteBtn" onclick="toggleWrite()" style="flex:1;padding:12px 0;border-radius:999px;font-size:12px;letter-spacing:2px;font-weight:700;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);cursor:pointer;">✏ 글쓰기</button>
+      <button id="blWriteBtn" onclick="toggleWrite()" style="flex:1;padding:12px 0;border-radius:999px;font-size:12px;letter-spacing:2px;font-weight:700;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);cursor:pointer;">글쓰기</button>
       <a class="bl-foot" id="blMore" href="notice.html" style="flex:1;margin-top:0;">FULL PAGE</a>
     </div>
   </div>
@@ -2582,5 +2582,122 @@ setHead();
   .sec-head{gap:10px !important;margin-bottom:22px !important}
 }
 </style>
+
+<style>
+/* ══ 커뮤니티 하단 버튼 — 높이 통일 + 글래스 ══ */
+#blWriteBtn, .bl-foot{
+  height:46px !important;
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  padding:0 20px !important;margin-top:0 !important;
+  border-radius:999px !important;
+  font-size:11.5px !important;letter-spacing:2px !important;font-weight:700 !important;
+  line-height:1 !important;text-decoration:none !important;
+  border:1px solid rgba(255,255,255,.85) !important;
+  background:linear-gradient(160deg,rgba(255,255,255,.88),rgba(255,255,255,.66)) !important;
+  backdrop-filter:blur(18px) saturate(170%) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(170%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 6px 18px rgba(0,0,0,.07) !important;
+  color:var(--ink) !important;cursor:pointer;
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),box-shadow .22s !important}
+#blWriteBtn:hover,.bl-foot:hover{
+  transform:translateY(-2px) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 12px 26px rgba(216,37,88,.16) !important}
+#blWriteBtn:active,.bl-foot:active{transform:scale(.97) !important}
+
+/* ══ NOTICE / REVIEW / Q&A 탭 — 글래스 + 반응 ══ */
+.bl-tabs button,.comm-tab,.bl-tab{
+  position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.75) !important;
+  background:linear-gradient(160deg,rgba(255,255,255,.7),rgba(255,255,255,.48)) !important;
+  backdrop-filter:blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(160%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9) !important;
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),
+             background .25s,color .25s,box-shadow .25s !important}
+.bl-tabs button:hover,.comm-tab:hover{transform:translateY(-1px) !important}
+.bl-tabs button:active,.comm-tab:active{transform:scale(.96) !important}
+.bl-tabs button.on,.comm-tab.on{
+  background:linear-gradient(135deg,var(--main2),var(--main)) !important;
+  color:#fff !important;border-color:transparent !important;
+  box-shadow:0 8px 20px rgba(216,37,88,.28),
+             inset 0 1px 0 rgba(255,255,255,.35) !important}
+/* 누를 때 번지는 물결 */
+.bl-tabs button::after,.comm-tab::after{
+  content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;
+  border-radius:50%;transform:translate(-50%,-50%) scale(0);
+  background:rgba(216,37,88,.22);pointer-events:none;transition:transform .5s ease-out,opacity .5s}
+.bl-tabs button:active::after,.comm-tab:active::after{
+  transform:translate(-50%,-50%) scale(22);opacity:0;transition:0s}
+
+/* ══ Triple-it 스타일 반응을 전체로 ══ */
+.card,.comm-card,.plan,.perk,.rv-item,.bl-item{
+  transition:transform .4s cubic-bezier(.2,.7,.3,1),box-shadow .4s !important}
+.card:hover,.comm-card:hover,.plan:hover,.perk:hover{
+  transform:translateY(-4px) !important;
+  box-shadow:0 20px 44px rgba(216,37,88,.14),
+             inset 0 1px 0 rgba(255,255,255,.95) !important}
+.card:active{transform:scale(.98) !important}
+.card .thumb img{transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.card:hover .thumb img{transform:scale(1.06)}
+
+/* 스크롤 진입 시 부드럽게 등장 */
+.reveal{opacity:0;translate:0 22px}
+.reveal.in{opacity:1;translate:0 0;
+  transition:opacity .7s ease,translate .7s cubic-bezier(.2,.7,.3,1)}
+
+/* ══ 팝업 — 모바일 표시 교정 ══ */
+.popup-dim{
+  display:none;position:fixed;inset:0;z-index:1500;
+  align-items:center;justify-content:center;
+  padding:20px;overflow-y:auto;
+  background:rgba(26,12,18,.42);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.popup-dim.on{display:flex}
+.popup{
+  width:min(calc(100vw - 40px),400px) !important;
+  max-height:calc(100dvh - 48px) !important;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  margin:auto;border-radius:24px !important}
+.popup .p-illust{width:min(62vw,220px) !important;height:auto !important;
+  margin:0 auto;display:block}
+.popup .p-title{padding:0 20px;font-size:clamp(16px,4.4vw,19px);line-height:1.4}
+.popup .p-desc{padding:0 22px;font-size:clamp(12.5px,3.4vw,14px);line-height:1.8;word-break:keep-all}
+.popup .p-acts{display:flex !important;gap:8px !important;padding:0 20px !important;
+  margin-top:18px !important;flex-wrap:wrap}
+.popup .p-acts button{
+  flex:1 1 46% !important;min-width:0 !important;
+  height:46px !important;border-radius:999px !important;
+  font-size:13px !important;font-weight:700 !important;
+  display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:380px){
+  .popup .p-acts button{flex:1 1 100% !important}
+}
+@media (max-height:620px){
+  .popup .p-illust{width:min(42vw,150px) !important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;translate:none}
+  .card,.comm-card,.plan,.perk{transition:none !important}
+}
+</style>
+<script>
+/* 스크롤 등장 효과 — 전체 카드에 적용 */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var sel='.grid .card,.comm-card,.plan,.perk,.rv-item,.sub-cta .sc-box';
+  var els=[].slice.call(document.querySelectorAll(sel));
+  if(!els.length) return;
+  els.forEach(function(e){ e.classList.add('reveal'); });
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e,i){
+      if(!e.isIntersecting) return;
+      setTimeout(function(){ e.target.classList.add('in'); }, Math.min(i*70,420));
+      io.unobserve(e.target);
+    });
+  },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(e){ io.observe(e); });
+})();
+</script>
 </body>
 </html>
