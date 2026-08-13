@@ -191,6 +191,30 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
 </div>
 
 <script>
+/* ── 화면 미리보기 ── */
+function siteBase(){
+  return location.href.split('#')[0].split('?')[0].replace(/[^/]*$/, '');
+}
+function prevUrl(){
+  var p = $('path').value || 'index.html';
+  return siteBase() + p + '?preview=1&t=' + Date.now();
+}
+function loadPrev(){
+  var f = $('pvFrame'); if(!f) return;
+  var p = $('path').value || 'index.html';
+  $('pvUrl').textContent = p;
+  f.removeAttribute('srcdoc');
+  f.src = prevUrl();
+}
+function setW(btn, w){
+  document.querySelectorAll('.pv-dev button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('pvFrame').style.width = w + 'px';
+}
+function openPrev(){
+  window.open(prevUrl(), '_blank', 'noopener');
+}
+
 const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const FN=SB+'/functions/v1/dev-agent';
@@ -281,8 +305,7 @@ function preview(){
     if(!ok){ $('rmsg').className='msg bad'; $('rmsg').textContent=d.error||'미리보기를 열 수 없습니다.'; return; }
     const f=$('pvFrame');
     f.removeAttribute('src');
-    f.srcdoc = d.html.replace('<head>',
-      '<head><base href="'+SITE_BASE+'">');
+    f.srcdoc = d.html.replace('<head>', '<head><base href="'+siteBase()+'">');
     $('pvUrl').textContent = d.path + ' (수정안 미리보기)';
     $('rmsg').className='msg ok';
     $('rmsg').textContent='위 미리보기가 수정안입니다. 원래 화면으로 돌아가려면 화면을 다시 선택해 주세요.';
@@ -333,25 +356,6 @@ function revert(id){
 sync();
 </script>
 <script src="assets/lite.js" defer>
-/* ── 화면 미리보기 ── */
-const SITE_BASE = location.href.replace(/[^/]*$/, '');
-function prevUrl(){
-  const p = $('path').value || 'index.html';
-  return SITE_BASE + p + '?preview=1&t=' + Date.now();
-}
-function loadPrev(){
-  const p = $('path').value || 'index.html';
-  $('pvUrl').textContent = p;
-  $('pvFrame').src = prevUrl();
-}
-function setW(btn, w){
-  document.querySelectorAll('.pv-dev button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  $('pvFrame').style.width = w + 'px';
-}
-function openPrev(){
-  window.open(prevUrl(), '_blank', 'noopener');
-}
 </script>
 </body>
 </html>
