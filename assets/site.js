@@ -25,6 +25,11 @@
     BRAND_KR: '츄구미',
 
     /* 외부 채널 */
+    /* 고객 상담 */
+    CS_PHONE: '0507-0444-2706',
+    CS_PHONE_RAW: '050704442706',
+    CS_HOURS: '평일 10:00 - 17:00 · 점심 12:00 - 13:00',
+
     KAKAO: 'https://pf.kakao.com/_lxjxjiX',
     INSTA: 'https://www.instagram.com/chewgumi_official/',
 
@@ -66,6 +71,15 @@
         els[i].setAttribute('rel', 'noopener');
       }
     }
+    /* data-cs 가 붙은 곳에 상담번호를 채운다 */
+    var cs = document.querySelectorAll('[data-cs]');
+    for (var c = 0; c < cs.length; c++) {
+      var mode = cs[c].getAttribute('data-cs');
+      if (mode === 'tel') { cs[c].setAttribute('href', 'tel:' + CFG.CS_PHONE_RAW); }
+      if (!cs[c].textContent.trim() || mode === 'fill')
+        cs[c].textContent = CFG.CS_PHONE;
+    }
+
     /* data-site 는 이 사이트 안 페이지 */
     var s = document.querySelectorAll('[data-site]');
     for (var j = 0; j < s.length; j++) {
