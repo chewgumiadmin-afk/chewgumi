@@ -95,14 +95,60 @@
 
 /* ══ 화면별 크기 ══ */
 @media (max-width:640px){
-  /* 모바일 — 화면 거의 가득, 아래에서 올라오는 형태가 편함 */
+  /* ── 모바일 팝업 = 바텀시트 ──
+     화면을 가득 덮지 않고 아래 60~72%만 차지합니다.
+     뒤 화면이 보이면 "갇힌 느낌"이 줄어듭니다. */
   .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
     max-width: 100% !important;
     width: 100% !important;
-    max-height: 88vh;
-    border-radius: 22px 22px 0 0 !important;
+    max-height: 72vh !important;
+    border-radius: 24px 24px 0 0 !important;
+    padding-top: 26px !important;
+    box-shadow: 0 -8px 32px rgba(0,0,0,.14) !important;
+    animation: cgUp .26s cubic-bezier(.2,.8,.3,1);
   }
-  .mo, .pop-bg, .bl-bg{ align-items: flex-end !important; padding: 0 !important; }
+  /* 위에 손잡이 표시 — 내려서 닫을 수 있다는 신호 */
+  .popup::before, .cartp::before, .detail::before,
+  .kko-box::before, .mo-b::before, .bl-box::before, .modal::before{
+    content:''; position:absolute; top:9px; left:50%;
+    width:38px; height:4px; margin-left:-19px; border-radius:99px;
+    background:rgba(0,0,0,.16); pointer-events:none;
+  }
+  /* 배경을 덜 어둡게 — 뒤가 보이도록 */
+  .mo, .pop-bg, .bl-bg, .kko-pop{
+    align-items: flex-end !important;
+    padding: 0 !important;
+    background: rgba(20,10,14,.32) !important;
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+    animation: cgFade .2s ease;
+  }
+  /* 내용이 길면 그 안에서만 스크롤 */
+  .popup, .cartp, .detail, .bl-box, .modal{
+    overscroll-behavior: contain;
+  }
+}
+@keyframes cgUp{ from{transform:translateY(14%);opacity:.6} to{transform:none;opacity:1} }
+@keyframes cgFade{ from{opacity:0} to{opacity:1} }
+
+/* 짧은 알림은 팝업 대신 아래에 잠깐 뜨는 띠 */
+.cg-toast{
+  position:fixed; left:50%; bottom:calc(96px + env(safe-area-inset-bottom));
+  transform:translateX(-50%); z-index:3000;
+  max-width:min(420px, calc(100vw - 32px));
+  padding:14px 20px; border-radius:16px;
+  font-size:13.5px; line-height:1.6; font-weight:600; text-align:center;
+  color:#fff; background:rgba(28,16,22,.94);
+  box-shadow:0 10px 30px rgba(0,0,0,.24);
+  animation:cgToast .28s cubic-bezier(.2,.8,.3,1);
+  word-break:keep-all;
+}
+.cg-toast.ok{background:rgba(26,110,68,.96)}
+.cg-toast.bad{background:rgba(168,32,66,.96)}
+@keyframes cgToast{ from{opacity:0;transform:translateX(-50%) translateY(12px)}
+  to{opacity:1;transform:translateX(-50%)} }
+@media (max-width:640px){
+  .cg-toast{bottom:calc(88px + env(safe-area-inset-bottom));font-size:13px}
 }
 @media (min-width:641px) and (max-width:1024px){
   /* 태블릿 — 가운데 적당한 크기 */
