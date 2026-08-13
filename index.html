@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v75 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v76 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -433,11 +433,11 @@ section { padding:80px 0; }
 .p-sale { font-weight:700; font-size:14px; }
 
 /* ---------- 풀 배너 ---------- */
-.full-banner { position:relative; overflow:hidden; }
-.full-banner img { width:100%; height:auto; max-height:300px; object-fit:cover; }
-.full-banner .cap { position:absolute; left:6%; top:50%; transform:translateY(-50%); color:#fff; text-shadow:0 1px 12px rgba(0,0,0,.3); }
-.full-banner .cap .en { font-size:clamp(20px,3vw,38px); font-weight:700; letter-spacing:3px; }
-.full-banner .cap .kr { margin-top:8px; font-size:14px; }
+
+
+
+
+
 
 /* ---------- RECOMMENDED : 영상 카드 (레퍼런스: 쇼츠 링크형) ---------- */
 /* 풀스크린 시네마 영상 (컨트롤 없음 · 자동재생 · 무음 · 반복) */
@@ -490,7 +490,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   border:1px solid rgba(255,255,255,.75);
   box-shadow:0 24px 70px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -10px 20px rgba(255,255,255,.18); }
 .popup img { width:100%; aspect-ratio:4/3; object-fit:cover; background:#f4f4f6; }
-.full-banner img { border-radius:0; }
+
 .popup-body { padding:22px 24px 16px; text-align:center; }
 .popup-body .p-en { font-size:11px; letter-spacing:3px; color:var(--gray); }
 .popup-body .p-title { font-family:"SUIT Variable","SUIT","Noto Sans KR"; font-size:17px; font-weight:700; margin-top:8px; }
@@ -660,8 +660,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 }
 @media (prefers-reduced-motion:reduce){ .comm-dot { animation:none; } }
 /* 프리미엄 세리프(Poppins): 제목·타이틀 계열 */
-.sec-title, .hero h1, .bl-title, .comm-card h3, .film-cap .en, .full-banner .cap .en, .popup-body .p-title
- { font-family:'Poppins',"SUIT Variable",sans-serif; font-weight:600; letter-spacing:.01em; }
+.sec-title, .hero h1, .bl-title, .comm-card h3, .film-cap .en, 
 
 /* 상세 레이어 버튼 정렬·높이 통일 */
 .detail .d-acts { display:flex !important; flex-wrap:wrap !important; align-items:stretch !important;
@@ -1222,10 +1221,8 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
 <!-- 풀 배너 (실제 프로모션 배너, 실패 시 드라이브 라이프스타일 컷) -->
 <div class="full-banner" id="about">
-  <img src="assets/banner-dewit-wide.jpg" alt="Dew-it 무설탕 자일리톨 캔디" loading="lazy" decoding="async">
-  <div class="cap">
-    <div class="en">DEW-IT</div>
-    <div class="kr" data-en="Finnish xylitol · sugar-free candy — a fresh daily habit">핀란드산 자일리톨 · 무설탕 캔디 — 입 안이 개운해지는 하루 습관</div>
+      <img src="assets/banner-dewit.jpg" alt="Dew-it 한 알로 입안을 촉촉하게" loading="lazy" decoding="async">
+    </div>
   </div>
 </div>
 
@@ -1386,7 +1383,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v75 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v76 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3105,22 +3102,14 @@ section{padding:44px 0}
 .cgbot-ft input{flex:1;min-width:0}
 @media(max-width:400px){.cgbot-ft .cg-ic{width:36px;height:36px}}
 
-/* 풀 배너 — 비율 고정 + 선명도 */
-.full-banner{position:relative;overflow:hidden;
-  aspect-ratio:21/6;max-height:340px;background:#F7E9EE}
-.full-banner img{width:100%;height:100%;object-fit:cover;display:block;max-height:none}
-.full-banner::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(100deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.12) 38%,rgba(0,0,0,0) 62%)}
-.full-banner .cap{z-index:2;max-width:min(52%,520px)}
-.full-banner .cap .kr{line-height:1.7;word-break:keep-all}
 @media(max-width:860px){
-  .full-banner{aspect-ratio:16/8}
-  .full-banner .cap{max-width:66%}
-  .full-banner .cap .kr{font-size:12.5px}
+  
+  
+  
 }
 @media(max-width:520px){
-  .full-banner{aspect-ratio:4/3}
-  .full-banner .cap{left:20px;max-width:76%}
+  
+  
 }
 
 /* 사용자 영상 재생 버튼 */
@@ -3529,6 +3518,15 @@ input:focus,select:focus,textarea:focus{
   .qbar a:nth-child(2)::before{display:none}
   .qbar a:nth-child(-n+2){border-bottom:.5px solid rgba(0,0,0,.06)}
 }
+</style>
+
+<style>
+/* 풀 배너 — 원본 비율 그대로 (이미지에 문구 포함) */
+.full-banner{position:relative;overflow:hidden;background:#3EB489;
+  max-width:1160px;margin:0 auto 34px;border-radius:22px}
+.full-banner img{display:block;width:100%;height:auto;
+  aspect-ratio:1568/756;object-fit:cover}
+@media(max-width:1200px){ .full-banner{border-radius:0;max-width:none;margin-bottom:28px} }
 </style>
 </body>
 </html>
