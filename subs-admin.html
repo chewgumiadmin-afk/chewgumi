@@ -70,6 +70,44 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
 .hide{display:none}
 @media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}
   .prow{grid-template-columns:1fr 1fr;gap:5px 9px}}
+
+/* 구독 상품 편집 */
+.pcard{padding:15px 4px;border-bottom:1px solid rgba(0,0,0,.06)}
+.pcard:last-child{border-bottom:0}
+.ph{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.ph .nm{flex:1;min-width:150px;font-size:14px;font-weight:700}
+.ph .nm small{display:block;color:var(--gray);font-weight:400;font-size:11px;margin-top:2px}
+.ph .off{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+  background:rgba(216,37,88,.1);color:var(--main)}
+.pf{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.pf label{font-size:11px;font-weight:600;margin:0 0 4px}
+.pf input,.pf select{padding:9px 11px;font-size:12px}
+.pa{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+/* 편집 모달 */
+.mo{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(20,10,14,.5);backdrop-filter:blur(6px)}
+.mo-b{max-width:520px;width:100%;background:#fff;border-radius:22px;padding:24px;
+  max-height:88vh;overflow-y:auto;box-shadow:0 22px 54px rgba(0,0,0,.24)}
+.mo-b h3{font-size:17px;font-weight:800;margin-bottom:14px}
+.mo-b .g2{display:grid;grid-template-columns:1fr 1fr;gap:9px 11px}
+.mo-b textarea{min-height:70px;resize:vertical;line-height:1.7}
+/* 이력 */
+.arow{display:grid;grid-template-columns:.7fr 1.7fr 1fr .9fr;gap:9px;padding:11px 4px;
+  border-bottom:1px solid rgba(0,0,0,.06);font-size:12.5px;align-items:center}
+.arow:last-child{border-bottom:0}
+.arow .ac{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:999px;
+  color:#fff;text-align:center;white-space:nowrap}
+.ac.create{background:var(--ok)}.ac.update{background:#3182F6}
+.ac.delete{background:var(--bad)}.ac.restore{background:var(--warn)}.ac.other{background:#999}
+.arow .tt{line-height:1.5}
+.arow .tt small{display:block;color:var(--gray);font-size:11px;margin-top:2px}
+.diff{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;
+  padding:14px;margin-top:10px;font-size:12px;line-height:1.8}
+.diff .k{font-weight:700;color:var(--main)}
+.diff .b{color:#999;text-decoration:line-through}
+.diff .a{color:var(--ok);font-weight:600}
+@media(max-width:860px){.pf{grid-template-columns:1fr 1fr}.mo-b .g2{grid-template-columns:1fr}
+  .arow{grid-template-columns:1fr 1fr;gap:5px 9px}}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -117,9 +155,38 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
     </div>
 
     <div class="panel">
-      <h2>구독 상품 설정</h2>
+      <h2>구독 상품 관리</h2>
+      <div class="acts" style="margin-bottom:12px">
+        <button class="mini go" onclick="planNew()">+ 새 구독 상품 추가</button>
+        <button class="mini" onclick="loadPlans()">새로고침</button>
+      </div>
       <div id="plans"><div class="empty">불러오는 중…</div></div>
       <div class="msg" id="pmsg">금액을 수정하고 [저장]을 누르시면 구독 페이지에 바로 반영됩니다.</div>
+
+      <div id="delBox" class="hide" style="margin-top:14px;padding-top:14px;
+        border-top:1px solid rgba(0,0,0,.07)">
+        <div style="font-size:12px;font-weight:700;color:var(--gray);margin-bottom:9px">
+          삭제된 상품</div>
+        <div id="delList"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>변경 이력</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:9px;margin-bottom:12px">
+        <select id="alArea" onchange="loadAudit()"><option value="">전체 영역</option></select>
+        <select id="alAct" onchange="loadAudit()">
+          <option value="">전체 동작</option>
+          <option value="create">추가</option>
+          <option value="update">수정</option>
+          <option value="delete">삭제</option>
+          <option value="restore">복원</option>
+        </select>
+        <input id="alQ" placeholder="이름·내용 검색"
+          onkeydown="if(event.key==='Enter')loadAudit()">
+      </div>
+      <div id="audit"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="amsg"></div>
     </div>
 
     <div class="panel">
@@ -139,7 +206,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const won=v=>Number(v||0).toLocaleString();
 const ST={pending:'입금 대기',active:'구독 중',paused:'일시 중지',cancelled:'해지',done:'종료'};
-let token=null,who='',SUBS=[],filt='all';
+let token=null,who='',SUBS=[],PLANS=[],filt='all';
 try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
 const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
 const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
@@ -152,7 +219,7 @@ document.querySelectorAll('#filters button').forEach(b=>b.onclick=()=>{
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';load();loadPlans();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';load();loadPlans();loadAudit();}}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
@@ -251,33 +318,173 @@ function ship(id){
 }
 
 function loadPlans(){
-  fetch(SB+'/rest/v1/subscription_plans?select=*&order=sort_order',{headers:H()})
-  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
-    if(!rows.length){$('plans').innerHTML='<div class="empty">등록된 구독 상품이 없습니다.</div>';return;}
-    $('plans').innerHTML=rows.map(p=>
-      '<div class="prow"><div class="pn">'+esc(p.name_kr)
-      +'<small>'+esc(p.name_en)+' · '+esc(p.tagline)+'</small></div>'
-      +'<div><input id="pm'+p.id+'" type="number" value="'+p.price_month+'" min="0"></div>'
-      +'<div><input id="po'+p.id+'" type="number" value="'+p.price_origin+'" min="0"></div>'
-      +'<div style="display:flex;gap:5px;flex-wrap:wrap">'
-      +'<button class="mini" onclick="savePlan('+p.id+')">저장</button>'
-      +'<button class="mini" onclick="togglePlan('+p.id+','+(!p.active)+')">'
-      +(p.active?'숨기기':'노출')+'</button></div></div>').join('');
+  call({action:'planList'}).then(({ok,d})=>{
+    if(!ok){$('plans').innerHTML='<div class="empty">'+(d.error||'불러오지 못했습니다.')+'</div>';return;}
+    PLANS=d.plans||[];
+    if(!PLANS.length){$('plans').innerHTML='<div class="empty">등록된 구독 상품이 없습니다. '
+      +'[+ 새 구독 상품 추가]로 만들어 주세요.</div>';}
+    else $('plans').innerHTML=PLANS.map(p=>{
+      const off=p.price_origin>p.price_month
+        ? Math.round((1-p.price_month/p.price_origin)*100):0;
+      return '<div class="pcard"><div class="ph">'
+        +'<span class="nm">'+esc(p.name_kr)
+        +'<small>'+esc(p.name_en)+' · '+esc(p.tagline||'')+'</small></span>'
+        +(off?'<span class="off">'+off+'% 할인</span>':'')
+        +'<span class="st '+(p.active?'active':'paused')+'">'
+        +(p.active?'노출 중':'숨김')+'</span></div>'
+        +'<div class="pf">'
+        +'<div><label>월 구독가</label><input id="pm'+p.id+'" type="number" value="'+p.price_month+'" min="0"></div>'
+        +'<div><label>정가</label><input id="po'+p.id+'" type="number" value="'+p.price_origin+'" min="0"></div>'
+        +'<div><label>약정 개월</label><input id="pmo'+p.id+'" type="number" value="'+(p.months||1)+'" min="1"></div>'
+        +'<div><label>노출 순서</label><input id="ps'+p.id+'" type="number" value="'+(p.sort_order||99)+'" min="1"></div>'
+        +'</div><div class="pa">'
+        +'<button class="mini go" onclick="quickSave('+p.id+')">저장</button>'
+        +'<button class="mini" onclick="planEdit('+p.id+')">자세히 편집</button>'
+        +'<button class="mini" onclick="planToggle('+p.id+','+(!p.active)+')">'
+        +(p.active?'숨기기':'노출하기')+'</button>'
+        +'<button class="mini d" onclick="planDel('+p.id+',\''+esc(p.code)+'\')">삭제</button>'
+        +'</div></div>';
+    }).join('');
+
+    const del=d.deleted||[];
+    $('delBox').classList.toggle('hide',!del.length);
+    $('delList').innerHTML=del.map(x=>
+      '<div class="arow" style="grid-template-columns:2fr 1fr 1fr">'
+      +'<div>'+esc(x.name_kr)+'</div>'
+      +'<div style="font-size:11.5px;color:var(--gray)">'
+      +new Date(x.deleted_at).toLocaleDateString('ko-KR')+'</div>'
+      +'<div><button class="mini go" onclick="planRestore('+x.id+')">복원</button></div></div>').join('');
   }).catch(()=>{$('plans').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
 }
-function savePlan(id){
-  const m=+$('pm'+id).value||0, o=+$('po'+id).value||0;
-  fetch(SB+'/rest/v1/subscription_plans?id=eq.'+id,{method:'PATCH',
-    headers:{...H(),Prefer:'return=minimal'},
-    body:JSON.stringify({price_month:m,price_origin:o})})
-  .then(r=>{$('pmsg').textContent=r.ok?'저장되었습니다. 구독 페이지에 바로 반영됩니다.':'저장 권한이 없습니다.';})
-  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+function quickSave(id){
+  const p=PLANS.find(x=>x.id===id); if(!p) return;
+  const row={...p,
+    price_month:+$('pm'+id).value||0, price_origin:+$('po'+id).value||0,
+    months:+$('pmo'+id).value||1, sort_order:+$('ps'+id).value||99};
+  call({action:'planSave',plan:row}).then(({ok,d})=>{
+    $('pmsg').textContent=ok?'저장되었습니다. 구독 페이지에 바로 반영됩니다.':(d.error||'저장 실패');
+    if(ok){loadPlans();loadAudit();}
+  }).catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
 }
-function togglePlan(id,v){
-  fetch(SB+'/rest/v1/subscription_plans?id=eq.'+id,{method:'PATCH',
-    headers:{...H(),Prefer:'return=minimal'},body:JSON.stringify({active:v})})
-  .then(r=>{if(r.ok)loadPlans();else $('pmsg').textContent='변경 권한이 없습니다.';})
-  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+function planToggle(id,v){
+  const p=PLANS.find(x=>x.id===id); if(!p) return;
+  call({action:'planSave',plan:{...p,active:v}}).then(({ok})=>{
+    if(ok){loadPlans();loadAudit();}
+  }).catch(()=>{});
+}
+function planDel(id,code){
+  if(!confirm('이 구독 상품을 삭제할까요?\n삭제해도 [복원]으로 되돌릴 수 있습니다.')) return;
+  call({action:'planDelete',id,code}).then(({ok,d})=>{
+    $('pmsg').textContent=ok?('삭제되었습니다.'+(d.warn?' '+d.warn:'')):(d.error||'삭제 실패');
+    if(ok){loadPlans();loadAudit();}
+  }).catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function planRestore(id){
+  call({action:'planRestore',id}).then(({ok,d})=>{
+    $('pmsg').textContent=ok?'복원되었습니다.':(d.error||'복원 실패');
+    if(ok){loadPlans();loadAudit();}
+  }).catch(()=>{});
+}
+function planNew(){ planForm(null); }
+function planEdit(id){ planForm(PLANS.find(x=>x.id===id)); }
+function planForm(p){
+  const v=p||{code:'',name_en:'',name_kr:'',tagline:'',description:'',
+    items:[],options:[],price_month:0,price_origin:0,months:1,badge:'',
+    image:'assets/banner-triple.png',sort_order:(PLANS.length+1),active:true};
+  const w=document.createElement('div'); w.className='mo';
+  w.innerHTML='<div class="mo-b"><h3>'+(p?'구독 상품 편집':'새 구독 상품')+'</h3>'
+    +'<div class="g2">'
+    +'<div><label>코드 (영문·중복 불가)</label><input id="fCode" value="'+esc(v.code)+'"'
+      +(p?' readonly':'')+'></div>'
+    +'<div><label>영문명</label><input id="fEn" value="'+esc(v.name_en)+'"></div>'
+    +'<div><label>한글명</label><input id="fKr" value="'+esc(v.name_kr)+'"></div>'
+    +'<div><label>뱃지</label><input id="fBadge" value="'+esc(v.badge)+'"></div>'
+    +'<div><label>월 구독가</label><input id="fPm" type="number" value="'+v.price_month+'"></div>'
+    +'<div><label>정가</label><input id="fPo" type="number" value="'+v.price_origin+'"></div>'
+    +'<div><label>약정 개월</label><input id="fMo" type="number" value="'+(v.months||1)+'"></div>'
+    +'<div><label>노출 순서</label><input id="fSo" type="number" value="'+(v.sort_order||99)+'"></div>'
+    +'</div>'
+    +'<label>한 줄 소개</label><input id="fTag" value="'+esc(v.tagline)+'">'
+    +'<label>설명</label><textarea id="fDesc">'+esc(v.description)+'</textarea>'
+    +'<label>구성 (한 줄에 하나)</label><textarea id="fItems">'
+      +esc((v.items||[]).join('\n'))+'</textarea>'
+    +'<label>선택 옵션 (없으면 비워두세요)</label><textarea id="fOpts">'
+      +esc((v.options||[]).join('\n'))+'</textarea>'
+    +'<label>이미지 경로</label><input id="fImg" value="'+esc(v.image)+'">'
+    +'<div class="pa" style="margin-top:16px">'
+    +'<button class="btn" id="fSave" style="flex:1">저장</button>'
+    +'<button class="btn ghost" id="fCancel" style="flex:1">취소</button></div>'
+    +'<div class="msg" id="fMsg"></div></div>';
+  document.body.appendChild(w);
+  w.onclick=e=>{ if(e.target===w) w.remove(); };
+  w.querySelector('#fCancel').onclick=()=>w.remove();
+  w.querySelector('#fSave').onclick=()=>{
+    const row={id:p?p.id:null,
+      code:w.querySelector('#fCode').value.trim(),
+      name_en:w.querySelector('#fEn').value.trim(),
+      name_kr:w.querySelector('#fKr').value.trim(),
+      badge:w.querySelector('#fBadge').value.trim(),
+      tagline:w.querySelector('#fTag').value.trim(),
+      description:w.querySelector('#fDesc').value.trim(),
+      items:w.querySelector('#fItems').value,
+      options:w.querySelector('#fOpts').value,
+      image:w.querySelector('#fImg').value.trim(),
+      price_month:+w.querySelector('#fPm').value||0,
+      price_origin:+w.querySelector('#fPo').value||0,
+      months:+w.querySelector('#fMo').value||1,
+      sort_order:+w.querySelector('#fSo').value||99,
+      active:v.active!==false};
+    if(!row.code||!row.name_kr){
+      w.querySelector('#fMsg').textContent='코드와 한글명을 입력해 주세요.'; return; }
+    w.querySelector('#fMsg').textContent='저장 중…';
+    call({action:'planSave',plan:row}).then(({ok,d})=>{
+      if(!ok){ w.querySelector('#fMsg').textContent=d.error||'저장 실패'; return; }
+      w.remove(); loadPlans(); loadAudit();
+      $('pmsg').textContent=p?'수정되었습니다.':'추가되었습니다.';
+    }).catch(()=>{w.querySelector('#fMsg').textContent='네트워크 오류가 발생했습니다.';});
+  };
+}
+
+/* 변경 이력 */
+const ACT={create:'추가',update:'수정',delete:'삭제',restore:'복원',other:'기타'};
+function loadAudit(){
+  call({action:'auditList',area:$('alArea').value,act:$('alAct').value,
+    q:$('alQ').value.trim(),limit:100}).then(({ok,d})=>{
+    if(!ok){$('audit').innerHTML='<div class="empty">'+(d.error||'불러오지 못했습니다.')+'</div>';return;}
+    const sel=$('alArea');
+    if(sel.options.length<=1 && d.areas)
+      sel.innerHTML='<option value="">전체 영역</option>'
+        +d.areas.map(a=>'<option value="'+esc(a)+'">'+esc(a)+'</option>').join('');
+    if(!d.items.length){$('audit').innerHTML='<div class="empty">해당하는 이력이 없습니다.</div>';return;}
+    $('audit').innerHTML=d.items.map(l=>
+      '<div class="arow"><div><span class="ac '+l.action+'">'
+      +(ACT[l.action]||l.action)+'</span></div>'
+      +'<div class="tt"><b>'+esc(l.target_name||l.target_table)+'</b>'
+      +(l.summary?'<small>'+esc(l.summary)+'</small>':'')+'</div>'
+      +'<div style="font-size:11.5px;color:var(--gray)">'+esc(l.area)
+      +'<br>'+esc((l.actor||'').split('@')[0])+'</div>'
+      +'<div style="font-size:11.5px;color:var(--gray)">'
+      +new Date(l.created_at).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',
+        hour:'2-digit',minute:'2-digit'})
+      +'<br><button class="mini" onclick="auditDetail('+l.id+')">상세</button></div></div>').join('');
+  }).catch(()=>{$('audit').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+function auditDetail(id){
+  call({action:'auditDetail',id}).then(({ok,d})=>{
+    if(!ok) return alert(d.error||'불러오지 못했습니다.');
+    const diff=d.diff||[];
+    if(!diff.length) return alert('변경된 항목이 없습니다.');
+    const w=document.createElement('div'); w.className='mo';
+    w.innerHTML='<div class="mo-b"><h3>변경 내용</h3>'
+      +'<div class="diff">'+diff.map(x=>
+        '<div style="margin-bottom:8px"><span class="k">'+esc(x.key)+'</span><br>'
+        +'<span class="b">'+esc(JSON.stringify(x.before)).slice(0,90)+'</span> → '
+        +'<span class="a">'+esc(JSON.stringify(x.after)).slice(0,90)+'</span></div>').join('')
+      +'</div><button class="btn ghost" id="dc" style="margin-top:14px;width:100%">닫기</button></div>';
+    document.body.appendChild(w);
+    w.onclick=e=>{if(e.target===w)w.remove();};
+    w.querySelector('#dc').onclick=()=>w.remove();
+  }).catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
 sync();
 </script>
