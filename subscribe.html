@@ -41,12 +41,10 @@ nav a{padding:9px 13px;border-radius:999px;font-size:12.5px;font-weight:600;colo
 nav a.on,nav a:hover{background:rgba(255,255,255,.92);box-shadow:0 3px 10px rgba(0,0,0,.07)}
 .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
 
-/* 탭 */
-.tabs{display:flex;gap:7px;margin:26px 0 6px;overflow-x:auto;padding-bottom:3px}
-.tabs a{flex:none;padding:12px 20px;border-radius:999px;font-size:13.5px;font-weight:700;
-  background:rgba(255,255,255,.82);border:1px solid var(--line);color:var(--gray);white-space:nowrap}
-.tabs a small{display:block;font-size:10.5px;font-weight:500;margin-top:2px;opacity:.75}
-.tabs a.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+
+
+
+
 
 .head{padding:26px 0 8px}
 .head .eb{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:3.5px;color:var(--main)}
@@ -152,11 +150,11 @@ textarea{resize:vertical;min-height:70px;line-height:1.7}
 </header>
 
 <div class="wrap">
-  <div class="tabs">
-    <a href="index.html#all">전체 상품<small>SHOP ALL</small></a>
-    <a href="index.html#all">개별 상품<small>SINGLE</small></a>
-    <a class="on" href="subscribe.html">정기 구독<small>SUBSCRIBE</small></a>
-  </div>
+  <nav class="ptab" aria-label="상품 보기 방식">
+    <a href="index.html#all"><b>전체 상품</b><small>ALL</small></a>
+    <a href="index.html#all"><b>개별 상품</b><small>SINGLE</small></a>
+    <a class="on" href="subscribe.html" aria-current="page"><b>정기 구독</b><small>SUBSCRIBE</small></a>
+  </nav>
 
   <div class="head">
     <div class="eb">SUBSCRIBE</div>
@@ -336,5 +334,46 @@ function apply(){
 load();
 </script>
 <script src="assets/pwa.js" defer></script>
+
+<style>
+/* ═══ 상품 보기 탭 — 균등 분할 ═══ */
+.ptab{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  max-width:640px;margin:26px auto 8px;
+  border-radius:16px;overflow:hidden;
+  border:.5px solid rgba(255,255,255,.85);
+  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.68));
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.07),
+    inset 0 1px 0 rgba(255,255,255,.95)}
+.ptab a{
+  position:relative;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+  min-height:60px;padding:10px 6px;text-decoration:none;text-align:center;
+  transition:background .3s var(--ease),color .3s var(--ease)}
+.ptab a b{
+  font-size:clamp(12.5px,2.4vw,14px);font-weight:700;letter-spacing:-.02em;
+  color:#3a3035;line-height:1.25;white-space:nowrap;transition:color .3s}
+.ptab a small{
+  font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:1.6px;
+  color:#a09298;transition:color .3s}
+.ptab a:not(:last-child)::after{
+  content:"";position:absolute;right:0;top:24%;height:52%;width:.5px;
+  background:rgba(0,0,0,.07)}
+.ptab a:hover{background:rgba(255,255,255,.6)}
+.ptab a:active{background:rgba(216,37,88,.06)}
+.ptab a.on{
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 6px 18px rgba(216,37,88,.26)}
+.ptab a.on b{color:#fff}
+.ptab a.on small{color:rgba(255,255,255,.82)}
+.ptab a.on::after{display:none}
+
+@media(max-width:640px){
+  .ptab{margin:18px 0 6px;border-radius:14px;max-width:none}
+  .ptab a{min-height:54px;gap:1px}
+  .ptab a small{font-size:8.5px;letter-spacing:1.2px}
+}
+</style>
 </body>
 </html>
