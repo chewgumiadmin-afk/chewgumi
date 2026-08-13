@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v85 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v86 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -969,18 +969,33 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 </aside>
 
 <!-- 히어로 (실제 메인 배너) -->
-<div class="hero" id="heroSlider" role="region" aria-label="브랜드 배너">
-      <div class="h-track" id="hTrack">
-        <a class="hslide" href="#all" onclick="filterLine('all')"
-           style="background-image:url('assets/hero-1.jpg')" aria-label="트리플잇 보기"></a>
-        <a class="hslide" href="#all" onclick="filterLine('travel')"
-           style="background-image:url('assets/hero-3.jpg')" aria-label="트래블잇 보기"></a>
-        <a class="hslide" href="#all" onclick="filterLine('doit')"
-           style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 보기"></a>
-        <a class="hslide" href="#all" onclick="filterLine('doit')"
-           style="background-image:url('assets/hero-4.jpg')" aria-label="듀잇 보기"></a>
+<section class="hero-sec">
+      <div class="hero" id="heroSlider" role="region" aria-label="브랜드 배너">
+        <div class="h-track" id="hTrack">
+          <a class="hslide" href="#all" onclick="filterLine('all')"
+             style="background-image:url('assets/hero-1.jpg')" aria-label="트리플잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('travel')"
+             style="background-image:url('assets/hero-3.jpg')" aria-label="트래블잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('doit')"
+             style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('doit')"
+             style="background-image:url('assets/hero-4.jpg')" aria-label="듀잇 보기"></a>
+        </div>
       </div>
-      <div class="h-dots" id="hDots" role="tablist" aria-label="배너 선택"></div>
+      <div class="hero-bar">
+        <div class="hb-in">
+          <div class="hb-txt" id="hbTxt">
+            <span class="eb">TRIPLE-IT</span>
+            <b>여행갈 땐, 트리플 잇</b>
+            <i>상황에 맞춰 고르는 세 가지 맛</i>
+          </div>
+          <div class="hb-nav">
+            <span class="hb-no"><em id="hbNow">1</em> / <span id="hbAll">4</span></span>
+            <div class="h-dots" id="hDots" role="tablist" aria-label="배너 선택"></div>
+          </div>
+        </div>
+      </div>
+    </section>
     </div>
 </div>
 
@@ -1365,7 +1380,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v85 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v86 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3336,90 +3351,7 @@ input:focus,select:focus,textarea:focus{
 
 </style>
 <script>
-/* ═══ 히어로 슬라이드 ═══ */
-(function(){
-  var hero=document.getElementById('heroSlider');
-  var track=document.getElementById('hTrack');
-  var dotBox=document.getElementById('hDots');
-  if(!hero||!track) return;
 
-  var slides=[].slice.call(track.children);
-  if(slides.length<2){ if(dotBox) dotBox.style.display='none'; return; }
-
-  var now=0, timer=null, W=hero.clientWidth||1;
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* 점 만들기 */
-  dotBox.innerHTML='';
-  slides.forEach(function(_,i){
-    var b=document.createElement('button');
-    b.type='button'; b.setAttribute('role','tab');
-    b.setAttribute('aria-label',(i+1)+'번 배너');
-    b.onclick=function(){ stop(); go(i); start(); };
-    dotBox.appendChild(b);
-  });
-  var dots=[].slice.call(dotBox.children);
-
-  function measure(){ W=hero.clientWidth||1; }
-  function place(anim){
-    track.classList.toggle('nodrag',!anim);
-    track.style.transform='translate3d('+(-now*W)+'px,0,0)';
-    dots.forEach(function(d,k){
-      d.classList.toggle('on',k===now);
-      d.setAttribute('aria-selected',k===now?'true':'false');
-    });
-  }
-  function go(i,anim){ now=(i+slides.length)%slides.length; place(anim!==false); }
-  function start(){ if(!timer && !reduce) timer=setInterval(function(){ go(now+1); },4600); }
-  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
-
-  window.addEventListener('resize',function(){ measure(); place(false); },{passive:true});
-  hero.addEventListener('mouseenter',stop);
-  hero.addEventListener('mouseleave',start);
-
-  /* 스와이프 */
-  var sx=0,sy=0,dx=0,drag=false,decided=false,horiz=false;
-  function down(x,y){ stop(); drag=true; decided=false; horiz=false; sx=x; sy=y; dx=0;
-    track.classList.add('nodrag'); }
-  function move(x,y,ev){
-    if(!drag) return;
-    var mx=x-sx,my=y-sy;
-    if(!decided){
-      if(Math.abs(mx)<7&&Math.abs(my)<7) return;
-      decided=true; horiz=Math.abs(mx)>Math.abs(my);
-      if(!horiz){ drag=false; track.classList.remove('nodrag'); return; }
-    }
-    if(ev&&ev.cancelable) ev.preventDefault();
-    dx=mx;
-    var over=(now===0&&dx>0)||(now===slides.length-1&&dx<0);
-    track.style.transform='translate3d('+(-now*W+(over?dx*.32:dx))+'px,0,0)';
-  }
-  function up(){
-    if(!drag) return;
-    drag=false; track.classList.remove('nodrag');
-    if(horiz&&Math.abs(dx)>W*.13) go(dx<0?now+1:now-1); else place(true);
-    dx=0; start();
-  }
-  hero.addEventListener('touchstart',function(e){down(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
-  hero.addEventListener('touchmove',function(e){move(e.touches[0].clientX,e.touches[0].clientY,e);},{passive:false});
-  hero.addEventListener('touchend',up,{passive:true});
-  hero.addEventListener('mousedown',function(e){ if(e.button===0){e.preventDefault();down(e.clientX,e.clientY);} });
-  window.addEventListener('mousemove',function(e){ move(e.clientX,e.clientY,null); });
-  window.addEventListener('mouseup',up);
-  slides.forEach(function(s){ s.addEventListener('click',function(e){ if(Math.abs(dx)>8) e.preventDefault(); }); });
-
-  hero.setAttribute('tabindex','0');
-  hero.addEventListener('keydown',function(e){
-    if(e.key==='ArrowLeft'){stop();go(now-1);start();}
-    if(e.key==='ArrowRight'){stop();go(now+1);start();}
-  });
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      es.forEach(function(e){ e.isIntersecting?start():stop(); });
-    },{threshold:.2}).observe(hero);
-  }
-  measure(); place(false); start();
-})();
 </script>
 
 <style>
@@ -3782,5 +3714,202 @@ body.at-foot .kko-fab{
   .bb-dots span.on{width:17px}
 }
 </style>
+
+<style>
+/* ═══════════ 히어로 ═══════════ */
+.hero-sec{max-width:1160px;margin:0 auto 34px;padding:0 20px}
+.hero{
+  position:relative;width:100%;aspect-ratio:1568/756;max-height:min(66vh,520px);
+  overflow:hidden;border-radius:24px 24px 0 0;background:#FFE4E6;
+  touch-action:pan-y;cursor:grab;
+  -webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+.hero:active{cursor:grabbing}
+.h-track{display:flex;height:100%;width:100%;
+  transition:transform .68s cubic-bezier(.32,.72,0,1);will-change:transform}
+.h-track.nodrag{transition:none}
+.hslide{flex:0 0 100%;height:100%;display:block;text-decoration:none;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  background-color:#FFE4E6;-webkit-user-drag:none}
+/* 아래 캡션 바와 이어지도록 미세한 그림자 */
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 -24px 40px -24px rgba(26,12,18,.28)}
+
+/* 캡션 바 — 이미지 위가 아니라 아래에 */
+.hero-bar{
+  border-radius:0 0 24px 24px;overflow:hidden;
+  background:linear-gradient(140deg,#241019 0%,#3A1128 55%,#4A1430 100%);
+  box-shadow:0 16px 40px rgba(36,16,25,.22)}
+.hb-in{display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:22px 26px;flex-wrap:wrap}
+.hb-txt{min-width:0;flex:1}
+.hb-txt .eb{display:block;font-family:'Poppins',sans-serif;
+  font-size:10px;font-weight:800;letter-spacing:3.4px;color:#FFE923;
+  opacity:0;transform:translateY(10px)}
+.hb-txt b{display:block;margin-top:8px;
+  font-size:clamp(17px,2.5vw,25px);font-weight:800;letter-spacing:-.035em;
+  line-height:1.3;color:#fff;word-break:keep-all;
+  opacity:0;transform:translateY(14px)}
+.hb-txt i{display:block;margin-top:7px;font-style:normal;
+  font-size:clamp(12px,1.4vw,14px);line-height:1.7;
+  color:rgba(255,255,255,.7);word-break:keep-all;
+  opacity:0;transform:translateY(12px)}
+.hb-txt.in .eb{animation:hbUp .6s cubic-bezier(.32,.72,0,1) .05s forwards}
+.hb-txt.in b {animation:hbUp .7s cubic-bezier(.32,.72,0,1) .14s forwards}
+.hb-txt.in i {animation:hbUp .7s cubic-bezier(.32,.72,0,1) .24s forwards}
+@keyframes hbUp{to{opacity:1;transform:none}}
+
+.hb-nav{display:flex;align-items:center;gap:14px;flex:none}
+.hb-no{font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.45);letter-spacing:1px}
+.hb-no em{font-style:normal;font-size:15px;font-weight:800;color:#fff}
+.h-dots{display:flex;gap:7px}
+.h-dots button{width:7px;height:7px;padding:0;border:0;border-radius:99px;cursor:pointer;
+  background:rgba(255,255,255,.28);
+  transition:width .45s cubic-bezier(.32,.72,0,1),background .3s}
+.h-dots button.on{width:26px;background:linear-gradient(90deg,#FF8FB1,#FFE923)}
+
+@media(max-width:860px){
+  .hero-sec{padding:0;margin-bottom:26px}
+  .hero{border-radius:0;aspect-ratio:16/9;max-height:none}
+  .hero-bar{border-radius:0}
+  .hb-in{padding:18px 20px;gap:14px}
+}
+@media(max-width:560px){
+  .hero{aspect-ratio:4/3}
+  .hb-in{flex-direction:column;align-items:flex-start}
+  .hb-nav{width:100%;justify-content:space-between}
+  .hb-txt i{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .h-track{transition:none}
+  .hb-txt .eb,.hb-txt b,.hb-txt i{opacity:1;transform:none;animation:none !important}
+}
+.lite .hero-bar{background:#3A1128}
+</style>
+<script>
+/* ═══ 히어로 ═══ */
+(function(){
+  var hero=document.getElementById('heroSlider');
+  var track=document.getElementById('hTrack');
+  var dotBox=document.getElementById('hDots');
+  var txt=document.getElementById('hbTxt');
+  if(!hero||!track||!dotBox) return;
+
+  var CAP=[
+    {e:'TRIPLE-IT', t:'여행갈 땐, 트리플 잇',      d:'상황에 맞춰 고르는 세 가지 맛'},
+    {e:'TRAVEL-IT', t:'물 없이 챙기는 12가지 영양', d:'감귤맛 비타민 젤리 · 40g'},
+    {e:'DEW-IT',    t:'한 알로 입안을 촉촉하게',    d:'핀란드산 자일리톨 93% · 무설탕'},
+    {e:'EVERY DAY', t:'매일의 상쾌한 습관',         d:'레몬민트 · 그레이프'}
+  ];
+  var slides=[].slice.call(track.children);
+  var n=slides.length;
+  if(n<2){ dotBox.style.display='none'; return; }
+
+  var now=0, timer=null, W=hero.clientWidth||1;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  dotBox.innerHTML='';
+  slides.forEach(function(_,i){
+    var b=document.createElement('button');
+    b.type='button'; b.setAttribute('role','tab');
+    b.setAttribute('aria-label',(i+1)+'번 배너');
+    b.addEventListener('click',function(){ stop(); go(i); start(); });
+    dotBox.appendChild(b);
+  });
+  var dots=[].slice.call(dotBox.children);
+  var elNow=document.getElementById('hbNow'), elAll=document.getElementById('hbAll');
+  if(elAll) elAll.textContent=n;
+
+  function cap(){
+    var c=CAP[now]||CAP[0];
+    if(!txt) return;
+    txt.classList.remove('in');
+    txt.querySelector('.eb').textContent=c.e;
+    txt.querySelector('b').textContent=c.t;
+    txt.querySelector('i').textContent=c.d;
+    void txt.offsetWidth;
+    txt.classList.add('in');
+  }
+  function place(anim){
+    track.classList.toggle('nodrag',!anim);
+    track.style.transform='translate3d('+(-now*W)+'px,0,0)';
+    dots.forEach(function(d,k){
+      d.classList.toggle('on',k===now);
+      d.setAttribute('aria-selected',k===now?'true':'false');
+    });
+    if(elNow) elNow.textContent=now+1;
+  }
+  function go(i,anim){
+    var prev=now;
+    now=(i+n)%n;
+    place(anim!==false);
+    if(prev!==now||anim===false) cap();
+  }
+  function start(){ if(!timer&&!reduce) timer=setInterval(function(){ go(now+1); },5000); }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+
+  window.addEventListener('resize',function(){ W=hero.clientWidth||1; place(false); },{passive:true});
+  hero.addEventListener('mouseenter',stop);
+  hero.addEventListener('mouseleave',start);
+
+  /* 끌기 */
+  var sx=0,sy=0,dx=0,drag=false,decided=false,horiz=false;
+  function down(x,y){ stop(); drag=true; decided=false; horiz=false; sx=x; sy=y; dx=0;
+    W=hero.clientWidth||1; track.classList.add('nodrag'); }
+  function move(x,y,ev){
+    if(!drag) return;
+    var mx=x-sx, my=y-sy;
+    if(!decided){
+      if(Math.abs(mx)<6&&Math.abs(my)<6) return;
+      decided=true; horiz=Math.abs(mx)>Math.abs(my)*1.2;
+      if(!horiz){ drag=false; track.classList.remove('nodrag'); place(false); return; }
+    }
+    if(ev&&ev.cancelable) ev.preventDefault();
+    dx=mx;
+    var over=(now===0&&dx>0)||(now===n-1&&dx<0);
+    track.style.transform='translate3d('+(-now*W+(over?dx*.3:dx))+'px,0,0)';
+  }
+  function up(){
+    if(!drag) return;
+    drag=false; track.classList.remove('nodrag');
+    if(horiz&&Math.abs(dx)>W*.12) go(dx<0?now+1:now-1); else place(true);
+    setTimeout(function(){ dx=0; },30);
+    start();
+  }
+  hero.addEventListener('touchstart',function(e){
+    down(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
+  hero.addEventListener('touchmove',function(e){
+    move(e.touches[0].clientX,e.touches[0].clientY,e); },{passive:false});
+  hero.addEventListener('touchend',up,{passive:true});
+  hero.addEventListener('touchcancel',up,{passive:true});
+  hero.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='mouse'&&e.button!==0) return;
+    if(e.pointerType==='touch') return;
+    e.preventDefault(); down(e.clientX,e.clientY);
+    try{ hero.setPointerCapture(e.pointerId); }catch(x){}
+  });
+  hero.addEventListener('pointermove',function(e){
+    if(e.pointerType==='touch') return; move(e.clientX,e.clientY,e); });
+  hero.addEventListener('pointerup',function(e){
+    if(e.pointerType==='touch') return; up(); });
+  hero.addEventListener('pointercancel',up);
+  slides.forEach(function(s){
+    s.addEventListener('click',function(e){ if(Math.abs(dx)>8) e.preventDefault(); });
+    s.addEventListener('dragstart',function(e){ e.preventDefault(); });
+  });
+
+  hero.setAttribute('tabindex','0');
+  hero.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'){ stop(); go(now-1); start(); }
+    if(e.key==='ArrowRight'){ stop(); go(now+1); start(); }
+  });
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting?start():stop(); });
+    },{threshold:.2}).observe(hero);
+  }
+  place(false); cap(); start();
+})();
+</script>
 </body>
 </html>
