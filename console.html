@@ -163,6 +163,16 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
     </div>
 
     <div class="panel">
+      <h2>휴대폰 알림</h2>
+      <div class="msg" id="pshMsg" style="margin-top:0">확인 중…</div>
+      <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn" id="pshBtn" onclick="pshToggle()">이 기기에서 알림 받기</button>
+        <button class="btn ghost" onclick="pshTest()">테스트 알림</button>
+      </div>
+      <div class="msg" id="pshRes"></div>
+    </div>
+
+    <div class="panel">
       <h2>계정</h2>
       <button class="btn ghost" onclick="doLogout()" style="max-width:150px">로그아웃</button>
     </div>
@@ -170,6 +180,7 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
 </div>
 
 <script src="assets/lite.js" defer></script>
+<script src="assets/push.js" defer></script>
 <script>
 const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
@@ -201,7 +212,7 @@ const MENU=[
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){ $('me').innerHTML='<b>'+esc(who)+'</b> 님'; boot(); }}
+  if(on){ $('me').innerHTML='<b>'+esc(who)+'</b> 님'; boot(); setTimeout(pshUI,600); }}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
@@ -281,6 +292,59 @@ function boot(){
 }
 sync();
 </script>
-<script src="assets/nav.js" defer></script>
+<script src="assets/nav.js" defer>
+/* 웹 푸시 */
+const FN_PUSH = SB + '/functions/v1/push';
+function pshCall(p){
+  return fetch(FN_PUSH,{method:'POST',headers:H(),body:JSON.stringify(p)})
+    .then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function pshUI(){
+  var st = window.cgPushState ? cgPushState() : 'unsupported';
+  var b = $('pshBtn'), m = $('pshMsg');
+  if(!b||!m) return;
+  if(st==='unsupported'){
+    b.disabled=true; b.textContent='지원하지 않는 브라우저';
+    m.textContent='이 브라우저는 알림을 지원하지 않습니다. 크롬이나 삼성 인터넷을 이용해 주세요.';
+  } else if(st==='denied'){
+    b.disabled=true; b.textContent='알림 차단됨';
+    m.innerHTML='브라우저에서 알림이 차단되어 있습니다.<br>'
+      +'주소창 왼쪽 자물쇠 → 알림 → 허용으로 바꿔주세요.';
+  } else if(st==='on'){
+    b.disabled=false; b.textContent='알림 끄기';
+    b.className='btn ghost';
+    m.innerHTML='<b style="color:var(--ok)">이 기기로 알림을 받고 있습니다.</b><br>'
+      +'주문이 들어오면 휴대폰 화면에 바로 뜹니다. 비용은 들지 않습니다.';
+  } else {
+    b.disabled=false; b.textContent='이 기기에서 알림 받기';
+    b.className='btn';
+    m.innerHTML='주문 알림을 휴대폰으로 받으실 수 있습니다. <b>무료</b>입니다.<br>'
+      +'<span style="font-size:11.5px">아이폰은 홈 화면에 추가한 뒤 열어야 작동합니다.</span>';
+  }
+}
+function pshToggle(){
+  $('pshRes').className='msg'; $('pshRes').textContent='처리 중…';
+  cgPushToggle().then(function(){
+    pshUI();
+    $('pshRes').className='msg ok';
+    $('pshRes').textContent = cgPushState()==='on'
+      ? '알림이 켜졌습니다. 테스트를 눌러 확인해 보세요.' : '알림을 껐습니다.';
+  }).catch(function(e){
+    $('pshRes').className='msg bad';
+    $('pshRes').textContent = e.message || '처리하지 못했습니다.';
+    pshUI();
+  });
+}
+function pshTest(){
+  $('pshRes').className='msg'; $('pshRes').textContent='알림을 보내는 중…';
+  pshCall({action:'test'}).then(({ok,d})=>{
+    if(!ok){ $('pshRes').className='msg bad'; $('pshRes').textContent=d.error||'실패'; return; }
+    $('pshRes').className='msg ok';
+    $('pshRes').textContent='기기 '+d.sent+'대로 보냈습니다.'
+      +(d.gone?' (만료된 구독 '+d.gone+'건 정리)':'');
+  }).catch(()=>{$('pshRes').className='msg bad';$('pshRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+document.addEventListener('cg-push-state', pshUI);
+</script>
 </body>
 </html>
