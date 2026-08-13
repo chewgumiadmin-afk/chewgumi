@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!-- ChewGumi Help Desk v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>도움말 | CHEWGUMI</title>
+<meta name="theme-color" content="#D82558">
+<script src="assets/site.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/glass.css">
+<link rel="stylesheet" href="assets/admin-ui.css">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#17171c;--gray:#7a7a82;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.64)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding:24px 16px 40px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    radial-gradient(700px 460px at 95% 12%,rgba(255,233,35,.1),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+.wrap{max-width:820px;margin:0 auto}
+.top{margin-bottom:20px}
+.top h1{font-family:'Poppins',sans-serif;font-size:26px}
+.top .s{margin-top:3px;color:var(--gray);font-size:12.5px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:24px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.88);
+  color:var(--ink);font-family:inherit;width:100%}
+.btn{border:0;color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 8px 20px rgba(216,37,88,.28)}
+.btn.ghost{background:rgba(255,255,255,.88);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{background:rgba(255,255,255,.86);border:1px solid var(--line);color:var(--ink)}
+.msg{color:var(--gray);min-height:17px}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+.empty{text-align:center;color:var(--gray);padding:28px 0}
+.hide{display:none}
+
+.hello{padding:22px 24px;border-radius:22px;margin-bottom:16px;
+  background:linear-gradient(135deg,rgba(255,228,230,.9),rgba(255,233,35,.35));
+  border:1px solid rgba(255,255,255,.8)}
+.hello b{display:block;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.hello p{margin-top:8px;font-size:13.5px;line-height:1.85;color:#4a4a52;word-break:keep-all}
+
+.chat{display:flex;flex-direction:column;gap:14px}
+.log{display:flex;flex-direction:column;gap:12px;max-height:46vh;overflow-y:auto;
+  padding-right:4px;scroll-behavior:smooth}
+.bub{max-width:88%;padding:14px 17px;border-radius:18px;font-size:14px;line-height:1.85;
+  white-space:pre-wrap;word-break:keep-all}
+.bub.me{align-self:flex-end;background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;border-bottom-right-radius:6px}
+.bub.ai{align-self:flex-start;background:rgba(255,255,255,.94);
+  border:1px solid var(--line);border-bottom-left-radius:6px;
+  box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.bub.ai a{color:var(--main);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.th{display:inline-flex;gap:4px}
+.th i{width:6px;height:6px;border-radius:50%;background:var(--main);opacity:.4;
+  animation:bl 1.2s infinite}
+.th i:nth-child(2){animation-delay:.2s}.th i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:.9}}
+
+.ask{display:flex;gap:8px;align-items:flex-end}
+.ask textarea{flex:1;min-height:54px;max-height:150px;resize:none;
+  border-radius:18px;padding:16px 18px !important;font-size:14.5px;line-height:1.6}
+.ask button{flex:none;width:54px;height:54px;border-radius:50%;padding:0 !important;
+  display:flex;align-items:center;justify-content:center}
+.ask button svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round}
+.ask button:disabled{opacity:.45}
+
+.sug{display:flex;gap:7px;flex-wrap:wrap}
+.sug button{padding:10px 15px;border-radius:999px;font-size:12.5px;font-weight:600;
+  background:rgba(255,255,255,.82);border:1px solid var(--line);color:#5a5a62}
+.sug button:hover{background:#fff}
+
+.reqbox{margin-top:16px;padding:18px;border-radius:18px;
+  background:rgba(255,233,35,.14);border:1px solid rgba(216,37,88,.16)}
+.reqbox b{font-size:14px;font-weight:700}
+.reqbox p{margin-top:7px;font-size:12.5px;line-height:1.8;color:#5a5a62}
+
+.mine{padding:13px 4px;border-bottom:1px solid rgba(0,0,0,.06)}
+.mine:last-child{border-bottom:0}
+.mine .q{font-size:13.5px;font-weight:600;line-height:1.5}
+.mine .m{margin-top:5px;font-size:11.5px;color:var(--gray);
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.st{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
+.st.answered{background:#9a9aa2}.st.queued{background:var(--warn)}
+.st.drafting{background:#3182F6}.st.review{background:#7B61FF}
+.st.done{background:var(--ok)}.st.closed{background:#c4c4cc}
+
+@media(max-width:640px){
+  .log{max-height:40vh}
+  .bub{max-width:94%;font-size:13.5px}
+  .hello{padding:18px 20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Help</h1>
+    <div class="s">츄구미 사이트 도움말</div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>담당자 로그인</h2>
+    <div class="msg" style="margin-top:0">
+      등록된 담당자 계정으로 들어와 주세요. 계정이 없으시면 개발자에게 요청해 주세요.
+    </div>
+    <label>이메일</label>
+    <input id="em" type="email" autocomplete="email"
+      onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
+    <label>비밀번호</label>
+    <input id="pw" type="password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()" style="width:100%;margin-top:16px">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="hello">
+      <b id="helloT">안녕하세요</b>
+      <p>사이트에 대해 궁금한 점을 편하게 물어보세요.<br>
+        직접 하실 수 있는 일이면 방법을 알려드리고,
+        개발이 필요한 일이면 <b>바로 요청으로 접수</b>해 드립니다.</p>
+    </div>
+
+    <div class="panel">
+      <h2>무엇을 도와드릴까요</h2>
+      <div class="chat">
+        <div class="log" id="log"></div>
+        <div class="sug">
+          <button onclick="ask('입금 확인은 어디서 하나요?')">입금 확인</button>
+          <button onclick="ask('상품 가격을 바꾸려면 어떻게 하나요?')">가격 수정</button>
+          <button onclick="ask('고객 문의에 답변하려면요?')">문의 답변</button>
+          <button onclick="ask('품절 표시를 없애려면 어떻게 하나요?')">품절 해제</button>
+          <button onclick="ask('주문 알림을 휴대폰으로 받고 싶어요')">알림 받기</button>
+          <button onclick="ask('지금 안 되는 기능이 뭔가요?')">안 되는 것</button>
+        </div>
+        <div class="ask">
+          <textarea id="q" rows="1" placeholder="궁금한 것을 편하게 적어주세요"
+            oninput="grow(this)"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ask()}"></textarea>
+          <button class="btn" id="send" onclick="ask()" aria-label="보내기">
+            <svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="reqbox">
+        <b>고쳐야 할 것이 있으신가요</b>
+        <p>화면 문구, 디자인, 새 기능 — 무엇이든 적어주시면 개발자에게 바로 전달됩니다.
+          메일과 휴대폰 알림이 함께 갑니다.</p>
+        <textarea id="req" placeholder="예) 메인 배너 문구를 바꾸고 싶어요. '한입에 건강을 더하다' 대신…"
+          style="margin-top:11px;min-height:80px;border-radius:14px;padding:13px 15px !important"></textarea>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:9px">
+          <select id="reqKind">
+            <option value="change">화면·문구 수정</option>
+            <option value="bug">오류 신고</option>
+            <option value="idea">새 기능 제안</option>
+          </select>
+          <button class="btn" onclick="sendReq()" style="padding:0 22px">요청 보내기</button>
+        </div>
+        <div class="msg" id="reqMsg"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>내가 남긴 것</h2>
+      <div id="mine"><div class="empty">아직 없습니다.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:150px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script src="assets/nav.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/help';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const link=s=>esc(s).replace(/([a-z0-9-]+\.html)/g,'<a href="$1">$1</a>');
+const ST={answered:'답변함',queued:'접수됨',drafting:'작업 중',
+  review:'확인 요청',done:'완료',closed:'종료'};
+let token=null,who='',name='',hist=[],busy=false;
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on) boot();}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  $('lmsg').className='msg'; $('lmsg').textContent='로그인 중…';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else {$('lmsg').className='msg bad';
+      $('lmsg').textContent='로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.';}
+  }).catch(()=>{$('lmsg').className='msg bad';$('lmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function doLogout(){token=null;who='';name='';hist=[];
+  try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function grow(t){ t.style.height='auto'; t.style.height=Math.min(150,t.scrollHeight)+'px'; }
+function bub(role,text){
+  const d=document.createElement('div');
+  d.className='bub '+role;
+  if(text==='…') d.innerHTML='<span class="th"><i></i><i></i><i></i></span>';
+  else d.innerHTML=link(text);
+  $('log').appendChild(d);
+  $('log').scrollTop=$('log').scrollHeight;
+  return d;
+}
+function ask(preset){
+  if(busy) return;
+  const q=preset||$('q').value.trim();
+  if(!q) return;
+  $('q').value=''; grow($('q'));
+  bub('me',q); hist.push({role:'me',text:q});
+  const t=bub('ai','…');
+  busy=true; $('send').disabled=true;
+  call({action:'ask',q,history:hist}).then(({ok,d})=>{
+    busy=false; $('send').disabled=false;
+    t.innerHTML = ok ? link(d.text) : esc(d.error||'답변을 불러오지 못했습니다.');
+    if(ok){
+      hist.push({role:'ai',text:d.text});
+      if(d.needDev && !$('req').value){
+        $('req').value=q;
+        $('reqMsg').className='msg';
+        $('reqMsg').textContent='개발이 필요한 내용 같습니다. 아래에서 바로 요청하실 수 있습니다.';
+      }
+      loadMine();
+    }
+    $('log').scrollTop=$('log').scrollHeight;
+  }).catch(()=>{busy=false;$('send').disabled=false;
+    t.textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function sendReq(){
+  const q=$('req').value.trim();
+  if(!q) return $('reqMsg').textContent='어떤 작업이 필요하신지 적어주세요.';
+  $('reqMsg').className='msg'; $('reqMsg').textContent='보내는 중…';
+  call({action:'request',q,kind:$('reqKind').value}).then(({ok,d})=>{
+    if(!ok){ $('reqMsg').className='msg bad'; $('reqMsg').textContent=d.error||'실패'; return; }
+    $('reqMsg').className='msg ok';
+    $('reqMsg').innerHTML='<b>#'+d.no+'번으로 접수되었습니다.</b><br>'
+      +'개발자에게 메일과 알림이 전달되었습니다.'
+      +(d.github?' (개발 이슈 #'+d.github+')':'');
+    $('req').value='';
+    bub('ai','요청 #'+d.no+'번이 접수되었습니다.\n개발자가 확인하면 진행 상황을 알려드리겠습니다.');
+    loadMine();
+  }).catch(()=>{$('reqMsg').className='msg bad';$('reqMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function boot(){
+  call({action:'me'}).then(({ok,d})=>{
+    if(!ok){
+      $('login').classList.remove('hide'); $('area').classList.add('hide');
+      $('lmsg').className='msg bad';
+      $('lmsg').textContent=d.error||'등록된 담당자 계정이 아닙니다.';
+      token=null; try{localStorage.removeItem('cg_sb');}catch(e){}
+      return;
+    }
+    name=d.me.name||who;
+    const h=new Date().getHours();
+    const g=h<11?'좋은 아침입니다':(h<18?'안녕하세요':'수고 많으셨습니다');
+    $('helloT').textContent=g+', '+name+'님';
+    $('who').textContent=name+' 님 ('+d.me.email+')';
+    if(!$('log').children.length)
+      bub('ai',g+', '+name+'님.\n\n무엇이든 물어보세요. 직접 하실 수 있는 일은 방법을 알려드리고,\n'
+        +'개발이 필요하면 바로 접수해 드리겠습니다.');
+    render(d.mine||[]);
+  }).catch(()=>{});
+}
+function loadMine(){
+  call({action:'me'}).then(({ok,d})=>{ if(ok) render(d.mine||[]); }).catch(()=>{});
+}
+function render(list){
+  if(!list.length){ $('mine').innerHTML='<div class="empty">아직 없습니다.</div>'; return; }
+  $('mine').innerHTML=list.map(r=>
+    '<div class="mine"><div class="q">'+esc(r.question.split('\n')[0].slice(0,70))+'</div>'
+    +'<div class="m">'
+    +(r.kind!=='question'?'<span class="st '+r.status+'">'+(ST[r.status]||r.status)+'</span>':'')
+    +'<span>'+new Date(r.created_at).toLocaleDateString('ko-KR')+'</span>'
+    +(r.no?'<span>#'+r.no+'</span>':'')+'</div></div>').join('');
+}
+sync();
+</script>
+</body>
+</html>
