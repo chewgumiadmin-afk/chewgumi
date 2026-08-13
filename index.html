@@ -3739,5 +3739,48 @@ body.at-foot .kko-fab{
   if(b) b.addEventListener('click',function(e){ e.stopPropagation(); play(); });
 })();
 </script>
+
+<style>
+/* ═══ 하단 배너 — 다른 섹션과 폭·여백 맞춤 ═══ */
+.btm-banner{
+  max-width:1160px !important;
+  width:auto !important;
+  margin:8px auto 44px !important;
+  padding:0 20px}
+.bb-wrap{
+  position:relative;overflow:hidden;
+  border-radius:20px !important;
+  aspect-ratio:1568/224;
+  background:#fff !important;
+  border:.5px solid rgba(255,255,255,.8);
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 28px rgba(0,0,0,.07),
+    inset 0 1px 0 rgba(255,255,255,.9) !important}
+.bb-slide img{object-fit:cover !important}
+
+/* 점 표시를 유리 캡슐로 (다른 영역과 통일) */
+.bb-dots{
+  right:14px !important;bottom:11px !important;
+  padding:6px 10px;border-radius:999px;gap:6px !important;
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+.bb-dots span{background:rgba(0,0,0,.2)}
+.bb-dots span.on{background:var(--main)}
+
+/* 위쪽 구독 배너와 간격 정리 */
+.sub-cta{padding-bottom:14px !important}
+
+@media(max-width:1200px){
+  .btm-banner{padding:0 16px}
+  .bb-wrap{border-radius:18px !important}
+}
+@media(max-width:640px){
+  .btm-banner{margin:4px auto 34px !important;padding:0 14px}
+  .bb-wrap{border-radius:16px !important;aspect-ratio:1568/280}
+  .bb-dots{right:10px !important;bottom:9px !important;padding:5px 9px}
+  .bb-dots span{width:6px;height:6px}
+  .bb-dots span.on{width:17px}
+}
+</style>
 </body>
 </html>
