@@ -3911,5 +3911,123 @@ body.at-foot .kko-fab{
   place(false); cap(); start();
 })();
 </script>
+
+<style>
+/* ═══ 상단 서브메뉴 ═══ */
+.gnb > li{position:relative}
+.gnb .sub{
+  display:block !important;
+  position:absolute;top:calc(100% + 8px);left:50%;
+  transform:translateX(-50%) translateY(-6px) scale(.97);
+  min-width:172px;padding:8px;z-index:60;
+  opacity:0;visibility:hidden;pointer-events:none;
+  border-radius:18px;
+  border:.5px solid rgba(255,255,255,.85);
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.76));
+  backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 40px rgba(0,0,0,.13),
+    inset 0 1px 0 rgba(255,255,255,.95);
+  transition:opacity .3s var(--ease,cubic-bezier(.32,.72,0,1)),
+             transform .3s var(--ease,cubic-bezier(.32,.72,0,1)),
+             visibility .3s}
+/* 메뉴와 서브메뉴 사이 빈틈을 덮어 마우스가 끊기지 않게 */
+.gnb > li::after{content:"";position:absolute;left:0;right:0;top:100%;height:12px}
+.gnb > li:hover .sub,
+.gnb > li:focus-within .sub,
+.gnb > li.open .sub{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transform:translateX(-50%) translateY(0) scale(1)}
+.gnb .sub a{
+  display:block;padding:10px 14px;border-radius:12px;
+  font-size:12.5px;font-weight:500;letter-spacing:-.01em;white-space:nowrap;
+  color:#3a3035;transition:background .22s,color .22s}
+.gnb .sub a:hover{background:rgba(216,37,88,.08);color:var(--main)}
+.gnb .sub a:active{background:rgba(216,37,88,.14)}
+
+/* ═══ 팝업 — 내용만 스크롤 ═══ */
+.popup{
+  display:flex !important;flex-direction:column !important;
+  width:min(calc(100vw - 40px),400px) !important;
+  max-height:min(86dvh,640px) !important;
+  overflow:hidden !important;
+  border-radius:24px !important}
+.popup .p-illust{flex:none}
+/* 제목부터 버튼까지를 하나의 스크롤 영역으로 */
+.popup .p-title,.popup .p-desc{flex:none}
+.popup .p-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain}
+.popup .p-acts{flex:none;padding-bottom:4px}
+
+/* ═══ 드로어(전체 메뉴) — 젤리 메뉴 방식 ═══ */
+.drawer nav{display:flex;flex-direction:column;gap:6px;padding:6px}
+.drawer nav a{
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+  min-height:50px;padding:0 20px;
+  border-radius:999px;
+  font-size:13px;font-weight:700;letter-spacing:1.5px;
+  color:#3a3035;
+  border:.5px solid rgba(255,255,255,.8);
+  background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.68));
+  backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(0,0,0,.05);
+  transition:transform .32s var(--ease,cubic-bezier(.32,.72,0,1)),
+             background .3s,color .3s,box-shadow .3s}
+/* 젤리 광택 */
+.drawer nav a::before{
+  content:"";position:absolute;left:10%;top:8%;width:42%;height:36%;
+  border-radius:50%;pointer-events:none;opacity:.75;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,.95),rgba(255,255,255,0) 70%)}
+.drawer nav a:hover{
+  transform:translateX(3px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 8px 22px rgba(216,37,88,.14)}
+.drawer nav a:active{transform:scale(.97)}
+/* 하위 항목 */
+.drawer nav a.d-sub{
+  min-height:42px;margin-left:16px;padding:0 18px;
+  font-size:11.5px;font-weight:500;letter-spacing:1px;color:#7a6a70;
+  background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.42));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.drawer nav a.d-sub::before{opacity:.4}
+.drawer nav a.d-sub:hover{color:var(--main);
+  background:linear-gradient(180deg,rgba(255,241,244,.9),rgba(255,228,230,.6))}
+</style>
+<script>
+/* 상단 메뉴 — 터치 기기에서 한 번 눌러 서브메뉴 열기 */
+(function(){
+  if(!window.matchMedia('(hover:none)').matches) return;
+  document.querySelectorAll('.gnb > li').forEach(function(li){
+    var sub=li.querySelector('.sub');
+    if(!sub) return;
+    var a=li.querySelector(':scope > a');
+    if(!a) return;
+    a.addEventListener('click',function(e){
+      if(!li.classList.contains('open')){
+        e.preventDefault();
+        document.querySelectorAll('.gnb > li.open').forEach(function(x){
+          if(x!==li) x.classList.remove('open'); });
+        li.classList.add('open');
+      }
+    });
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.gnb'))
+      document.querySelectorAll('.gnb > li.open').forEach(function(x){x.classList.remove('open');});
+  });
+})();
+
+/* 팝업 본문을 스크롤 영역으로 묶는다 */
+(function(){
+  var p=document.querySelector('.popup');
+  if(!p||p.querySelector('.p-body')) return;
+  var t=p.querySelector('.p-title'), acts=p.querySelector('.p-acts');
+  if(!t||!acts) return;
+  var body=document.createElement('div');
+  body.className='p-body';
+  var n=t;
+  while(n && n!==acts){ var next=n.nextSibling; body.appendChild(n); n=next; }
+  p.insertBefore(body, acts);
+})();
+</script>
 </body>
 </html>
