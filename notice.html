@@ -287,6 +287,18 @@ document.addEventListener('click', e => {
 .cgbot-ft button:disabled{opacity:.5;cursor:not-allowed}
 .cgbot-note{font-size:11px;color:#999;text-align:center;padding:0 16px 10px;background:#FDF3F5;line-height:1.6}
 @media(max-width:480px){.cgbot-win{right:12px;left:12px;width:auto;bottom:82px}}
+
+  /* 모바일 — 긴 글자가 화면을 밀어내지 않도록 */
+  @media(max-width:640px){
+    body{overflow-x:hidden}
+    .msg,.hint,p,li,td,th,.rb,.ib,.sb,.d{word-break:keep-all;overflow-wrap:anywhere}
+    [style*="nowrap"],.nowrap{white-space:normal !important}
+    .acts,.chips,.tabs,.sug,.eps,.kinds{overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;padding-bottom:2px}
+    .acts::-webkit-scrollbar,.chips::-webkit-scrollbar,
+    .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
+    .out,pre,code{overflow-x:auto;word-break:break-all}
+  }
 </style>
 <button class="cgbot-fab" onclick="cgbotToggle()" aria-label="상담 문의">
   <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z"/></svg>
