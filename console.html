@@ -317,5 +317,157 @@ function loadStats(){
 sync();
 </script>
 <script src="assets/lite.js" defer></script>
+
+<style>
+/* ═══ 즐겨찾기 ═══ */
+.fav-sec{margin-bottom:6px}
+.fav-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin:22px 0 12px;flex-wrap:wrap}
+.fav-hd h2{margin:0 !important}
+.fav-edit{padding:8px 15px;border-radius:999px;font-family:inherit;font-size:11.5px;
+  font-weight:700;cursor:pointer;color:var(--ink);
+  border:1px solid rgba(255,255,255,.85);
+  background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,255,255,.7));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 4px 12px rgba(0,0,0,.05);
+  transition:transform .2s}
+.fav-edit:active{transform:scale(.95)}
+.fav-edit.on{background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;border-color:transparent}
+.fav-empty{padding:26px 18px;text-align:center;border-radius:18px;
+  border:1.5px dashed rgba(216,37,88,.22);background:rgba(255,255,255,.5);
+  font-size:12.5px;line-height:1.85;color:var(--gray)}
+
+/* 별 표시 */
+.item{position:relative}
+.item .star{position:absolute;right:10px;top:10px;z-index:3;
+  width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;padding:0;
+  display:none;align-items:center;justify-content:center;font-size:15px;line-height:1;
+  background:rgba(255,255,255,.94);box-shadow:0 3px 10px rgba(0,0,0,.13);
+  transition:transform .2s}
+body.fav-editing .item .star{display:flex}
+.item .star:active{transform:scale(.86)}
+.item .star.on{background:linear-gradient(135deg,#FFE923,#FFC93B)}
+body.fav-editing .item{pointer-events:none}
+body.fav-editing .item .star{pointer-events:auto}
+body.fav-editing .menu .item{opacity:.65}
+body.fav-editing .menu .item.picked{opacity:1;
+  box-shadow:0 0 0 2px var(--main),0 10px 26px rgba(216,37,88,.16)}
+
+/* 드래그 정렬 */
+.fav-sec .item{cursor:grab}
+.fav-sec .item.drag{opacity:.4}
+</style>
+<script>
+/* ═══ 즐겨찾기 메뉴 ═══ */
+(function(){
+  var KEY='cg_fav_menu';
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ return []; } }
+  function save(v){ try{ localStorage.setItem(KEY,JSON.stringify(v)); }catch(e){} }
+
+  var editing=false, favs=load();
+
+  function items(){ return [].slice.call(document.querySelectorAll('.menu .item')); }
+  function key(a){ return (a.getAttribute('href')||'').split('?')[0]; }
+
+  /* 즐겨찾기 영역 만들기 */
+  function build(){
+    var host=document.getElementById('favWrap');
+    if(!host) return;
+    var all=items().filter(function(a){ return !a.closest('#favWrap'); });
+    var map={}; all.forEach(function(a){ map[key(a)]=a; });
+
+    var picked=favs.filter(function(k){ return map[k]; });
+    if(!picked.length){
+      host.innerHTML='<div class="fav-empty">자주 쓰는 메뉴를 모아두실 수 있습니다.<br>'
+        +'<b>[메뉴 고르기]</b>를 누르고 별을 눌러 추가해 주세요.</div>';
+      return;
+    }
+    host.innerHTML='<div class="menu" id="favMenu"></div>';
+    var box=document.getElementById('favMenu');
+    picked.forEach(function(k){
+      var c=map[k].cloneNode(true);
+      c.classList.add('fav-item');
+      c.setAttribute('draggable','true');
+      var s=c.querySelector('.star'); if(s) s.remove();
+      var b=c.querySelector('.badge'); if(b) b.remove();
+      box.appendChild(c);
+    });
+    dragSort(box);
+  }
+
+  /* 드래그로 순서 바꾸기 */
+  function dragSort(box){
+    var src=null;
+    box.querySelectorAll('.fav-item').forEach(function(el){
+      el.addEventListener('dragstart',function(e){
+        src=el; el.classList.add('drag');
+        try{ e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',''); }catch(x){}
+      });
+      el.addEventListener('dragend',function(){
+        el.classList.remove('drag');
+        favs=[].slice.call(box.querySelectorAll('.fav-item')).map(function(x){
+          return (x.getAttribute('href')||'').split('?')[0]; });
+        save(favs);
+      });
+      el.addEventListener('dragover',function(e){
+        e.preventDefault();
+        if(!src||src===el) return;
+        var r=el.getBoundingClientRect();
+        var after=(e.clientY-r.top)>r.height/2;
+        box.insertBefore(src, after?el.nextSibling:el);
+      });
+      el.addEventListener('click',function(e){
+        if(src) e.preventDefault();
+      });
+    });
+  }
+
+  /* 별 버튼 달기 */
+  function stars(){
+    items().forEach(function(a){
+      if(a.closest('#favWrap')) return;
+      if(a.querySelector('.star')) return;
+      var k=key(a);
+      var b=document.createElement('button');
+      b.type='button'; b.className='star'+(favs.indexOf(k)>-1?' on':'');
+      b.textContent=favs.indexOf(k)>-1?'★':'☆';
+      b.setAttribute('aria-label','즐겨찾기');
+      b.onclick=function(e){
+        e.preventDefault(); e.stopPropagation();
+        var i=favs.indexOf(k);
+        if(i>-1){ favs.splice(i,1); b.classList.remove('on'); b.textContent='☆';
+          a.classList.remove('picked'); }
+        else { favs.push(k); b.classList.add('on'); b.textContent='★';
+          a.classList.add('picked'); }
+        save(favs); build();
+      };
+      a.appendChild(b);
+      a.classList.toggle('picked', favs.indexOf(k)>-1);
+    });
+  }
+
+  window.favToggleEdit=function(){
+    editing=!editing;
+    document.body.classList.toggle('fav-editing',editing);
+    var b=document.getElementById('favEdit');
+    if(b){ b.classList.toggle('on',editing); b.textContent=editing?'완료':'메뉴 고르기'; }
+    if(editing) stars();
+  };
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var first=document.querySelector('h2.sec');
+    if(!first) return;
+    var sec=document.createElement('div');
+    sec.className='fav-sec';
+    sec.innerHTML='<div class="fav-hd"><h2 class="sec">자주 쓰는 메뉴</h2>'
+      +'<button type="button" class="fav-edit" id="favEdit" onclick="favToggleEdit()">메뉴 고르기</button></div>'
+      +'<div id="favWrap"></div>';
+    first.parentNode.insertBefore(sec, first);
+    stars();
+    build();
+  });
+})();
+</script>
 </body>
 </html>
