@@ -175,6 +175,27 @@ h1{font-family:'Poppins',sans-serif;font-size:30px;font-weight:700;margin-bottom
 
 
 
+
+  /* 표 — 모바일에서 가로 스크롤 */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;
+    border-radius:12px;margin:12px 0}
+  .tbl-wrap table{min-width:480px;width:100%;border-collapse:collapse}
+  @media(max-width:640px){
+    table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;
+      white-space:normal;max-width:100%}
+  }
+
+  /* 모바일 — 긴 글자가 화면을 밀어내지 않도록 */
+  @media(max-width:640px){
+    body{overflow-x:hidden}
+    .msg,.hint,p,li,td,th,.rb,.ib,.sb,.d{word-break:keep-all;overflow-wrap:anywhere}
+    [style*="nowrap"],.nowrap{white-space:normal !important}
+    .acts,.chips,.tabs,.sug,.eps,.kinds{overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;padding-bottom:2px}
+    .acts::-webkit-scrollbar,.chips::-webkit-scrollbar,
+    .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
+    .out,pre,code{overflow-x:auto;word-break:break-all}
+  }
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
