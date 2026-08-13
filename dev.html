@@ -120,7 +120,7 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
       <div class="warn">
         <b>안전 절차</b> — AI가 만든 수정안은 <b>바로 반영되지 않습니다.</b>
         요약을 확인하고 <b>[사이트에 반영]</b>을 누르셔야 실제로 적용됩니다.
-        반영 전 원본이 자동 보관되어 <b>언제든 되돌릴 수 있습니다.</b>
+        반영 전 원본이 자동 보관되어 <b>언제든 되돌릴 수 있습니다.</b><br>고객 화면과 관리자 화면을 모두 고칠 수 있으며, 모든 작업은 변경 이력에 기록됩니다.
       </div>
 
       <div class="fg">
@@ -134,6 +134,11 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
         </div>
       </div>
 
+      <div class="warn danger" id="admWarn" style="display:none;margin-top:14px">
+        <b>관리자 화면을 고치려 합니다.</b>
+        로그인 심사·인증 코드가 사라지면 자동으로 거부되고, 내용이 절반 이하로 줄어도 거부됩니다.
+        그래도 반영 전 <b>미리보기로 꼭 확인</b>해 주세요. 문제가 생기면 [되돌리기]로 복구됩니다.
+      </div>
       <div class="pv">
         <div class="pv-bar">
           <div class="pv-dots"><i></i><i></i><i></i></div>
@@ -148,7 +153,7 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
         <div class="pv-stage" id="pvStage">
           <iframe id="pvFrame" title="화면 미리보기" loading="lazy"></iframe>
         </div>
-        <div class="pv-hint">보이는 화면을 그대로 고칩니다. 아래에 바꾸고 싶은 내용을 적어주세요.</div>
+        <div class="pv-hint">보이는 화면을 그대로 고칩니다. 관리자 화면은 로그인 상태에서만 내용이 보입니다.</div>
       </div>
 
       <label>무엇을 바꾸고 싶으신가요?</label>
@@ -205,6 +210,8 @@ function loadPrev(){
   $('pvUrl').textContent = p;
   f.removeAttribute('srcdoc');
   f.src = prevUrl();
+  var w = document.getElementById('admWarn');
+  if(w) w.style.display = (ADMIN_PATHS.indexOf(p) > -1) ? 'block' : 'none';
 }
 function setW(btn, w){
   document.querySelectorAll('.pv-dev button').forEach(b=>b.classList.remove('on'));
@@ -221,7 +228,7 @@ const FN=SB+'/functions/v1/dev-agent';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const ST={draft:'검토 대기',deployed:'반영됨',reverted:'되돌림',failed:'실패'};
-let token=null,who='',curId=null;
+let token=null,who='',curId=null,ADMIN_PATHS=[];
 try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
 const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
 
@@ -259,7 +266,23 @@ function init(){
       $('setupWarn').innerHTML='<b>설정이 필요합니다.</b> Supabase → Edge Functions → Secrets 에 '
         +miss.join(', ')+' 를 등록해 주세요. 등록 전까지는 수정안을 만들 수 없습니다.';
     } else $('setupWarn').style.display='none';
-    $('path').innerHTML=(d.paths||[]).map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+    const NAME={'index.html':'메인','about.html':'브랜드 소개','product.html':'상품 상세',
+      'cart.html':'장바구니','checkout.html':'주문서','join.html':'회원가입','login.html':'로그인',
+      'mypage.html':'마이페이지','notice.html':'공지사항','review.html':'후기','qna.html':'상품문의',
+      'faq.html':'자주묻는질문','guide.html':'이용안내','terms.html':'이용약관',
+      'privacy.html':'개인정보처리방침','tracking.html':'배송조회','wish.html':'위시리스트',
+      'subscribe.html':'정기구독','status.html':'운영현황','reset.html':'비밀번호 재설정',
+      'console.html':'관리자 홈','orders.html':'주문·배송','stock.html':'재고·품절',
+      'members.html':'회원 조회','posts.html':'게시물 관리','boards.html':'게시판 설정',
+      'message.html':'메시지 서비스','campaign.html':'마케팅 발송','subs-admin.html':'정기구독 관리',
+      'export-ai.html':'AI 수출 비서','grievance.html':'규제·민원','integrations.html':'연동 관리',
+      'cafe24.html':'카페24 API','exports.html':'수출·인증','qa.html':'QA 점검',
+      'preview.html':'모바일 미리보기','issue.html':'이슈 게시판','admin.html':'관리자(구)'};
+    const opt=p=>'<option value="'+p+'">'+(NAME[p]?NAME[p]+' — '+p:p)+'</option>';
+    ADMIN_PATHS=d.adminPaths||[];
+    $('path').innerHTML=
+      '<optgroup label="고객 화면">'+(d.paths||[]).map(opt).join('')+'</optgroup>'
+      +'<optgroup label="관리자 화면 — 주의">'+ADMIN_PATHS.map(opt).join('')+'</optgroup>';
     loadPrev();
     loadModels(d.model);
   }).catch(()=>{});
