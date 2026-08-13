@@ -1771,19 +1771,57 @@ function closePopup(today){
   document.body.style.overflow = p.classList.contains('hide') ? '' : 'hidden';
 })();
 
-/* 안전장치: 열린 레이어가 하나도 없으면 스크롤을 반드시 복구 */
-function cgUnlockIfIdle(){
-  const open =
-    (document.getElementById('popup') && !document.getElementById('popup').classList.contains('hide')) ||
-    (document.getElementById('detail') && !document.getElementById('detail').classList.contains('hide')) ||
-    (document.getElementById('boardLayer') && !document.getElementById('boardLayer').classList.contains('hide')) ||
-    (document.getElementById('cartP') && document.getElementById('cartP').classList.contains('open')) ||
-    (document.getElementById('drawer') && document.getElementById('drawer').classList.contains('open'));
-  if (!open) document.body.style.overflow = '';
+/* ══ 스크롤 잠금 안전장치 ══
+   레이어가 하나도 안 열려 있으면 스크롤을 반드시 되살린다. */
+function cgAnyLayerOpen(){
+  var byHide = ['popup','detail','boardLayer','joinPop'];
+  var byOpen = ['cartP','drawer','cartDim'];
+  var byOn   = ['ufPop','filmPop'];
+  var i, el;
+  for(i=0;i<byHide.length;i++){
+    el = document.getElementById(byHide[i]);
+    if (el && !el.classList.contains('hide')) return true;
+  }
+  for(i=0;i<byOpen.length;i++){
+    el = document.getElementById(byOpen[i]);
+    if (el && el.classList.contains('open')) return true;
+  }
+  for(i=0;i<byOn.length;i++){
+    el = document.getElementById(byOn[i]);
+    if (el && el.classList.contains('on')) return true;
+  }
+  /* 동적으로 만들어지는 팝업들 */
+  if (document.querySelector('.mo, .kko-pop, .cg-modal')) return true;
+  return false;
 }
-document.addEventListener('click', () => setTimeout(cgUnlockIfIdle, 60));
-setInterval(cgUnlockIfIdle, 1500);
-document.addEventListener('keyup', e => { if (e.key === 'Escape') setTimeout(cgUnlockIfIdle, 60); });
+function cgUnlockIfIdle(){
+  if (!cgAnyLayerOpen()) {
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.touchAction = '';
+  }
+}
+/* 클릭·터치·키보드·뒤로가기·화면복귀 시 모두 확인 */
+['click','touchend','keyup'].forEach(function(ev){
+  document.addEventListener(ev, function(){ setTimeout(cgUnlockIfIdle, 60); }, {passive:true});
+});
+window.addEventListener('pageshow', cgUnlockIfIdle);
+window.addEventListener('popstate', function(){ setTimeout(cgUnlockIfIdle, 60); });
+document.addEventListener('visibilitychange', function(){
+  if (!document.hidden) setTimeout(cgUnlockIfIdle, 60);
+});
+/* ESC 로 열린 레이어 닫기 */
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  ['closePopup','closeDetail','closeBoardLayer','closeCart','filmClose']
+    .forEach(function(fn){ try{ if (typeof window[fn] === 'function') window[fn](); }catch(err){} });
+  var m = document.querySelector('.mo, .kko-pop');
+  if (m) m.remove();
+  setTimeout(cgUnlockIfIdle, 60);
+});
+/* 최후 보루 — 2초마다 확인 */
+setInterval(cgUnlockIfIdle, 2000);
 window.addEventListener('pageshow', (e) => {
   /* 뒤로가기로 복귀하면 브라우저가 이전 화면 상태를 그대로 되살려
      드로어·레이어가 열린 채 남아 메뉴가 눌리지 않는 문제를 방지 */
