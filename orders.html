@@ -108,6 +108,13 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .kko-act .cl{background:rgba(0,0,0,.06);color:#333}
 
 .kko-hint{margin-top:11px;font-size:11.5px;line-height:1.7;color:var(--gray);text-align:center}
+
+.push-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-top:13px;padding:14px 16px;border-radius:16px;
+  background:rgba(255,233,35,.14);border:.5px solid rgba(216,37,88,.16)}
+.push-row .pr-t{flex:1;min-width:180px}
+.push-row .pr-t b{display:block;font-size:13.5px;font-weight:700}
+.push-row .pr-t span{display:block;margin-top:4px;font-size:11.5px;line-height:1.7;color:#6a5a60}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
@@ -169,6 +176,12 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
           <input id="ntKko" placeholder="https://pf.kakao.com/_xxxxx"></div>
         <div><label style="font-size:12px;font-weight:600">보내는 사람 (이메일)</label>
           <input id="ntFrom" placeholder="ChewGumi &lt;onboarding@resend.dev&gt;"></div>
+      </div>
+      <div class="push-row" id="pushRow">
+        <div class="pr-t"><b>휴대폰 알림 받기</b>
+          <span id="pushMsg">주문이 들어오면 폰에 바로 알림이 뜹니다. 무료입니다.</span></div>
+        <button class="mini" id="pushBtn" onclick="pushToggle()">알림 켜기</button>
+        <button class="mini" onclick="pushTest()">테스트</button>
       </div>
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;align-items:center">
         <label class="ntsw"><input type="checkbox" id="ntOn"> 주문 알림 켜기</label>
@@ -255,7 +268,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 
 function sync(){const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();bankLoad();ntLoad();load();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();bankLoad();ntLoad();setTimeout(pushSync,600);load();}}
 
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
@@ -518,6 +531,58 @@ function ntCall(p){
     headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
     body:JSON.stringify(p)}).then(r=>r.json().then(d=>({ok:r.ok,d})));
 }
+const FN_PUSH = SB_URL + '/functions/v1/push';
+function pushCall(p){
+  return fetch(FN_PUSH,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify(p)}).then(r=>r.json().then(d=>({ok:r.ok,d})));
+}
+function pushSync(){
+  var b=$('pushBtn'), m=$('pushMsg');
+  if(!window.cgPushSupported || !cgPushSupported()){
+    if(b){ b.style.display='none'; }
+    if(m) m.textContent='이 브라우저는 알림을 지원하지 않습니다. 크롬이나 삼성 인터넷을 이용해 주세요.';
+    return;
+  }
+  var st=cgPushState();
+  if(st==='denied'){
+    if(b) b.style.display='none';
+    if(m) m.innerHTML='알림이 차단되어 있습니다.<br>주소창의 자물쇠를 눌러 알림을 허용해 주세요.';
+    return;
+  }
+  pushCall({action:'status'}).then(({ok,d})=>{
+    if(!ok) return;
+    var on = (st==='granted' && d.admins>0);
+    if(b) b.textContent = on ? '알림 끄기' : '알림 켜기';
+    if(m) m.textContent = on
+      ? ('알림을 받고 있습니다. 등록된 기기 '+d.admins+'대')
+      : '주문이 들어오면 폰에 바로 알림이 뜹니다. 무료입니다.';
+  }).catch(()=>{});
+}
+function pushToggle(){
+  var b=$('pushBtn'), m=$('pushMsg');
+  var turningOn = b && b.textContent.indexOf('켜기')>-1;
+  if(m) m.textContent = turningOn?'알림을 켜는 중…':'알림을 끄는 중…';
+  var job = turningOn ? cgPushOn() : cgPushOff();
+  job.then(function(){
+    if(m) m.textContent = turningOn
+      ? '알림이 켜졌습니다. 이제 주문이 들어오면 폰으로 알려드립니다.'
+      : '알림을 껐습니다.';
+    setTimeout(pushSync,900);
+  }).catch(function(e){
+    if(m) m.textContent = (e && e.message) || '처리하지 못했습니다.';
+  });
+}
+function pushTest(){
+  var m=$('pushMsg');
+  if(m) m.textContent='테스트 알림을 보내는 중…';
+  pushCall({action:'test'}).then(({ok,d})=>{
+    if(m) m.textContent = (ok && d.sent)
+      ? ('보냈습니다. 알림이 뜨는지 확인해 주세요. ('+d.sent+'대)')
+      : (d.error || '보내지 못했습니다. 알림을 먼저 켜주세요.');
+  }).catch(()=>{ if(m) m.textContent='네트워크 오류가 발생했습니다.'; });
+}
+
 function ntLoad(){
   ntCall({action:'getSettings'}).then(({ok,d})=>{
     if(!ok) return $('ntMsg').textContent='설정을 불러오지 못했습니다.';
@@ -713,5 +778,6 @@ sync();
 </script>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
+<script src="assets/push.js" defer></script>
 </body>
 </html>
