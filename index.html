@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CHEWGUMI | 한입에 건강을 더하다</title>
+<script src="assets/site.js"></script>
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ChewGumi 츄구미">
 <meta property="og:title" content="ChewGumi 츄구미 — 맛있게 건강을 챙기는 습관">
@@ -1387,7 +1389,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div>
         <div class="ft-title">SNS</div>
         <a href="https://www.instagram.com/chewgumi_official/" target="_blank" rel="noopener">INSTAGRAM @chewgumi_official →</a><br>
-        <a href="https://chewgumi.com" target="_blank" rel="noopener">OFFICIAL STORE chewgumi.com →</a>
+        <a href=(window.CG_SITE?CG_SITE.MALL:'https://chewgumi.com') target="_blank" rel="noopener">OFFICIAL STORE chewgumi.com →</a>
       </div>
     </div></div>
     <div class="ft-links">
@@ -2199,7 +2201,7 @@ function renderCart(){
   document.getElementById('cTotal').textContent = won(CART.reduce((a,i)=>a+i.price*i.qty,0));
   const btn = document.getElementById('cCheckout');
   const note = document.getElementById('cNote');
-  const first = CART.length ? productUrl(CART[0].name) : 'https://chewgumi.com';
+  const first = CART.length ? productUrl(CART[0].name) : (window.CG_SITE?CG_SITE.MALL:'https://chewgumi.com');
   if (CART.length === 1) {
     btn.href = 'checkout.html';
     btn.textContent = '주문서 작성하기';
