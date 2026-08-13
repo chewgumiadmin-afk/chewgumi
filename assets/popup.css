@@ -1,153 +1,151 @@
 /*! ChewGumi Popup Typography v1 · MedIT
  *  팝업·모달·서랍의 글자 크기를 화면 폭에 맞춰 자동 조정합니다.
- *  clamp(최소, 화면비례, 최대) — 작은 폰에서도 읽히고 태블릿에서 과하지 않게.
+ *  clamp(최소, 화면비례, 최대) 방식이라 기기마다 자연스럽게 맞습니다.
  */
 
 :root{
-  /* 팝업 전용 글자 단계 — 화면 폭에 따라 부드럽게 변함 */
-  --pop-title:  clamp(16px, 1.1vw + 12px, 21px);
-  --pop-sub:    clamp(12.5px, .5vw + 10.5px, 14.5px);
-  --pop-body:   clamp(13px, .6vw + 10.8px, 15px);
-  --pop-small:  clamp(11.5px, .35vw + 10.2px, 13px);
-  --pop-label:  clamp(11.5px, .3vw + 10.4px, 12.5px);
-  --pop-btn:    clamp(13.5px, .5vw + 11.6px, 15px);
-  --pop-pad:    clamp(18px, 3vw, 28px);
-  --pop-radius: clamp(18px, 2vw, 24px);
+  /* 팝업 전용 글자 단계 — 화면 폭에 따라 부드럽게 변합니다 */
+  --pop-xs: clamp(11px, 2.8vw, 12.5px);
+  --pop-sm: clamp(12px, 3.2vw, 13.5px);
+  --pop-md: clamp(13px, 3.6vw, 15px);
+  --pop-lg: clamp(15px, 4.2vw, 17px);
+  --pop-xl: clamp(17px, 5vw, 21px);
+  --pop-2xl:clamp(19px, 5.6vw, 25px);
+  /* 팝업 여백 */
+  --pop-pad: clamp(18px, 5vw, 28px);
+  --pop-gap: clamp(10px, 2.6vw, 16px);
 }
 
 /* ══ 공통 팝업 컨테이너 ══ */
-.popup, .detail, .pdetail, .uf-pop,
-.mo-b, .kko-box, .cgbot-win, .modal, .layer, .sheet{
-  font-size: var(--pop-body);
-  line-height: 1.75;
-}
-
-/* 제목 */
-.popup h2, .popup h3, .popup .popup-t,
-.detail h2, .detail h3, .pdetail h2, .pdetail h3,
-.mo-b h3, .kko-box h3, .uf-pop h3, .modal h3{
-  font-size: var(--pop-title) !important;
-  font-weight: 800;
-  letter-spacing: -.025em;
-  line-height: 1.35;
-}
-
-/* 부제 · 설명 */
-.popup .sub, .popup .desc, .detail .sub, .detail .desc,
-.mo-b .sub, .kko-box .who, .pdetail .sub{
-  font-size: var(--pop-sub) !important;
+.popup, .cartp, .drawer, .detail, .kko-box, .cgbot-win, .mo-b,
+.bl-box, .bl-wrap, .modal, .sheet, .dlg{
+  font-size: var(--pop-md);
   line-height: 1.7;
 }
 
+/* 제목 */
+.popup h2, .popup h3, .cartp h2, .cartp h3,
+.detail h2, .detail h3, .kko-box h3, .mo-b h3,
+.bl-box h2, .bl-box h3, .cgbot-win h3, .modal h2, .modal h3{
+  font-size: var(--pop-xl) !important;
+  line-height: 1.35;
+  letter-spacing: -.025em;
+}
+.popup h1, .detail h1, .bl-box h1{
+  font-size: var(--pop-2xl) !important;
+  line-height: 1.3;
+}
+
 /* 본문 */
-.popup p, .popup li, .popup td,
-.detail p, .detail li, .pdetail p,
-.mo-b p, .uf-pop p{
-  font-size: var(--pop-body);
+.popup p, .cartp p, .detail p, .kko-box p, .mo-b p,
+.bl-box p, .modal p, .sheet p,
+.popup li, .detail li, .bl-box li{
+  font-size: var(--pop-md);
   line-height: 1.85;
   word-break: keep-all;
 }
 
-/* 작은 글씨 · 안내 */
-.popup .hint, .popup .msg, .popup small,
-.detail .hint, .detail .msg,
-.mo-b .msg, .kko-box .hint{
-  font-size: var(--pop-small) !important;
-  line-height: 1.7;
+/* 보조 설명 */
+.popup .sub, .popup .hint, .popup .note, .popup .msg,
+.detail .sub, .detail .hint, .cartp .sub,
+.bl-box .sub, .bl-box .meta, .mo-b .msg, .kko-box .who{
+  font-size: var(--pop-sm) !important;
+  line-height: 1.75;
 }
 
-/* 라벨 */
-.popup label, .detail label, .mo-b label, .modal label{
-  font-size: var(--pop-label) !important;
-  font-weight: 600;
-}
-
-/* 입력칸 — 확대 방지를 위해 iOS에서 16px 이상 유지 */
-.popup input, .popup select, .popup textarea,
-.detail input, .detail select, .detail textarea,
-.mo-b input, .mo-b select, .mo-b textarea,
-.kko-box textarea, .modal input, .modal textarea{
-  font-size: max(16px, var(--pop-body)) !important;
-  line-height: 1.6;
+/* 아주 작은 글자 (날짜·라벨) */
+.popup .date, .popup .tag, .popup .badge,
+.detail .date, .bl-box .date, .bl-box .num,
+.kko-box .kko-tabs button, .mo-b .diff{
+  font-size: var(--pop-xs) !important;
 }
 
 /* 버튼 */
-.popup .btn, .popup button, .popup-foot button,
-.detail .btn, .detail button,
-.mo-b .btn, .kko-box .kko-act button, .kko-act a,
-.modal .btn{
-  font-size: var(--pop-btn) !important;
-  font-weight: 700;
+.popup button, .cartp button, .detail button,
+.kko-box button, .mo-b button, .bl-box button,
+.modal button, .sheet button,
+.popup .btn, .detail .btn, .mo-b .btn{
+  font-size: var(--pop-sm) !important;
+  min-height: clamp(42px, 11vw, 50px);
+  padding-left: clamp(16px, 4.5vw, 26px);
+  padding-right: clamp(16px, 4.5vw, 26px);
 }
-.popup .mini, .detail .mini, .mo-b .mini{
-  font-size: var(--pop-small) !important;
-}
-
-/* 여백 · 모서리도 화면에 맞게 */
-.popup, .detail, .pdetail, .mo-b, .kko-box, .uf-pop{
-  border-radius: var(--pop-radius);
-}
-.popup > div, .mo-b, .kko-box{ padding: var(--pop-pad); }
-
-/* ══ 화면별 세부 조정 ══ */
-
-/* 태블릿 */
-@media (min-width:641px) and (max-width:1024px){
-  .popup, .detail, .pdetail, .mo-b, .kko-box{
-    max-width: min(560px, 88vw) !important;
-  }
+.popup .mini, .detail .mini, .mo-b .mini, .bl-box .mini{
+  font-size: var(--pop-xs) !important;
+  min-height: clamp(34px, 9vw, 40px);
 }
 
-/* 모바일 */
+/* 입력칸 */
+.popup input, .popup select, .popup textarea,
+.detail input, .detail select, .detail textarea,
+.mo-b input, .mo-b select, .mo-b textarea,
+.kko-box textarea, .bl-box input, .bl-box textarea{
+  font-size: max(16px, var(--pop-md)) !important;  /* 16px 미만이면 iOS가 확대함 */
+  min-height: clamp(44px, 11.5vw, 52px);
+}
+.popup textarea, .detail textarea, .mo-b textarea, .kko-box textarea{
+  min-height: clamp(80px, 22vw, 140px);
+  line-height: 1.75;
+}
+
+/* 여백 */
+.popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+  padding: var(--pop-pad);
+}
+
+/* ══ 화면별 크기 ══ */
 @media (max-width:640px){
-  :root{ --pop-pad: 18px; }
-  .popup, .detail, .pdetail, .mo-b, .kko-box, .uf-pop, .modal{
+  /* 모바일 — 화면 거의 가득, 아래에서 올라오는 형태가 편함 */
+  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
     max-width: 100% !important;
-    width: calc(100% - 24px) !important;
-    max-height: 86vh !important;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    width: 100% !important;
+    max-height: 88vh;
+    border-radius: 22px 22px 0 0 !important;
   }
-  /* 버튼은 손가락에 맞게 */
-  .popup .btn, .detail .btn, .mo-b .btn, .kko-act button, .kko-act a{
-    min-height: 48px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .mo, .pop-bg, .bl-bg{ align-items: flex-end !important; padding: 0 !important; }
+}
+@media (min-width:641px) and (max-width:1024px){
+  /* 태블릿 — 가운데 적당한 크기 */
+  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+    max-width: min(560px, 88vw) !important;
+    max-height: 86vh;
   }
-  /* 팝업 안 격자는 한 줄로 */
-  .popup .g2, .mo-b .g2, .popup .fg, .detail .fg{
-    grid-template-columns: 1fr !important;
+}
+@media (min-width:1025px){
+  /* PC */
+  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+    max-width: min(600px, 70vw) !important;
+    max-height: 84vh;
   }
 }
 
-/* 아주 작은 화면 */
-@media (max-width:360px){
-  :root{
-    --pop-title: 16px;
-    --pop-body: 13px;
-    --pop-pad: 16px;
-  }
-}
-
-/* 가로 모드 — 세로 공간이 좁을 때 */
-@media (max-height:520px) and (orientation:landscape){
-  .popup, .detail, .mo-b, .kko-box{
+/* 가로 모드 — 세로가 짧을 때 */
+@media (max-height:560px) and (orientation:landscape){
+  :root{ --pop-pad: 14px; --pop-xl: 17px; --pop-2xl: 19px; }
+  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
     max-height: 92vh !important;
-    overflow-y: auto;
+    border-radius: 18px !important;
   }
-  :root{ --pop-pad: 14px; --pop-title: 16px; }
+  .mo, .pop-bg, .bl-bg{ align-items: center !important; padding: 10px !important; }
 }
 
-/* 큰 화면에서 과하게 커지지 않도록 */
-@media (min-width:1400px){
-  :root{
-    --pop-title: 21px;
-    --pop-body: 15px;
-  }
+/* 상담 챗봇 창 */
+.cgbot-win{ font-size: var(--pop-sm); }
+.cgbot-win .cgbot-msg, .cgbot-win .msg{ font-size: var(--pop-sm) !important; line-height: 1.8; }
+.cgbot-win input, .cgbot-win textarea{ font-size: max(16px, var(--pop-sm)) !important; }
+@media (max-width:640px){
+  .cgbot-win{ width: calc(100vw - 20px) !important; right: 10px !important;
+    max-height: 76vh !important; }
 }
 
-/* 텍스트 크기 조절을 켠 사용자 존중 */
+/* 스크롤 영역 */
+.popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* 접근성 — 확대 설정 존중 */
 @media (prefers-reduced-motion:reduce){
-  .popup, .detail, .mo-b{ transition:none !important }
+  .popup, .cartp, .detail, .modal{ transition: none !important; }
 }
