@@ -752,7 +752,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 .tri-badge{display:inline-block;padding:7px 16px;border-radius:999px;font-size:11px;font-weight:700;
   letter-spacing:2.5px;color:#FFE923;background:rgba(255,233,35,.12);
   border:1px solid rgba(255,233,35,.32)}
-.tri-title{margin-top:18px;font-size:clamp(28px,5.2vw,52px);font-weight:800;line-height:1.2;
+.tri-title{margin-top:0;font-size:clamp(28px,5.2vw,52px);font-weight:800;line-height:1.2;
   letter-spacing:-.04em;color:#fff}
 .tri-title .l{display:block}
 .tri-title .accent{background:linear-gradient(100deg,#FF8FB1,#FFE923 55%,#B6D94C);
@@ -1268,7 +1268,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <div class="uf-head">
           <span class="uf-eb">USER FILMS</span>
           <h2>당신의 한입을<br>보여주세요</h2>
-          <p id="ufLead">츄구미를 즐기는 순간을 공유해 주세요.</p>
+          <p id="ufLead">츄구미를 즐기는 순간을 공유해 주세요.<br><span style="font-size:.92em;opacity:.8">인스타그램에 <b>#츄구미</b>와 함께 올려주시면 소개해 드립니다.</span></p>
         </div>
         <div class="uf-grid" id="ufGrid"></div>
       </div>
@@ -1290,7 +1290,6 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
       <div class="wrap tri-in">
         <div class="tri-head">
-          <span class="tri-badge kr" data-en="COMING SOON">출시 예정</span>
           <h2 class="tri-title">
             <span class="l">세 가지 순간을 위한</span>
             <span class="l accent">세 가지 맛</span>
@@ -2066,7 +2065,9 @@ const USER_VIDEOS = [
   const g = document.getElementById('ufilmGrid');
   if (!g) return;
   if (!USER_VIDEOS.length) {
-    g.innerHTML = '<div class="ufilm-empty">아직 등록된 영상이 없습니다.</div>';
+    g.innerHTML = '<div class="ufilm-empty">첫 번째 영상의 주인공이 되어 주세요.<br>'
+      + '<a href="reports.html" style="color:var(--main);text-decoration:underline;'
+      + 'text-underline-offset:3px">의견 남기기 →</a></div>';
     return;
   }
   g.innerHTML = USER_VIDEOS.map(function(v,n){
