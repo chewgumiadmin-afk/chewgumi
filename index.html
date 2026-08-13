@@ -4505,7 +4505,67 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* ══ 상품 카드 겹침·스크롤 문제 해결 ══ */
+@media (max-width:900px){
+  /* 카드가 서로 겹치던 음수 여백 제거 */
+  .grid .card{
+    margin:0 !important;
+    padding:0 !important;
+    border-radius:18px !important;
+    opacity:1 !important;
+    transform:none !important;
+    transition:none !important;
+  }
+  /* 격자 간격 확보 — 세로 간격을 넉넉히 */
+  .grid{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:26px 12px !important;
+    align-items:start !important;
+  }
+  /* 눌렀을 때만 살짝 반응 (겹침 유발 안 함) */
+  .grid .card:active{transform:scale(.985) !important}
+  .grid .card:hover{
+    transform:none !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+  /* 이미지 위 반짝임 효과는 모바일에서 끔 (스크롤 끊김 원인) */
+  .card .thumb::after{display:none !important}
+  .card .thumb img.hover{display:none !important}
+  .card .thumb img{transition:none !important}
+
+  /* 스크롤이 부드럽게 */
+  html{scroll-behavior:auto}
+  body{overflow-x:hidden;overscroll-behavior-y:contain}
+  .grid,.grid .card{will-change:auto !important}
+}
+
+/* 아주 좁은 화면 */
+@media (max-width:380px){
+  .grid{gap:22px 10px !important}
+  .grid .card .name{font-size:12px !important}
+}
 </style>
-<script src="assets/nav.js" defer></script>
+<script src="assets/nav.js" defer>
+/* 모바일에서는 등장 애니메이션 없이 바로 표시 */
+(function(){
+  if (window.innerWidth > 900) return;
+  function showAll(){
+    var c = document.querySelectorAll('.card, .tri-card, .nl-card');
+    for (var i = 0; i < c.length; i++) {
+      c[i].classList.add('inview');
+      c[i].classList.add('in');
+    }
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', showAll);
+  else showAll();
+  setTimeout(showAll, 400);
+  window.addEventListener('load', showAll);
+})();
+</script>
 </body>
 </html>
