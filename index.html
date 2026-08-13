@@ -1395,13 +1395,16 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div>
         <div class="ft-title">CS CENTER</div>
+        <a href="tel:050704442706" style="font-weight:700">0507-0444-2706</a><br>
         chewgumi24@gmail.com<br>
-        <span class="kr" data-en="Hours : 9:00 ~ 18:00">운영시간 : 9:00 ~ 18:00</span>
+        <span class="kr" data-en="Weekdays 10:00 - 17:00">평일 10:00 - 17:00</span><br>
+        <span class="kr" data-en="Lunch 12:00 - 13:00 / Closed on weekends"
+          style="opacity:.75;font-size:.92em">점심 12:00 - 13:00 · 주말·공휴일 휴무</span>
       </div>
       <div>
         <div class="ft-title">SNS</div>
         <a href="https://www.instagram.com/chewgumi_official/" target="_blank" rel="noopener">INSTAGRAM @chewgumi_official →</a><br>
-        <a href=(window.CG_SITE?CG_SITE.MALL:'https://chewgumi.com') target="_blank" rel="noopener">OFFICIAL STORE chewgumi.com →</a>
+        <a data-mall href="https://chewgumi.com" target="_blank" rel="noopener">OFFICIAL STORE chewgumi.com →</a>
       </div>
     </div></div>
     <div class="ft-links">
@@ -1409,7 +1412,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v89 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v69 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4567,17 +4570,16 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
    모바일에서 4:3(1.33)·16:9(1.78)로 잡혀 양옆이 크게 잘렸습니다.
    원본 비율에 가깝게 맞추고, 잘리더라도 가운데가 남도록 합니다. */
 @media (max-width:1000px){
-  .hero{aspect-ratio:1400/675 !important;max-height:none !important}
+  .hero{aspect-ratio:1400/760 !important;max-height:none !important}
 }
 @media (max-width:640px){
-  .hero{aspect-ratio:1400/720 !important;border-radius:0 !important;max-height:none !important}
-}
-@media (max-width:420px){
-  /* 아주 좁은 화면에서도 4:3까지 내리지 않음 */
-  .hero{aspect-ratio:1400/780 !important}
+  .hero{aspect-ratio:1400/880 !important;border-radius:0 !important;max-height:none !important}
 }
 @media (max-width:560px){
-  .hero{aspect-ratio:1400/720 !important}
+  .hero{aspect-ratio:1400/920 !important}
+}
+@media (max-width:420px){
+  .hero{aspect-ratio:1400/980 !important}
 }
 @media (max-height:520px) and (orientation:landscape){
   .hero{aspect-ratio:1400/675 !important;height:auto !important}
@@ -4606,6 +4608,18 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
     text-decoration:none;display:inline-flex;align-items:center;min-height:40px}
   .cs-hr{font-size:11.5px;color:var(--gray,#7a7a82)}
   @media(max-width:640px){.cs-line{gap:4px;flex-direction:column}}
+
+/* 배너 번호 표시 — 다른 라벨과 같은 영문 스타일 */
+.hero-count{
+  position:absolute;right:16px;bottom:16px;z-index:5;
+  padding:6px 12px;border-radius:999px;
+  font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;
+  color:#fff;background:rgba(0,0,0,.28);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+@media(max-width:640px){
+  .hero-count{right:12px;bottom:12px;font-size:10px;padding:5px 10px}
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
