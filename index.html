@@ -2909,14 +2909,18 @@ section{padding:44px 0}
   /* 헤더 그림자 */
   var hd=document.querySelector('header');
   if(hd){
-    var tick=false;
+    var tick=false, stuck=false;
+    function upd(){
+      var y=window.scrollY||document.documentElement.scrollTop||0;
+      /* 켤 때 64, 끌 때 16 — 경계에서 깜빡이지 않도록 여유를 둔다 */
+      if(!stuck && y>64){ stuck=true; hd.classList.add('stuck'); }
+      else if(stuck && y<16){ stuck=false; hd.classList.remove('stuck'); }
+      tick=false;
+    }
     window.addEventListener('scroll',function(){
-      if(tick) return; tick=true;
-      requestAnimationFrame(function(){
-        hd.classList.toggle('stuck',(window.scrollY||0)>40);
-        tick=false;
-      });
+      if(tick) return; tick=true; requestAnimationFrame(upd);
     },{passive:true});
+    upd();
   }
 })();
 </script>
@@ -4053,5 +4057,40 @@ body.at-foot .kko-fab{
   p.insertBefore(body, acts);
 })();
 </script>
+
+<style>
+/* ═══ 메뉴바 흔들림 방지 ═══ */
+header{
+  /* 흐림 처리를 미리 레이어로 만들어 스크롤 중 다시 계산하지 않게 */
+  will-change:auto;
+  transform:translate3d(0,0,0);
+  -webkit-transform:translate3d(0,0,0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  /* 높이를 고정해 내용에 따라 흔들리지 않게 */
+  contain:layout}
+
+/* 그림자를 실제 속성이 아니라 겹친 층의 투명도로만 바꾼다 */
+header::after{
+  transition:opacity .35s ease !important}
+
+/* 위로 당길 때 튕기는 동작을 없앤다 (iOS·안드로이드 공통) */
+body{overscroll-behavior-y:contain}
+
+/* 상단 티커·헤더가 함께 붙어 있을 때 층 순서 고정 */
+.topbar{position:relative;z-index:901}
+header{z-index:900}
+
+/* 흐림이 무거운 기기에서는 단계를 낮춘다 */
+@media (max-width:640px){
+  header{
+    backdrop-filter:blur(20px) saturate(160%) !important;
+    -webkit-backdrop-filter:blur(20px) saturate(160%) !important}
+}
+/* 경량 모드에서는 흐림 자체를 끈다 */
+.lite header{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  background:rgba(255,255,255,.97) !important}
+</style>
 </body>
 </html>
