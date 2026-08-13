@@ -63,6 +63,35 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
 .empty{padding:32px 0;text-align:center;color:var(--gray);font-size:13px}
 .hide{display:none}
 @media(max-width:820px){.fg{grid-template-columns:1fr}.hrow{grid-template-columns:1fr 1fr;gap:5px 9px}}
+
+/* 화면 미리보기 */
+.pv{margin-top:16px;border-radius:18px;overflow:hidden;
+  border:1px solid var(--line);background:rgba(255,255,255,.7);
+  box-shadow:0 10px 26px rgba(0,0,0,.07)}
+.pv-bar{display:flex;align-items:center;gap:10px;padding:9px 12px;flex-wrap:wrap;
+  background:rgba(255,255,255,.85);border-bottom:1px solid rgba(0,0,0,.06)}
+.pv-dots{display:flex;gap:5px;flex:none}
+.pv-dots i{width:9px;height:9px;border-radius:50%;background:rgba(0,0,0,.13)}
+.pv-url{flex:1;min-width:90px;font-size:11.5px;color:var(--gray);
+  font-family:ui-monospace,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-dev{display:flex;gap:4px;flex:none}
+.pv-dev button{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(0,0,0,.05);border:0;color:#666;cursor:pointer}
+.pv-dev button.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+.pv-open{padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.9);border:1px solid var(--line);color:var(--ink);cursor:pointer}
+.pv-stage{display:flex;justify-content:center;padding:14px;
+  background:repeating-linear-gradient(45deg,#FBF3F6,#FBF3F6 10px,#F7EDF1 10px,#F7EDF1 20px);
+  max-height:520px;overflow:auto}
+.pv-stage iframe{width:390px;height:480px;border:0;border-radius:12px;background:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.12);transition:width .28s cubic-bezier(.2,.7,.3,1)}
+.pv-hint{padding:10px 14px;font-size:11.5px;color:var(--gray);
+  background:rgba(255,255,255,.7);border-top:1px solid rgba(0,0,0,.05)}
+@media(max-width:640px){
+  .pv-stage{padding:10px}
+  .pv-stage iframe{width:100% !important;height:380px}
+  .pv-dev button{padding:6px 9px;font-size:10.5px}
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -97,12 +126,29 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
       <div class="fg">
         <div>
           <label>어느 화면을 고칠까요?</label>
-          <select id="path"></select>
+          <select id="path" onchange="loadPrev()"></select>
         </div>
         <div>
           <label>사용할 AI 모델</label>
           <select id="model" onchange="setModel()"></select>
         </div>
+      </div>
+
+      <div class="pv">
+        <div class="pv-bar">
+          <div class="pv-dots"><i></i><i></i><i></i></div>
+          <span class="pv-url" id="pvUrl">index.html</span>
+          <div class="pv-dev">
+            <button class="on" data-w="390" onclick="setW(this,390)">모바일</button>
+            <button data-w="768" onclick="setW(this,768)">태블릿</button>
+            <button data-w="1200" onclick="setW(this,1200)">PC</button>
+          </div>
+          <button class="pv-open" id="pvOpen" onclick="openPrev()">새 창</button>
+        </div>
+        <div class="pv-stage" id="pvStage">
+          <iframe id="pvFrame" title="화면 미리보기" loading="lazy"></iframe>
+        </div>
+        <div class="pv-hint">보이는 화면을 그대로 고칩니다. 아래에 바꾸고 싶은 내용을 적어주세요.</div>
       </div>
 
       <label>무엇을 바꾸고 싶으신가요?</label>
@@ -190,6 +236,7 @@ function init(){
         +miss.join(', ')+' 를 등록해 주세요. 등록 전까지는 수정안을 만들 수 없습니다.';
     } else $('setupWarn').style.display='none';
     $('path').innerHTML=(d.paths||[]).map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+    loadPrev();
     loadModels(d.model);
   }).catch(()=>{});
   loadHist();
@@ -229,12 +276,18 @@ function draft(){
 }
 function preview(){
   if(!curId) return;
+  $('rmsg').className='msg'; $('rmsg').textContent='수정안을 미리보기에 표시하는 중…';
   call({action:'preview',id:curId}).then(({ok,d})=>{
-    if(!ok) return alert(d.error||'미리보기를 열 수 없습니다.');
-    const w=window.open('','_blank');
-    if(!w) return alert('팝업이 차단되었습니다. 허용 후 다시 시도해 주세요.');
-    w.document.open(); w.document.write(d.html); w.document.close();
-  }).catch(()=>alert('네트워크 오류가 발생했습니다.'));
+    if(!ok){ $('rmsg').className='msg bad'; $('rmsg').textContent=d.error||'미리보기를 열 수 없습니다.'; return; }
+    const f=$('pvFrame');
+    f.removeAttribute('src');
+    f.srcdoc = d.html.replace('<head>',
+      '<head><base href="'+SITE_BASE+'">');
+    $('pvUrl').textContent = d.path + ' (수정안 미리보기)';
+    $('rmsg').className='msg ok';
+    $('rmsg').textContent='위 미리보기가 수정안입니다. 원래 화면으로 돌아가려면 화면을 다시 선택해 주세요.';
+    document.querySelector('.pv').scrollIntoView({behavior:'smooth',block:'center'});
+  }).catch(()=>{$('rmsg').className='msg bad';$('rmsg').textContent='네트워크 오류가 발생했습니다.';});
 }
 function deploy(){
   if(!curId) return;
@@ -245,6 +298,7 @@ function deploy(){
     $('rmsg').className='msg ok';
     $('rmsg').textContent='반영되었습니다. 사이트에 보이기까지 1~2분 걸립니다.';
     curId=null; $('result').classList.add('hide'); $('req').value=''; loadHist();
+    setTimeout(loadPrev, 90000);
   }).catch(()=>{$('rmsg').className='msg bad';$('rmsg').textContent='네트워크 오류가 발생했습니다.';});
 }
 function discard(){ curId=null; $('result').classList.add('hide'); $('dmsg').textContent=''; }
@@ -278,6 +332,26 @@ function revert(id){
 }
 sync();
 </script>
-<script src="assets/lite.js" defer></script>
+<script src="assets/lite.js" defer>
+/* ── 화면 미리보기 ── */
+const SITE_BASE = location.href.replace(/[^/]*$/, '');
+function prevUrl(){
+  const p = $('path').value || 'index.html';
+  return SITE_BASE + p + '?preview=1&t=' + Date.now();
+}
+function loadPrev(){
+  const p = $('path').value || 'index.html';
+  $('pvUrl').textContent = p;
+  $('pvFrame').src = prevUrl();
+}
+function setW(btn, w){
+  document.querySelectorAll('.pv-dev button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('pvFrame').style.width = w + 'px';
+}
+function openPrev(){
+  window.open(prevUrl(), '_blank', 'noopener');
+}
+</script>
 </body>
 </html>
