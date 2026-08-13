@@ -95,6 +95,19 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
     .note{font-size:12px;padding:12px 14px}
     .links{gap:14px;font-size:12px}
   }
+
+  .selfbox{margin-top:6px}
+  .selfbox input{width:100%;padding:14px 15px;margin-bottom:9px;border-radius:14px;
+    font-family:inherit;font-size:14px;color:var(--ink);
+    border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.85)}
+  .selfbox input:focus{outline:2px solid #E95073;outline-offset:2px;background:#fff}
+  .li-btn{width:100%;padding:15px 0;border:0;border-radius:999px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:700;letter-spacing:1px;color:#fff;
+    background:linear-gradient(135deg,#E95073,#D82558);
+    box-shadow:0 10px 24px rgba(216,37,88,.3)}
+  .li-msg{font-size:12.5px;color:#D82558;margin-top:10px;min-height:17px;line-height:1.75}
+  .or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;color:#a5a5ad;font-size:12px}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:rgba(0,0,0,.09)}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -121,6 +134,15 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <button class="btn" type="submit">LOGIN</button>
     </form>
     <div id="lgMsg" style="font-size:12px;color:#D82558;margin-top:10px;min-height:16px"></div>
+    <div class="selfbox">
+      <input id="liEmail" type="email" placeholder="이메일" autocomplete="email"
+        onkeydown="if(event.key==='Enter')document.getElementById('liPw').focus()">
+      <input id="liPw" type="password" placeholder="비밀번호" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="li-btn" onclick="doLogin()">LOGIN — 로그인</button>
+      <div class="li-msg" id="liMsg"></div>
+    </div>
+    <div class="or"><span>또는</span></div>
     <div class="sso">
       <div class="sso-t">SNS 계정으로 간편하게</div>
       <div class="sso-b">
@@ -152,7 +174,7 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <a href="#" onclick="toggleReset('pw');return false;">비밀번호 재설정</a>
       <a href="cart.html">장바구니</a>
     </div>
-    <div class="note">안전한 거래를 위해 로그인과 결제는 <b>공식몰</b>에서 진행됩니다.<br><b>LOGIN</b>을 누르시면 공식몰 로그인 화면으로 이동합니다.</div>
+    <div class="note">이 사이트 계정으로 로그인하시면 주문 내역과 적립금을 확인하실 수 있습니다.<br><b>카드 결제</b>는 안전을 위해 공식몰에서 진행됩니다.</div>
     <a class="home" href="index.html">HOME</a>
   </div>
 </div>
@@ -258,6 +280,45 @@ document.addEventListener('click', e => {
   document.body.appendChild(r); setTimeout(()=>r.remove(), 800);
 });
 </script>
-<script src="assets/lite.js" defer></script>
+<script src="assets/lite.js" defer>
+function doLogin(){
+  var em=document.getElementById('liEmail').value.trim();
+  var pw=document.getElementById('liPw').value;
+  var m=document.getElementById('liMsg');
+  if(!em||!pw){ m.textContent='이메일과 비밀번호를 입력해 주세요.'; return; }
+  m.style.color='#797979'; m.textContent='로그인 중…';
+  var base=(typeof SB_URL!=='undefined')?SB_URL:SB;
+  var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
+  fetch(base+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:key,'Content-Type':'application/json'},
+    body:JSON.stringify({email:em,password:pw})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.access_token){
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:d.access_token,u:em.split('@')[0]}));}catch(e){}
+      m.style.color='#2AA060'; m.textContent='로그인되었습니다. 이동합니다…';
+      /* 운영자면 관리자 홈, 아니면 마이페이지 */
+      fetch(base+'/rest/v1/admins?select=email',
+        {headers:{apikey:key,Authorization:'Bearer '+d.access_token}})
+      .then(function(r){return r.ok?r.json():[];})
+      .then(function(a){
+        location.href=(Array.isArray(a)&&a.length)?'console.html':'mypage.html';
+      }).catch(function(){ location.href='mypage.html'; });
+    } else {
+      m.style.color='#D82558';
+      m.textContent = (d.error_description||'').indexOf('confirm')>-1
+        ? '이메일 인증을 먼저 완료해 주세요.'
+        : '이메일 또는 비밀번호가 올바르지 않습니다.';
+    }
+  }).catch(function(){ m.style.color='#D82558'; m.textContent='네트워크 오류가 발생했습니다.'; });
+}
+/* 이미 로그인되어 있으면 안내 */
+(function(){
+  var t=null; try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)t=s.t;}catch(e){}
+  if(!t) return;
+  var m=document.getElementById('liMsg');
+  if(m){ m.style.color='#2AA060'; m.textContent='이미 로그인되어 있습니다.'; }
+})();
+</script>
 </body>
 </html>
