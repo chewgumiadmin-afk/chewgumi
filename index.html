@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v81 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v82 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1216,23 +1216,15 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <section style="padding-bottom:40px;">
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">Travel-it Film</h2></div>
-    <div class="film" id="filmBox">
-          <video id="filmVideo" playsinline muted loop preload="metadata"
-            poster="assets/hero-2.jpg" aria-label="ChewGumi Travel-it 홍보영상">
-            <source src="assets/videos/travel-it.mp4" type="video/mp4">
-          </video>
+    <div class="film" id="filmBox" data-drive="1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv">
+          <img class="film-poster" src="assets/hero-3.jpg" alt="" aria-hidden="true">
           <div class="film-cap">
             <div class="en">TRAVEL-IT</div>
             <div class="kr">여행의 모든 순간을 가볍게</div>
           </div>
-          <button class="film-play" id="filmPlay" type="button" aria-label="영상 재생">
+          <button class="film-play" type="button" aria-label="영상 재생">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
           </button>
-          <div class="film-ctl" id="filmCtl" hidden>
-            <button type="button" id="filmToggle" aria-label="일시정지">❚❚</button>
-            <button type="button" id="filmSound" aria-label="소리 켜기">🔇</button>
-            <button type="button" id="filmFull" aria-label="전체화면">⛶</button>
-          </div>
         </div>
     <p class="video-note">▶ 버튼을 누르면 재생됩니다.</p>
   </div>
@@ -1372,7 +1364,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v81 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v82 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3005,67 +2997,7 @@ section{padding:44px 0}
 .lite .film video{display:none}
 </style>
 <script>
-/* Travel-it 영상 — mp4 우선, 없으면 드라이브로 전환 */
-(function(){
-  var DRIVE='1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv';
-  var box=document.getElementById('filmBox');
-  var v=document.getElementById('filmVideo');
-  if(!box||!v) return;
 
-  var fellBack=false;
-  function fallback(){
-    if(fellBack) return; fellBack=true;
-    box.innerHTML='<iframe src="https://drive.google.com/file/d/'+DRIVE
-      +'/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy"'
-      +' title="ChewGumi Travel-it 홍보영상"></iframe>';
-  }
-  /* mp4가 없으면 드라이브로 */
-  v.addEventListener('error',fallback);
-  v.querySelector('source').addEventListener('error',fallback);
-  setTimeout(function(){
-    if(!fellBack && v.readyState===0) fallback();
-  },3500);
-
-  var play=document.getElementById('filmPlay');
-  var ctl=document.getElementById('filmCtl');
-  var tog=document.getElementById('filmToggle');
-  var snd=document.getElementById('filmSound');
-  var full=document.getElementById('filmFull');
-
-  function start(){
-    v.play().then(function(){
-      box.classList.add('playing');
-      if(ctl) ctl.hidden=false;
-    }).catch(fallback);
-  }
-  if(play) play.onclick=start;
-  box.addEventListener('click',function(e){
-    if(e.target===box||e.target===v){
-      if(v.paused) start(); else { v.pause(); box.classList.remove('playing'); }
-    }
-  });
-  if(tog) tog.onclick=function(){
-    if(v.paused){ start(); tog.textContent='❚❚'; }
-    else { v.pause(); box.classList.remove('playing'); tog.textContent='▶'; }
-  };
-  if(snd) snd.onclick=function(){
-    v.muted=!v.muted; snd.textContent=v.muted?'🔇':'🔊';
-    snd.setAttribute('aria-label',v.muted?'소리 켜기':'소리 끄기');
-  };
-  if(full) full.onclick=function(){
-    if(v.requestFullscreen) v.requestFullscreen();
-    else if(v.webkitEnterFullscreen) v.webkitEnterFullscreen();
-  };
-
-  /* 화면에서 벗어나면 정지 */
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if(!e.isIntersecting && !v.paused){ v.pause(); box.classList.remove('playing'); }
-      });
-    },{threshold:.25}).observe(box);
-  }
-})();
 </script>
 
 <style>
@@ -3732,6 +3664,74 @@ body.at-foot .kko-fab{
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',load);
   else load();
+})();
+</script>
+
+<style>
+/* ═══ 영상 — 포스터 + 유리 재생버튼 ═══ */
+.film{position:relative;width:100%;aspect-ratio:16/9;max-height:74vh;
+  overflow:hidden;border-radius:22px;background:#120810;cursor:pointer}
+.film-poster{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;transition:transform .8s var(--ease,cubic-bezier(.32,.72,0,1))}
+.film:hover .film-poster{transform:scale(1.03)}
+.film iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:5}
+.film::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,0) 42%,rgba(0,0,0,.45))}
+.film.playing::after,.film.playing .film-cap,
+.film.playing .film-play,.film.playing .film-poster{display:none}
+
+.film-cap{position:absolute;left:6%;bottom:9%;z-index:2;color:#fff;
+  text-shadow:0 1px 16px rgba(0,0,0,.4)}
+.film-cap .en{font-family:'Poppins',sans-serif;font-size:clamp(20px,3vw,38px);
+  font-weight:800;letter-spacing:2px}
+.film-cap .kr{margin-top:7px;font-size:clamp(12px,1.5vw,15px);opacity:.94}
+
+.film-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;
+  width:78px;height:78px;border-radius:50%;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.5);
+  background:linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,.16));
+  backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);
+  box-shadow:0 12px 36px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.7);
+  transition:transform .35s var(--ease,cubic-bezier(.32,.72,0,1))}
+.film-play svg{width:30px;height:30px;fill:#fff;margin-left:4px}
+.film-play::before{content:"";position:absolute;inset:-11px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.38);animation:filmPulse 2.6s ease-out infinite}
+@keyframes filmPulse{0%{transform:scale(.92);opacity:.75}
+  70%{transform:scale(1.24);opacity:0}100%{opacity:0}}
+.film:hover .film-play{transform:translate(-50%,-50%) scale(1.07)}
+.film-play:active{transform:translate(-50%,-50%) scale(.93)}
+
+@media(max-width:860px){
+  .film{aspect-ratio:16/10;border-radius:18px}
+  .film-play{width:64px;height:64px}
+  .film-play svg{width:25px;height:25px}
+  .film-cap{left:20px;bottom:18px}
+}
+@media(max-width:520px){ .film{aspect-ratio:4/3} }
+@media (prefers-reduced-motion:reduce){ .film-play::before{animation:none} }
+.lite .film-play::before{animation:none}
+</style>
+<script>
+/* 눌렀을 때만 드라이브 영상을 불러온다 */
+(function(){
+  var box=document.getElementById('filmBox');
+  if(!box) return;
+  var id=box.getAttribute('data-drive');
+  if(!id) return;
+  function play(){
+    if(box.classList.contains('playing')) return;
+    var f=document.createElement('iframe');
+    f.src='https://drive.google.com/file/d/'+id+'/preview?autoplay=1';
+    f.allow='autoplay; fullscreen';
+    f.setAttribute('allowfullscreen','');
+    f.title='ChewGumi Travel-it 홍보영상';
+    box.appendChild(f);
+    box.classList.add('playing');
+  }
+  box.addEventListener('click',play);
+  var b=box.querySelector('.film-play');
+  if(b) b.addEventListener('click',function(e){ e.stopPropagation(); play(); });
 })();
 </script>
 </body>
