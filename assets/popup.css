@@ -1,0 +1,153 @@
+/*! ChewGumi Popup Typography v1 · MedIT
+ *  팝업·모달·서랍의 글자 크기를 화면 폭에 맞춰 자동 조정합니다.
+ *  clamp(최소, 화면비례, 최대) — 작은 폰에서도 읽히고 태블릿에서 과하지 않게.
+ */
+
+:root{
+  /* 팝업 전용 글자 단계 — 화면 폭에 따라 부드럽게 변함 */
+  --pop-title:  clamp(16px, 1.1vw + 12px, 21px);
+  --pop-sub:    clamp(12.5px, .5vw + 10.5px, 14.5px);
+  --pop-body:   clamp(13px, .6vw + 10.8px, 15px);
+  --pop-small:  clamp(11.5px, .35vw + 10.2px, 13px);
+  --pop-label:  clamp(11.5px, .3vw + 10.4px, 12.5px);
+  --pop-btn:    clamp(13.5px, .5vw + 11.6px, 15px);
+  --pop-pad:    clamp(18px, 3vw, 28px);
+  --pop-radius: clamp(18px, 2vw, 24px);
+}
+
+/* ══ 공통 팝업 컨테이너 ══ */
+.popup, .detail, .pdetail, .uf-pop,
+.mo-b, .kko-box, .cgbot-win, .modal, .layer, .sheet{
+  font-size: var(--pop-body);
+  line-height: 1.75;
+}
+
+/* 제목 */
+.popup h2, .popup h3, .popup .popup-t,
+.detail h2, .detail h3, .pdetail h2, .pdetail h3,
+.mo-b h3, .kko-box h3, .uf-pop h3, .modal h3{
+  font-size: var(--pop-title) !important;
+  font-weight: 800;
+  letter-spacing: -.025em;
+  line-height: 1.35;
+}
+
+/* 부제 · 설명 */
+.popup .sub, .popup .desc, .detail .sub, .detail .desc,
+.mo-b .sub, .kko-box .who, .pdetail .sub{
+  font-size: var(--pop-sub) !important;
+  line-height: 1.7;
+}
+
+/* 본문 */
+.popup p, .popup li, .popup td,
+.detail p, .detail li, .pdetail p,
+.mo-b p, .uf-pop p{
+  font-size: var(--pop-body);
+  line-height: 1.85;
+  word-break: keep-all;
+}
+
+/* 작은 글씨 · 안내 */
+.popup .hint, .popup .msg, .popup small,
+.detail .hint, .detail .msg,
+.mo-b .msg, .kko-box .hint{
+  font-size: var(--pop-small) !important;
+  line-height: 1.7;
+}
+
+/* 라벨 */
+.popup label, .detail label, .mo-b label, .modal label{
+  font-size: var(--pop-label) !important;
+  font-weight: 600;
+}
+
+/* 입력칸 — 확대 방지를 위해 iOS에서 16px 이상 유지 */
+.popup input, .popup select, .popup textarea,
+.detail input, .detail select, .detail textarea,
+.mo-b input, .mo-b select, .mo-b textarea,
+.kko-box textarea, .modal input, .modal textarea{
+  font-size: max(16px, var(--pop-body)) !important;
+  line-height: 1.6;
+}
+
+/* 버튼 */
+.popup .btn, .popup button, .popup-foot button,
+.detail .btn, .detail button,
+.mo-b .btn, .kko-box .kko-act button, .kko-act a,
+.modal .btn{
+  font-size: var(--pop-btn) !important;
+  font-weight: 700;
+}
+.popup .mini, .detail .mini, .mo-b .mini{
+  font-size: var(--pop-small) !important;
+}
+
+/* 여백 · 모서리도 화면에 맞게 */
+.popup, .detail, .pdetail, .mo-b, .kko-box, .uf-pop{
+  border-radius: var(--pop-radius);
+}
+.popup > div, .mo-b, .kko-box{ padding: var(--pop-pad); }
+
+/* ══ 화면별 세부 조정 ══ */
+
+/* 태블릿 */
+@media (min-width:641px) and (max-width:1024px){
+  .popup, .detail, .pdetail, .mo-b, .kko-box{
+    max-width: min(560px, 88vw) !important;
+  }
+}
+
+/* 모바일 */
+@media (max-width:640px){
+  :root{ --pop-pad: 18px; }
+  .popup, .detail, .pdetail, .mo-b, .kko-box, .uf-pop, .modal{
+    max-width: 100% !important;
+    width: calc(100% - 24px) !important;
+    max-height: 86vh !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* 버튼은 손가락에 맞게 */
+  .popup .btn, .detail .btn, .mo-b .btn, .kko-act button, .kko-act a{
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* 팝업 안 격자는 한 줄로 */
+  .popup .g2, .mo-b .g2, .popup .fg, .detail .fg{
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 아주 작은 화면 */
+@media (max-width:360px){
+  :root{
+    --pop-title: 16px;
+    --pop-body: 13px;
+    --pop-pad: 16px;
+  }
+}
+
+/* 가로 모드 — 세로 공간이 좁을 때 */
+@media (max-height:520px) and (orientation:landscape){
+  .popup, .detail, .mo-b, .kko-box{
+    max-height: 92vh !important;
+    overflow-y: auto;
+  }
+  :root{ --pop-pad: 14px; --pop-title: 16px; }
+}
+
+/* 큰 화면에서 과하게 커지지 않도록 */
+@media (min-width:1400px){
+  :root{
+    --pop-title: 21px;
+    --pop-body: 15px;
+  }
+}
+
+/* 텍스트 크기 조절을 켠 사용자 존중 */
+@media (prefers-reduced-motion:reduce){
+  .popup, .detail, .mo-b{ transition:none !important }
+}
