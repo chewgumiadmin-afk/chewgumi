@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v77 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v78 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -148,13 +148,12 @@
 }
 
 /* 디자이너 배너 반영 */
-.hero { aspect-ratio:1568/756 !important; max-height:none !important; min-height:0 !important;
-  max-width:1160px !important; background:#FFE4E6 !important; }
-@media (max-width:640px){ .hero { aspect-ratio:1568/756 !important; } }
-.hero .slide { background-color:#FFE4E6 !important; background-size:cover; background-position:center; display:block; }
-.hero .slide-4 { background-image:url('assets/hero-4.jpg'); }
-.hero::after { display:none; }
-@media (max-width:640px) { .hero { aspect-ratio:1568/756 !important; } }
+
+@media (max-width:640px){  }
+
+
+
+@media (max-width:640px) {  }
 
 /* 하단 배너 3초 자동 전환 */
 (function(){
@@ -349,17 +348,13 @@ header:not(.solid) .gnb > li:hover > a { background:rgba(255,255,255,.22);
 .m-nav a span { display:block; font-size:16px; margin-bottom:2px; }
 
 /* ---------- 히어로 ---------- */
-.hero { position:relative; overflow:hidden; max-width:1360px; margin:18px auto 0; width:calc(100% - 40px);
-  border-radius:28px; aspect-ratio:21/8; max-height:430px; min-height:280px;
-  background:#121314; box-shadow:0 18px 48px rgba(0,0,0,.14); }
-.hero .slide { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .8s ease;
-  background:#121314 center/cover no-repeat; }
-.hero .slide.on { opacity:1; pointer-events:auto; }
-.hero .slide-1 { background-image:url('assets/hero-1.jpg'); }
-.hero .slide-2 { background-image:url('assets/hero-3.jpg'); }
-.hero .slide-2 .slide-prd { position:absolute; right:6%; bottom:0; height:92%; width:auto; object-fit:contain;
-  filter:drop-shadow(0 18px 34px rgba(120,10,40,.28)); }
-.hero .slide-3 { background-image:url('assets/hero-2.jpg'); }
+
+
+
+
+
+
+
 .hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:5; width:40px; height:40px; border-radius:50%;
   display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; cursor:pointer;
   background:rgba(255,255,255,.16); backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%);
@@ -372,9 +367,9 @@ header:not(.solid) .gnb > li:hover > a { background:rgba(255,255,255,.22);
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.25); }
 .hero-dots button { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.45); transition:all .3s ease; }
 .hero-dots button.on { background:#fff; width:20px; border-radius:999px; }
-@media (max-width:900px){ .hero-arrow { display:none; } .hero .slide-2 .slide-prd { right:-4%; height:64%; } }
-@media (max-width:900px){ .hero { width:calc(100% - 28px); margin:12px auto 0; min-height:0; max-height:none; border-radius:22px; } }
-.hero::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 40%, rgba(0,0,0,.28)); }
+
+@media (max-width:900px){  }
+
 .hero-txt { z-index:2; }
 .hero-txt { position:absolute; left:6%; bottom:10%; color:#fff; text-shadow:0 1px 12px rgba(0,0,0,.25); }
 .hero-txt .en { font-size:clamp(22px,3.2vw,40px); font-weight:700; letter-spacing:3px; text-transform:uppercase; line-height:1.15; }
@@ -660,11 +655,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 }
 @media (prefers-reduced-motion:reduce){ .comm-dot { animation:none; } }
 /* 프리미엄 세리프(Poppins): 제목·타이틀 계열 */
-.sec-title, .hero h1, .bl-title, .comm-card h3, .film-cap .en, 
-
-/* 상세 레이어 버튼 정렬·높이 통일 */
-.detail .d-acts { display:flex !important; flex-wrap:wrap !important; align-items:stretch !important;
-  gap:10px !important; }
+.sec-title, 
 .detail .d-acts a { flex:1 1 0 !important; min-width:0 !important; width:auto !important;
   box-sizing:border-box; min-height:50px; display:flex !important; align-items:center;
   justify-content:center; padding:0 10px !important; line-height:1.2; margin:0 !important;
@@ -820,12 +811,10 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
 /* 히어로 전환을 부드럽게 (페이드 + 미세 줌) */
 .slide{opacity:0;transform:scale(1.035);
   transition:opacity 1s cubic-bezier(.4,0,.2,1),transform 1.4s cubic-bezier(.4,0,.2,1)}
-.slide.on{opacity:1;transform:scale(1)}
+
 /* 이미지 선명도 */
 .slide,.bb-slide img,.tri-img img{image-rendering:-webkit-optimize-contrast}
-@media(prefers-reduced-motion:reduce){
-  .slide,.bb-slide{transition:opacity .3s;transform:none !important}
-}
+
 
 .cgbot-order{margin:8px 0;padding:14px 15px;border-radius:14px;
   background:rgba(255,233,35,.16);border:1px solid rgba(216,37,88,.18)}
@@ -978,14 +967,19 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 </aside>
 
 <!-- 히어로 (실제 메인 배너) -->
-<div class="hero" id="heroSlider">
-  <a class="slide slide-1 on" href="#all" onclick="filterLine('all')" aria-label="트리플잇 신제품 보기"></a>
-      <a class="slide slide-2" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기"></a>
-      <a class="slide slide-3" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기"></a>
-      <a class="slide slide-4" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기"></a>
-  <button class="hero-arrow prev" onclick="heroGo(-1)" aria-label="이전 배너">‹</button>
-  <button class="hero-arrow next" onclick="heroGo(1)" aria-label="다음 배너">›</button>
-  <div class="hero-dots" id="heroDots"></div>
+<div class="hero" id="heroSlider" role="region" aria-label="브랜드 배너">
+      <div class="h-track" id="hTrack">
+        <a class="hslide" href="#all" onclick="filterLine('all')"
+           style="background-image:url('assets/hero-1.jpg')" aria-label="트리플잇 보기"></a>
+        <a class="hslide" href="#all" onclick="filterLine('travel')"
+           style="background-image:url('assets/hero-3.jpg')" aria-label="트래블잇 보기"></a>
+        <a class="hslide" href="#all" onclick="filterLine('doit')"
+           style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 보기"></a>
+        <a class="hslide" href="#all" onclick="filterLine('doit')"
+           style="background-image:url('assets/hero-4.jpg')" aria-label="듀잇 보기"></a>
+      </div>
+      <div class="h-dots" id="hDots" role="tablist" aria-label="배너 선택"></div>
+    </div>
 </div>
 
 <!-- NEW : 트리플잇 3종 (출시 예정) -->
@@ -1220,9 +1214,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 </section>
 
 <!-- 풀 배너 (실제 프로모션 배너, 실패 시 드라이브 라이프스타일 컷) -->
-<div class="full-banner" id="about">
-      <img src="assets/banner-dewit.jpg" alt="Dew-it 한 알로 입안을 촉촉하게" loading="lazy" decoding="async">
-    </div>
+<div id="about"></div>
   </div>
 </div>
 
@@ -1383,7 +1375,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v77 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v78 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2512,7 +2504,7 @@ setHead();
   .ripple{width:min(58vw,220px) !important;height:auto !important}
   .wrap{padding-left:16px !important;padding-right:16px !important}
 
-  .hero{border-radius:18px}
+  
   .hero-arrow{width:34px;height:34px;font-size:18px}
 
   .rail,.video-grid,.tabs,.chips{-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -3217,156 +3209,9 @@ section{padding:44px 0}
 <script src="assets/pwa.js" defer></script>
 
 <style>
-/* ═══ 히어로 — 밀려서 흐르는 방식 ═══ */
-.hero{position:relative;overflow:hidden;touch-action:pan-y}
-.hero .slide{
-  position:absolute !important;top:0;left:0;
-  width:100%;height:100%;
-  opacity:1 !important;
-  transform:none !important;
-  will-change:transform;
-  backface-visibility:hidden}
-/* 트랙 방식으로 전환되면 각 슬라이드를 가로로 배치 */
-.hero.track .slide{
-  left:auto;position:relative !important;flex:0 0 100%}
-.hero .h-track{
-  display:flex;width:100%;height:100%;
-  transition:transform .62s cubic-bezier(.22,.85,.28,1);
-  will-change:transform}
-.hero .h-track.nodrag{transition:none}
-
-/* 배경이 살짝 따라오는 시차 효과 */
-.hero.track .slide{background-position:center;background-size:cover}
-
-.hero-arrow{z-index:6}
-.hero-dots{z-index:6}
-@media (prefers-reduced-motion:reduce){
-  .hero .h-track{transition:none}
-}
 </style>
 <script>
-/* ═══ 히어로 슬라이드 (드래그·스와이프) ═══ */
-(function(){
-  var hero=document.getElementById('heroSlider');
-  if(!hero) return;
-  var slides=[].slice.call(hero.querySelectorAll('.slide'));
-  if(slides.length<2) return;
 
-  /* 슬라이드를 트랙에 담는다 */
-  var track=document.createElement('div');
-  track.className='h-track';
-  slides.forEach(function(s){ track.appendChild(s); });
-  hero.insertBefore(track, hero.firstChild);
-  hero.classList.add('track');
-
-  var dots=document.getElementById('heroDots');
-  var ds=dots?[].slice.call(dots.children):[];
-  var now=0, timer=null, W=0;
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function measure(){ W=hero.clientWidth||1; }
-  measure();
-  window.addEventListener('resize',function(){ measure(); place(false); },{passive:true});
-
-  function place(anim){
-    track.classList.toggle('nodrag',!anim);
-    track.style.transform='translate3d('+(-now*W)+'px,0,0)';
-    slides.forEach(function(s,k){ s.classList.toggle('on',k===now); });
-    ds.forEach(function(d,k){ d.classList.toggle('on',k===now); });
-  }
-  function go(i,anim){
-    now=(i+slides.length)%slides.length;
-    place(anim!==false);
-  }
-  window.heroSlide=go;
-
-  /* 화살표 */
-  var prev=hero.querySelector('.hero-arrow.prev');
-  var next=hero.querySelector('.hero-arrow.next');
-  if(prev) prev.onclick=function(e){ e.preventDefault(); stop(); go(now-1); start(); };
-  if(next) next.onclick=function(e){ e.preventDefault(); stop(); go(now+1); start(); };
-  ds.forEach(function(d,i){
-    d.onclick=function(e){ e.preventDefault(); stop(); go(i); start(); };
-  });
-
-  /* 자동 흐름 */
-  function start(){ if(!timer && !reduce) timer=setInterval(function(){ go(now+1); },4600); }
-  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
-  hero.addEventListener('mouseenter',stop);
-  hero.addEventListener('mouseleave',start);
-
-  /* 손가락·마우스로 끌기 */
-  var sx=0, sy=0, dx=0, dragging=false, decided=false, horiz=false;
-  function down(x,y){
-    stop(); dragging=true; decided=false; horiz=false;
-    sx=x; sy=y; dx=0;
-    track.classList.add('nodrag');
-  }
-  function move(x,y,ev){
-    if(!dragging) return;
-    var mx=x-sx, my=y-sy;
-    if(!decided){
-      if(Math.abs(mx)<6 && Math.abs(my)<6) return;
-      decided=true; horiz=Math.abs(mx)>Math.abs(my);
-      if(!horiz){ dragging=false; track.classList.remove('nodrag'); return; }
-    }
-    if(!horiz) return;
-    if(ev && ev.cancelable) ev.preventDefault();
-    dx=mx;
-    /* 양 끝에서는 저항 */
-    var over=(now===0&&dx>0)||(now===slides.length-1&&dx<0);
-    var d=over?dx*0.35:dx;
-    track.style.transform='translate3d('+(-now*W+d)+'px,0,0)';
-  }
-  function up(){
-    if(!dragging) return;
-    dragging=false;
-    track.classList.remove('nodrag');
-    if(horiz && Math.abs(dx)>W*0.14){ go(dx<0?now+1:now-1); }
-    else place(true);
-    dx=0; start();
-  }
-
-  hero.addEventListener('touchstart',function(e){
-    down(e.touches[0].clientX,e.touches[0].clientY);
-  },{passive:true});
-  hero.addEventListener('touchmove',function(e){
-    move(e.touches[0].clientX,e.touches[0].clientY,e);
-  },{passive:false});
-  hero.addEventListener('touchend',up,{passive:true});
-  hero.addEventListener('touchcancel',up,{passive:true});
-
-  hero.addEventListener('mousedown',function(e){
-    if(e.button!==0) return;
-    e.preventDefault(); down(e.clientX,e.clientY);
-  });
-  window.addEventListener('mousemove',function(e){ move(e.clientX,e.clientY,null); });
-  window.addEventListener('mouseup',up);
-
-  /* 끌었으면 클릭 취소 */
-  slides.forEach(function(s){
-    s.addEventListener('click',function(e){
-      if(Math.abs(dx)>8) e.preventDefault();
-    });
-  });
-
-  /* 키보드 */
-  hero.setAttribute('tabindex','0');
-  hero.addEventListener('keydown',function(e){
-    if(e.key==='ArrowLeft'){ stop(); go(now-1); start(); }
-    if(e.key==='ArrowRight'){ stop(); go(now+1); start(); }
-  });
-
-  /* 화면 밖이면 멈춤 */
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      es.forEach(function(e){ e.isIntersecting?start():stop(); });
-    },{threshold:.2}).observe(hero);
-  }
-
-  place(false);
-  start();
-})();
 </script>
 
 <style>
@@ -3532,39 +3377,166 @@ input:focus,select:focus,textarea:focus{
   .qbar a{flex:0 0 auto;padding:14px 15px 12px}
 }
 
-/* ═══ 히어로 — 화면 크기별 비율 ═══ */
-.hero{
-  width:100%;max-width:1160px;margin:0 auto;
-  aspect-ratio:1568/756;
-  max-height:min(72vh,560px);
-  border-radius:22px;overflow:hidden}
-.hero .h-track,.hero .slide{height:100%}
-.hero .slide{
-  background-size:cover;background-position:center;
-  background-repeat:no-repeat}
-
-/* 태블릿 — 조금 더 세로를 준다 */
-@media(max-width:1000px){
-  .hero{border-radius:18px;aspect-ratio:16/8;max-height:none}
-}
-/* 휴대폰 — 배너 인물과 로고가 다 보이도록 */
-@media(max-width:640px){
-  .hero{border-radius:0;aspect-ratio:16/9;
-    margin-left:0;margin-right:0;max-width:none}
-  .hero .slide{background-position:center right}
-  .hero-arrow{display:none}
-  .hero-dots{bottom:10px}
-  .hero-dots span{width:6px;height:6px}
-  .hero-dots span.on{width:18px}
-}
-@media(max-width:420px){
-  .hero{aspect-ratio:4/3}
-  .hero .slide{background-position:center}
-}
-/* 가로로 눕혔을 때 */
-@media(max-height:520px) and (orientation:landscape){
-  .hero{aspect-ratio:auto;height:72vh}
-}
 </style>
+
+<style>
+/* ═══════════ 히어로 배너 ═══════════ */
+.hero{
+  position:relative;width:100%;max-width:1160px;margin:0 auto;
+  aspect-ratio:1568/756;max-height:min(70vh,540px);
+  overflow:hidden;border-radius:22px;background:#FFE4E6;
+  touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.h-track{
+  display:flex;height:100%;width:100%;
+  transition:transform .65s cubic-bezier(.32,.72,0,1);
+  will-change:transform}
+.h-track.nodrag{transition:none}
+.hslide{
+  flex:0 0 100%;height:100%;display:block;text-decoration:none;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  background-color:#FFE4E6}
+
+/* 점 표시 */
+.h-dots{
+  position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
+  z-index:4;display:flex;gap:7px;padding:7px 12px;border-radius:999px;
+  background:rgba(255,255,255,.42);
+  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.h-dots button{
+  width:7px;height:7px;padding:0;border:0;border-radius:99px;cursor:pointer;
+  background:rgba(0,0,0,.22);
+  transition:width .42s cubic-bezier(.32,.72,0,1),background .3s}
+.h-dots button.on{width:22px;background:var(--main)}
+
+@media(max-width:1000px){ .hero{border-radius:18px;aspect-ratio:16/8;max-height:none} }
+@media(max-width:640px){
+  .hero{border-radius:0;max-width:none;aspect-ratio:16/9}
+  .h-dots{bottom:11px;padding:6px 10px;gap:6px}
+  .h-dots button{width:6px;height:6px}
+  .h-dots button.on{width:18px}
+}
+@media(max-width:420px){ .hero{aspect-ratio:4/3} }
+@media(max-height:520px) and (orientation:landscape){ .hero{aspect-ratio:auto;height:70vh} }
+@media (prefers-reduced-motion:reduce){ .h-track{transition:none} }
+
+/* ═══════════ 상품 탭 ═══════════ */
+.qbar{max-width:1160px;margin:0 auto;padding:0 20px}
+.qbar-in{
+  display:flex;gap:0;
+  border-bottom:.5px solid rgba(0,0,0,.09);
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.qbar-in::-webkit-scrollbar{display:none}
+.qbar a{
+  position:relative;flex:1 1 0;min-width:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:clamp(13px,1.8vw,20px) clamp(6px,1.4vw,16px) clamp(11px,1.6vw,17px);
+  text-decoration:none;text-align:center;
+  transition:color .3s cubic-bezier(.32,.72,0,1)}
+.qbar a b{
+  font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(11px,2.6vw,14.5px);color:#1a1a1a;line-height:1.2;
+  white-space:nowrap;transition:color .3s}
+.qbar a span{
+  font-size:clamp(9.5px,2vw,12px);color:#8a8085;letter-spacing:-.02em;
+  line-height:1.25;white-space:nowrap;transition:color .3s}
+.qbar a::after{
+  content:"";position:absolute;left:50%;bottom:-.5px;width:0;height:2px;
+  border-radius:2px;transform:translateX(-50%);
+  background:linear-gradient(90deg,var(--main2),var(--main));
+  transition:width .42s cubic-bezier(.32,.72,0,1)}
+.qbar a:hover::after,.qbar a:focus-visible::after{width:70%}
+.qbar a:hover b{color:var(--main)}
+.qbar a:not(:last-child)::before{
+  content:"";position:absolute;right:0;top:30%;height:40%;width:.5px;
+  background:rgba(0,0,0,.07)}
+@media(max-width:640px){ .qbar{padding:0 8px} }
+</style>
+<script>
+/* ═══ 히어로 슬라이드 ═══ */
+(function(){
+  var hero=document.getElementById('heroSlider');
+  var track=document.getElementById('hTrack');
+  var dotBox=document.getElementById('hDots');
+  if(!hero||!track) return;
+
+  var slides=[].slice.call(track.children);
+  if(slides.length<2){ if(dotBox) dotBox.style.display='none'; return; }
+
+  var now=0, timer=null, W=hero.clientWidth||1;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 점 만들기 */
+  dotBox.innerHTML='';
+  slides.forEach(function(_,i){
+    var b=document.createElement('button');
+    b.type='button'; b.setAttribute('role','tab');
+    b.setAttribute('aria-label',(i+1)+'번 배너');
+    b.onclick=function(){ stop(); go(i); start(); };
+    dotBox.appendChild(b);
+  });
+  var dots=[].slice.call(dotBox.children);
+
+  function measure(){ W=hero.clientWidth||1; }
+  function place(anim){
+    track.classList.toggle('nodrag',!anim);
+    track.style.transform='translate3d('+(-now*W)+'px,0,0)';
+    dots.forEach(function(d,k){
+      d.classList.toggle('on',k===now);
+      d.setAttribute('aria-selected',k===now?'true':'false');
+    });
+  }
+  function go(i,anim){ now=(i+slides.length)%slides.length; place(anim!==false); }
+  function start(){ if(!timer && !reduce) timer=setInterval(function(){ go(now+1); },4600); }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+
+  window.addEventListener('resize',function(){ measure(); place(false); },{passive:true});
+  hero.addEventListener('mouseenter',stop);
+  hero.addEventListener('mouseleave',start);
+
+  /* 스와이프 */
+  var sx=0,sy=0,dx=0,drag=false,decided=false,horiz=false;
+  function down(x,y){ stop(); drag=true; decided=false; horiz=false; sx=x; sy=y; dx=0;
+    track.classList.add('nodrag'); }
+  function move(x,y,ev){
+    if(!drag) return;
+    var mx=x-sx,my=y-sy;
+    if(!decided){
+      if(Math.abs(mx)<7&&Math.abs(my)<7) return;
+      decided=true; horiz=Math.abs(mx)>Math.abs(my);
+      if(!horiz){ drag=false; track.classList.remove('nodrag'); return; }
+    }
+    if(ev&&ev.cancelable) ev.preventDefault();
+    dx=mx;
+    var over=(now===0&&dx>0)||(now===slides.length-1&&dx<0);
+    track.style.transform='translate3d('+(-now*W+(over?dx*.32:dx))+'px,0,0)';
+  }
+  function up(){
+    if(!drag) return;
+    drag=false; track.classList.remove('nodrag');
+    if(horiz&&Math.abs(dx)>W*.13) go(dx<0?now+1:now-1); else place(true);
+    dx=0; start();
+  }
+  hero.addEventListener('touchstart',function(e){down(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  hero.addEventListener('touchmove',function(e){move(e.touches[0].clientX,e.touches[0].clientY,e);},{passive:false});
+  hero.addEventListener('touchend',up,{passive:true});
+  hero.addEventListener('mousedown',function(e){ if(e.button===0){e.preventDefault();down(e.clientX,e.clientY);} });
+  window.addEventListener('mousemove',function(e){ move(e.clientX,e.clientY,null); });
+  window.addEventListener('mouseup',up);
+  slides.forEach(function(s){ s.addEventListener('click',function(e){ if(Math.abs(dx)>8) e.preventDefault(); }); });
+
+  hero.setAttribute('tabindex','0');
+  hero.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'){stop();go(now-1);start();}
+    if(e.key==='ArrowRight'){stop();go(now+1);start();}
+  });
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting?start():stop(); });
+    },{threshold:.2}).observe(hero);
+  }
+  measure(); place(false); start();
+})();
+</script>
 </body>
 </html>
