@@ -2269,7 +2269,8 @@ setHead();
       el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
       return true;
     }
-    add('bot',p.name+'으로 준비했습니다. 확인하시고 진행해 주세요.');
+    var _m=p.name+'으로 준비했습니다. 확인하시고 진행해 주세요.';
+    add('bot',_m); if(window.cgbotSpeak) cgbotSpeak(_m);
     orderCard(p,1);
     return true;
   }
@@ -2314,6 +2315,7 @@ setHead();
       el('cgbotBtn').disabled=false;
       t.textContent=d.answer||'답변을 가져오지 못했습니다.';
       hist.push({role:'bot',text:t.textContent});
+      if(window.cgbotSpeak) cgbotSpeak(t.textContent);
       if(d.kakao) kakaoUrl=d.kakao;
       if(d.handoff) addKakao();
     }).catch(function(){
