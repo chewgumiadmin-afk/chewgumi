@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!-- ChewGumi QA Checklist v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>기능 테스트 | ChewGumi</title>
+<meta name="theme-color" content="#D82558">
+<link rel="stylesheet" href="assets/glass.css">
+<link rel="stylesheet" href="assets/ui.css">
+<link rel="stylesheet" href="assets/stable.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);
+  --ease:cubic-bezier(.32,.72,0,1)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding-bottom:calc(70px + env(safe-area-inset-bottom));
+  background:radial-gradient(760px 440px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit}button{font-family:inherit;cursor:pointer}
+.hd{position:sticky;top:0;z-index:50;padding:calc(15px + env(safe-area-inset-top)) 18px 12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.74));
+  backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
+  border-bottom:.5px solid rgba(0,0,0,.06)}
+.hd h1{font-family:'Poppins',sans-serif;font-size:19px;color:var(--main)}
+.hd .s{margin-top:2px;font-size:11px;letter-spacing:2.5px;color:var(--gray)}
+.hd .pg{margin-top:11px;height:6px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden}
+.hd .pg i{display:block;height:100%;border-radius:99px;width:0;
+  background:linear-gradient(90deg,var(--main2),var(--main));transition:width .5s var(--ease)}
+.hd .pgt{margin-top:6px;font-size:11.5px;color:var(--gray)}
+.wrap{max-width:620px;margin:0 auto;padding:14px 16px 0}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;height:38px;padding:0 14px;border-radius:999px;font-size:12.5px;
+  font-weight:700;white-space:nowrap;color:var(--gray);border:.5px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);transition:.3s var(--ease)}
+.tabs button.on{background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(216,37,88,.26)}
+.sect{margin:20px 4px 9px;font-size:11px;letter-spacing:2px;font-weight:700;color:var(--main)}
+.it{display:flex;gap:11px;align-items:flex-start;padding:13px 15px;margin-bottom:8px;
+  border-radius:16px;border:.5px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.62));
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 1px 2px rgba(0,0,0,.03),0 6px 18px rgba(0,0,0,.05),
+    inset 0 1px 0 rgba(255,255,255,.9);transition:opacity .3s}
+.it.ok{opacity:.5}
+.it.ng{border-color:rgba(192,57,92,.4);background:rgba(192,57,92,.06)}
+.it .tx{flex:1;font-size:13.5px;line-height:1.6;word-break:keep-all}
+.it.ok .tx{text-decoration:line-through;color:var(--gray)}
+.it .x{flex:none;width:30px;height:30px;border-radius:9px;border:.5px solid rgba(192,57,92,.25);
+  background:#fff;color:var(--bad);font-size:14px;font-weight:700;line-height:1}
+.it.ng .x{background:var(--bad);color:#fff;border-color:transparent}
+.note{padding:20px 6px;font-size:11.5px;line-height:1.9;color:var(--gray)}
+.bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+  z-index:60;max-width:600px;margin:0 auto;display:flex;gap:8px;padding:9px;
+  border-radius:20px;border:.5px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.76));
+  backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 12px 34px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.95)}
+.bar button{flex:1;height:42px;border-radius:999px;font-size:12.5px;font-weight:700;border:0}
+.bar .rp{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+.bar .rs{background:rgba(0,0,0,.06);color:#444}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>기능 테스트</h1>
+  <div class="s">CHEWGUMI QA</div>
+  <div class="pg"><i id="pgBar"></i></div>
+  <div class="pgt" id="pgTxt"></div>
+</div>
+<div class="wrap">
+  <div class="tabs" id="tabs"></div>
+  <div id="list"></div>
+  <div class="note" id="foot"></div>
+</div>
+<div class="bar">
+  <button class="rp" onclick="report()">결과 정리해서 복사</button>
+  <button class="rs" onclick="resetAll()">초기화</button>
+</div>
+<script>
+var G=[{"k": "user1", "label": "가입~주문", "items": [{"s": "1. 첫 방문", "t": "시크릿 창으로 메인 접속"}, {"s": "1. 첫 방문", "t": "첫 방문 팝업(2000원 쿠폰)이 뜨는가"}, {"s": "1. 첫 방문", "t": "팝업 글자와 버튼이 화면 안에 들어오는가"}, {"s": "1. 첫 방문", "t": "[닫기]를 누르면 닫히고, 새로고침해도 다시 안 뜨는가"}, {"s": "1. 첫 방문", "t": "상단 배너 4장이 자동으로 넘어가는가"}, {"s": "1. 첫 방문", "t": "손가락(또는 마우스)으로 배너를 끌 수 있는가"}, {"s": "1. 첫 방문", "t": "배너 아래 문구가 배너마다 바뀌는가"}, {"s": "1. 첫 방문", "t": "점을 누르면 해당 배너로 가는가"}, {"s": "2. 회원가입", "t": "상단 [JOIN US] 또는 팝업의 [1초 회원가입] 클릭"}, {"s": "2. 회원가입", "t": "이메일 입력 시 형식 오류를 잡아주는가"}, {"s": "2. 회원가입", "t": "비밀번호 6자 미만이면 막히는가"}, {"s": "2. 회원가입", "t": "[인증 메일 받기] 클릭"}, {"s": "2. 회원가입", "t": "메일이 실제로 도착하는가 (스팸함도 확인)"}, {"s": "2. 회원가입", "t": "메일의 링크를 눌렀을 때 사이트로 돌아오는가"}, {"s": "2. 회원가입", "t": "돌아온 뒤 \"인증 완료\" 표시가 나오는가"}, {"s": "2. 회원가입", "t": "이름·휴대전화 입력"}, {"s": "2. 회원가입", "t": "약관 3개 체크 (전체 동의도 눌러보기)"}, {"s": "2. 회원가입", "t": "[가입하기] 클릭 → 완료되는가"}, {"s": "2. 회원가입", "t": "가입 후 쿠폰이 지급되었는가 (마이페이지에서 확인)"}, {"s": "3. 로그인", "t": "로그아웃 후 다시 로그인되는가"}, {"s": "3. 로그인", "t": "비밀번호를 틀리면 안내가 나오는가"}, {"s": "3. 로그인", "t": "[비밀번호 재설정] 메일이 오는가"}, {"s": "3. 로그인", "t": "재설정 후 새 비밀번호로 로그인되는가"}, {"s": "4. 상품 둘러보기", "t": "Best Items 4개가 나란히 보이는가"}, {"s": "4. 상품 둘러보기", "t": "상품 카드에 별점과 후기 수가 표시되는가"}, {"s": "4. 상품 둘러보기", "t": "카드를 누르면 상세창이 열리는가"}, {"s": "4. 상품 둘러보기", "t": "상세창에 이미지·가격·설명이 나오는가"}, {"s": "4. 상품 둘러보기", "t": "전체 상품 11개가 다 보이는가"}, {"s": "4. 상품 둘러보기", "t": "상품 상세 페이지에서 후기가 보이는가"}, {"s": "4. 상품 둘러보기", "t": "[후기 더 보기]로 계속 불러와지는가"}, {"s": "5. 장바구니", "t": "상품을 장바구니에 담기"}, {"s": "5. 장바구니", "t": "우측 장바구니가 열리는가"}, {"s": "5. 장바구니", "t": "담은 상품의 작은 이미지가 보이는가"}, {"s": "5. 장바구니", "t": "수량 +, − 가 작동하는가"}, {"s": "5. 장바구니", "t": "✕ 로 삭제되는가"}, {"s": "5. 장바구니", "t": "합계 금액이 맞는가"}, {"s": "5. 장바구니", "t": "새로고침해도 장바구니가 유지되는가"}, {"s": "6. 주문서", "t": "[주문하기] → 주문서로 이동"}, {"s": "6. 주문서", "t": "로그인 상태라면 이름·연락처·주소가 자동으로 채워지는가"}, {"s": "6. 주문서", "t": "주소 검색이 작동하는가"}, {"s": "6. 주문서", "t": "이름이나 주소를 비우면 막히는가"}, {"s": "6. 주문서", "t": "배송비가 맞는가 (5만원 이상 무료)"}, {"s": "6. 주문서", "t": "쿠폰을 적용하면 금액이 줄어드는가"}, {"s": "6. 주문서", "t": "적립금 사용이 되는가"}, {"s": "7. 결제 (무통장입금)", "t": "[무통장입금] 탭 선택"}, {"s": "7. 결제 (무통장입금)", "t": "계좌가 국민은행 38183704010801 로 보이는가"}, {"s": "7. 결제 (무통장입금)", "t": "예금주가 윤소호(츄구미) 인가"}, {"s": "7. 결제 (무통장입금)", "t": "입금기한이 7일로 안내되는가"}, {"s": "7. 결제 (무통장입금)", "t": "[계좌번호 복사] 누르면 복사되는가"}, {"s": "7. 결제 (무통장입금)", "t": "[은행 앱 열기] 누르면 목록이 뜨는가"}, {"s": "7. 결제 (무통장입금)", "t": "(휴대폰) 토스를 누르면 금액까지 채워져 열리는가"}, {"s": "7. 결제 (무통장입금)", "t": "입금자명 입력"}, {"s": "7. 결제 (무통장입금)", "t": "[주문하기] 클릭 → 주문번호가 나오는가"}, {"s": "7. 결제 (무통장입금)", "t": "마이페이지에 주문이 보이는가"}, {"s": "8. 결제 (카드 · 공식몰)", "t": "[카드 · 간편결제] 탭 선택"}, {"s": "8. 결제 (카드 · 공식몰)", "t": "안내 문구가 나오는가"}, {"s": "8. 결제 (카드 · 공식몰)", "t": "[공식몰에서 결제하기] → 새 창으로 공식몰이 열리는가"}, {"s": "8. 결제 (카드 · 공식몰)", "t": "담았던 상품 페이지로 가는가"}]}, {"k": "user2", "label": "부가 기능", "items": [{"s": "1. 챗봇", "t": "우측 하단 핑크 버튼 클릭"}, {"s": "1. 챗봇", "t": "첫 인사말에 기능 안내가 나오는가"}, {"s": "1. 챗봇", "t": "\"트래블잇이 뭔가요\" 질문 → 답이 오는가"}, {"s": "1. 챗봇", "t": "\"1봉 주문할게요\" → 주문 카드가 뜨는가"}, {"s": "1. 챗봇", "t": "주문 카드에 금액·배송비·합계가 맞는가"}, {"s": "1. 챗봇", "t": "[담고 주문하기] → 주문서로 가는가"}, {"s": "1. 챗봇", "t": "(휴대폰·크롬) 마이크 버튼 → 음성 인식되는가"}, {"s": "1. 챗봇", "t": "스피커 버튼 → 답변을 읽어주는가"}, {"s": "2. 카카오톡 상담", "t": "노란 카톡 버튼이 챗봇 버튼과 겹치지 않는가"}, {"s": "2. 카카오톡 상담", "t": "누르면 츄구미 채널이 열리는가"}, {"s": "3. 게시판", "t": "공지사항 / 사용후기 / 문의하기 탭이 균등하게 보이는가"}, {"s": "3. 게시판", "t": "탭을 누르면 내용이 바뀌는가"}, {"s": "3. 게시판", "t": "[글쓰기]와 [FULL PAGE] 버튼 높이가 같은가"}, {"s": "3. 게시판", "t": "로그인 후 글을 쓸 수 있는가"}, {"s": "3. 게시판", "t": "외부몰 리뷰 바로가기가 열리는가"}, {"s": "4. 정기구독", "t": "상단 탭 3개가 균등하게 보이는가"}, {"s": "4. 정기구독", "t": "구독 상품 4종이 나오는가"}, {"s": "4. 정기구독", "t": "금액과 할인율이 표시되는가"}, {"s": "4. 정기구독", "t": "[이 구독 신청하기] → 폼이 열리는가"}, {"s": "4. 정기구독", "t": "회원이면 배송지가 자동으로 채워지는가"}, {"s": "4. 정기구독", "t": "신청 후 구독번호와 계좌 안내가 나오는가"}, {"s": "5. 영상 · User Films", "t": "Travel-it Film 재생 버튼이 보이는가"}, {"s": "5. 영상 · User Films", "t": "누르면 영상이 재생되는가"}, {"s": "5. 영상 · User Films", "t": "User Films 영역이 어두운 톤으로 보이는가"}, {"s": "5. 영상 · User Films", "t": "[여기에 당신의 영상이] 칸을 누르면 창이 열리는가"}, {"s": "5. 영상 · User Films", "t": "로그인 없이 등록하면 로그인 안내가 나오는가"}, {"s": "5. 영상 · User Films", "t": "로그인 후 인스타 링크를 넣으면 등록되는가"}, {"s": "5. 영상 · User Films", "t": "이상한 주소를 넣으면 막히는가"}, {"s": "6. 배송 조회", "t": "주문번호로 조회되는가"}, {"s": "6. 배송 조회", "t": "운송장이 등록된 주문은 배송 상태가 나오는가"}, {"s": "7. 마이페이지", "t": "주문 내역이 보이는가"}, {"s": "7. 마이페이지", "t": "쿠폰 목록이 보이는가"}, {"s": "7. 마이페이지", "t": "적립금이 보이는가"}, {"s": "7. 마이페이지", "t": "회원정보 수정이 되는가"}, {"s": "7. 마이페이지", "t": "회원 탈퇴가 되는가 (실제로 하지는 마세요)"}, {"s": "8. 모바일 · 화면", "t": "하단 탭바가 떠 있는 유리처럼 보이는가"}, {"s": "8. 모바일 · 화면", "t": "좌우로 밀리는 곳이 없는가"}, {"s": "8. 모바일 · 화면", "t": "스크롤할 때 화면이 흔들리지 않는가"}, {"s": "8. 모바일 · 화면", "t": "푸터 링크(회사소개 등)가 눌리는가"}, {"s": "8. 모바일 · 화면", "t": "홈 화면에 추가 안내가 나오는가"}, {"s": "8. 모바일 · 화면", "t": "추가한 뒤 앱처럼 열리는가"}, {"s": "8. 모바일 · 화면", "t": "체크박스 크기가 일정한가"}, {"s": "8. 모바일 · 화면", "t": "휴대폰을 가로로 돌려도 정상인가"}]}, {"k": "adm1", "label": "주문 처리", "items": [{"s": "1. 관리자 홈", "t": "로그인이 되는가"}, {"s": "1. 관리자 홈", "t": "상단에 주문·매출·회원·품절 숫자가 나오는가"}, {"s": "1. 관리자 홈", "t": "메뉴 18개가 다 보이는가"}, {"s": "1. 관리자 홈", "t": "[메뉴 고르기] → 별을 누르면 위로 올라오는가"}, {"s": "1. 관리자 홈", "t": "즐겨찾기 순서를 끌어서 바꿀 수 있는가"}, {"s": "1. 관리자 홈", "t": "새로고침해도 유지되는가"}, {"s": "2. 주문 확인", "t": "앞서 넣은 테스트 주문이 보이는가"}, {"s": "2. 주문 확인", "t": "주문번호·상품·금액·주소가 맞는가"}, {"s": "2. 주문 확인", "t": "상태 필터(입금대기·결제완료 등)가 작동하는가"}, {"s": "2. 주문 확인", "t": "검색이 되는가"}, {"s": "3. 입금 확인", "t": "[입금 확인] 클릭"}, {"s": "3. 입금 확인", "t": "상태가 결제완료로 바뀌는가"}, {"s": "3. 입금 확인", "t": "재고가 줄어드는가 (재고 관리에서 확인)"}, {"s": "3. 입금 확인", "t": "적립금이 지급되는가"}, {"s": "3. 입금 확인", "t": "고객 마이페이지에서도 상태가 바뀌는가"}, {"s": "4. 발송 처리", "t": "운송장 번호 입력 (아무 번호나)"}, {"s": "4. 발송 처리", "t": "택배사가 자동으로 인식되는가"}, {"s": "4. 발송 처리", "t": "[발송 처리] → 상태가 배송중으로 바뀌는가"}, {"s": "4. 발송 처리", "t": "고객 배송조회에서 확인되는가"}, {"s": "5. 카카오톡 안내", "t": "[카톡 안내] 클릭 → 창이 열리는가"}, {"s": "5. 카카오톡 안내", "t": "입금안내 / 입금확인 / 발송안내 / 수령확인 탭이 바뀌는가"}, {"s": "5. 카카오톡 안내", "t": "문구에 주문번호·상품·계좌가 채워지는가"}, {"s": "5. 카카오톡 안내", "t": "[문구 복사]가 되는가"}, {"s": "5. 카카오톡 안내", "t": "[카톡으로 보내기] → 카카오톡이 열리는가"}, {"s": "6. 주문 취소 · 환불", "t": "[주문 취소] 클릭"}, {"s": "6. 주문 취소 · 환불", "t": "취소 사유를 입력할 수 있는가"}, {"s": "6. 주문 취소 · 환불", "t": "재고가 원래대로 돌아오는가"}, {"s": "6. 주문 취소 · 환불", "t": "지급했던 적립금이 회수되는가"}, {"s": "6. 주문 취소 · 환불", "t": "사용한 쿠폰이 복구되는가"}, {"s": "6. 주문 취소 · 환불", "t": "고객 화면에서도 취소로 보이는가"}, {"s": "6. 주문 취소 · 환불", "t": "[수정이력]에 기록이 남는가"}, {"s": "7. 배송지 수정", "t": "주소를 바꿀 수 있는가"}, {"s": "7. 배송지 수정", "t": "변경 전후가 이력에 남는가"}, {"s": "8. 알림 설정", "t": "알림 받을 이메일이 등록되어 있는가"}, {"s": "8. 알림 설정", "t": "[이메일 테스트] → 메일이 오는가"}, {"s": "8. 알림 설정", "t": "주문이 들어왔을 때 자동으로 메일이 오는가"}]}, {"k": "adm2", "label": "상품·회원", "items": [{"s": "1. 재고 · 품절 관리", "t": "상품 11개가 다 보이는가"}, {"s": "1. 재고 · 품절 관리", "t": "재고 수량이 나오는가"}, {"s": "1. 재고 · 품절 관리", "t": "재고를 수정하면 저장되는가"}, {"s": "1. 재고 · 품절 관리", "t": "품절 임박 경보가 나오는가"}, {"s": "1. 재고 · 품절 관리", "t": "[일괄 채우기]가 작동하는가"}, {"s": "1. 재고 · 품절 관리", "t": "CSV 내려받기가 되는가"}, {"s": "1. 재고 · 품절 관리", "t": "고객 화면에서 품절 상품이 표시되는가"}, {"s": "2. 회원 조회", "t": "회원 목록이 보이는가"}, {"s": "2. 회원 조회", "t": "이름·이메일·전화로 검색되는가"}, {"s": "2. 회원 조회", "t": "가입일·주문 횟수가 나오는가"}, {"s": "2. 회원 조회", "t": "마케팅 수신 동의 여부가 보이는가"}, {"s": "2. 회원 조회", "t": "CSV 내려받기가 되는가"}, {"s": "3. 게시물 관리", "t": "게시판을 고르면 글이 나오는가"}, {"s": "3. 게시물 관리", "t": "새 글을 쓸 수 있는가"}, {"s": "3. 게시물 관리", "t": "글을 수정할 수 있는가"}, {"s": "3. 게시물 관리", "t": "삭제하면 30일 보관으로 넘어가는가"}, {"s": "3. 게시물 관리", "t": "복원이 되는가"}, {"s": "3. 게시물 관리", "t": "Q&A에 답변을 달 수 있는가"}, {"s": "3. 게시물 관리", "t": "공지로 지정하면 상단에 고정되는가"}, {"s": "4. 게시판 설정", "t": "게시판 8개가 보이는가"}, {"s": "4. 게시판 설정", "t": "노출 여부를 바꿀 수 있는가"}, {"s": "4. 게시판 설정", "t": "쓰기 권한을 바꿀 수 있는가"}, {"s": "5. 정기구독 관리", "t": "앞서 신청한 구독이 보이는가"}, {"s": "5. 정기구독 관리", "t": "입금 대기 / 구독 중 숫자가 맞는가"}, {"s": "5. 정기구독 관리", "t": "[입금 확인 · 구독 시작] → 상태가 바뀌는가"}, {"s": "5. 정기구독 관리", "t": "[발송 처리] → 다음 배송일이 한 달 뒤로 잡히는가"}, {"s": "5. 정기구독 관리", "t": "[일시 중지] → [재개] 가 되는가"}, {"s": "5. 정기구독 관리", "t": "[해지]가 되는가"}, {"s": "5. 정기구독 관리", "t": "구독 금액을 수정하면 고객 화면에 반영되는가"}, {"s": "6. 이슈 게시판", "t": "로그인 없이 열리는가"}, {"s": "6. 이슈 게시판", "t": "이슈를 등록할 수 있는가"}, {"s": "6. 이슈 게시판", "t": "사진을 첨부할 수 있는가"}]}, {"k": "adm3", "label": "마케팅·AI", "items": [{"s": "1. 마케팅 발송", "t": "채널 3개(문자·이메일·카톡)가 보이는가"}, {"s": "1. 마케팅 발송", "t": "상품을 고르고 [문구 자동 작성] → 문구가 나오는가"}, {"s": "1. 마케팅 발송", "t": "글자수와 차감 건수(SMS 1건 / LMS 3건)가 나오는가"}, {"s": "1. 마케팅 발송", "t": "대상 인원이 표시되는가"}, {"s": "1. 마케팅 발송", "t": "미리보기에 (광고) 표기가 붙는가"}, {"s": "1. 마케팅 발송", "t": "[대상 명단 내려받기] → CSV가 받아지는가"}, {"s": "1. 마케팅 발송", "t": "오후 9시 이후에 [지금 발송] → 차단되는가"}, {"s": "2. AI 수출 비서", "t": "바이어를 등록할 수 있는가"}, {"s": "2. AI 수출 비서", "t": "문서 6종 탭이 보이는가"}, {"s": "2. AI 수출 비서", "t": "[문서 생성] → 영문 메일이 나오는가"}, {"s": "2. AI 수출 비서", "t": "견적서에 HS Code·MOQ가 들어가는가"}, {"s": "2. AI 수출 비서", "t": "인증 체크리스트가 국가별로 나오는가"}, {"s": "2. AI 수출 비서", "t": "[수출 일정 세우기] → 일정이 자동 등록되는가"}, {"s": "2. AI 수출 비서", "t": "복사·파일 저장이 되는가"}, {"s": "3. AI 개발 도우미", "t": "모델 목록이 나오는가 (Opus 5 · Sonnet 5 등)"}, {"s": "3. AI 개발 도우미", "t": "화면을 고르고 요청을 적으면 수정안이 나오는가"}, {"s": "3. AI 개발 도우미", "t": "요약이 한글로 나오는가"}, {"s": "3. AI 개발 도우미", "t": "[미리보기]가 열리는가"}, {"s": "3. AI 개발 도우미", "t": "[사이트에 반영] → 실제로 바뀌는가"}, {"s": "3. AI 개발 도우미", "t": "[되돌리기] → 원래대로 돌아오는가"}, {"s": "3. AI 개발 도우미", "t": "이력에 기록이 남는가"}, {"s": "4. 규제 · 민원 대응", "t": "등록된 사안 15건이 보이는가"}, {"s": "4. 규제 · 민원 대응", "t": "[불러오기] → 내용이 채워지는가"}, {"s": "4. 규제 · 민원 대응", "t": "[초안 만들기] → 문서가 나오는가"}, {"s": "4. 규제 · 민원 대응", "t": "법적 안내 문구가 붙는가"}, {"s": "4. 규제 · 민원 대응", "t": "상태 변경이 되는가"}, {"s": "5. 연동 · API 관리", "t": "연동 현황이 보이는가"}, {"s": "5. 연동 · API 관리", "t": "등록된 것은 초록, 안 된 것은 회색인가"}, {"s": "5. 연동 · API 관리", "t": "계좌 정보를 수정하면 주문서에 반영되는가"}, {"s": "5. 연동 · API 관리", "t": "AI 모델을 바꿀 수 있는가"}, {"s": "6. QA 점검", "t": "자동 점검이 실행되는가"}, {"s": "6. QA 점검", "t": "결과가 나오는가"}]}, {"k": "flow", "label": "전체 흐름", "items": [{"s": "1단계  주문 (고객)", "t": "로그인"}, {"s": "1단계  주문 (고객)", "t": "상품 2종 이상 장바구니에 담기"}, {"s": "1단계  주문 (고객)", "t": "합계 금액 확인 (5만원 미만 → 배송비 2,500원)"}, {"s": "1단계  주문 (고객)", "t": "쿠폰 적용"}, {"s": "1단계  주문 (고객)", "t": "무통장입금 선택, 입금자명 입력"}, {"s": "1단계  주문 (고객)", "t": "[주문하기]"}, {"s": "1단계  주문 (고객)", "t": "주문번호 기록 : ________________"}, {"s": "1단계  주문 (고객)", "t": "안내된 계좌 확인 : 국민은행 38183704010801"}, {"s": "1단계  주문 (고객)", "t": "마이페이지에 \"입금대기\"로 보이는가"}, {"s": "1단계  주문 (고객)", "t": "이메일 알림이 대표님께 갔는가"}, {"s": "2단계  입금 확인 (관리자)", "t": "주문 관리에서 해당 주문 찾기"}, {"s": "2단계  입금 확인 (관리자)", "t": "주문 전 재고 기록 : ________"}, {"s": "2단계  입금 확인 (관리자)", "t": "[입금 확인] 클릭"}, {"s": "2단계  입금 확인 (관리자)", "t": "상태가 \"결제완료\"로 바뀌는가"}, {"s": "2단계  입금 확인 (관리자)", "t": "재고가 주문 수량만큼 줄었는가"}, {"s": "2단계  입금 확인 (관리자)", "t": "적립금이 지급되었는가"}, {"s": "2단계  입금 확인 (관리자)", "t": "고객 마이페이지에도 반영되는가"}, {"s": "3단계  발송 (관리자)", "t": "운송장 번호 입력 : ________________"}, {"s": "3단계  발송 (관리자)", "t": "택배사가 자동 인식되는가"}, {"s": "3단계  발송 (관리자)", "t": "[발송 처리]"}, {"s": "3단계  발송 (관리자)", "t": "[카톡 안내] → 발송안내 문구 복사"}, {"s": "3단계  발송 (관리자)", "t": "상태가 \"배송중\"으로 바뀌는가"}, {"s": "3단계  발송 (관리자)", "t": "고객 배송조회에서 확인되는가"}, {"s": "3단계  발송 (관리자)", "t": "문구에 운송장 번호가 들어갔는가"}, {"s": "4단계  취소 (관리자)", "t": "[주문 취소] 클릭"}, {"s": "4단계  취소 (관리자)", "t": "사유 입력 : ________________"}, {"s": "4단계  취소 (관리자)", "t": "재고가 원래 수량으로 돌아왔는가"}, {"s": "4단계  취소 (관리자)", "t": "지급했던 적립금이 회수되었는가"}, {"s": "4단계  취소 (관리자)", "t": "사용한 쿠폰이 다시 쓸 수 있게 되었는가"}, {"s": "4단계  취소 (관리자)", "t": "고객 화면에 \"취소\"로 보이는가"}, {"s": "4단계  취소 (관리자)", "t": "[수정이력]에 취소 기록이 남았는가"}, {"s": "5단계  정기구독 흐름", "t": "구독 신청 (고객)"}, {"s": "5단계  정기구독 흐름", "t": "구독번호 기록 : ________________"}, {"s": "5단계  정기구독 흐름", "t": "[입금 확인 · 구독 시작] (관리자)"}, {"s": "5단계  정기구독 흐름", "t": "[발송 처리] → 다음 배송일이 한 달 뒤인가"}, {"s": "5단계  정기구독 흐름", "t": "[일시 중지] → [재개]"}, {"s": "5단계  정기구독 흐름", "t": "[해지]"}]}, {"k": "skip", "label": "제외 항목", "items": [{"s": "", "t": "[제품 설정] → [카카오 로그인] → 활성화 ON", "note": 1}, {"s": "", "t": "Redirect URI 등록", "note": 1}, {"s": "", "t": "[동의항목]에서 닉네임 등 필수 항목 설정", "note": 1}, {"s": "", "t": "Supabase → Authentication → Providers → Kakao 에", "note": 1}, {"s": "", "t": "이메일 인증 메일이 스팸함으로 갈 수 있습니다", "note": 1}, {"s": "", "t": "무통장입금은 실제 입금 없이 관리자에서 확인 처리하시면 됩니다", "note": 1}, {"s": "", "t": "운송장 번호는 아무 숫자나 넣으셔도 됩니다", "note": 1}, {"s": "", "t": "AI 도구는 사용할 때마다 소액(30~100원)이 과금됩니다", "note": 1}]}];
+var $=function(i){return document.getElementById(i);};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+var cur=G[0]?G[0].k:'', st={};
+try{ st=JSON.parse(localStorage.getItem('cg_qa')||'{}'); }catch(e){}
+function save(){ try{ localStorage.setItem('cg_qa',JSON.stringify(st)); }catch(e){} }
+function key(g,i){ return g+'_'+i; }
+
+$('tabs').innerHTML=G.map(function(g,n){
+  return '<button'+(n?'':' class="on"')+' data-k="'+g.k+'">'+esc(g.label)+'</button>';
+}).join('');
+[].slice.call($('tabs').children).forEach(function(b){
+  b.onclick=function(){
+    [].slice.call($('tabs').children).forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on'); cur=b.dataset.k; render();
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+window.tog=function(g,i){
+  var k=key(g,i); st[k]=(st[k]==='ok')?null:'ok'; save(); render();
+};
+window.ng=function(e,g,i){
+  e.stopPropagation();
+  var k=key(g,i); st[k]=(st[k]==='ng')?null:'ng'; save(); render();
+};
+function render(){
+  var all=0,ok=0,ng=0;
+  G.forEach(function(g){
+    if(g.k==='skip') return;
+    g.items.forEach(function(_,i){
+      all++; var v=st[key(g.k,i)];
+      if(v==='ok') ok++; if(v==='ng') ng++;
+    });
+  });
+  var pct=all?Math.round((ok+ng)/all*100):0;
+  $('pgBar').style.width=pct+'%';
+  $('pgTxt').textContent='확인 '+(ok+ng)+' / '+all+'건 ('+pct+'%) · 정상 '+ok+' · 문제 '+ng;
+
+  var g=null; G.forEach(function(x){ if(x.k===cur) g=x; });
+  if(!g) return;
+  var last='', out='';
+  g.items.forEach(function(it,i){
+    if(it.s&&it.s!==last){ out+='<div class="sect">'+esc(it.s)+'</div>'; last=it.s; }
+    var v=st[key(g.k,i)];
+    var cls=v==='ok'?' ok':(v==='ng'?' ng':'');
+    out+='<div class="it'+cls+'" onclick="tog(\''+g.k+'\','+i+')">'
+      +(g.k==='skip'?'':'<input type="checkbox"'+(v==='ok'?' checked':'')+' onclick="event.stopPropagation();tog(\''+g.k+'\','+i+')">')
+      +'<span class="tx">'+esc(it.t)+'</span>'
+      +(g.k==='skip'?'':'<button class="x" onclick="ng(event,\''+g.k+'\','+i+')" aria-label="문제 있음">!</button>')
+      +'</div>';
+  });
+  $('list').innerHTML=out;
+  $('foot').innerHTML='항목을 누르면 정상, <b>!</b> 를 누르면 문제로 기록됩니다.'
+    +'<br>기록은 이 기기에만 저장됩니다.'
+    +'<br><br><a href="index.html" style="text-decoration:underline">사이트</a>'
+    +' · <a href="console.html" style="text-decoration:underline">관리자</a>'
+    +' · <a href="tasks.html" style="text-decoration:underline">업무 안내</a>';
+}
+window.report=function(){
+  var t='[츄구미 기능 테스트 결과] '+new Date().toLocaleDateString('ko-KR')+'\n\n';
+  var tot=0,ok=0,bad=[];
+  G.forEach(function(g){
+    if(g.k==='skip') return;
+    g.items.forEach(function(it,i){
+      tot++; var v=st[key(g.k,i)];
+      if(v==='ok') ok++;
+      if(v==='ng') bad.push(g.label+' · '+(it.s||'')+' — '+it.t);
+    });
+  });
+  t+='전체 '+tot+'건 / 정상 '+ok+'건 / 문제 '+bad.length+'건\n';
+  if(bad.length){
+    t+='\n[문제 발견]\n'+bad.map(function(x,n){return (n+1)+'. '+x;}).join('\n');
+  } else t+='\n문제 없음';
+  navigator.clipboard.writeText(t).then(function(){
+    alert('복사되었습니다.\n카톡이나 이슈에 붙여넣어 주세요.');
+  }).catch(function(){
+    var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);
+    a.select();document.execCommand('copy');a.remove();alert('복사되었습니다.');
+  });
+};
+window.resetAll=function(){
+  if(!confirm('모든 체크를 지울까요?')) return;
+  st={}; save(); render();
+};
+render();
+</script>
+</body>
+</html>
