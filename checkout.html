@@ -320,14 +320,96 @@ function setPay(t){
   $('cardPane').style.display = t==='card' ? 'block':'none';
   $('payBtn').textContent = t==='bank' ? '주문하기 (무통장입금)' : '공식몰에서 결제하기';
 }
+let BANK={};
+/* 주요 은행·페이 앱 (Android intent / iOS scheme) */
+const BANK_APPS=[
+  {n:'국민은행',s:'kbbank://',       a:'com.kbstar.kbbank'},
+  {n:'신한은행',s:'shinhan-sr-ansimclick://', a:'com.shinhan.sbanking'},
+  {n:'우리은행',s:'NewSmartPib://',  a:'com.wooribank.smart.npib'},
+  {n:'하나은행',s:'hanamysmart://',  a:'com.hanabank.ebk.channel.android.hananbank'},
+  {n:'농협',    s:'nhallonepay://',  a:'nh.smart'},
+  {n:'기업은행',s:'ibk-i-one://',    a:'com.ibk.neobanking'},
+  {n:'카카오뱅크',s:'kakaobank://',  a:'com.kakaobank.channel'},
+  {n:'토스',    s:'supertoss://',    a:'viva.republica.toss'}
+];
+function isMobile(){ return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
+
+function copyAcc(){
+  const t=(BANK.bank_name||'')+' '+(BANK.bank_account||'')
+    +' 예금주 '+(BANK.bank_holder||'');
+  const num=(BANK.bank_account||'').replace(/\D/g,'');
+  navigator.clipboard.writeText(num||t).then(()=>{
+    const b=document.querySelector('.bk-b.copy');
+    if(b){ const o=b.textContent; b.textContent='복사됨 ✓';
+      setTimeout(()=>{b.textContent=o;},1600); }
+  }).catch(()=>{
+    const a=document.createElement('textarea'); a.value=num||t;
+    document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove();
+    alert('계좌번호가 복사되었습니다.');
+  });
+}
+
+function openBankPick(){
+  /* 먼저 계좌번호를 복사해 둔다 */
+  const num=(BANK.bank_account||'').replace(/\D/g,'');
+  try{ navigator.clipboard.writeText(num); }catch(e){}
+
+  if(!isMobile()){
+    alert('계좌번호가 복사되었습니다.\n'
+      +(BANK.bank_name||'')+' '+(BANK.bank_account||'')+'\n'
+      +'예금주 '+(BANK.bank_holder||'')+'\n\n'
+      +'휴대폰에서 열면 은행 앱을 바로 실행할 수 있습니다.');
+    return;
+  }
+  const w=document.createElement('div');
+  w.className='bk-pop';
+  w.innerHTML='<div class="bk-box">'
+    +'<h3>은행 앱 열기</h3>'
+    +'<p>계좌번호가 복사되었습니다.<br>앱에서 붙여넣기 하시면 됩니다.</p>'
+    +'<div class="bk-acc">'+esc(BANK.bank_name||'')+' '+esc(BANK.bank_account||'')
+    +'<br>예금주 '+esc(BANK.bank_holder||'')+'</div>'
+    +'<div class="bk-grid">'
+    + BANK_APPS.map((b,i)=>'<button type="button" data-i="'+i+'">'+esc(b.n)+'</button>').join('')
+    +'</div>'
+    +'<button type="button" class="bk-close">닫기</button></div>';
+  document.body.appendChild(w);
+
+  w.querySelectorAll('.bk-grid button').forEach(btn=>{
+    btn.onclick=function(){
+      const b=BANK_APPS[+btn.dataset.i];
+      const ua=navigator.userAgent;
+      if(/Android/i.test(ua)){
+        location.href='intent://#Intent;scheme='+b.s.replace('://','')
+          +';package='+b.a+';end';
+      } else {
+        const t=Date.now();
+        location.href=b.s;
+        /* 앱이 없으면 스토어로 */
+        setTimeout(function(){
+          if(Date.now()-t<1800) location.href='https://apps.apple.com/kr/search?term='
+            +encodeURIComponent(b.n);
+        },1500);
+      }
+    };
+  });
+  w.querySelector('.bk-close').onclick=()=>w.remove();
+  w.onclick=e=>{ if(e.target===w) w.remove(); };
+}
+
 async function loadBank(){
   try{
     const r=await fetch(SB+'/functions/v1/bank',{method:'POST',headers:authH(),
       body:JSON.stringify({action:'bankInfo'})});
     const d=await r.json();
-    $('bankBox').innerHTML='<b>'+(d.bank_name||'')+'</b> '+(d.bank_account||'')
-      +'<br>예금주 <b>'+(d.bank_holder||'ChewGumi')+'</b>'
-      +'<br><span style="font-size:11.5px;color:var(--gray)">주문 후 '+(d.deposit_days||3)+'일 이내 입금해 주세요.</span>';
+          BANK = d;
+      $('bankBox').innerHTML='<div class="bk-line"><b>'+esc(d.bank_name||'')+'</b> '
+        +'<span class="bk-no" id="bkNoTx">'+esc(d.bank_account||'')+'</span></div>'
+        +'<div class="bk-sub">예금주 <b>'+esc(d.bank_holder||'ChewGumi')+'</b>'
+        +' · 주문 후 '+(d.deposit_days||7)+'일 이내 입금</div>'
+        +'<div class="bk-acts">'
+        +'<button type="button" class="bk-b copy" onclick="copyAcc()">계좌번호 복사</button>'
+        +'<button type="button" class="bk-b open" onclick="openBankPick()">은행 앱 열기</button>'
+        +'</div>';
   }catch(e){ $('bankBox').textContent='계좌 정보를 불러오지 못했습니다.'; }
 }
 
@@ -460,6 +542,45 @@ $('payBtn').addEventListener('click',async()=>{
 
 
 
+
+.bk-line{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.bk-line .bk-no{font-family:'Poppins',sans-serif;letter-spacing:.5px}
+.bk-sub{margin-top:6px;font-size:12px;color:var(--gray);line-height:1.7}
+.bk-acts{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.bk-b{flex:1;min-width:120px;height:44px;border-radius:999px;font-family:inherit;
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  border:1px solid rgba(255,255,255,.85);color:var(--ink);
+  background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(255,255,255,.72));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 4px 14px rgba(0,0,0,.06);
+  transition:transform .2s}
+.bk-b:active{transform:scale(.96)}
+.bk-b.open{background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(216,37,88,.28)}
+
+.bk-pop{position:fixed;inset:0;z-index:2200;display:flex;align-items:flex-end;
+  justify-content:center;background:rgba(20,10,14,.5);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  animation:bkDim .3s ease both}
+@keyframes bkDim{from{opacity:0}to{opacity:1}}
+.bk-box{width:100%;max-width:460px;background:#fff;
+  border-radius:26px 26px 0 0;padding:24px 22px calc(24px + env(safe-area-inset-bottom));
+  box-shadow:0 -12px 40px rgba(0,0,0,.2);
+  animation:bkUp .4s cubic-bezier(.2,.9,.3,1.05) both}
+@keyframes bkUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.bk-box h3{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.bk-box p{margin-top:7px;font-size:12.5px;line-height:1.75;color:#666}
+.bk-acc{margin-top:13px;padding:14px;border-radius:14px;background:#FFF7FA;
+  font-size:13.5px;line-height:1.75;font-weight:600;text-align:center}
+.bk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.bk-grid button{padding:14px 4px;border-radius:14px;font-family:inherit;font-size:11.5px;
+  font-weight:700;cursor:pointer;border:1px solid rgba(0,0,0,.08);
+  background:rgba(255,255,255,.9);color:#333;transition:transform .18s}
+.bk-grid button:active{transform:scale(.94);background:#FFF1F4}
+.bk-close{width:100%;margin-top:16px;height:46px;border-radius:999px;border:0;
+  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  background:rgba(0,0,0,.06);color:#333}
+@media(max-width:420px){.bk-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 <script src="assets/lite.js" defer></script>
 </body>
