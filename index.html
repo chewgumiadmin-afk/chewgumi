@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v70 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v71 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1226,8 +1226,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
 <!-- 풀 배너 (실제 프로모션 배너, 실패 시 드라이브 라이프스타일 컷) -->
 <div class="full-banner" id="about">
-  <img referrerpolicy="no-referrer" src="https://file.cafe24cos.com/banner-admin-live/upload/chewgumi/5b12115b-753d-4f70-beca-cbb32a9f71d6.png" alt="DEW-IT"
-       onerror="this.src='https://drive.google.com/thumbnail?id=1_eavDY8eCwTOzm71do0qMtuqzCCxsobd&sz=w2000'">
+  <img src="assets/banner-dewit-wide.jpg" alt="Dew-it 무설탕 자일리톨 캔디" loading="lazy" decoding="async">
   <div class="cap">
     <div class="en">DEW-IT</div>
     <div class="kr" data-en="Finnish xylitol · sugar-free candy — a fresh daily habit">핀란드산 자일리톨 · 무설탕 캔디 — 입 안이 개운해지는 하루 습관</div>
@@ -1391,7 +1390,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v70 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v71 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3101,6 +3100,24 @@ section{padding:44px 0}
 @keyframes micPulse{0%{transform:scale(.9);opacity:.8}70%{transform:scale(1.35);opacity:0}100%{opacity:0}}
 .cgbot-ft input{flex:1;min-width:0}
 @media(max-width:400px){.cgbot-ft .cg-ic{width:36px;height:36px}}
+
+/* 풀 배너 — 비율 고정 + 선명도 */
+.full-banner{position:relative;overflow:hidden;
+  aspect-ratio:21/6;max-height:340px;background:#F7E9EE}
+.full-banner img{width:100%;height:100%;object-fit:cover;display:block;max-height:none}
+.full-banner::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.12) 38%,rgba(0,0,0,0) 62%)}
+.full-banner .cap{z-index:2;max-width:min(52%,520px)}
+.full-banner .cap .kr{line-height:1.7;word-break:keep-all}
+@media(max-width:860px){
+  .full-banner{aspect-ratio:16/8}
+  .full-banner .cap{max-width:66%}
+  .full-banner .cap .kr{font-size:12.5px}
+}
+@media(max-width:520px){
+  .full-banner{aspect-ratio:4/3}
+  .full-banner .cap{left:20px;max-width:76%}
+}
 </style>
 <script>
 /* ═══ 음성 입력·출력 ═══ */
