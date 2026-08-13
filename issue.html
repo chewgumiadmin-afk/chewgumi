@@ -183,17 +183,23 @@ function submitIssue(){
   try{localStorage.setItem('cg_reporter',who);}catch(e){}
   $('go').disabled=true; $('msg').textContent='등록 중…';
   const dev=navigator.userAgent.slice(0,120);
-  fetch(SB+'/rest/v1/issues',{method:'POST',
-    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=representation'},
-    body:JSON.stringify({title,body:$('body').value.trim(),page:$('page').value,
-      kind,reporter:who,device:dev,image_url:$('img').value.trim()})})
-  .then(r=>r.json()).then(d=>{
-    const row=Array.isArray(d)?d[0]:d;
-    if(row&&row.id){
-      $('form').classList.add('hide'); $('doneBox').classList.remove('hide');
-      $('doneMsg').innerHTML='이슈 <b>#'+(row.no||row.id)+'</b> 로 접수되었습니다.<br>확인 후 처리하겠습니다.';
-    } else { $('go').disabled=false; $('msg').textContent='등록에 실패했습니다. 잠시 후 다시 시도해 주세요.'; }
-  }).catch(()=>{$('go').disabled=false;$('msg').textContent='네트워크 오류가 발생했습니다.';});
+  fetch(SB+'/functions/v1/issue',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({action:'create',issue:{
+      title, body:$('body').value.trim(), page:$('page').value,
+      kind, reporter:who, device:dev, image_url:$('img').value.trim()}})})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})))
+  .then(({ok,d})=>{
+    $('go').disabled=false;
+    if(!ok){ $('msg').textContent=d.error||'등록에 실패했습니다.'; return; }
+    var extra=[];
+    if(d.email==='sent') extra.push('담당자에게 메일이 발송되었습니다');
+    if(d.github) extra.push('개발 이슈 #'+d.github+'로 등록되었습니다');
+    $('msg').innerHTML='<b>이슈 #'+d.no+'번으로 등록되었습니다.</b>'
+      +(extra.length?'<br>'+extra.join(' · '):'');
+    reset(); load();
+  })
+  .catch(()=>{ $('go').disabled=false; $('msg').textContent='네트워크 오류가 발생했습니다.'; });
 }
 
 function load(){
