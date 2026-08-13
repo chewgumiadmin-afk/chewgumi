@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v66 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v67 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -152,7 +152,7 @@
   max-width:1160px !important; background:#FFE4E6 !important; }
 @media (max-width:640px){ .hero { aspect-ratio:1568/756 !important; } }
 .hero .slide { background-color:#FFE4E6 !important; background-size:cover; background-position:center; display:block; }
-.hero .slide-4 { background-image:url('assets/hero-4.png'); }
+.hero .slide-4 { background-image:url('assets/hero-4.jpg'); }
 .hero::after { display:none; }
 @media (max-width:640px) { .hero { aspect-ratio:1568/756 !important; } }
 
@@ -355,11 +355,11 @@ header:not(.solid) .gnb > li:hover > a { background:rgba(255,255,255,.22);
 .hero .slide { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .8s ease;
   background:#121314 center/cover no-repeat; }
 .hero .slide.on { opacity:1; pointer-events:auto; }
-.hero .slide-1 { background-image:url('assets/hero-1.png'); }
-.hero .slide-2 { background-image:url('assets/hero-3.png'); }
+.hero .slide-1 { background-image:url('assets/hero-1.jpg'); }
+.hero .slide-2 { background-image:url('assets/hero-3.jpg'); }
 .hero .slide-2 .slide-prd { position:absolute; right:6%; bottom:0; height:92%; width:auto; object-fit:contain;
   filter:drop-shadow(0 18px 34px rgba(120,10,40,.28)); }
-.hero .slide-3 { background-image:url('assets/hero-2.png'); }
+.hero .slide-3 { background-image:url('assets/hero-2.jpg'); }
 .hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:5; width:40px; height:40px; border-radius:50%;
   display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; cursor:pointer;
   background:rgba(255,255,255,.16); backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%);
@@ -974,10 +974,18 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
 <!-- 히어로 (실제 메인 배너) -->
 <div class="hero" id="heroSlider">
-  <a class="slide slide-1 on" href="#all" onclick="filterLine('all')" aria-label="트리플잇 신제품 보기"></a>
-  <a class="slide slide-2" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기"></a>
-  <a class="slide slide-3" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기"></a>
-  <a class="slide slide-4" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기"></a>
+  <a class="slide slide-1 on" href="#all" onclick="filterLine('all')" aria-label="트리플잇 신제품 보기">
+        <span class="h-cap"><em>COMING SOON</em><b>여행갈 땐, 트리플 잇</b>
+        <i>상황에 맞춰 고르는 세 가지 맛</i></span></a>
+      <a class="slide slide-2" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기">
+        <span class="h-cap"><em>TRAVEL-IT</em><b>물 없이 챙기는 12가지 영양</b>
+        <i>감귤맛 비타민 젤리 · 40g</i></span></a>
+      <a class="slide slide-3" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기">
+        <span class="h-cap"><em>DEW-IT</em><b>한 알로 입안을 촉촉하게</b>
+        <i>핀란드산 자일리톨 93% · 무설탕</i></span></a>
+      <a class="slide slide-4" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기">
+        <span class="h-cap"><em>EVERY DAY</em><b>매일의 상쾌한 습관</b>
+        <i>레몬민트 · 그레이프</i></span></a>
   <button class="hero-arrow prev" onclick="heroGo(-1)" aria-label="이전 배너">‹</button>
   <button class="hero-arrow next" onclick="heroGo(1)" aria-label="다음 배너">›</button>
   <div class="hero-dots" id="heroDots"></div>
@@ -1370,7 +1378,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v66 · 2026-08-12</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v67 · 2026-08-12</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2834,5 +2842,51 @@ section{padding:44px 0}
   }
 })();
 </script>
+
+<style>
+/* ═══ 히어로 문구 액팅 ═══ */
+.hero .slide{position:absolute;inset:0;display:block;text-decoration:none;overflow:hidden}
+.h-cap{
+  position:absolute;left:clamp(20px,5vw,58px);top:50%;transform:translateY(-50%);
+  max-width:min(46%,420px);pointer-events:none;z-index:2;
+  display:flex;flex-direction:column;gap:9px;text-align:left}
+.h-cap em{
+  font-family:'Poppins',sans-serif;font-style:normal;
+  font-size:clamp(9px,1.1vw,11px);font-weight:800;letter-spacing:3px;
+  color:var(--main);
+  opacity:0;transform:translateY(14px)}
+.h-cap b{
+  font-size:clamp(17px,3vw,34px);font-weight:800;line-height:1.28;letter-spacing:-.035em;
+  color:#1a1013;word-break:keep-all;
+  opacity:0;transform:translateY(20px)}
+.h-cap i{
+  font-style:normal;font-size:clamp(11px,1.4vw,15px);line-height:1.7;
+  color:#4a3a40;word-break:keep-all;
+  opacity:0;transform:translateY(16px)}
+
+/* 현재 슬라이드일 때만 순차 등장 */
+.slide.on .h-cap em{animation:capUp .7s cubic-bezier(.2,.8,.3,1) .18s forwards}
+.slide.on .h-cap b {animation:capUp .8s cubic-bezier(.2,.8,.3,1) .32s forwards}
+.slide.on .h-cap i {animation:capUp .8s cubic-bezier(.2,.8,.3,1) .48s forwards}
+@keyframes capUp{to{opacity:1;transform:translateY(0)}}
+
+/* 글자 뒤 부드러운 밝기 (사진 위 가독성) */
+.slide::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,rgba(255,255,255,.62) 0%,
+    rgba(255,255,255,.28) 34%,rgba(255,255,255,0) 56%)}
+
+@media (max-width:640px){
+  .h-cap{left:18px;max-width:62%;gap:6px}
+  .h-cap b{font-size:clamp(15px,4.6vw,20px)}
+  .h-cap i{display:none}
+  .slide::before{background:linear-gradient(100deg,rgba(255,255,255,.7) 0%,
+    rgba(255,255,255,.34) 46%,rgba(255,255,255,0) 68%)}
+}
+@media (prefers-reduced-motion:reduce){
+  .h-cap em,.h-cap b,.h-cap i{opacity:1;transform:none;animation:none !important}
+}
+</style>
+<link rel="preload" as="image" href="assets/hero-1.jpg">
 </body>
 </html>
