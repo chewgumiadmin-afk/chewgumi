@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<!-- ChewGumi GitHub Dashboard v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>개발 현황 | CHEWGUMI</title>
+<script src="assets/site.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/glass.css">
+<link rel="stylesheet" href="assets/admin-ui.css">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#17171c;--gray:#7a7a82;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.64)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding:24px 16px 48px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+.wrap{max-width:960px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:flex-end;
+  flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.top h1{font-family:'Poppins',sans-serif}
+.top .s{margin-top:2px;color:var(--gray)}
+.top a{font-size:12.5px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:24px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.88);
+  color:var(--ink);font-family:inherit;width:100%}
+.btn{border:0;color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 8px 20px rgba(216,37,88,.28)}
+.btn.ghost{background:rgba(255,255,255,.86);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{background:rgba(255,255,255,.86);border:1px solid var(--line);color:var(--ink)}
+.mini.go{background:linear-gradient(135deg,#37B26B,#2AA060);color:#fff;border-color:transparent}
+.mini.d{color:var(--bad);border-color:rgba(192,57,92,.3)}
+.msg{color:var(--gray);min-height:17px}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+.empty{text-align:center;color:var(--gray);padding:30px 0}
+.acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.hide{display:none}
+
+/* 상태 카드 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:rgba(255,255,255,.72);border:1px solid var(--line);
+  border-radius:16px;padding:15px 14px;text-align:center}
+.stat .l{font-size:11.5px;color:var(--gray);font-weight:600}
+.stat .v{margin-top:5px;font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--main)}
+.stat.ok .v{color:var(--ok)}.stat.bad .v{color:var(--bad)}
+.stat .d{margin-top:3px;font-size:10.5px;color:var(--gray)}
+
+/* 요약 */
+.sum{background:rgba(42,160,96,.08);border:1px solid rgba(42,160,96,.22);
+  border-radius:16px;padding:16px 18px;font-size:13.5px;line-height:1.95;white-space:pre-wrap}
+
+/* 이슈 */
+.irow{padding:13px 4px;border-bottom:1px solid rgba(0,0,0,.06)}
+.irow:last-child{border-bottom:0}
+.ih{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ih .no{font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700;color:var(--gray)}
+.ih .tt{flex:1;min-width:150px;font-size:14px;font-weight:700;line-height:1.45}
+.lb{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:rgba(216,37,88,.09);color:var(--main)}
+.lb.g{background:rgba(42,160,96,.12);color:var(--ok)}
+.ib{margin-top:6px;font-size:12px;color:var(--gray)}
+
+/* 커밋 */
+.crow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:11px 4px;
+  border-bottom:1px solid rgba(0,0,0,.055);font-size:12.5px;align-items:center}
+.crow:last-child{border-bottom:0}
+.crow .sha{font-family:ui-monospace,Menlo,monospace;font-size:11px;
+  padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.05);color:#666}
+.crow .m{line-height:1.5;word-break:break-word}
+.crow .dt{font-size:11px;color:var(--gray);white-space:nowrap}
+
+/* 복원 */
+.hrow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:12px 4px;
+  border-bottom:1px solid rgba(0,0,0,.055);font-size:12.5px;align-items:center}
+.hrow:last-child{border-bottom:0}
+.hrow.now{background:rgba(42,160,96,.07);border-radius:10px}
+.pv{margin-top:12px;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.pv iframe{width:100%;height:420px;border:0;background:#fff;display:block}
+
+@media(max-width:768px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .crow,.hrow{grid-template-columns:1fr;gap:5px}
+  .crow .dt{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Development</h1><div class="s">개발 현황 · GitHub</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="dev.html">AI 개발 도우미</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <label>이메일</label>
+    <input id="em" type="email" autocomplete="email"
+      onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
+    <label>비밀번호</label>
+    <input id="pw" type="password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()" style="width:100%;margin-top:16px">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>현황</h2>
+      <div class="stats" id="stats"><div class="msg">불러오는 중…</div></div>
+      <div class="acts">
+        <button class="mini" onclick="load()">새로고침</button>
+        <button class="mini go" onclick="rebuild()">사이트 다시 배포</button>
+        <a class="mini" id="repoLink" href="#" target="_blank" rel="noopener">GitHub 열기</a>
+      </div>
+      <div class="msg" id="smsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>최근 변경 요약</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="mini" onclick="summary(7)">최근 7일</button>
+        <button class="mini" onclick="summary(14)">14일</button>
+        <button class="mini" onclick="summary(30)">30일</button>
+      </div>
+      <div id="sumBox"><div class="empty">기간을 선택하시면 정리해 드립니다.</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>이슈</h2>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+        <input id="nTitle" placeholder="새 이슈 제목"
+          onkeydown="if(event.key==='Enter')newIssue()">
+        <button class="mini go" onclick="newIssue()">등록</button>
+      </div>
+      <textarea id="nBody" placeholder="내용 (선택)" style="margin-top:8px;min-height:70px"></textarea>
+      <div class="msg" id="imsg"></div>
+      <div id="issues" style="margin-top:12px"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>화면 복원</h2>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+        <select id="file" onchange="fileHist()"></select>
+        <button class="mini" onclick="fileHist()">이력 보기</button>
+      </div>
+      <div id="hist" style="margin-top:12px"><div class="empty">화면을 선택해 주세요.</div></div>
+      <div id="pvBox"></div>
+      <div class="msg" id="rmsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>변경 기록</h2>
+      <div id="commits"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:150px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script src="assets/nav.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/github';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const dt=s=>s?new Date(s).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+let token=null,who='',curFile='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){load();files();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else {$('lmsg').className='msg bad';$('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';}
+  }).catch(()=>{$('lmsg').className='msg bad';$('lmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function load(){
+  call({action:'dashboard'}).then(({ok,d})=>{
+    if(!ok){ $('stats').innerHTML='<div class="msg bad">'
+      +esc(d.error||'불러오지 못했습니다.')+(d.help?'<br>'+esc(d.help):'')+'</div>'; return; }
+
+    const p=d.pages||{}, st=p.status;
+    const bs = st==='built'?['ok','정상']:(st==='building'?['','배포 중']:['bad','실패']);
+    $('repoLink').href=d.info?.url||'#';
+    $('stats').innerHTML=
+      '<div class="stat '+bs[0]+'"><div class="l">배포 상태</div><div class="v" style="font-size:16px">'
+        +bs[1]+'</div><div class="d">'+dt(p.created)+'</div></div>'
+      +'<div class="stat"><div class="l">열린 이슈</div><div class="v">'
+        +(d.issues||[]).length+'</div></div>'
+      +'<div class="stat"><div class="l">최근 변경</div><div class="v" style="font-size:15px">'
+        +dt(d.info?.updated).slice(0,11)+'</div></div>'
+      +'<div class="stat"><div class="l">공개 여부</div><div class="v" style="font-size:16px">'
+        +(d.info?.private?'비공개':'공개')+'</div></div>';
+
+    $('issues').innerHTML=(d.issues||[]).length?d.issues.map(i=>
+      '<div class="irow"><div class="ih">'
+      +'<span class="no">#'+i.no+'</span>'
+      +'<span class="tt">'+esc(i.title)+'</span>'
+      +(i.labels||[]).map(l=>'<span class="lb">'+esc(l)+'</span>').join('')
+      +'</div><div class="ib">'+esc(i.user||'')+' · '+dt(i.created)
+      +(i.comments?' · 댓글 '+i.comments:'')+'</div>'
+      +'<div class="acts">'
+      +'<button class="mini" onclick="comment('+i.no+')">댓글</button>'
+      +'<button class="mini go" onclick="closeIssue('+i.no+')">완료</button>'
+      +'<a class="mini" href="'+esc(i.url)+'" target="_blank" rel="noopener">열기</a>'
+      +'</div></div>').join('')
+      :'<div class="empty">열린 이슈가 없습니다.</div>';
+
+    $('commits').innerHTML=(d.commits||[]).map(c=>
+      '<div class="crow"><span class="sha">'+esc(c.short)+'</span>'
+      +'<span class="m">'+esc(c.msg)+'</span>'
+      +'<span class="dt">'+dt(c.date)+'</span></div>').join('')
+      || '<div class="empty">기록이 없습니다.</div>';
+  }).catch(()=>{$('stats').innerHTML='<div class="msg bad">네트워크 오류가 발생했습니다.</div>';});
+}
+
+function summary(days){
+  $('sumBox').innerHTML='<div class="msg">정리하는 중… 15초 정도 걸립니다.</div>';
+  call({action:'summary',days}).then(({ok,d})=>{
+    if(!ok){ $('sumBox').innerHTML='<div class="msg bad">'+esc(d.error||'실패')+'</div>'; return; }
+    $('sumBox').innerHTML='<div class="sum">'+esc(d.text)+'</div>'
+      +'<div class="msg">최근 '+days+'일 · 변경 '+(d.count||0)+'건'
+      +(d.raw?' (AI 정리 없이 원본 표시)':'')+'</div>';
+  }).catch(()=>{$('sumBox').innerHTML='<div class="msg bad">네트워크 오류가 발생했습니다.</div>';});
+}
+
+function newIssue(){
+  const t=$('nTitle').value.trim();
+  if(!t) return $('imsg').textContent='제목을 입력해 주세요.';
+  $('imsg').className='msg'; $('imsg').textContent='등록 중…';
+  call({action:'newIssue',title:t,body:$('nBody').value.trim()}).then(({ok,d})=>{
+    if(!ok){ $('imsg').className='msg bad'; $('imsg').textContent=d.error||'등록 실패'; return; }
+    $('imsg').className='msg ok'; $('imsg').textContent='#'+d.number+'번으로 등록되었습니다.';
+    $('nTitle').value=''; $('nBody').value=''; load();
+  }).catch(()=>{$('imsg').className='msg bad';$('imsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function closeIssue(no){
+  if(!confirm('#'+no+' 이슈를 완료 처리할까요?')) return;
+  call({action:'issueState',no,state:'closed'}).then(({ok,d})=>{
+    $('imsg').className=ok?'msg ok':'msg bad';
+    $('imsg').textContent=ok?'완료 처리했습니다.':(d.error||'실패');
+    if(ok) load();
+  }).catch(()=>{});
+}
+function comment(no){
+  const t=prompt('#'+no+'에 남길 댓글');
+  if(!t) return;
+  call({action:'issueComment',no,text:t}).then(({ok,d})=>{
+    $('imsg').className=ok?'msg ok':'msg bad';
+    $('imsg').textContent=ok?'댓글을 남겼습니다.':(d.error||'실패');
+    if(ok) load();
+  }).catch(()=>{});
+}
+
+function files(){
+  call({action:'files'}).then(({ok,d})=>{
+    if(!ok) return;
+    $('file').innerHTML='<option value="">화면 선택</option>'
+      +(d.files||[]).map(f=>'<option value="'+esc(f.path)+'">'+esc(f.path)+'</option>').join('');
+  }).catch(()=>{});
+}
+function fileHist(){
+  const p=$('file').value;
+  if(!p){ $('hist').innerHTML='<div class="empty">화면을 선택해 주세요.</div>'; return; }
+  curFile=p;
+  $('hist').innerHTML='<div class="msg">이력을 불러오는 중…</div>';
+  $('pvBox').innerHTML='';
+  call({action:'fileHistory',path:p}).then(({ok,d})=>{
+    if(!ok){ $('hist').innerHTML='<div class="msg bad">'+esc(d.error||'실패')+'</div>'; return; }
+    $('hist').innerHTML=(d.items||[]).map((c,i)=>
+      '<div class="hrow'+(i===0?' now':'')+'">'
+      +'<span class="sha">'+esc(c.short)+'</span>'
+      +'<span class="m">'+esc(c.msg)+'<br>'
+        +'<span style="font-size:11px;color:var(--gray)">'+dt(c.date)+'</span></span>'
+      +'<span style="display:flex;gap:5px">'
+      +(i===0?'<span class="lb g">현재</span>'
+        :'<button class="mini" onclick="peek(\''+c.sha+'\')">미리보기</button>'
+         +'<button class="mini d" onclick="restore(\''+c.sha+'\',\''+esc(c.short)+'\')">복원</button>')
+      +'</span></div>').join('') || '<div class="empty">이력이 없습니다.</div>';
+  }).catch(()=>{$('hist').innerHTML='<div class="msg bad">네트워크 오류가 발생했습니다.</div>';});
+}
+function peek(sha){
+  $('rmsg').className='msg'; $('rmsg').textContent='그 시점 화면을 불러오는 중…';
+  call({action:'fileAt',path:curFile,sha}).then(({ok,d})=>{
+    if(!ok){ $('rmsg').className='msg bad'; $('rmsg').textContent=d.error||'실패'; return; }
+    const base=(window.CG_SITE?CG_SITE.SITE:location.href.replace(/[^/]*$/,''))+'/';
+    $('pvBox').innerHTML='<div class="pv"><iframe id="pf" title="예전 화면"></iframe></div>';
+    $('pf').srcdoc=d.html.replace('<head>','<head><base href="'+base+'">');
+    $('rmsg').className='msg ok';
+    $('rmsg').textContent='그 시점의 화면입니다. 되돌리시려면 [복원]을 눌러주세요.';
+    $('pvBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }).catch(()=>{$('rmsg').className='msg bad';$('rmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function restore(sha,short){
+  if(!confirm(curFile+'을(를) '+short+' 시점으로 되돌릴까요?\n현재 내용은 기록에 남으므로 다시 되돌릴 수 있습니다.')) return;
+  $('rmsg').className='msg'; $('rmsg').textContent='복원 중…';
+  call({action:'restore',path:curFile,sha}).then(({ok,d})=>{
+    if(!ok){ $('rmsg').className='msg bad'; $('rmsg').textContent=d.error||'복원 실패'; return; }
+    $('rmsg').className='msg ok';
+    $('rmsg').textContent='복원했습니다. 사이트에 반영되기까지 1~2분 걸립니다.';
+    fileHist(); load();
+  }).catch(()=>{$('rmsg').className='msg bad';$('rmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function rebuild(){
+  $('smsg').className='msg'; $('smsg').textContent='재배포를 요청하는 중…';
+  call({action:'rebuild'}).then(({ok,d})=>{
+    $('smsg').className=ok?'msg ok':'msg bad';
+    $('smsg').textContent=ok?'재배포를 요청했습니다. 1~2분 후 반영됩니다.':(d.error||'실패');
+    if(ok) setTimeout(load,20000);
+  }).catch(()=>{$('smsg').className='msg bad';$('smsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+sync();
+</script>
+</body>
+</html>
