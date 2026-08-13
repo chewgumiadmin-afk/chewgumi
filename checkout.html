@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>주문/결제 | CHEWGUMI</title>
+<script src="assets/site.js"></script>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://js.tosspayments.com/v2/standard"></script>
@@ -566,7 +568,7 @@ $('payBtn').addEventListener('click',async()=>{
     document.body.appendChild(form);
     const first=CART[0]?matchNo(CART[0].name):null;
     if(first){
-      window.open('https://chewgumi.com/product/detail.html?product_no='+first,'_blank','noopener');
+      window.open((window.CG_SITE?CG_SITE.mallProduct(''):'https://chewgumi.com/product/detail.html?product_no=')+first,'_blank','noopener');
     } else {
       window.open('https://chewgumi.com/','_blank','noopener');
     }
