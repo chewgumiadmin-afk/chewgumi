@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v72 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v73 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1396,7 +1396,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v72 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v73 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3296,5 +3296,158 @@ section{padding:44px 0}
 })();
 </script>
 <script src="assets/pwa.js" defer></script>
+
+<style>
+/* ═══ 히어로 — 밀려서 흐르는 방식 ═══ */
+.hero{position:relative;overflow:hidden;touch-action:pan-y}
+.hero .slide{
+  position:absolute !important;top:0;left:0;
+  width:100%;height:100%;
+  opacity:1 !important;
+  transform:none !important;
+  will-change:transform;
+  backface-visibility:hidden}
+/* 트랙 방식으로 전환되면 각 슬라이드를 가로로 배치 */
+.hero.track .slide{
+  left:auto;position:relative !important;flex:0 0 100%}
+.hero .h-track{
+  display:flex;width:100%;height:100%;
+  transition:transform .62s cubic-bezier(.22,.85,.28,1);
+  will-change:transform}
+.hero .h-track.nodrag{transition:none}
+
+/* 배경이 살짝 따라오는 시차 효과 */
+.hero.track .slide{background-position:center;background-size:cover}
+
+.hero-arrow{z-index:6}
+.hero-dots{z-index:6}
+@media (prefers-reduced-motion:reduce){
+  .hero .h-track{transition:none}
+}
+</style>
+<script>
+/* ═══ 히어로 슬라이드 (드래그·스와이프) ═══ */
+(function(){
+  var hero=document.getElementById('heroSlider');
+  if(!hero) return;
+  var slides=[].slice.call(hero.querySelectorAll('.slide'));
+  if(slides.length<2) return;
+
+  /* 슬라이드를 트랙에 담는다 */
+  var track=document.createElement('div');
+  track.className='h-track';
+  slides.forEach(function(s){ track.appendChild(s); });
+  hero.insertBefore(track, hero.firstChild);
+  hero.classList.add('track');
+
+  var dots=document.getElementById('heroDots');
+  var ds=dots?[].slice.call(dots.children):[];
+  var now=0, timer=null, W=0;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function measure(){ W=hero.clientWidth||1; }
+  measure();
+  window.addEventListener('resize',function(){ measure(); place(false); },{passive:true});
+
+  function place(anim){
+    track.classList.toggle('nodrag',!anim);
+    track.style.transform='translate3d('+(-now*W)+'px,0,0)';
+    slides.forEach(function(s,k){ s.classList.toggle('on',k===now); });
+    ds.forEach(function(d,k){ d.classList.toggle('on',k===now); });
+  }
+  function go(i,anim){
+    now=(i+slides.length)%slides.length;
+    place(anim!==false);
+  }
+  window.heroSlide=go;
+
+  /* 화살표 */
+  var prev=hero.querySelector('.hero-arrow.prev');
+  var next=hero.querySelector('.hero-arrow.next');
+  if(prev) prev.onclick=function(e){ e.preventDefault(); stop(); go(now-1); start(); };
+  if(next) next.onclick=function(e){ e.preventDefault(); stop(); go(now+1); start(); };
+  ds.forEach(function(d,i){
+    d.onclick=function(e){ e.preventDefault(); stop(); go(i); start(); };
+  });
+
+  /* 자동 흐름 */
+  function start(){ if(!timer && !reduce) timer=setInterval(function(){ go(now+1); },4600); }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+  hero.addEventListener('mouseenter',stop);
+  hero.addEventListener('mouseleave',start);
+
+  /* 손가락·마우스로 끌기 */
+  var sx=0, sy=0, dx=0, dragging=false, decided=false, horiz=false;
+  function down(x,y){
+    stop(); dragging=true; decided=false; horiz=false;
+    sx=x; sy=y; dx=0;
+    track.classList.add('nodrag');
+  }
+  function move(x,y,ev){
+    if(!dragging) return;
+    var mx=x-sx, my=y-sy;
+    if(!decided){
+      if(Math.abs(mx)<6 && Math.abs(my)<6) return;
+      decided=true; horiz=Math.abs(mx)>Math.abs(my);
+      if(!horiz){ dragging=false; track.classList.remove('nodrag'); return; }
+    }
+    if(!horiz) return;
+    if(ev && ev.cancelable) ev.preventDefault();
+    dx=mx;
+    /* 양 끝에서는 저항 */
+    var over=(now===0&&dx>0)||(now===slides.length-1&&dx<0);
+    var d=over?dx*0.35:dx;
+    track.style.transform='translate3d('+(-now*W+d)+'px,0,0)';
+  }
+  function up(){
+    if(!dragging) return;
+    dragging=false;
+    track.classList.remove('nodrag');
+    if(horiz && Math.abs(dx)>W*0.14){ go(dx<0?now+1:now-1); }
+    else place(true);
+    dx=0; start();
+  }
+
+  hero.addEventListener('touchstart',function(e){
+    down(e.touches[0].clientX,e.touches[0].clientY);
+  },{passive:true});
+  hero.addEventListener('touchmove',function(e){
+    move(e.touches[0].clientX,e.touches[0].clientY,e);
+  },{passive:false});
+  hero.addEventListener('touchend',up,{passive:true});
+  hero.addEventListener('touchcancel',up,{passive:true});
+
+  hero.addEventListener('mousedown',function(e){
+    if(e.button!==0) return;
+    e.preventDefault(); down(e.clientX,e.clientY);
+  });
+  window.addEventListener('mousemove',function(e){ move(e.clientX,e.clientY,null); });
+  window.addEventListener('mouseup',up);
+
+  /* 끌었으면 클릭 취소 */
+  slides.forEach(function(s){
+    s.addEventListener('click',function(e){
+      if(Math.abs(dx)>8) e.preventDefault();
+    });
+  });
+
+  /* 키보드 */
+  hero.setAttribute('tabindex','0');
+  hero.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'){ stop(); go(now-1); start(); }
+    if(e.key==='ArrowRight'){ stop(); go(now+1); start(); }
+  });
+
+  /* 화면 밖이면 멈춤 */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting?start():stop(); });
+    },{threshold:.2}).observe(hero);
+  }
+
+  place(false);
+  start();
+})();
+</script>
 </body>
 </html>
