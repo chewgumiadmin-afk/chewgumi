@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v86 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v87 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1380,7 +1380,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v86 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v87 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2102,11 +2102,30 @@ function addToCart(){
   const name = (window._curOpt && window._curOpt.name) || card.querySelector('.name').textContent.trim();
   const found = CART.find(i => i.name === name);
   if (found) found.qty += dQty;
-  else CART.push({ name, price: dPrice, qty: dQty, img: card.querySelector('.thumb img').src });
+  else { var _im=card.querySelector('.thumb img'); CART.push({ name:name, price:dPrice, qty:dQty, img:(_im&&_im.src)||'' }); }
   closeDetail(); openCart();
 }
 function cartQty(i, d){ CART[i].qty = Math.max(1, CART[i].qty + d); renderCart(); }
 function cartDel(i){ CART.splice(i,1); renderCart(); }
+/* 상품명으로 이미지 찾기 — 챗봇·구독 등에서 담으면 img가 없다 */
+function cartImg(it){
+  if (it && it.img) return it.img;
+  var nm = String((it && it.name) || '');
+  /* 화면의 상품 카드에서 같은 이름을 찾아 이미지를 가져온다 */
+  var cards = document.querySelectorAll('.grid .card');
+  for (var i = 0; i < cards.length; i++) {
+    var el = cards[i].querySelector('.name');
+    if (el && el.textContent.trim() === nm.trim()) {
+      var im = cards[i].querySelector('.thumb img');
+      if (im && im.src) return im.src;
+    }
+  }
+  /* 못 찾으면 라인별 기본 이미지 */
+  if (/트래블|travel/i.test(nm)) return 'assets/banner-travel.png';
+  if (/듀잇|dew/i.test(nm))     return 'assets/banner-dew.png';
+  if (/트리플|triple|드림|스파크|리셋/i.test(nm)) return 'assets/banner-triple.png';
+  return 'assets/icon-192.png';
+}
 function renderCart(){
   saveCart();
   const list = document.getElementById('cList');
@@ -2115,7 +2134,7 @@ function renderCart(){
   if (!CART.length) { list.innerHTML = '<div class="c-empty">장바구니가 비어 있습니다</div>'; document.getElementById('cTotal').textContent = '₩0'; return; }
   list.innerHTML = CART.map((it,i) => `
     <div class="c-item">
-      <img src="${it.img}" alt="">
+      <img src="${cartImg(it)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='assets/icon-192.png';this.classList.add('c-noimg')">
       <div class="c-info">
         <div class="c-name">${it.name}</div>
         <div class="c-price">${won(it.price)} · 소계 ${won(it.price*it.qty)}</div>
@@ -3991,6 +4010,11 @@ body.at-foot .kko-fab{
 .drawer nav a.d-sub::before{opacity:.4}
 .drawer nav a.d-sub:hover{color:var(--main);
   background:linear-gradient(180deg,rgba(255,241,244,.9),rgba(255,228,230,.6))}
+
+/* 장바구니 썸네일 */
+.c-item img{width:58px;height:58px;flex:none;border-radius:12px;
+  object-fit:cover;background:#FFF1F4;display:block}
+.c-item img.c-noimg{object-fit:contain;padding:9px;background:#FFF7FA}
 </style>
 <script>
 /* 상단 메뉴 — 터치 기기에서 한 번 눌러 서브메뉴 열기 */
