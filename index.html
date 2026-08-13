@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v71 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v72 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1390,7 +1390,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v71 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v72 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2008,9 +2008,14 @@ function closeBoardLayer(){
 
 /* 사용자 사용 영상 목록 — assets/videos/ 에 올린 파일명만 적으면 됩니다.
    (구글 드라이브 임베드는 드라이브 UI 노출·주소 유출 문제로 사용하지 않습니다) */
+/* 사용자 사용 영상
+   mp4 파일을 assets/videos/ 에 올리면 그 파일로 재생됩니다.
+   파일이 없으면 아래 drive 주소로 자동 전환됩니다. */
 const USER_VIDEOS = [
-  '1x5V3DKvs2qWxiacrPYpNx2F9bm4PMUiG',
-  '14IpomqIc9lGBE-E3AoXGh9MEwZ_kF3kV'
+  { file:'assets/videos/user-1.mp4', drive:'1x5V3DKvs2qWxiacrPYpNx2F9bm4PMUiG',
+    title:'츄구미 사용 영상 1', poster:'assets/hero-1.jpg' },
+  { file:'assets/videos/user-2.mp4', drive:'14IpomqIc9lGBE-E3AoXGh9MEwZ_kF3kV',
+    title:'츄구미 사용 영상 2', poster:'assets/hero-3.jpg' }
 ];
 (function(){
   const g = document.getElementById('ufilmGrid');
@@ -2019,10 +2024,73 @@ const USER_VIDEOS = [
     g.innerHTML = '<div class="ufilm-empty">아직 등록된 영상이 없습니다.</div>';
     return;
   }
-  g.innerHTML = USER_VIDEOS.map(id =>
-    '<div class="video-card"><iframe src="https://drive.google.com/file/d/' + id +
-    '/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="ChewGumi 사용 영상"></iframe></div>'
-  ).join('') ;
+  g.innerHTML = USER_VIDEOS.map(function(v,n){
+    return '<div class="video-card" data-n="'+n+'">'
+      + '<video playsinline muted loop preload="metadata" poster="'+v.poster+'"'
+      + ' aria-label="'+v.title+'"><source src="'+v.file+'" type="video/mp4"></video>'
+      + '<button class="uf-play" type="button" aria-label="재생">'
+      + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></button>'
+      + '<div class="uf-ctl"><button type="button" class="uf-snd" aria-label="소리 켜기">🔇</button>'
+      + '<button type="button" class="uf-full" aria-label="전체화면">⛶</button></div>'
+      + '</div>';
+  }).join('');
+
+  [].slice.call(g.querySelectorAll('.video-card')).forEach(function(card){
+    const n = +card.dataset.n;
+    const v = card.querySelector('video');
+    const play = card.querySelector('.uf-play');
+    const snd = card.querySelector('.uf-snd');
+    const full = card.querySelector('.uf-full');
+    let fellBack = false;
+
+    function fallback(){
+      if (fellBack) return; fellBack = true;
+      card.innerHTML = '<iframe src="https://drive.google.com/file/d/'
+        + USER_VIDEOS[n].drive + '/preview" allow="autoplay; fullscreen"'
+        + ' allowfullscreen loading="lazy" title="'+USER_VIDEOS[n].title+'"></iframe>';
+    }
+    v.addEventListener('error', fallback);
+    const src = v.querySelector('source');
+    if (src) src.addEventListener('error', fallback);
+    setTimeout(function(){ if(!fellBack && v.readyState===0) fallback(); }, 3500);
+
+    function start(){
+      /* 다른 영상은 멈춘다 */
+      [].slice.call(g.querySelectorAll('video')).forEach(function(o){
+        if(o!==v && !o.paused){ o.pause(); o.closest('.video-card').classList.remove('playing'); }
+      });
+      v.play().then(function(){ card.classList.add('playing'); }).catch(fallback);
+    }
+    if (play) play.onclick = start;
+    v.addEventListener('click', function(){
+      if (v.paused) start();
+      else { v.pause(); card.classList.remove('playing'); }
+    });
+    if (snd) snd.onclick = function(e){
+      e.stopPropagation();
+      v.muted = !v.muted;
+      snd.textContent = v.muted ? '🔇' : '🔊';
+      snd.setAttribute('aria-label', v.muted ? '소리 켜기' : '소리 끄기');
+    };
+    if (full) full.onclick = function(e){
+      e.stopPropagation();
+      if (v.requestFullscreen) v.requestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    };
+  });
+
+  /* 화면 밖으로 나가면 정지 */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        const vv = e.target.querySelector('video');
+        if (!e.isIntersecting && vv && !vv.paused) {
+          vv.pause(); e.target.classList.remove('playing');
+        }
+      });
+    }, { threshold:.25 });
+    [].slice.call(g.querySelectorAll('.video-card')).forEach(function(c){ io.observe(c); });
+  }
 })();
 
 /* Community 요약 카드: BOARDS에서 3건씩 자동 추림 */
@@ -3118,6 +3186,29 @@ section{padding:44px 0}
   .full-banner{aspect-ratio:4/3}
   .full-banner .cap{left:20px;max-width:76%}
 }
+
+/* 사용자 영상 재생 버튼 */
+.video-card .uf-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  z-index:3;width:58px;height:58px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.5);
+  background:linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,.16));
+  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:0 8px 26px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.65);
+  transition:transform .26s cubic-bezier(.2,.7,.3,1),opacity .3s}
+.video-card .uf-play svg{width:23px;height:23px;fill:#fff;margin-left:3px}
+.video-card .uf-play:hover{transform:translate(-50%,-50%) scale(1.09)}
+.video-card .uf-play:active{transform:translate(-50%,-50%) scale(.93)}
+.video-card.playing .uf-play{opacity:0;pointer-events:none}
+.video-card .uf-ctl{position:absolute;right:11px;bottom:11px;z-index:4;display:flex;gap:6px;
+  opacity:0;transition:opacity .3s}
+.video-card:hover .uf-ctl,.video-card.playing .uf-ctl{opacity:1}
+.video-card .uf-ctl button{width:33px;height:33px;border-radius:50%;cursor:pointer;font-size:12px;
+  color:#fff;border:1px solid rgba(255,255,255,.3);
+  background:rgba(20,10,16,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:transform .18s,background .18s}
+.video-card .uf-ctl button:hover{background:rgba(20,10,16,.72);transform:translateY(-1px)}
+.lite .video-card video{display:none}
 </style>
 <script>
 /* ═══ 음성 입력·출력 ═══ */
