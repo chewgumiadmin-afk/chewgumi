@@ -1408,11 +1408,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
     </div></div>
     <div class="ft-links">
-      <a href="about.html">회사소개</a><a href="terms.html">이용약관</a><a href="privacy.html"><strong>개인정보처리방침</strong></a><a href="guide.html">이용안내</a><a href="tracking.html">배송조회</a><a href="faq.html">자주묻는질문(FAQ)</a>
+      <a href="about.html" class="kr" data-en="About">회사소개</a><a href="guide.html" class="kr" data-en="Guide">이용안내</a><a href="faq.html" class="kr" data-en="FAQ">자주묻는질문</a><a href="tracking.html" class="kr" data-en="Tracking">배송조회</a><a href="terms.html" class="kr" data-en="Terms">이용약관</a><a href="privacy.html" class="kr" data-en="Privacy"><strong>개인정보처리방침</strong></a>
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v71 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v72 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4624,6 +4624,67 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
 }
 @media(max-width:640px){
   .hero-count{right:12px;bottom:12px;font-size:10px;padding:5px 10px}
+}
+
+/* ══ 푸터 링크 — 줄 맞춰 정돈 ══
+   알약 버튼이 글자 수대로 폭이 달라져 어긋나 보였습니다.
+   3열 격자로 폭을 고정해 가지런히 놓습니다. */
+.ft-links{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:8px !important;
+  max-width:520px;
+  margin:28px auto 0 !important;
+  padding:0 4px;
+}
+.ft-links a{
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:0 8px !important;
+  font-size:11.5px !important;
+  letter-spacing:0 !important;
+  font-weight:600;
+  text-align:center;
+  line-height:1.35;
+  word-break:keep-all;
+  border-radius:14px !important;
+  border:1px solid rgba(255,255,255,.85);
+  background:rgba(255,255,255,.62);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+  transition:transform .16s, box-shadow .16s, background .16s;
+}
+.ft-links a:hover{
+  background:rgba(255,255,255,.9);
+  transform:translateY(-1px);
+}
+.ft-links a strong{font-weight:700}
+
+@media (max-width:640px){
+  .ft-links{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:7px !important;
+    max-width:340px;
+    margin-top:24px !important;
+  }
+  .ft-links a{font-size:12px !important;min-height:46px}
+}
+@media (max-width:340px){
+  .ft-links{grid-template-columns:1fr !important;max-width:100%}
+}
+
+/* 저작권 줄도 함께 정돈 */
+.ft-copy{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  margin-top:24px;padding-top:20px;
+  border-top:1px solid rgba(0,0,0,.06);
+  text-align:center;
+}
+.ft-copy > span:first-child{font-size:11.5px;color:var(--gray)}
+.ft-copy a{font-size:11px;letter-spacing:1px}
+@media (max-width:640px){
+  .ft-copy{gap:4px;margin-top:20px}
 }
 </style>
 <script src="assets/nav.js" defer>
