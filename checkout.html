@@ -322,16 +322,53 @@ function setPay(t){
 }
 let BANK={};
 /* 주요 은행·페이 앱 (Android intent / iOS scheme) */
+const BANK_CODE={ '국민':'004','신한':'088','우리':'020','하나':'081','농협':'011',
+  'NH':'011','기업':'003','카카오':'090','케이':'089','토스뱅크':'092','SC':'023',
+  '씨티':'027','부산':'032','대구':'031','경남':'039','광주':'034','전북':'037',
+  '제주':'035','새마을':'045','신협':'048','우체국':'071','수협':'007','산업':'002' };
+
+/* 은행 · 페이 앱 (Android package / iOS scheme) */
 const BANK_APPS=[
-  {n:'국민은행',s:'kbbank://',       a:'com.kbstar.kbbank'},
-  {n:'신한은행',s:'shinhan-sr-ansimclick://', a:'com.shinhan.sbanking'},
-  {n:'우리은행',s:'NewSmartPib://',  a:'com.wooribank.smart.npib'},
-  {n:'하나은행',s:'hanamysmart://',  a:'com.hanabank.ebk.channel.android.hananbank'},
-  {n:'농협',    s:'nhallonepay://',  a:'nh.smart'},
-  {n:'기업은행',s:'ibk-i-one://',    a:'com.ibk.neobanking'},
-  {n:'카카오뱅크',s:'kakaobank://',  a:'com.kakaobank.channel'},
-  {n:'토스',    s:'supertoss://',    a:'viva.republica.toss'}
+  {n:'토스',    s:'supertoss://',  a:'viva.republica.toss', pay:1},
+  {n:'카카오페이',s:'kakaotalk://', a:'com.kakao.talk',      pay:1},
+  {n:'네이버페이',s:'naversearchapp://', a:'com.nhn.android.search', pay:1},
+  {n:'국민',    s:'kbbank://',     a:'com.kbstar.kbbank'},
+  {n:'신한',    s:'shinhan-sr-ansimclick://', a:'com.shinhan.sbanking'},
+  {n:'우리',    s:'NewSmartPib://',a:'com.wooribank.smart.npib'},
+  {n:'하나',    s:'hanamysmart://',a:'com.hanabank.ebk.channel.android.hananbank'},
+  {n:'농협',    s:'nhallonepay://',a:'nh.smart'},
+  {n:'기업',    s:'ibk-i-one://',  a:'com.ibk.neobanking'},
+  {n:'카카오뱅크',s:'kakaobank://',a:'com.kakaobank.channel'},
+  {n:'케이뱅크',s:'kbank://',      a:'com.kbankwith.smartbank'},
+  {n:'토스뱅크',s:'supertoss://',  a:'viva.republica.toss'},
+  {n:'SC제일',  s:'scbankm://',    a:'com.scbank.mbanking'},
+  {n:'씨티',    s:'citimobileapp://', a:'com.citibank.cnb'},
+  {n:'부산',    s:'busanbank://',  a:'com.bnk.bs.mobile'},
+  {n:'대구',    s:'dgbbank://',    a:'com.dgb.mbanking'},
+  {n:'경남',    s:'knbanksmart://',a:'com.knb.psb'},
+  {n:'광주',    s:'kjbank://',     a:'com.kjbank.smart'},
+  {n:'전북',    s:'jbbank://',     a:'kr.co.jbbank'},
+  {n:'제주',    s:'jejubank://',   a:'com.jejubank.smart'},
+  {n:'새마을',  s:'kfccmobile://', a:'com.kfcc.mbanking'},
+  {n:'신협',    s:'cuonebank://',  a:'com.cu.cubank'},
+  {n:'우체국',  s:'postbank://',   a:'com.epost.psf.sdsi'},
+  {n:'수협',    s:'shbank://',     a:'com.sh.shbankm'},
+  {n:'산업',    s:'kdbbank://',    a:'com.kdb.smart'}
 ];
+
+/* 계좌 정보로 은행 코드 찾기 */
+function bankCode(){
+  const n=(BANK.bank_name||'');
+  for(const k in BANK_CODE){ if(n.indexOf(k)>-1) return BANK_CODE[k]; }
+  return '';
+}
+/* 토스 송금 링크 — 은행·계좌·금액 미리 채움 */
+function tossLink(){
+  const c=bankCode(), no=(BANK.bank_account||'').replace(/\D/g,'');
+  if(!c||!no) return 'supertoss://';
+  return 'supertoss://send?bank='+c+'&accountNo='+no
+    +(amount?('&amount='+amount):'');
+}
 function isMobile(){ return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
 
 function copyAcc(){
@@ -365,11 +402,19 @@ function openBankPick(){
   w.className='bk-pop';
   w.innerHTML='<div class="bk-box">'
     +'<h3>은행 앱 열기</h3>'
-    +'<p>계좌번호가 복사되었습니다.<br>앱에서 붙여넣기 하시면 됩니다.</p>'
+    +'<p><b>토스</b>는 계좌와 금액이 자동으로 채워집니다.<br>'
+    +'다른 앱은 계좌번호가 복사되어 있으니 붙여넣어 주세요.</p>'
     +'<div class="bk-acc">'+esc(BANK.bank_name||'')+' '+esc(BANK.bank_account||'')
     +'<br>예금주 '+esc(BANK.bank_holder||'')+'</div>'
+    +'<div class="bk-sect">간편결제 · 송금</div>'
+    +'<div class="bk-grid pay">'
+    + BANK_APPS.map((b,i)=>b.pay
+        ?'<button type="button" class="pay" data-i="'+i+'">'+esc(b.n)+'</button>':'').join('')
+    +'</div>'
+    +'<div class="bk-sect">은행 앱</div>'
     +'<div class="bk-grid">'
-    + BANK_APPS.map((b,i)=>'<button type="button" data-i="'+i+'">'+esc(b.n)+'</button>').join('')
+    + BANK_APPS.map((b,i)=>!b.pay
+        ?'<button type="button" data-i="'+i+'">'+esc(b.n)+'</button>':'').join('')
     +'</div>'
     +'<button type="button" class="bk-close">닫기</button></div>';
   document.body.appendChild(w);
@@ -378,6 +423,11 @@ function openBankPick(){
     btn.onclick=function(){
       const b=BANK_APPS[+btn.dataset.i];
       const ua=navigator.userAgent;
+      /* 토스는 은행·계좌·금액을 미리 채워서 연다 */
+      if(b.n==='토스'||b.n==='토스뱅크'){
+        location.href=tossLink();
+        return;
+      }
       if(/Android/i.test(ua)){
         location.href='intent://#Intent;scheme='+b.s.replace('://','')
           +';package='+b.a+';end';
@@ -581,6 +631,12 @@ $('payBtn').addEventListener('click',async()=>{
   font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
   background:rgba(0,0,0,.06);color:#333}
 @media(max-width:420px){.bk-grid{grid-template-columns:repeat(3,1fr)}}
+
+.bk-sect{margin-top:16px;margin-bottom:8px;font-size:11px;font-weight:700;
+  letter-spacing:2px;color:var(--gray)}
+.bk-grid.pay button{background:linear-gradient(160deg,#FFF6D6,#FFE923);
+  border-color:transparent;font-weight:800}
+.bk-box{max-height:82vh;overflow-y:auto}
 </style>
 <script src="assets/lite.js" defer></script>
 </body>
