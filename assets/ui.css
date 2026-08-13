@@ -60,28 +60,10 @@
 .tabs a:active{transform:scale(.96) !important}
 
 /* ── 입력 ── */
-input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
-select,textarea{
+input,select,textarea{
   min-height:var(--h-md);
   padding:0 14px;border-radius:14px !important;
   font-size:var(--fs-md) !important;font-family:inherit}
-
-/* ── 체크박스 · 라디오 ── */
-input[type=checkbox],input[type=radio]{
-  width:20px !important;height:20px !important;
-  min-height:0 !important;min-width:0 !important;
-  flex:none !important;margin:0 !important;padding:0 !important;
-  accent-color:var(--main,#D82558);
-  cursor:pointer;vertical-align:middle}
-input[type=radio]{border-radius:50% !important}
-/* 라벨과 나란히 놓이도록 */
-label:has(input[type=checkbox]),
-label:has(input[type=radio]){
-  display:inline-flex;align-items:center;gap:8px;
-  min-height:0;font-weight:500;cursor:pointer}
-@media(max-width:640px){
-  input[type=checkbox],input[type=radio]{width:22px !important;height:22px !important}
-}
 textarea{padding:12px 14px;min-height:80px;line-height:1.7}
 label{font-size:var(--fs-sm) !important;font-weight:600 !important}
 
@@ -151,3 +133,39 @@ label{font-size:var(--fs-sm) !important;font-weight:600 !important}
   .bl-tabs button,.ptab a{min-height:48px !important;font-size:11.5px !important}
   .bl-tabs button small,.ptab a small{font-size:8.5px;letter-spacing:1.1px}
 }
+
+
+/* ── select 화살표 ── */
+select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  padding-right:38px !important;cursor:pointer;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:right 13px center !important;
+  background-size:16px !important}
+select:focus{
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D82558' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important}
+select::-ms-expand{display:none}
+
+/* ── 너무 작은 글씨 최소 크기 보장 ── */
+body,p,li,td,th,span,div,label,small{font-synthesis-weight:none}
+small,.hint,.note,.msg,.ds,.sub,.desc{font-size:max(11.5px,1em) }
+
+/* ── 작은 버튼 터치 영역 확보 ── */
+.mini,.bk-grid button,.chips button,.bl-tabs button,
+.h-dots button,.bb-dots span,.ar-dots span{
+  touch-action:manipulation}
+.mini{min-height:38px}
+
+/* ── 아이콘 버튼 정렬 ── */
+button svg,a svg{flex:none;vertical-align:middle}
+
+/* ── 링크 터치 하이라이트 통일 ── */
+a,button,label,select,input,textarea{-webkit-tap-highlight-color:rgba(216,37,88,.08)}
+
+/* ── 표 가로 넘침 방지 ── */
+table{width:100%;border-collapse:collapse}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ── 긴 단어 줄바꿈 ── */
+h1,h2,h3,p,li,td{word-break:keep-all;overflow-wrap:anywhere}
