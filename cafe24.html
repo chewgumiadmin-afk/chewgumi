@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<!-- ChewGumi Cafe24 API Console v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>카페24 API | CHEWGUMI ADMIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/glass.css">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#1a1a1a;--gray:#797979;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1040px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:25px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.top a{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:12px;font-size:12.5px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.85)}
+label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
+.btn{padding:12px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;
+  font-size:11.5px;font-weight:700;background:rgba(255,255,255,.85);
+  border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.mini.go{background:linear-gradient(135deg,#37B26B,#2AA060);color:#fff;border-color:transparent}
+.msg{font-size:12.5px;color:var(--gray);margin-top:10px;min-height:17px;line-height:1.8}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+.warn{background:rgba(233,162,59,.14);border:1px solid rgba(233,162,59,.35);border-radius:14px;
+  padding:13px 15px;font-size:12.5px;line-height:1.85;margin-bottom:14px}
+.warn b{color:#9a6414}
+.acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+/* 진단 */
+.diag{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.dg{padding:14px 15px;border-radius:15px;background:rgba(255,255,255,.72);border:1px solid var(--line)}
+.dg .t{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.dg .st{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
+.dg .st.y{background:var(--ok)}.dg .st.n{background:#bbb}.dg .st.e{background:var(--bad)}
+.dg .d{margin-top:7px;font-size:11.5px;line-height:1.75;color:#555;word-break:break-all}
+/* 학습 */
+.eps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.eps button{padding:8px 12px;border-radius:999px;font-size:11px;font-weight:600;
+  background:rgba(255,255,255,.8);border:1px solid var(--line);color:#555}
+.eps button:hover{background:#fff}
+.out{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11.5px;line-height:1.7;background:rgba(27,11,20,.94);color:#e9e3e6;
+  border-radius:14px;padding:16px;max-height:420px;overflow:auto;margin-top:12px}
+.out .k{color:#FF8FB1}.out .s{color:#B6D94C}.out .n{color:#FFE923}
+.hide{display:none}
+@media(max-width:860px){.diag{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Cafe24 API</h1><div class="s">연동 · 진단 · 학습</div></div>
+    <div><a href="console.html">관리자 홈</a> · <a href="integrations.html">연동 관리</a> ·
+      <a href="https://developers.cafe24.com/docs/api/admin/" target="_blank" rel="noopener">API 문서</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <input id="em" type="email" placeholder="운영자 이메일" autocomplete="email" style="margin-bottom:9px">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-bottom:12px">
+    <button class="btn" onclick="doLogin()">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>연동 상태</h2>
+      <div class="msg" id="cStat" style="margin-top:0">확인 중…</div>
+      <div class="acts">
+        <a class="mini go" id="cAuth" href="#" target="_blank" rel="noopener">연동 승인하기</a>
+        <button class="mini" onclick="diagnose()">상점 종합 진단</button>
+        <button class="mini" onclick="doSync(30)">최근 30일 주문 가져오기</button>
+      </div>
+      <div class="msg" id="cRes"></div>
+    </div>
+
+    <div class="panel" id="dPanel" style="display:none">
+      <h2>종합 진단</h2>
+      <div class="diag" id="diag"></div>
+    </div>
+
+    <div class="panel">
+      <h2>자동 알림 설정</h2>
+      <div class="warn">
+        <b>알림톡을 켜면</b> 주문·입금·배송 안내가 고객 카카오톡으로 자동 발송됩니다.
+        카카오 비즈니스 채널 인증이 선행되어야 하며, 발송 건당 비용이 발생합니다.
+      </div>
+      <div class="acts">
+        <button class="mini" onclick="alimtalk()">알림톡 상태 확인</button>
+        <button class="mini go" onclick="alimtalkOn(true)">알림톡 켜기</button>
+        <button class="mini" onclick="alimtalkOn(false)">알림톡 끄기</button>
+        <button class="mini go" onclick="smsOn(true)">문자(SMS) 켜기</button>
+        <button class="mini" onclick="smsOn(false)">문자 끄기</button>
+      </div>
+      <div class="msg" id="aRes"></div>
+    </div>
+
+    <div class="panel">
+      <h2>결제 · 정산</h2>
+      <div class="acts">
+        <button class="mini" onclick="payments()">결제수단 조회</button>
+        <button class="mini" onclick="bankSync()">무통장 계좌 가져오기</button>
+        <button class="mini" onclick="unpaid()">미입금 주문 조회</button>
+        <button class="mini" onclick="receipts()">현금영수증 조회 (30일)</button>
+      </div>
+      <div class="msg" id="pRes"></div>
+    </div>
+
+    <div class="panel">
+      <h2>상품 · 재고</h2>
+      <div class="acts">
+        <button class="mini" onclick="stockSync()">공식몰 재고 · 품절 확인</button>
+      </div>
+      <div class="msg" id="sRes"></div>
+    </div>
+
+    <div class="panel">
+      <h2>API 학습</h2>
+      <div class="warn">
+        조회(GET)만 가능합니다. 데이터를 바꾸는 요청은 이 화면에서 실행되지 않습니다.
+      </div>
+      <div class="eps">
+        <button onclick="setEp('store')">상점 정보</button>
+        <button onclick="setEp('orders?limit=3')">주문 목록</button>
+        <button onclick="setEp('orders/count')">주문 수</button>
+        <button onclick="setEp('products?limit=3')">상품 목록</button>
+        <button onclick="setEp('customers?limit=3')">회원 목록</button>
+        <button onclick="setEp('paymentmethods')">결제수단</button>
+        <button onclick="setEp('sms/balance')">SMS 잔액</button>
+        <button onclick="setEp('kakaoalimtalk/setting')">알림톡 설정</button>
+        <button onclick="setEp('subscription/products')">정기배송 상품</button>
+        <button onclick="setEp('coupons?limit=3')">쿠폰</button>
+        <button onclick="setEp('customersgroup')">회원등급</button>
+        <button onclick="setEp('shipping')">배송 설정</button>
+      </div>
+      <label>요청 경로 (v2/admin/ 뒤에 올 부분)</label>
+      <input id="ep" placeholder="예) orders?limit=3" onkeydown="if(event.key==='Enter')runRaw()">
+      <div class="acts">
+        <button class="btn" onclick="runRaw()">조회 실행</button>
+        <button class="btn ghost" onclick="copyOut()">결과 복사</button>
+        <a class="mini" href="https://developers.cafe24.com/docs/api/admin/" target="_blank" rel="noopener">문서에서 찾기</a>
+      </div>
+      <div class="msg" id="rMsg"></div>
+      <div id="rBox"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <div class="msg" id="who" style="margin-top:0"></div>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:140px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/cafe24';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+let token=null,who='',lastOut='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';status();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
+  }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+function show(el,d,label){
+  lastOut=JSON.stringify(d,null,2);
+  $('rBox').innerHTML='<div class="out">'+esc(lastOut)+'</div>';
+  if(label) $(el).textContent=label;
+  $('rBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function status(){
+  call({action:'status'}).then(({ok,d})=>{
+    if(!ok) return $('cStat').textContent=d.error||'상태를 확인하지 못했습니다.';
+    if(d.connected){
+      $('cStat').innerHTML='공식몰과 연동되어 있습니다. 가져온 주문 <b>'+(d.orderCount||0)+'건</b>'
+        +'<br><span style="font-size:11.5px;color:var(--gray)">권한: '+esc(d.info?.scopes||'')+'</span>';
+      $('cAuth').textContent='권한 다시 받기';
+    } else {
+      $('cStat').innerHTML='아직 연동되지 않았습니다. <b>[연동 승인하기]</b>를 눌러 카페24에서 승인해 주세요.'
+        +'<br><span style="font-size:11.5px;color:var(--gray)">Redirect URI: '+esc(d.authUrl||'')+'</span>';
+    }
+    $('cAuth').href=d.authUrl||'#';
+  }).catch(()=>{$('cStat').textContent='상태를 확인하지 못했습니다.';});
+}
+
+const DG={
+  store:['상점 정보','내 쇼핑몰 기본 정보'],
+  bank:['무통장 계좌','등록된 입금 계좌'],
+  sms:['문자(SMS) 설정','사용 여부'],
+  smsBalance:['SMS 잔액','충전된 건수'],
+  alimtalk:['카카오 알림톡','자동 발송 설정'],
+  alimtalkKey:['알림톡 발신 프로필','채널 연결 키'],
+  paymentMethods:['결제수단','노출 중인 결제수단'],
+  paymentSetting:['결제 설정','PG·에스크로 등'],
+  restock:['재입고 알림','품절 시 알림 설정'],
+  subscription:['정기배송','카페24 구독 상품'],
+  financials:['PG 정보','정산 관련']
+};
+function diagnose(){
+  $('cRes').className='msg'; $('cRes').textContent='상점 정보를 확인하는 중… 10초 정도 걸립니다.';
+  call({action:'diagnose'}).then(({ok,d})=>{
+    if(!ok){ $('cRes').className='msg bad';
+      $('cRes').textContent=d.error||'진단에 실패했습니다.'; return; }
+    $('cRes').className='msg ok'; $('cRes').textContent='진단이 끝났습니다.';
+    $('dPanel').style.display='';
+    const r=d.result||{};
+    $('diag').innerHTML=Object.keys(DG).map(k=>{
+      const v=r[k]||{}; const meta=DG[k];
+      const st=v.ok?['y','사용 가능']:(v.status===403||v.status===401?['n','권한 없음']:['e','오류 '+(v.status||'')]);
+      let txt='';
+      if(v.ok){
+        try{ txt=JSON.stringify(v.data).slice(0,150); }catch(e){ txt=''; }
+      } else txt=typeof v.data==='string'?v.data:JSON.stringify(v.data||{}).slice(0,120);
+      return '<div class="dg"><div class="t">'+esc(meta[0])
+        +'<span class="st '+st[0]+'">'+st[1]+'</span></div>'
+        +'<div class="d">'+esc(meta[1])+'<br>'+esc(txt)+'</div></div>';
+    }).join('');
+    show('cRes',r);
+  }).catch(()=>{$('cRes').className='msg bad';$('cRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function doSync(days){
+  $('cRes').className='msg'; $('cRes').textContent='주문을 가져오는 중…';
+  call({action:'sync',days}).then(({ok,d})=>{
+    $('cRes').className=ok?'msg ok':'msg bad';
+    $('cRes').textContent=ok?('최근 '+d.days+'일 주문 '+d.saved+'건을 가져왔습니다.')
+      :(d.error||'가져오지 못했습니다.');
+    if(ok) status();
+  }).catch(()=>{$('cRes').className='msg bad';$('cRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function alimtalk(){
+  $('aRes').className='msg'; $('aRes').textContent='알림톡 설정을 확인하는 중…';
+  call({action:'alimtalk'}).then(({ok,d})=>{
+    if(!ok){ $('aRes').className='msg bad'; $('aRes').textContent=d.error||'확인하지 못했습니다.'; return; }
+    const s=d.setting, k=d.senderKey;
+    let msg=[];
+    if(s) msg.push('알림톡 설정을 읽었습니다.');
+    else msg.push('알림톡 설정 조회 실패: '+esc(String(d.settingErr||'')));
+    if(k) msg.push('발신 프로필 키가 확인되었습니다. (채널 연결됨)');
+    else msg.push('발신 프로필 키 없음 — 카카오 비즈니스 채널 연결이 필요합니다.');
+    $('aRes').className='msg'; $('aRes').innerHTML=msg.join('<br>');
+    show('aRes',d);
+  }).catch(()=>{$('aRes').className='msg bad';$('aRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function alimtalkOn(on){
+  if(on && !confirm('알림톡을 켤까요?\n고객에게 자동 발송이 시작되며 건당 비용이 발생합니다.')) return;
+  $('aRes').className='msg'; $('aRes').textContent='설정을 변경하는 중…';
+  call({action:'alimtalkOn',on}).then(({ok,d})=>{
+    $('aRes').className=ok?'msg ok':'msg bad';
+    $('aRes').textContent=ok?('알림톡을 '+(on?'켰습니다.':'껐습니다.')):(d.error||'변경에 실패했습니다.');
+    if(d) show('aRes',d);
+  }).catch(()=>{$('aRes').className='msg bad';$('aRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function smsOn(on){
+  $('aRes').className='msg'; $('aRes').textContent='설정을 변경하는 중…';
+  call({action:'smsOn',on}).then(({ok,d})=>{
+    $('aRes').className=ok?'msg ok':'msg bad';
+    $('aRes').textContent=ok?('문자를 '+(on?'켰습니다.':'껐습니다.')):(d.error||'변경에 실패했습니다.');
+    if(d) show('aRes',d);
+  }).catch(()=>{$('aRes').className='msg bad';$('aRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function payments(){
+  $('pRes').className='msg'; $('pRes').textContent='결제수단을 조회하는 중…';
+  call({action:'payments'}).then(({ok,d})=>{
+    if(!ok){ $('pRes').className='msg bad'; $('pRes').textContent=d.error||'조회 실패'; return; }
+    const m=d.methods;
+    $('pRes').className='msg ok';
+    $('pRes').textContent=Array.isArray(m)?('결제수단 '+m.length+'건을 읽었습니다.'):'결제 설정을 읽었습니다.';
+    show('pRes',d);
+  }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function bankSync(){
+  $('pRes').className='msg'; $('pRes').textContent='계좌 정보를 가져오는 중…';
+  call({action:'bankSync'}).then(({ok,d})=>{
+    if(!ok){ $('pRes').className='msg bad'; $('pRes').textContent=d.error||'가져오지 못했습니다.'; return; }
+    if(!d.found){ $('pRes').className='msg'; $('pRes').textContent=d.message; show('pRes',d); return; }
+    $('pRes').className='msg ok';
+    $('pRes').textContent='가져왔습니다: '+d.bank_name+' '+d.bank_account
+      +(d.bank_holder?' (예금주 '+d.bank_holder+')':'');
+    show('pRes',d);
+  }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function unpaid(){
+  $('pRes').className='msg'; $('pRes').textContent='미입금 주문을 조회하는 중…';
+  call({action:'unpaid'}).then(({ok,d})=>{
+    $('pRes').className=ok?'msg ok':'msg bad';
+    $('pRes').textContent=ok?('미입금 주문 '+(d.items||[]).length+'건'):(d.error||'조회 실패');
+    show('pRes',d);
+  }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function receipts(){
+  $('pRes').className='msg'; $('pRes').textContent='현금영수증을 조회하는 중…';
+  call({action:'cashReceipts',days:30}).then(({ok,d})=>{
+    $('pRes').className=ok?'msg ok':'msg bad';
+    $('pRes').textContent=ok?('최근 30일 현금영수증 '+(d.items||[]).length+'건'):(d.error||'조회 실패');
+    show('pRes',d);
+  }).catch(()=>{$('pRes').className='msg bad';$('pRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+function stockSync(){
+  $('sRes').className='msg'; $('sRes').textContent='공식몰 재고를 확인하는 중…';
+  call({action:'stockSync'}).then(({ok,d})=>{
+    if(!ok){ $('sRes').className='msg bad'; $('sRes').textContent=d.error||'조회 실패'; return; }
+    const so=d.soldout||[];
+    $('sRes').className=so.length?'msg bad':'msg ok';
+    $('sRes').innerHTML='상품 '+(d.products||[]).length+'건 확인. '
+      +(so.length?('<b>품절 '+so.length+'건</b>: '+so.map(x=>esc(x.name)).join(', ')):'품절 없음');
+    show('sRes',d);
+  }).catch(()=>{$('sRes').className='msg bad';$('sRes').textContent='네트워크 오류가 발생했습니다.';});
+}
+
+function setEp(p){ $('ep').value=p; runRaw(); }
+function runRaw(){
+  const p=$('ep').value.trim();
+  if(!p) return $('rMsg').textContent='요청 경로를 입력해 주세요.';
+  $('rMsg').className='msg'; $('rMsg').textContent='조회하는 중…';
+  call({action:'raw',path:p}).then(({ok,d})=>{
+    $('rMsg').className=(ok&&d.ok)?'msg ok':'msg bad';
+    $('rMsg').textContent=(ok&&d.ok)?('응답 '+d.status+' — 정상'):
+      (d.error||('응답 '+(d.status||'')+' — 권한이 없거나 경로가 올바르지 않습니다.'));
+    show('rMsg',d.data||d);
+  }).catch(()=>{$('rMsg').className='msg bad';$('rMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function copyOut(){
+  if(!lastOut) return alert('복사할 결과가 없습니다.');
+  navigator.clipboard.writeText(lastOut).then(()=>alert('복사되었습니다.'))
+  .catch(()=>alert('복사에 실패했습니다.'));
+}
+sync();
+</script>
+</body>
+</html>
