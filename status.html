@@ -80,6 +80,18 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--main2);outline-offs
 .fab .kko{background:#FEE500;color:#191600}
 .fab .ml{background:rgba(255,255,255,.9);border:1px solid var(--line);color:var(--ink)}
 .fab .ad{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+
+  /* 모바일 — 긴 글자가 화면을 밀어내지 않도록 */
+  @media(max-width:640px){
+    body{overflow-x:hidden}
+    .msg,.hint,p,li,td,th,.rb,.ib,.sb,.d{word-break:keep-all;overflow-wrap:anywhere}
+    [style*="nowrap"],.nowrap{white-space:normal !important}
+    .acts,.chips,.tabs,.sug,.eps,.kinds{overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;padding-bottom:2px}
+    .acts::-webkit-scrollbar,.chips::-webkit-scrollbar,
+    .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
+    .out,pre,code{overflow-x:auto;word-break:break-all}
+  }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="manifest" href="manifest.json">
