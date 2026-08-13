@@ -276,7 +276,7 @@ header.solid { background:rgba(251,251,253,.78); backdrop-filter:saturate(120%) 
 header.solid .cart-n { border-color:var(--ink); }
 .head-top { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; height:50px; transition:height .25s ease; }
 header.shrink .head-top { height:42px; }
-header.shrink .head-top .logo img { height:28px !important; }
+header.shrink .head-top .logo img { height:34px !important; }
 header.shrink .glass-wrap { padding:0 16px 8px; }
 header.shrink .glass-bar { padding:3px; }
 .head-top .logo { grid-column:2; }
@@ -648,8 +648,8 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   animation:ripple-wave .75s cubic-bezier(.2,.6,.3,1) forwards; mix-blend-mode:screen; }
 @keyframes ripple-wave { 60% { opacity:.5; } 100% { transform:translate(-50%,-50%) scale(4.2); opacity:0; } }
 @media (prefers-reduced-motion:reduce){ .ripple { display:none; } }
-.logo img { height:38px; width:auto; display:block; margin:0 auto; }
-@media (max-width:900px){ .logo img { height:30px; } }
+.logo img { height:46px; width:auto; display:block; margin:0 auto; }
+@media (max-width:900px){ .logo img { height:38px; } }
 @keyframes jelly-wobble {
   0%,100% { border-radius:58% 42% 62% 38% / 55% 48% 52% 45%; transform:scale(1); }
   35% { border-radius:45% 55% 48% 52% / 60% 42% 58% 40%; transform:scale(1.06,0.95); }
@@ -1412,7 +1412,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v70 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v71 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4575,16 +4575,16 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
    모바일에서 4:3(1.33)·16:9(1.78)로 잡혀 양옆이 크게 잘렸습니다.
    원본 비율에 가깝게 맞추고, 잘리더라도 가운데가 남도록 합니다. */
 @media (max-width:1000px){
-  .hero{aspect-ratio:1400/760 !important;max-height:none !important}
+  .hero{aspect-ratio:1400/675 !important;max-height:none !important}
 }
 @media (max-width:640px){
-  .hero{aspect-ratio:1400/880 !important;border-radius:0 !important;max-height:none !important}
+  .hero{aspect-ratio:1400/700 !important;border-radius:0 !important;max-height:none !important}
 }
 @media (max-width:560px){
-  .hero{aspect-ratio:1400/920 !important}
+  .hero{aspect-ratio:1400/720 !important}
 }
 @media (max-width:420px){
-  .hero{aspect-ratio:1400/980 !important}
+  .hero{aspect-ratio:1400/750 !important}
 }
 @media (max-height:520px) and (orientation:landscape){
   .hero{aspect-ratio:1400/675 !important;height:auto !important}
