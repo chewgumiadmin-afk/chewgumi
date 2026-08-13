@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v73 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v74 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -980,18 +980,10 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 
 <!-- 히어로 (실제 메인 배너) -->
 <div class="hero" id="heroSlider">
-  <a class="slide slide-1 on" href="#all" onclick="filterLine('all')" aria-label="트리플잇 신제품 보기">
-        <span class="h-cap"><em>COMING SOON</em><b>여행갈 땐, 트리플 잇</b>
-        <i>상황에 맞춰 고르는 세 가지 맛</i></span></a>
-      <a class="slide slide-2" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기">
-        <span class="h-cap"><em>TRAVEL-IT</em><b>물 없이 챙기는 12가지 영양</b>
-        <i>감귤맛 비타민 젤리 · 40g</i></span></a>
-      <a class="slide slide-3" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기">
-        <span class="h-cap"><em>DEW-IT</em><b>한 알로 입안을 촉촉하게</b>
-        <i>핀란드산 자일리톨 93% · 무설탕</i></span></a>
-      <a class="slide slide-4" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기">
-        <span class="h-cap"><em>EVERY DAY</em><b>매일의 상쾌한 습관</b>
-        <i>레몬민트 · 그레이프</i></span></a>
+  <a class="slide slide-1 on" href="#all" onclick="filterLine('all')" aria-label="트리플잇 신제품 보기"></a>
+      <a class="slide slide-2" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기"></a>
+      <a class="slide slide-3" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기"></a>
+      <a class="slide slide-4" href="#all" onclick="filterLine('doit')" aria-label="듀잇 보기"></a>
   <button class="hero-arrow prev" onclick="heroGo(-1)" aria-label="이전 배너">‹</button>
   <button class="hero-arrow next" onclick="heroGo(1)" aria-label="다음 배너">›</button>
   <div class="hero-dots" id="heroDots"></div>
@@ -1396,7 +1388,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v73 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v74 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2937,47 +2929,9 @@ section{padding:44px 0}
 </script>
 
 <style>
-/* ═══ 히어로 문구 액팅 ═══ */
-.hero .slide{position:absolute;inset:0;display:block;text-decoration:none;overflow:hidden}
-.h-cap{
-  position:absolute;left:clamp(20px,5vw,58px);top:50%;transform:translateY(-50%);
-  max-width:min(46%,420px);pointer-events:none;z-index:2;
-  display:flex;flex-direction:column;gap:9px;text-align:left}
-.h-cap em{
-  font-family:'Poppins',sans-serif;font-style:normal;
-  font-size:clamp(9px,1.1vw,11px);font-weight:800;letter-spacing:3px;
-  color:var(--main);
-  opacity:0;transform:translateY(14px)}
-.h-cap b{
-  font-size:clamp(17px,3vw,34px);font-weight:800;line-height:1.28;letter-spacing:-.035em;
-  color:#1a1013;word-break:keep-all;
-  opacity:0;transform:translateY(20px)}
-.h-cap i{
-  font-style:normal;font-size:clamp(11px,1.4vw,15px);line-height:1.7;
-  color:#4a3a40;word-break:keep-all;
-  opacity:0;transform:translateY(16px)}
 
-/* 현재 슬라이드일 때만 순차 등장 */
-.slide.on .h-cap em{animation:capUp .7s cubic-bezier(.2,.8,.3,1) .18s forwards}
-.slide.on .h-cap b {animation:capUp .8s cubic-bezier(.2,.8,.3,1) .32s forwards}
-.slide.on .h-cap i {animation:capUp .8s cubic-bezier(.2,.8,.3,1) .48s forwards}
-@keyframes capUp{to{opacity:1;transform:translateY(0)}}
-
-/* 글자 뒤 부드러운 밝기 (사진 위 가독성) */
-.slide::before{
-  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(100deg,rgba(255,255,255,.62) 0%,
-    rgba(255,255,255,.28) 34%,rgba(255,255,255,0) 56%)}
-
-@media (max-width:640px){
-  .h-cap{left:18px;max-width:62%;gap:6px}
-  .h-cap b{font-size:clamp(15px,4.6vw,20px)}
-  .h-cap i{display:none}
-  .slide::before{background:linear-gradient(100deg,rgba(255,255,255,.7) 0%,
-    rgba(255,255,255,.34) 46%,rgba(255,255,255,0) 68%)}
-}
 @media (prefers-reduced-motion:reduce){
-  .h-cap em,.h-cap b,.h-cap i{opacity:1;transform:none;animation:none !important}
+  
 }
 </style>
 <link rel="preload" as="image" href="assets/hero-1.jpg">
@@ -3449,5 +3403,119 @@ section{padding:44px 0}
   start();
 })();
 </script>
+
+<style>
+/* ═══════════════════════════════════════
+   Apple-style Liquid Glass — 정제판
+   ═══════════════════════════════════════ */
+:root{
+  /* 유리 층위 — 배경에서 멀어질수록 흐림이 강해진다 */
+  --g-blur-1:20px;   /* 카드 */
+  --g-blur-2:30px;   /* 바 · 헤더 */
+  --g-blur-3:44px;   /* 팝업 · 시트 */
+  --g-sat:180%;
+  /* 유리 자체의 색 — 완전 투명이 아니라 아주 옅은 흰색 */
+  --g-tint-1:rgba(255,255,255,.62);
+  --g-tint-2:rgba(255,255,255,.74);
+  --g-tint-3:rgba(255,255,255,.86);
+  /* 테두리 — 위는 밝고 아래는 어둡게 (빛이 위에서 온다) */
+  --g-edge:rgba(255,255,255,.7);
+  --g-hi:inset 0 1px 0 rgba(255,255,255,.9);
+  --g-lo:inset 0 -1px 0 rgba(0,0,0,.03);
+  /* 그림자 — 두 겹 (가까운 것과 먼 것) */
+  --g-sh-1:0 1px 2px rgba(0,0,0,.04);
+  --g-sh-2:0 12px 32px rgba(0,0,0,.08);
+  --g-sh-3:0 24px 60px rgba(0,0,0,.16);
+  /* 애플의 감속 곡선 */
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+
+/* ── 카드 층 ── */
+.panel,.card,.comm-card,.plan,.perk,.stat,.rv-sec,.bankbox,.cardbox,.qn{
+  background:linear-gradient(180deg,var(--g-tint-2),var(--g-tint-1)) !important;
+  border:.5px solid var(--g-edge) !important;
+  backdrop-filter:blur(var(--g-blur-1)) saturate(var(--g-sat)) !important;
+  -webkit-backdrop-filter:blur(var(--g-blur-1)) saturate(var(--g-sat)) !important;
+  box-shadow:var(--g-sh-1),var(--g-sh-2),var(--g-hi),var(--g-lo) !important;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease) !important}
+
+/* 눌림 — 애플은 커지지 않고 살짝 작아진다 */
+.card:active,.qn:active,.comm-card:active{transform:scale(.985) !important}
+
+/* ── 바 층 ── */
+header,.m-nav,.cg-pwa,.cg-lite-bar{
+  backdrop-filter:blur(var(--g-blur-2)) saturate(var(--g-sat)) !important;
+  -webkit-backdrop-filter:blur(var(--g-blur-2)) saturate(var(--g-sat)) !important}
+header{
+  background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.7)) !important;
+  border-bottom:.5px solid rgba(0,0,0,.06) !important;
+  box-shadow:none !important}
+header.stuck{box-shadow:0 .5px 0 rgba(0,0,0,.07),0 8px 24px rgba(0,0,0,.05) !important}
+
+/* ── 팝업 층 ── */
+.popup,.cartp,.drawer,.detail,.kko-box,.cgbot-win,.bk-box{
+  background:linear-gradient(180deg,var(--g-tint-3),rgba(255,255,255,.78)) !important;
+  border:.5px solid var(--g-edge) !important;
+  backdrop-filter:blur(var(--g-blur-3)) saturate(var(--g-sat)) !important;
+  -webkit-backdrop-filter:blur(var(--g-blur-3)) saturate(var(--g-sat)) !important;
+  box-shadow:var(--g-sh-3),var(--g-hi) !important}
+.popup-dim,.kko-pop,.bk-pop,.join-dim{
+  background:rgba(0,0,0,.28) !important;
+  backdrop-filter:blur(20px) saturate(120%) !important;
+  -webkit-backdrop-filter:blur(20px) saturate(120%) !important}
+
+/* ── 알약 버튼 ── */
+.mini,.btn.ghost,.sec-more,.comm-more,.bl-foot,#blWriteBtn,.fav-edit,.ps-btn,.bk-b{
+  border:.5px solid var(--g-edge) !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.72)) !important;
+  backdrop-filter:blur(16px) saturate(var(--g-sat)) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(var(--g-sat)) !important;
+  box-shadow:var(--g-sh-1),var(--g-hi) !important;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease) !important}
+.mini:active,.btn.ghost:active,.sec-more:active,.ps-btn:active,.bk-b:active{
+  transform:scale(.96) !important}
+
+/* ── 채워진 버튼 — 위쪽 광택 ── */
+.btn:not(.ghost),.sc-go,.p-join,.tri-btn{
+  border:.5px solid rgba(255,255,255,.28) !important;
+  box-shadow:0 1px 2px rgba(216,37,88,.16),
+             0 8px 22px rgba(216,37,88,.24),
+             inset 0 1px 0 rgba(255,255,255,.4) !important;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease) !important}
+.btn:not(.ghost):active,.sc-go:active,.tri-btn:active{transform:scale(.96) !important}
+
+/* ── 입력창 ── */
+input,select,textarea{
+  border:.5px solid rgba(0,0,0,.09) !important;
+  background:rgba(255,255,255,.78) !important;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.03) !important;
+  transition:background .25s var(--ease),box-shadow .25s var(--ease) !important}
+input:focus,select:focus,textarea:focus{
+  background:rgba(255,255,255,.97) !important;
+  box-shadow:0 0 0 3.5px rgba(216,37,88,.12),
+             inset 0 1px 2px rgba(0,0,0,.02) !important;
+  outline:none !important}
+
+/* ── 하단 탭바 ── */
+@media(max-width:900px){
+  .m-nav{
+    background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.62)) !important;
+    border:.5px solid var(--g-edge) !important;
+    box-shadow:var(--g-sh-2),var(--g-hi),var(--g-lo) !important}
+  .m-nav a{transition:transform .35s var(--ease),background .3s,color .3s !important}
+  .m-nav a:active{transform:scale(.9) !important}
+}
+
+/* 경량 모드에서는 흐림 해제 */
+.lite .panel,.lite .card,.lite header,.lite .m-nav,.lite .popup,
+.lite .cartp,.lite .drawer,.lite .mini,.lite .btn.ghost{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  background:rgba(255,255,255,.96) !important}
+
+@media (prefers-reduced-motion:reduce){
+  .panel,.card,.mini,.btn,.m-nav a{transition:none !important}
+}
+</style>
 </body>
 </html>
