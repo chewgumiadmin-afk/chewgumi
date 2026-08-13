@@ -990,8 +990,8 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <div class="hb-in">
           <div class="hb-txt" id="hbTxt">
             <span class="eb">TRIPLE-IT</span>
-            <b>여행갈 땐, 트리플 잇</b>
-            <i>상황에 맞춰 고르는 세 가지 맛</i>
+            <b data-en="Three for every moment">여행갈 땐, 트리플 잇</b>
+            <i data-en="Pick what you need, when you need it">상황에 맞춰 고르는 세 가지 맛</i>
           </div>
           <div class="hb-nav">
             <span class="hb-no"><em id="hbNow">1</em> / <span id="hbAll">4</span></span>
@@ -1412,7 +1412,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v69 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v70 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1581,6 +1581,7 @@ function setLang(l){
   document.querySelectorAll('[data-en]').forEach(el => { el.innerHTML = l === 'en' ? el.dataset.en : el.dataset.ko; });
   document.getElementById('langBtn').textContent = l === 'en' ? 'KR' : 'EN';
   document.documentElement.lang = l;
+  try{ if(window._heroCap) window._heroCap(); }catch(e){}
   if (l === 'en') cgLoadUsd(); else cgUpdUsd();
   const d = document.getElementById('detail');
   if (d && !d.classList.contains('hide') && window._curCard) {
@@ -3891,10 +3892,14 @@ body.at-foot .kko-fab{
   if(!hero||!track||!dotBox) return;
 
   var CAP=[
-    {e:'TRIPLE-IT', t:'여행갈 땐, 트리플 잇',      d:'상황에 맞춰 고르는 세 가지 맛'},
-    {e:'TRAVEL-IT', t:'물 없이 챙기는 12가지 영양', d:'감귤맛 비타민 젤리 · 40g'},
-    {e:'DEW-IT',    t:'한 알로 입안을 촉촉하게',    d:'핀란드산 자일리톨 93% · 무설탕'},
-    {e:'EVERY DAY', t:'매일의 상쾌한 습관',         d:'레몬민트 · 그레이프'}
+    {e:'TRIPLE-IT', t:'여행갈 땐, 트리플 잇',      d:'상황에 맞춰 고르는 세 가지 맛',
+     te:'Three for every moment',    de:'Pick what you need, when you need it'},
+    {e:'TRAVEL-IT', t:'물 없이 챙기는 12가지 영양', d:'감귤맛 비타민 젤리 · 40g',
+     te:'12 nutrients, no water',    de:'Citrus vitamin gummy · 40g'},
+    {e:'DEW-IT',    t:'한 알로 입안을 촉촉하게',    d:'핀란드산 자일리톨 93% · 무설탕',
+     te:'One piece, all-day fresh',  de:'93% Finnish xylitol · Sugar-free'},
+    {e:'EVERY DAY', t:'매일의 상쾌한 습관',         d:'레몬민트 · 그레이프',
+     te:'A fresher daily habit',     de:'Lemon Mint · Grape'}
   ];
   var slides=[].slice.call(track.children);
   var n=slides.length;
@@ -3915,17 +3920,17 @@ body.at-foot .kko-fab{
   var elNow=document.getElementById('hbNow'), elAll=document.getElementById('hbAll');
   if(elAll) elAll.textContent=n;
 
-  function cap(){
-    var c=CAP[now]||CAP[0];
-    if(!txt) return;
-    txt.classList.remove('in');
-    txt.querySelector('.eb').textContent=c.e;
-    txt.querySelector('b').textContent=c.t;
-    txt.querySelector('i').textContent=c.d;
+  function cap(){ var c=CAP[now]||CAP[0]; if(!txt) return;
+      var en = (typeof cgLang!=='undefined' && cgLang==='en');
+      txt.classList.remove('in');
+      txt.querySelector('.eb').textContent=c.e;
+      txt.querySelector('b').textContent = en ? (c.te||c.t) : c.t;
+      txt.querySelector('i').textContent = en ? (c.de||c.d) : c.d;
     void txt.offsetWidth;
     txt.classList.add('in');
   }
-  function place(anim){
+  window._heroCap = cap;
+    function place(anim){
     track.classList.toggle('nodrag',!anim);
     track.style.transform='translate3d('+(-now*W)+'px,0,0)';
     dots.forEach(function(d,k){
