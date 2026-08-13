@@ -106,8 +106,11 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .kko-act .go{background:#FEE500;color:#191600}
 .kko-act .cp{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
 .kko-act .cl{background:rgba(0,0,0,.06);color:#333}
+
+.kko-hint{margin-top:11px;font-size:11.5px;line-height:1.7;color:var(--gray);text-align:center}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="wrap">
@@ -478,6 +481,21 @@ function c24Ship(id){
     else $('c24Status').textContent=d.error||'등록에 실패했습니다.';
   }).catch(()=>{$('c24Status').textContent='네트워크 오류가 발생했습니다.';});
 }
+const SITE_URL='https://chewgumi.com';
+let KKO_OK=false;
+function kkoReady(){
+  if(KKO_OK) return true;
+  if(!window.Kakao) return false;
+  try{
+    if(!window.Kakao.isInitialized()){
+      var k=window._KKO_JS_KEY;
+      if(!k) return false;
+      window.Kakao.init(k);
+    }
+    KKO_OK=window.Kakao.isInitialized();
+    return KKO_OK;
+  }catch(e){ return false; }
+}
 const FN_NT = SB_URL + '/functions/v1/notify';
 function ntCall(p){
   return fetch(FN_NT,{method:'POST',
@@ -495,6 +513,7 @@ function ntLoad(){
     $('ntMailOn').checked=(d.owner_notify_email==='on');
     $('ntSmsOn').checked=(d.owner_notify_sms==='on');
     $('ntKkoLink').href=d.kakao_channel_url||'#';
+    if(d.kakao_js_key){ window._KKO_JS_KEY=d.kakao_js_key; kkoReady(); }
     var s=[];
     s.push(d.mailReady?'이메일 발송 준비됨 (월 3,000통 무료)'
       :'이메일 키(RESEND_API_KEY) 미등록 — 등록하면 무료로 알림을 받으실 수 있습니다.');
@@ -549,9 +568,11 @@ function kkoPop(no,d){
     +'<button data-k="done">수령 확인</button></div>'
     +'<textarea id="kkoTx">'+esc(d.text)+'</textarea>'
     +'<div class="kko-act">'
+    +'<button class="go" id="kkoSendBtn">카톡으로 보내기</button>'
     +'<button class="cp" id="kkoCp">문구 복사</button>'
-    +'<a class="go" href="'+esc(d.channel||'#')+'" target="_blank" rel="noopener">카톡 열기</a>'
-    +'<button class="cl" id="kkoCl">닫기</button></div></div>';
+    +'<button class="cl" id="kkoCl">닫기</button></div>'
+    +'<div class="kko-hint" id="kkoHint">카카오톡이 열리면 받으실 분을 고르고 전송해 주세요.</div>'
+    +'</div>';
   document.body.appendChild(wrap);
 
   wrap.querySelectorAll('.kko-tabs button').forEach(function(b){
@@ -573,6 +594,25 @@ function kkoPop(no,d){
       var a=wrap.querySelector('#kkoTx'); a.select(); document.execCommand('copy');
       alert('복사되었습니다.');
     });
+  };
+  wrap.querySelector('#kkoSendBtn').onclick=function(){
+    var t=wrap.querySelector('#kkoTx').value;
+    if(!kkoReady()){
+      wrap.querySelector('#kkoHint').textContent=
+        '카카오톡 연결을 준비하지 못했습니다. [문구 복사]를 이용해 주세요.';
+      return;
+    }
+    try{
+      window.Kakao.Share.sendDefault({
+        objectType:'text',
+        text:t,
+        link:{mobileWebUrl:SITE_URL,webUrl:SITE_URL},
+        buttonTitle:'배송 조회'
+      });
+    }catch(e){
+      wrap.querySelector('#kkoHint').textContent=
+        '전송 창을 열지 못했습니다. [문구 복사]를 이용해 주세요.';
+    }
   };
   wrap.querySelector('#kkoCl').onclick=function(){ wrap.remove(); };
   wrap.onclick=function(e){ if(e.target===wrap) wrap.remove(); };
