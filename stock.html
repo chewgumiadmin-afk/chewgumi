@@ -103,7 +103,7 @@ input,select{width:100%;padding:10px 12px;border-radius:11px;font-size:12.5px;fo
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn" onclick="fillSold()">품절 상품 재고 채우기</button>
-        <input id="fillQty" type="number" value="100" min="1" style="width:100px">
+        <input id="fillQty" aria-label="채울 수량" type="number" value="100" min="1" style="width:100px">
         <span style="font-size:12px;color:var(--gray)">개씩</span>
         <button class="btn ghost" onclick="exportCsv()">엑셀(CSV) 내려받기</button>
       </div>
