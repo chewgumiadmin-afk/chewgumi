@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>츄구미 운영 현황</title>
+<script src="assets/site.js"></script>
+
 <meta name="theme-color" content="#D82558">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -118,7 +120,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--main2);outline-offs
 </div>
 
 <script>
-const SITE='https://hyunjeongshin83.github.io/chewgumi/';
+const SITE='';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 
@@ -153,7 +155,7 @@ const ITEMS=[
   tags:['자체 사이트'],url:SITE+'checkout.html'},
  {id:'c24pay',state:'now',t:'카드·네이버페이 결제',
   d:'주문서에서 [카드·간편결제]를 고르면 공식몰로 연결됩니다.',
-  tags:['공식몰 경유'],url:'https://chewgumi.com'},
+  tags:['공식몰 경유'],url:(window.CG_SITE?CG_SITE.MALL:'https://chewgumi.com')},
  {id:'admin',state:'now',t:'관리자 콘솔',
   d:'주문·재고·회원·게시물·마케팅을 한 곳에서 관리합니다.',
   tags:['13개 메뉴'],url:SITE+'console.html'},
