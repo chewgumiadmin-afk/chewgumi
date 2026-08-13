@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<!-- ChewGumi Report Admin v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>고객 리포트 | CHEWGUMI</title>
+<script src="assets/site.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/glass.css">
+<link rel="stylesheet" href="assets/admin-ui.css">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;--bad:#C0395C;
+  --ink:#17171c;--gray:#7a7a82;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.64)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding:24px 16px 48px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+.wrap{max-width:960px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:flex-end;
+  flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.top h1{font-family:'Poppins',sans-serif}
+.top .s{margin-top:2px;color:var(--gray)}
+.top a{font-size:12.5px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:24px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.88);
+  color:var(--ink);font-family:inherit;width:100%}
+.btn{border:0;color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 8px 20px rgba(216,37,88,.28)}
+.btn.ghost{background:rgba(255,255,255,.86);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{background:rgba(255,255,255,.86);border:1px solid var(--line);color:var(--ink)}
+.mini.go{background:linear-gradient(135deg,#37B26B,#2AA060);color:#fff;border-color:transparent}
+.msg{color:var(--gray);min-height:17px}
+.msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
+.empty{text-align:center;color:var(--gray);padding:32px 0}
+.acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.hide{display:none}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:rgba(255,255,255,.72);border:1px solid var(--line);
+  border-radius:16px;padding:15px 12px;text-align:center}
+.stat .l{font-size:11.5px;color:var(--gray);font-weight:600}
+.stat .v{margin-top:4px;font-size:22px;font-weight:800;color:var(--main)}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{padding:9px 14px;border-radius:999px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.78);border:1px solid var(--line);color:var(--gray)}
+.chips button.on{background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;border-color:transparent}
+
+.rp{padding:16px 4px;border-bottom:1px solid rgba(0,0,0,.06)}
+.rp:last-child{border-bottom:0}
+.rh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rh .no{font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700;color:var(--gray)}
+.rh .tt{flex:1;min-width:150px;font-size:14.5px;font-weight:700;line-height:1.45}
+.kd{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+  background:rgba(216,37,88,.09);color:var(--main)}
+.st{font-size:10px;font-weight:700;padding:4px 9px;border-radius:999px;color:#fff}
+.st.open{background:#9a9aa2}.st.reviewing{background:var(--warn)}
+.st.adopted{background:var(--ok)}.st.planned{background:#3182F6}
+.st.done{background:var(--ok)}.st.closed{background:#c4c4cc}
+.rb{margin-top:9px;font-size:13px;line-height:1.85;color:#4a4a52;white-space:pre-wrap}
+.rm{margin-top:8px;font-size:11.5px;color:var(--gray)}
+.ai{margin-top:11px;padding:15px 17px;border-radius:16px;white-space:pre-wrap;
+  background:rgba(42,160,96,.07);border:1px solid rgba(42,160,96,.2);
+  font-size:13px;line-height:1.9}
+
+.res{padding:20px 22px;border-radius:20px;white-space:pre-wrap;
+  background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,247,250,.85));
+  border:1px solid var(--line);font-size:13.5px;line-height:2;
+  max-height:600px;overflow-y:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.95)}
+.hrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:12px 4px;
+  border-bottom:1px solid rgba(0,0,0,.055);font-size:12.5px;align-items:center}
+.hrow:last-child{border-bottom:0}
+@media(max-width:768px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hrow{grid-template-columns:1fr;gap:5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Reports</h1><div class="s">고객 리포트 · AI 리서치</div></div>
+    <div><a href="console.html">관리자 홈</a> ·
+      <a href="reports.html" target="_blank" rel="noopener">고객 화면</a></div>
+  </div>
+
+  <div class="panel" id="login">
+    <h2>ADMIN LOGIN</h2>
+    <label>이메일</label>
+    <input id="em" type="email" autocomplete="email"
+      onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
+    <label>비밀번호</label>
+    <input id="pw" type="password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()" style="width:100%;margin-top:16px">로그인</button>
+    <div class="msg" id="lmsg"></div>
+  </div>
+
+  <div id="area" class="hide">
+    <div class="panel">
+      <h2>현황</h2>
+      <div class="stats" id="stats"><div class="msg">불러오는 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>AI 리서치</h2>
+      <div class="msg" style="margin-top:0">
+        모아진 의견과 상품 후기를 함께 읽고, 무엇을 고쳐야 할지 정리해 드립니다.
+        의견이 적으면 근거 없는 결론이 나올 수 있으니 최소 10건 이상 쌓인 뒤 쓰시는 걸 권합니다.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-top:14px">
+        <div><label>기간</label>
+          <select id="rDays">
+            <option value="30">최근 30일</option>
+            <option value="90" selected>최근 90일</option>
+            <option value="180">최근 6개월</option>
+            <option value="365">최근 1년</option>
+          </select></div>
+        <div><label>범위</label>
+          <select id="rKind">
+            <option value="all">전체</option>
+            <option value="improve">개선 제안</option>
+            <option value="taste">맛 · 식감</option>
+            <option value="package">포장 · 디자인</option>
+            <option value="delivery">배송</option>
+            <option value="service">응대 · 서비스</option>
+            <option value="idea">신제품 아이디어</option>
+          </select></div>
+        <div><label>&nbsp;</label>
+          <button class="btn" onclick="research()" style="width:100%">분석 시작</button></div>
+      </div>
+      <div class="msg" id="resMsg"></div>
+      <div id="resBox"></div>
+      <div style="margin-top:16px">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--gray);font-weight:700;
+          margin-bottom:9px">지난 분석</div>
+        <div id="resHist"><div class="empty" style="padding:20px 0">아직 없습니다.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>접수된 의견</h2>
+      <div class="chips" id="tabs">
+        <button class="on" data-s="all">전체</button>
+        <button data-s="open">접수</button>
+        <button data-s="reviewing">검토 중</button>
+        <button data-s="adopted">반영 결정</button>
+        <button data-s="done">반영 완료</button>
+      </div>
+      <div id="list"><div class="empty">불러오는 중…</div></div>
+      <div class="msg" id="lmsg2"></div>
+    </div>
+
+    <div class="panel">
+      <h2>계정</h2>
+      <button class="btn ghost" onclick="doLogout()" style="max-width:150px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script src="assets/nav.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/report';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const KIND={improve:'개선 제안',research:'사용 리포트',taste:'맛 · 식감',
+  package:'포장 · 디자인',delivery:'배송',service:'응대 · 서비스',idea:'신제품 아이디어'};
+const ST={open:'접수',reviewing:'검토 중',adopted:'반영 결정',
+  planned:'계획 등록',done:'반영 완료',closed:'종료'};
+let token=null,who='',filt='all',lastRes='';
+try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+
+function sync(){const on=!!token;
+  $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
+  if(on){load();resHist();}}
+function doLogin(){
+  const email=$('em').value.trim(),pw=$('pw').value;
+  if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
+  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password:pw})})
+  .then(r=>r.json()).then(d=>{
+    if(d.access_token){token=d.access_token;who=email.split('@')[0];
+      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      $('lmsg').textContent='';sync();}
+    else {$('lmsg').className='msg bad';$('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';}
+  }).catch(()=>{$('lmsg').className='msg bad';$('lmsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); filt=b.dataset.s; load();
+});
+
+function load(){
+  call({action:'adminList',status:filt}).then(({ok,d})=>{
+    if(!ok){$('list').innerHTML='<div class="empty">'+(d.error||'실패')+'</div>';return;}
+    const bs=d.byStatus||{}, bk=d.byKind||{};
+    $('stats').innerHTML=
+      '<div class="stat"><div class="l">전체</div><div class="v">'+(d.total||0)+'</div></div>'
+      +'<div class="stat"><div class="l">접수</div><div class="v">'+(bs.open||0)+'</div></div>'
+      +'<div class="stat"><div class="l">검토 중</div><div class="v">'+(bs.reviewing||0)+'</div></div>'
+      +'<div class="stat"><div class="l">반영 완료</div><div class="v">'
+        +((bs.adopted||0)+(bs.done||0))+'</div></div>';
+
+    if(!d.items.length){$('list').innerHTML='<div class="empty">해당하는 의견이 없습니다.</div>';return;}
+    $('list').innerHTML=d.items.map(r=>
+      '<div class="rp"><div class="rh">'
+      +'<span class="no">#'+r.no+'</span>'
+      +'<span class="kd">'+(KIND[r.kind]||r.kind)+'</span>'
+      +'<span class="tt">'+esc(r.title)+'</span>'
+      +'<span class="st '+r.status+'">'+(ST[r.status]||r.status)+'</span></div>'
+      +'<div class="rb">'+esc(r.body)+'</div>'
+      +'<div class="rm">'+esc(r.reporter||'익명')
+      +(r.contact?' · '+esc(r.contact):'')
+      +' · '+new Date(r.created_at).toLocaleDateString('ko-KR')
+      +(r.votes?' · 공감 '+r.votes:'')
+      +(r.rating?' · '+'★'.repeat(r.rating):'')+'</div>'
+      +(r.ai_analysis?'<div class="ai">'+esc(r.ai_analysis)+'</div>':'')
+      +(r.admin_reply?'<div class="ai" style="background:rgba(255,233,35,.14);'
+        +'border-color:rgba(216,37,88,.15)"><b>답변</b><br>'+esc(r.admin_reply)+'</div>':'')
+      +'<div class="acts">'
+      +(r.ai_analysis?'':'<button class="mini go" onclick="analyze('+r.id+')">AI 분석</button>')
+      +'<button class="mini" onclick="reply('+r.id+')">답변 남기기</button>'
+      +'<button class="mini" onclick="setSt('+r.id+',\'reviewing\')">검토 중</button>'
+      +'<button class="mini" onclick="setSt('+r.id+',\'adopted\')">반영 결정</button>'
+      +'<button class="mini" onclick="setSt('+r.id+',\'done\')">완료</button>'
+      +'</div></div>').join('');
+  }).catch(()=>{$('list').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
+}
+
+function analyze(id){
+  $('lmsg2').className='msg'; $('lmsg2').textContent='AI가 읽는 중… 20초 정도 걸립니다.';
+  call({action:'analyze',id}).then(({ok,d})=>{
+    $('lmsg2').className=ok?'msg ok':'msg bad';
+    $('lmsg2').textContent=ok?'분석이 끝났습니다.':(d.error||'실패');
+    if(ok) load();
+  }).catch(()=>{$('lmsg2').className='msg bad';$('lmsg2').textContent='네트워크 오류가 발생했습니다.';});
+}
+function reply(id){
+  const t=prompt('고객에게 보여질 답변을 적어주세요.');
+  if(!t) return;
+  call({action:'reply',id,text:t,status:'reviewing'}).then(({ok,d})=>{
+    $('lmsg2').className=ok?'msg ok':'msg bad';
+    $('lmsg2').textContent=ok?'답변을 등록했습니다. 고객 화면에 표시됩니다.':(d.error||'실패');
+    if(ok) load();
+  }).catch(()=>{});
+}
+function setSt(id,s){
+  call({action:'setStatus',id,status:s}).then(({ok,d})=>{
+    $('lmsg2').className=ok?'msg ok':'msg bad';
+    $('lmsg2').textContent=ok?'상태를 변경했습니다.':(d.error||'실패');
+    if(ok) load();
+  }).catch(()=>{});
+}
+
+function research(){
+  const days=+$('rDays').value, kind=$('rKind').value;
+  $('resMsg').className='msg';
+  $('resMsg').textContent='의견을 모아 분석하는 중… 30초에서 1분 걸립니다.';
+  $('resBox').innerHTML='';
+  call({action:'research',days,kind}).then(({ok,d})=>{
+    if(!ok){ $('resMsg').className='msg bad'; $('resMsg').textContent=d.error||'분석에 실패했습니다.'; return; }
+    lastRes=d.text;
+    $('resBox').innerHTML='<div class="res">'+esc(d.text)+'</div>'
+      +'<div class="acts"><button class="mini" onclick="copyRes()">복사</button>'
+      +'<button class="mini" onclick="downRes()">파일로 저장</button></div>';
+    $('resMsg').className='msg ok';
+    $('resMsg').textContent='의견 '+d.reports+'건 · 후기 '+d.reviews+'건을 읽었습니다.';
+    resHist();
+  }).catch(()=>{$('resMsg').className='msg bad';$('resMsg').textContent='네트워크 오류가 발생했습니다.';});
+}
+function copyRes(){
+  if(!lastRes) return;
+  navigator.clipboard.writeText(lastRes).then(()=>alert('복사되었습니다.')).catch(()=>{});
+}
+function downRes(){
+  if(!lastRes) return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+lastRes],{type:'text/plain;charset=utf-8'}));
+  a.download='츄구미_고객리서치_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function resHist(){
+  call({action:'researchList'}).then(({ok,d})=>{
+    if(!ok||!d.items.length) return;
+    $('resHist').innerHTML=d.items.map(r=>
+      '<div class="hrow"><span>'+esc(r.summary.split('\n').find(l=>l.trim()&&!l.startsWith('■'))||'').slice(0,60)+'</span>'
+      +'<span style="font-size:11.5px;color:var(--gray)">'
+      +r.period_days+'일 · '+r.sample_count+'건</span>'
+      +'<span style="font-size:11.5px;color:var(--gray)">'
+      +new Date(r.created_at).toLocaleDateString('ko-KR')+'</span></div>').join('');
+  }).catch(()=>{});
+}
+sync();
+</script>
+</body>
+</html>
