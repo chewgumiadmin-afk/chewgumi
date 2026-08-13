@@ -1,12 +1,30 @@
-/*! ChewGumi Web Push v1 · MedIT */
+/*! ChewGumi Push Client v1 · MedIT
+ *  적용: <script src="assets/push.js" defer></script>
+ *  버튼:  <button onclick="cgPushToggle()">알림 받기</button>
+ *  상태:  window.cgPushState() → 'on' | 'off' | 'denied' | 'unsupported'
+ */
 (function () {
   'use strict';
+
   var SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
   var KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
   var FN = SB + '/functions/v1/push';
+  var reg = null, pubKey = '';
+
+  function supported() {
+    return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+  }
+
+  function b64ToU8(b64) {
+    var pad = '='.repeat((4 - b64.length % 4) % 4);
+    var s = (b64 + pad).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = atob(s), arr = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
 
   function hd() {
-    var h = { 'Content-Type': 'application/json', apikey: KEY };
+    var h = { apikey: KEY, 'Content-Type': 'application/json' };
     try {
       var s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
       if (s && s.t) h.Authorization = 'Bearer ' + s.t;
@@ -15,80 +33,96 @@
   }
   function call(p) {
     return fetch(FN, { method: 'POST', headers: hd(), body: JSON.stringify(p) })
-      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); });
-  }
-  function b64ToU8(s) {
-    var pad = '='.repeat((4 - s.length % 4) % 4);
-    var b = (s + pad).replace(/-/g, '+').replace(/_/g, '/');
-    var raw = atob(b), out = new Uint8Array(raw.length);
-    for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
-    return out;
+      .then(function (r) { return r.json(); });
   }
 
-  window.cgPushSupported = function () {
-    return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-  };
   window.cgPushState = function () {
-    if (!cgPushSupported()) return 'unsupported';
-    return Notification.permission; // default / granted / denied
+    if (!supported()) return 'unsupported';
+    if (Notification.permission === 'denied') return 'denied';
+    return window._cgPushOn ? 'on' : 'off';
   };
 
-  /* 알림 켜기 */
-  window.cgPushOn = function () {
-    if (!cgPushSupported())
-      return Promise.reject(new Error('이 브라우저는 알림을 지원하지 않습니다.'));
+  function base() {
+    return location.pathname.replace(/[^/]*$/, '');
+  }
 
-    return Notification.requestPermission().then(function (perm) {
-      if (perm !== 'granted') throw new Error('알림이 허용되지 않았습니다.');
-      return navigator.serviceWorker.ready;
-    }).then(function (reg) {
-      return call({ action: 'key' }).then(function (res) {
-        var k = res.d && res.d.key;
-        if (!k) throw new Error('알림 설정이 준비되지 않았습니다.');
-        return reg.pushManager.getSubscription().then(function (ex) {
-          if (ex) return ex;
-          return reg.pushManager.subscribe({
+  function ensureSW() {
+    if (reg) return Promise.resolve(reg);
+    return navigator.serviceWorker.register(base() + 'sw.js', { scope: base() })
+      .then(function (r) { reg = r; return navigator.serviceWorker.ready; })
+      .then(function (r) { reg = r; return r; });
+  }
+
+  function getKey() {
+    if (pubKey) return Promise.resolve(pubKey);
+    return call({ action: 'key' }).then(function (d) {
+      if (!d.ok || !d.key) throw new Error('알림 설정이 준비되지 않았습니다.');
+      pubKey = d.key; return pubKey;
+    });
+  }
+
+  /* 켜기 */
+  window.cgPushOn = function () {
+    if (!supported())
+      return Promise.reject(new Error('이 브라우저는 알림을 지원하지 않습니다.'));
+    return Notification.requestPermission().then(function (p) {
+      if (p !== 'granted') throw new Error('알림이 차단되어 있습니다. 브라우저 설정에서 허용해 주세요.');
+      return getKey();
+    }).then(function (k) {
+      return ensureSW().then(function (r) {
+        return r.pushManager.getSubscription().then(function (s) {
+          return s || r.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: b64ToU8(k)
           });
         });
       });
     }).then(function (sub) {
-      return call({ action: 'subscribe', sub: sub.toJSON(), ua: navigator.userAgent });
-    }).then(function (res) {
-      if (!res.ok) throw new Error((res.d && res.d.error) || '등록에 실패했습니다.');
+      return call({ action: 'subscribe', sub: sub.toJSON(),
+        ua: navigator.userAgent.slice(0, 160) });
+    }).then(function (d) {
+      if (d.error) throw new Error(d.error);
+      window._cgPushOn = true;
       try { localStorage.setItem('cg_push', '1'); } catch (e) {}
-      return res.d;
+      return d;
     });
   };
 
-  /* 알림 끄기 */
+  /* 끄기 */
   window.cgPushOff = function () {
-    try { localStorage.setItem('cg_push', '0'); } catch (e) {}
-    if (!cgPushSupported()) return Promise.resolve();
-    return navigator.serviceWorker.ready.then(function (reg) {
-      return reg.pushManager.getSubscription();
-    }).then(function (sub) {
-      if (!sub) return;
-      var ep = sub.endpoint;
-      return sub.unsubscribe().then(function () {
-        return call({ action: 'unsubscribe', endpoint: ep });
+    if (!supported()) return Promise.resolve();
+    return ensureSW().then(function (r) { return r.pushManager.getSubscription(); })
+      .then(function (s) {
+        if (!s) return null;
+        var ep = s.endpoint;
+        return s.unsubscribe().then(function () {
+          return call({ action: 'unsubscribe', endpoint: ep });
+        });
+      }).then(function () {
+        window._cgPushOn = false;
+        try { localStorage.setItem('cg_push', '0'); } catch (e) {}
       });
-    });
   };
 
-  /* 이미 허용한 기기는 조용히 재등록 (구독이 만료될 수 있음) */
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!cgPushSupported()) return;
-    if (Notification.permission !== 'granted') return;
-    var want = null;
-    try { want = localStorage.getItem('cg_push'); } catch (e) {}
-    if (want === '0') return;
-    navigator.serviceWorker.ready.then(function (reg) {
-      return reg.pushManager.getSubscription();
-    }).then(function (sub) {
-      if (!sub) return;
-      call({ action: 'subscribe', sub: sub.toJSON(), ua: navigator.userAgent });
+  window.cgPushToggle = function () {
+    return window._cgPushOn ? window.cgPushOff() : window.cgPushOn();
+  };
+
+  /* 현재 상태 확인 */
+  function check() {
+    if (!supported()) return;
+    if (Notification.permission !== 'granted') { window._cgPushOn = false; return; }
+    navigator.serviceWorker.getRegistration(base()).then(function (r) {
+      if (!r) return;
+      reg = r;
+      return r.pushManager.getSubscription().then(function (s) {
+        window._cgPushOn = !!s;
+        document.dispatchEvent(new CustomEvent('cg-push-state', { detail: !!s }));
+      });
     }).catch(function () {});
-  });
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', check);
+  else check();
 })();
