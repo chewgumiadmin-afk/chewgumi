@@ -4161,5 +4161,44 @@ header{z-index:900}
 .lite .uf-bg{display:none}
 .lite #userfilms::before{background:#3A1128}
 </style>
+
+<style>
+/* ═══ 하단 배너 — 원본 비율 그대로 (양옆 글자 잘림 방지) ═══ */
+.btm-banner{
+  max-width:1160px !important;width:auto !important;
+  margin:10px auto 46px !important;padding:0 20px}
+.bb-wrap{
+  position:relative;overflow:hidden;
+  aspect-ratio:1568/224 !important;   /* 원본 비율 고정 */
+  border-radius:18px !important;
+  background:#EAF4FF !important;
+  border:.5px solid rgba(255,255,255,.8);
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 26px rgba(0,0,0,.07),
+    inset 0 1px 0 rgba(255,255,255,.9) !important}
+.bb-slide{position:absolute;inset:0;display:block}
+.bb-slide img{
+  width:100% !important;height:100% !important;
+  object-fit:fill !important;   /* 비율이 같으므로 왜곡 없이 꽉 참 */
+  display:block}
+
+.bb-dots{
+  position:absolute;right:14px;bottom:50%;transform:translateY(50%);
+  z-index:3;display:flex;gap:6px;padding:6px 10px;border-radius:999px;
+  background:rgba(255,255,255,.5);
+  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+.bb-dots span{width:6px;height:6px;border-radius:50%;background:rgba(0,0,0,.22);
+  cursor:pointer;transition:width .35s cubic-bezier(.32,.72,0,1),background .3s}
+.bb-dots span.on{width:18px;border-radius:999px;background:var(--main)}
+
+@media(max-width:1200px){ .btm-banner{padding:0 16px} }
+@media(max-width:640px){
+  .btm-banner{margin:6px auto 34px !important;padding:0 14px}
+  .bb-wrap{border-radius:14px !important}
+  .bb-dots{right:9px;padding:5px 8px;gap:5px}
+  .bb-dots span{width:5px;height:5px}
+  .bb-dots span.on{width:15px}
+}
+</style>
 </body>
 </html>
