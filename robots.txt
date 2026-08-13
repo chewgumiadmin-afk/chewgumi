@@ -1,0 +1,62 @@
+# ChewGumi 츄구미
+# https://chewgumi.com
+
+User-agent: *
+Allow: /
+Disallow: /console.html
+Disallow: /orders.html
+Disallow: /stock.html
+Disallow: /members.html
+Disallow: /posts.html
+Disallow: /boards.html
+Disallow: /message.html
+Disallow: /campaign.html
+Disallow: /subs-admin.html
+Disallow: /export-ai.html
+Disallow: /dev.html
+Disallow: /github.html
+Disallow: /grievance.html
+Disallow: /integrations.html
+Disallow: /cafe24.html
+Disallow: /reports-admin.html
+Disallow: /help.html
+Disallow: /exports.html
+Disallow: /qa.html
+Disallow: /admin.html
+Disallow: /preview.html
+Disallow: /tasks.html
+
+# ── AI 검색·쇼핑 도우미 ──
+# 상품 정보를 읽고 추천에 활용하는 것을 허용합니다.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://hyunjeongshin83.github.io/chewgumi/sitemap.xml
