@@ -1,0 +1,158 @@
+/*! ChewGumi Admin UI v2 · MedIT
+ *  관리자 화면 공통 타이포그래피 · 간격 · 반응형
+ */
+
+:root{
+  /* 타이포 — 8단계 */
+  --fs-xs:11.5px; --fs-sm:12.5px; --fs-md:13.5px; --fs-lg:15px;
+  --fs-xl:17px;   --fs-2xl:20px;  --fs-3xl:24px;  --fs-4xl:28px;
+  /* 간격 — 4의 배수 */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px;
+  /* 높이 */
+  --h-input:44px; --h-btn:44px; --h-mini:36px;
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:24px;
+}
+
+/* ── 본문 ── */
+body{
+  font-size:var(--fs-md);
+  line-height:1.65;
+  letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ── 제목 ── */
+.top h1{
+  font-size:var(--fs-3xl) !important;
+  font-weight:800;letter-spacing:-.03em;line-height:1.25}
+.top .s{
+  font-size:var(--fs-xs) !important;letter-spacing:2.5px;
+  font-weight:600;text-transform:uppercase}
+.panel h2{
+  font-size:var(--fs-xs) !important;
+  letter-spacing:1.8px !important;
+  font-weight:700 !important;
+  text-transform:uppercase;
+  margin-bottom:var(--sp-4) !important;
+  padding-bottom:var(--sp-2);
+  border-bottom:1px solid rgba(0,0,0,.055)}
+
+/* ── 패널 ── */
+.panel{
+  padding:var(--sp-6) !important;
+  margin-bottom:var(--sp-4) !important;
+  border-radius:var(--r-xl) !important}
+
+/* ── 입력 ── */
+label{
+  font-size:var(--fs-sm) !important;
+  font-weight:600 !important;
+  color:#4a4a52;
+  margin:var(--sp-3) 0 var(--sp-1) !important;
+  letter-spacing:-.005em}
+input,select,textarea{
+  min-height:var(--h-input);
+  padding:0 var(--sp-4) !important;
+  font-size:var(--fs-md) !important;
+  border-radius:var(--r-md) !important;
+  line-height:1.5}
+textarea{padding:var(--sp-3) var(--sp-4) !important;line-height:1.75;min-height:96px}
+select{padding-right:var(--sp-8) !important;cursor:pointer}
+input::placeholder,textarea::placeholder{color:#b4b4bc}
+
+/* ── 버튼 ── */
+.btn{
+  min-height:var(--h-btn);
+  padding:0 var(--sp-6) !important;
+  font-size:var(--fs-md) !important;
+  font-weight:700 !important;
+  letter-spacing:-.01em;
+  border-radius:999px !important;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.mini{
+  min-height:var(--h-mini);
+  padding:0 var(--sp-4) !important;
+  font-size:var(--fs-xs) !important;
+  font-weight:600 !important;
+  border-radius:999px !important;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  white-space:nowrap}
+
+/* ── 안내 문구 ── */
+.msg{
+  font-size:var(--fs-sm) !important;
+  line-height:1.75 !important;
+  margin-top:var(--sp-3) !important}
+.warn{
+  font-size:var(--fs-sm) !important;
+  line-height:1.8 !important;
+  padding:var(--sp-4) var(--sp-4) !important;
+  border-radius:var(--r-md) !important;
+  margin-bottom:var(--sp-4) !important}
+.empty{
+  padding:var(--sp-10) 0 !important;
+  font-size:var(--fs-md) !important;
+  color:#9a9aa2}
+
+/* ── 표 형태 행 ── */
+.hrow,.arow,.brow,.trow,.srow,.prow,.irow,.svc,.gitem,.pcard{
+  padding:var(--sp-4) var(--sp-1) !important;
+  font-size:var(--fs-sm) !important;
+  gap:var(--sp-3) !important}
+
+/* ── 상태 표시 ── */
+.st,.ac,.tag,.kd,.cat{
+  font-size:10.5px !important;
+  font-weight:700 !important;
+  letter-spacing:.02em;
+  padding:5px 11px !important;
+  border-radius:999px !important;
+  white-space:nowrap}
+
+/* ── 통계 카드 ── */
+.stat .l{font-size:var(--fs-xs) !important;font-weight:600;color:#7a7a82}
+.stat .v{
+  font-size:var(--fs-3xl) !important;
+  font-weight:800 !important;
+  letter-spacing:-.03em;
+  margin-top:var(--sp-1) !important}
+
+/* ── 숫자 정렬 ── */
+.v,.amt,.price,td[align="right"]{
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum"}
+
+/* ══ 반응형 ══ */
+@media (max-width:1024px){
+  body{padding:var(--sp-5) var(--sp-4) 64px}
+  .panel{padding:var(--sp-5) !important}
+}
+@media (max-width:768px){
+  :root{--fs-3xl:22px;--h-input:46px;--h-btn:46px}
+  body{padding:var(--sp-4) var(--sp-3) 60px}
+  .panel{padding:var(--sp-4) !important;border-radius:var(--r-lg) !important}
+  .top{margin-bottom:var(--sp-4) !important}
+  .mini{min-height:38px;padding:0 var(--sp-3) !important}
+  /* 버튼 줄바꿈 시 간격 */
+  .acts,.ia,.pa,.sa,.ga{gap:var(--sp-2) !important}
+}
+@media (max-width:480px){
+  :root{--fs-3xl:20px;--fs-md:13px}
+  .panel h2{letter-spacing:1.4px !important}
+  /* 그리드는 한 줄로 */
+  .fg,.g2,.diag,.stats,.plans,.perks{grid-template-columns:1fr !important}
+  .stats{grid-template-columns:repeat(2,1fr) !important}
+  /* 버튼 전체 폭 */
+  .btn{width:100%}
+  .acts .mini,.pa .mini{flex:1 1 calc(50% - 4px)}
+}
+
+/* ── 접근성 ── */
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+a:focus-visible,button:focus-visible,input:focus-visible,
+select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--main2);outline-offset:2px}
