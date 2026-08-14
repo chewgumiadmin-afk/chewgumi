@@ -232,7 +232,14 @@ const H=()=>({apikey:KEY,'Content-Type':'application/json',
 const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
   .then(r=>r.json().then(d=>({ok:r.ok,d})));
 
-function sync(){const on=!!token;
+function sync(){
+  if(window.CGAuth && CGAuth.isIn() && !window._cgChecked){
+    window._cgChecked=1;
+    CGAuth.token().then(function(t){
+      if(t){ token=t; sync(); }
+      else { token=null; sync(); }
+    });
+  }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
   if(on) boot();}
 function doLogin(){
@@ -241,7 +248,7 @@ function doLogin(){
   $('lmsg').className='msg'; $('lmsg').textContent='로그인 중…';
   CGAuth.login(email,pw).then(function(at){ var d={access_token:at};
     if(d.access_token){token=d.access_token;who=email.split('@')[0];
-      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      
       $('lmsg').textContent='';sync();}
     else {$('lmsg').className='msg bad';
       $('lmsg').textContent='로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.';}
