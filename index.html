@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v74 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v75 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4799,6 +4799,67 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
   .uf-way b{display:block}
   .uf-way > span:last-child{display:block;margin-top:2px}
   .uf-way b, .uf-way > span:last-child{flex:1}
+}
+
+/* ══ 이미지 원본 비율 맞추기 ══
+   원본: hero 1400x675(2.07) · mid-banner 1200x600(2.00)
+        하단배너 1400x200(7.00) · 신제품 532x532(1.00) · 로고 400x209(1.91) */
+
+/* ── 하단 배너 (7:1 — 아주 넓은 띠) ── */
+.btm-banner .bb-img{
+  aspect-ratio:1400/200 !important;
+  overflow:hidden;border-radius:16px 16px 0 0;background:#FFF1F4;
+}
+.btm-banner .bb-img img{
+  width:100% !important;height:100% !important;
+  object-fit:cover !important;object-position:center !important;display:block;
+}
+@media (max-width:768px){
+  /* 모바일에서는 조금 더 높게 — 7:1은 너무 납작함 */
+  .btm-banner .bb-img{aspect-ratio:1400/300 !important}
+}
+@media (max-width:480px){
+  .btm-banner .bb-img{aspect-ratio:1400/380 !important}
+}
+
+/* ── 중간 배너 (2:1) ── */
+.mid-banner img{
+  width:100%;height:auto;display:block;
+  aspect-ratio:1200/600;object-fit:cover;
+  border-radius:18px;
+}
+@media (max-width:640px){
+  .mid-banner{padding:0 16px}
+  .mid-banner img{border-radius:14px}
+}
+
+/* ── 신제품 카드 (정사각) ── */
+.nl-card .nl-img, .nl-thumb{
+  aspect-ratio:1/1 !important;overflow:hidden;border-radius:16px;background:#FFF1F4;
+}
+.nl-card img, .nl-thumb img{
+  width:100% !important;height:100% !important;
+  object-fit:cover !important;display:block;
+}
+
+/* ── 상품 카드 (정사각) ── */
+.grid .card .thumb{aspect-ratio:1/1 !important;overflow:hidden;background:#FFF1F4}
+.grid .card .thumb img{
+  width:100% !important;height:100% !important;object-fit:cover !important;display:block;
+}
+
+/* ── 로고 (1.91:1) ── */
+.logo img{
+  height:52px !important;width:auto !important;
+  object-fit:contain;display:block;margin:0 auto;
+}
+@media (max-width:900px){ .logo img{height:44px !important} }
+@media (max-width:420px){ .logo img{height:40px !important} }
+
+/* 어떤 이미지도 찌그러지지 않도록 */
+img{max-width:100%}
+.card img, .bb-img img, .nl-card img, .mid-banner img, .hslide img{
+  object-fit:cover;
 }
 </style>
 <script src="assets/nav.js" defer>
