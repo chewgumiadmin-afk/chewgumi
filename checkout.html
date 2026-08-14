@@ -257,15 +257,27 @@ async function init(){
   list.forEach(p=>PRODS[p.id]=p);
 
   let goods=0;
-  $('items').innerHTML=CART.map(it=>{
-    const id=matchId(it.name), p=PRODS[id];
-    if(!p)return '';
-    goods+=p.price_sale*it.qty;
-    return '<div class="item"><div class="th"><img src="'+CDN+p.image+'" alt=""></div>'
-      +'<div class="c"><div class="n">'+esc(p.name)+'</div>'
-      +'<div class="p">'+won(p.price_sale)+' × '+it.qty+'개'
-      +(p.stock<it.qty?' <b style="color:#c0395c">· 재고부족</b>':'')+'</div></div></div>';
-  }).join('');
+  $('items').innerHTML=CART.map((it,ix)=>{
+      const id=matchId(it.name), p=PRODS[id]; if(!p)return '';
+      goods+=p.price_sale*it.qty;
+      return '<div class="item"><div class="th"><img src="'+CDN+p.image+'" alt=""></div>'
+        +'<div class="c"><div class="n">'+esc(p.name)+'</div>'
+        +'<div class="p">'+won(p.price_sale)+'원'
+        +(p.stock<it.qty?' <b style="color:#c0395c">· 재고부족</b>':'')+'</div>'
+        +'<div class="qty">'
+        +'<button type="button" onclick="chgQty('+ix+',-1)" aria-label="수량 줄이기">−</button>'
+        +'<span>'+it.qty+'</span>'
+        +'<button type="button" onclick="chgQty('+ix+',1)" aria-label="수량 늘리기">+</button>'
+        +'</div></div>'
+        +'<button type="button" class="rm" onclick="rmItem('+ix+')" aria-label="이 상품 빼기">'
+        +'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" '
+        +'stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+        +'</button></div>';
+    }).join('');
+    if(!CART.length){
+      $('items').innerHTML='<div class="empty-cart">담긴 상품이 없습니다.<br>'
+        +'<a href="index.html#all">상품 보러 가기 →</a></div>';
+    }
   window._goods=goods;
   await loadCoupons();
   await quote();
@@ -730,11 +742,64 @@ $('payBtn').addEventListener('click',async()=>{
   @media(max-width:640px){
     .bank-apps{grid-template-columns:repeat(3,1fr)}
   }
+
+  /* 주문 상품 — 빼기·수량 */
+  .item{position:relative;display:flex;gap:12px;align-items:center;
+    padding:14px 40px 14px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+  .item:last-child{border-bottom:0}
+  .item .c{flex:1;min-width:0}
+  .item .n{font-size:13.5px;font-weight:600;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .item .p{margin-top:4px;font-size:12.5px;color:var(--gray)}
+  .item .qty{display:inline-flex;align-items:center;gap:0;margin-top:8px;
+    border:1px solid var(--line);border-radius:999px;overflow:hidden;
+    background:rgba(255,255,255,.9)}
+  .item .qty button{width:34px;height:32px;border:0;background:transparent;
+    font-size:16px;font-weight:600;color:#555;cursor:pointer;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .item .qty button:active{background:rgba(0,0,0,.05)}
+  .item .qty span{min-width:34px;text-align:center;font-size:13px;font-weight:700}
+  .item .rm{position:absolute;top:14px;right:0;width:32px;height:32px;
+    border:0;border-radius:50%;background:rgba(0,0,0,.045);color:#8a8a92;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:background .16s,color .16s}
+  .item .rm:hover{background:rgba(216,37,88,.1);color:var(--main)}
+  .empty-cart{padding:40px 0;text-align:center;font-size:13.5px;
+    color:var(--gray);line-height:1.9}
+  .empty-cart a{color:var(--main);font-weight:700;text-decoration:underline;
+    text-underline-offset:3px}
+  @media(max-width:640px){
+    .item{padding-right:36px}
+    .item .n{font-size:13px}
+  }
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
-<script src="assets/float.js" defer></script>
+<script src="assets/float.js" defer>
+/* 주문서에서 상품 빼기 · 수량 변경 */
+function saveCart(){
+  try{ localStorage.setItem('cg_cart', JSON.stringify(CART)); }catch(e){}
+}
+window.rmItem=function(ix){
+  if(ix<0||ix>=CART.length) return;
+  var nm=CART[ix].name||'이 상품';
+  if(!confirm(nm+'\n주문에서 빼시겠어요?')) return;
+  CART.splice(ix,1);
+  saveCart();
+  if(typeof cgToast==='function') cgToast('상품을 뺐습니다.');
+  render();
+};
+window.chgQty=function(ix,d){
+  if(ix<0||ix>=CART.length) return;
+  var q=(CART[ix].qty||1)+d;
+  if(q<1){ rmItem(ix); return; }
+  if(q>99) q=99;
+  CART[ix].qty=q;
+  saveCart();
+  render();
+};
+</script>
 </body>
 </html>
