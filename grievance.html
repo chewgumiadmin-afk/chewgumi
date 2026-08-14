@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>규제 · 민원 대응 | CHEWGUMI ADMIN</title>
+<script src="assets/auth.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -189,8 +190,9 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const CAT={platform:'플랫폼',regulation:'규제',tax:'세무',etc:'기타'};
 const ST={open:'검토중',drafted:'초안 완료',submitted:'제출함',answered:'회신 받음',closed:'종료'};
 let token=null,who='',kind='complaint',curId=null,lastOut='';
-try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
-const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
+const H=()=>({apikey:KEY,'Content-Type':'application/json',
+  Authorization:'Bearer '+((function(){try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null');return s&&s.t||'';}catch(e){return '';}})())});
 const call=p=>fetch(SB+'/functions/v1/grievance',{method:'POST',headers:H(),body:JSON.stringify(p)})
   .then(r=>r.json().then(d=>({ok:r.ok,d})));
 
@@ -204,17 +206,14 @@ function sync(){const on=!!token;
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
-  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
-    headers:{apikey:KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({email,password:pw})})
-  .then(r=>r.json()).then(d=>{
+  CGAuth.login(email,pw).then(function(at){ var d={access_token:at};
     if(d.access_token){token=d.access_token;who=email.split('@')[0];
       try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
       $('lmsg').textContent='';sync();}
     else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
   }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
 }
-function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
 function ctx(){return{
   title:$('title').value.trim(), target:$('target').value.trim(),
