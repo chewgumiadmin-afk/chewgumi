@@ -1435,7 +1435,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v83 · 2026-08-14</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v84 · 2026-08-14</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1758,6 +1758,21 @@ function heroGo(line){
   return false;
 }
 
+/* 상품명 → 번호 */
+function matchNo(name){
+  var s = String(name||'');
+  if(s.indexOf('트래블')>-1 || s.toLowerCase().indexOf('travel')>-1){
+    var m = s.match(/\[(\d+)봉\]/);
+    var map = {'1':15,'3':11,'5':12,'10':13,'20':14};
+    return (m && map[m[1]]) || 11;
+  }
+  if(s.indexOf('레몬민트')>-1) return 16;
+  if(s.indexOf('그레이프')>-1) return 17;
+  var m2 = s.match(/(\d+)개입/);
+  var map2 = {'4':18,'6':19,'10':20,'20':21};
+  return (m2 && map2[m2[1]]) || 18;
+}
+
 function openDetail(card){
   const img = card.querySelector('.thumb img');
   document.getElementById('dImg').src = img.src;
@@ -1768,6 +1783,16 @@ function openDetail(card){
   document.getElementById('dSale').textContent = sale;
   window._curCard = card;
   document.getElementById('dBuy').href = 'checkout.html';
+    /* 상세 페이지 링크 — 카드에서 상품번호 추출 */
+    try{
+      var _no = card.dataset.no || (function(){
+        var nm = card.querySelector('.name');
+        return nm ? matchNo(nm.textContent) : '';
+      })();
+      var _df = document.getElementById('dFull');
+      if(_df && _no){ _df.href = 'product.html?no=' + _no; _df.style.display=''; }
+      else if(_df){ _df.style.display='none'; }
+    }catch(e){}
   const np = document.getElementById('dNpay');
   const su = smartstoreUrl(card.querySelector('.name').textContent);
   if (su) { np.href = su; np.classList.add('show'); } else { np.classList.remove('show'); }
