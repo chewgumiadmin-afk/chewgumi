@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>주문 관리 | CHEWGUMI ADMIN</title>
+<script src="assets/auth.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -275,7 +276,7 @@ const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const ST={pending:'미결제',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
   delivered:'배송완료',cancelled:'취소',refunded:'환불'};
 let token=null,who='',filt='all',ORD=[];
-try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
 const $=id=>document.getElementById(id);
 const won=v=>Number(v||0).toLocaleString();
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
@@ -287,17 +288,14 @@ function sync(){const on=!!token;
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
-  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
-    headers:{apikey:KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({email,password:pw})})
-  .then(r=>r.json()).then(d=>{
+  CGAuth.login(email,pw).then(function(at){ var d={access_token:at};
     if(d.access_token){token=d.access_token;who=email.split('@')[0];
       try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
       $('lmsg').textContent='';sync();}
     else $('lmsg').textContent='로그인 실패: 계정을 확인하거나 가입 메일 인증을 완료해 주세요.';
   }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
 }
-function doLogout(){token=null;who='';try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
+function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
 function load(){
   fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price),refunds(amount,reason,created_at)&order=created_at.desc&limit=200',
