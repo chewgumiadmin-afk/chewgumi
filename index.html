@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v75 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v76 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1487,11 +1487,14 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-cart d-full" id="dFull" href="product.html">상세페이지 보기</a>
+        <a class="d-cart d-full" id="dFull" href="product.html" data-en="VIEW FULL DETAILS">상세페이지 보기</a>
       </div>
       <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
-      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch for orders before 2PM (weekdays) · <b>Returns</b> Unopened, within 7 days · Options and payment are completed on the official store (NaverPay · Card · Bank transfer).">
-        <b>배송</b> 평일 14시 이전 주문 당일 출고 · <b>교환/반품</b> 미개봉 7일 이내 · 옵션 선택과 결제는 공식몰에서 안전하게 진행됩니다. (네이버페이 · 신용카드 · 계좌이체 · 가상계좌)
+      <div class="d-notice" data-en="<span class='nl'><b>Shipping</b> Same-day dispatch for orders before 2PM on weekdays</span><span class='nl'><b>Returns</b> Unopened, within 7 days</span><span class='nl'><b>Payment</b> Options and payment are completed on the official store<br><span style='opacity:.8'>NaverPay · Card · Bank transfer · Virtual account</span></span>">
+        <span class="nl"><b>배송</b> 평일 14시 이전 주문 시 당일 출고</span>
+        <span class="nl"><b>교환 · 반품</b> 미개봉 상태로 7일 이내</span>
+        <span class="nl"><b>결제</b> 옵션 선택과 결제는 공식몰에서 안전하게 진행됩니다<br>
+          <span style="opacity:.8">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span></span>
       </div>
     </div>
   </div>
@@ -4860,6 +4863,75 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
 img{max-width:100%}
 .card img, .bb-img img, .nl-card img, .mid-banner img, .hslide img{
   object-fit:cover;
+}
+
+/* ══ 상품 팝업 정리 ══ */
+/* 닫기 버튼 — 누르기 편한 크기로 */
+.d-close{
+  position:absolute !important;top:12px !important;right:12px !important;
+  width:40px !important;height:40px !important;
+  display:flex !important;align-items:center;justify-content:center;
+  font-size:20px !important;line-height:1 !important;
+  border-radius:50% !important;border:1px solid rgba(0,0,0,.08) !important;
+  background:rgba(255,255,255,.94) !important;color:#555 !important;
+  box-shadow:0 2px 10px rgba(0,0,0,.1) !important;
+  z-index:10;cursor:pointer;
+}
+.d-close:hover{background:#fff !important;color:var(--main) !important}
+@media(max-width:640px){
+  .d-close{width:42px !important;height:42px !important;top:10px !important;right:10px !important}
+}
+
+/* 옵션 선택 — 체크박스형 버튼 크기 통일 */
+.d-opts, .d-opt-list{display:grid !important;grid-template-columns:1fr;gap:7px !important}
+.d-opt, .d-opts label, .d-opts button{
+  display:flex !important;align-items:center;justify-content:space-between;
+  min-height:52px !important;padding:0 16px !important;
+  border-radius:14px !important;font-size:13.5px !important;
+  border:1px solid rgba(0,0,0,.1) !important;
+  background:rgba(255,255,255,.9) !important;
+  cursor:pointer;transition:.16s;
+}
+.d-opt.on, .d-opts label.on{
+  border-color:var(--main) !important;
+  background:rgba(216,37,88,.06) !important;
+  box-shadow:0 0 0 2px rgba(216,37,88,.12) !important;
+}
+.d-opt input[type="radio"], .d-opt input[type="checkbox"],
+.d-opts input[type="radio"], .d-opts input[type="checkbox"]{
+  width:20px !important;height:20px !important;flex:none;
+  accent-color:var(--main);margin:0 10px 0 0 !important;
+}
+
+/* 팝업 안 이미지 — 원본 비율 유지 */
+.detail .d-img, .detail .d-thumb{
+  aspect-ratio:1/1 !important;overflow:hidden;border-radius:16px;background:#FFF1F4;
+}
+.detail .d-img img, .detail .d-thumb img{
+  width:100% !important;height:100% !important;
+  object-fit:cover !important;display:block;
+}
+
+/* 안내 문구 — 줄바꿈으로 읽기 편하게 */
+.d-notice{
+  margin-top:16px !important;padding:14px 16px !important;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.6) !important;
+  border:1px solid rgba(0,0,0,.06) !important;
+  font-size:12px !important;line-height:1.9 !important;
+  color:#5a5a62 !important;word-break:keep-all;
+}
+.d-notice b{color:var(--ink);font-weight:700}
+.d-notice .nl{display:block;margin-top:6px}
+.d-notice .nl:first-child{margin-top:0}
+
+/* 버튼 줄 */
+.d-acts{display:grid !important;grid-template-columns:1fr 1fr;gap:8px !important;margin-top:16px}
+.d-acts .d-full{grid-column:1 / -1}
+.d-acts a{min-height:50px !important;display:inline-flex !important;
+  align-items:center;justify-content:center;font-size:13.5px !important;font-weight:700}
+@media(max-width:400px){
+  .d-acts{grid-template-columns:1fr}
 }
 </style>
 <script src="assets/nav.js" defer>
