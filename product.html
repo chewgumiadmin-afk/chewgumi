@@ -843,6 +843,7 @@ loadWish();
     <h2>REVIEW <span id="rvCount"></span></h2>
     <div class="rv-stars" id="rvStars"></div>
   </div>
+  <div id="rvSummary" class="rv-sum" style="display:none"></div>
   <div id="rvList"><div class="rv-empty">후기를 불러오는 중…</div></div>
   <button class="rv-more" id="rvMore" onclick="rvLoad()" style="display:none">후기 더 보기</button>
 </section>
@@ -899,6 +900,26 @@ loadWish();
   #pDetailImgs .pd-img:last-child{border-radius:0 !important}
   #pDetailImgs.fold{max-height:900px}
 }
+
+/* 리뷰 요약 — 레디블룸 방식 */
+.rv-sum{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:26px 20px;margin-bottom:20px;border-radius:20px;
+  background:linear-gradient(160deg,rgba(255,255,255,.82),rgba(255,247,250,.7));
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 8px 22px rgba(0,0,0,.05);
+}
+.rv-score{display:flex;align-items:center;gap:10px}
+.rv-score b{font-family:'Poppins',sans-serif;font-size:34px;font-weight:800;
+  letter-spacing:-.03em;color:var(--ink);line-height:1}
+.rv-stars-lg{font-size:20px;color:#F5A623;letter-spacing:2px}
+.rv-cnt{font-size:14px;font-weight:700;color:var(--main)}
+.rv-line{font-size:11.5px;color:var(--gray);letter-spacing:.5px}
+@media(max-width:640px){
+  .rv-sum{padding:22px 16px;border-radius:18px}
+  .rv-score b{font-size:30px}
+  .rv-stars-lg{font-size:18px}
+}
 </style>
 <script>
 (function(){
@@ -920,7 +941,7 @@ loadWish();
 
   window.rvLoad = function(){
     if(!no) return;
-    fetch(SB+'/rest/v1/product_reviews?select=*&'+(LINE?('product_line=eq.'+LINE):('product_id=eq.'+no))
+    fetch(SB+'/rest/v1/product_reviews?select=*&'+(LINE?('line=eq.'+LINE):('product_id=eq.'+no))
       +'&visible=eq.true&order=written_at.desc&limit='+PAGE+'&offset='+off,
       {headers:{apikey:KEY,Authorization:'Bearer '+KEY,Prefer:'count=exact'}})
     .then(function(r){
@@ -931,13 +952,22 @@ loadWish();
     .then(function(rows){
       var box=document.getElementById('rvList');
       if(off===0){
+        /* 상단 요약 — 별점·개수 크게 */
+        var sum=document.getElementById('rvSummary');
+        if(sum && total>0){
+          sum.innerHTML=
+            '<div class="rv-score"><b>5.0</b><span class="rv-stars-lg">★★★★★</span></div>'
+            +'<div class="rv-cnt">'+(total>=999?'999+':total)+'개의 후기</div>'
+            +'<div class="rv-line">'+(LINE_NM?LINE_NM+' 전체 후기':'')+'</div>';
+          sum.style.display='';
+        }
         if(!rows.length){
           box.innerHTML='<div class="rv-empty">아직 등록된 후기가 없습니다.</div>';
           document.getElementById('rvCount').textContent='';
           return;
         }
         box.innerHTML='';
-        document.getElementById('rvCount').textContent='('+total+')';
+        document.getElementById('rvCount').textContent='('+(total>=999?'999+':total)+')';
         document.getElementById('rvStars').innerHTML='<b>★★★★★</b> 5.0 · '
           +(LINE_NM?LINE_NM+' ':'')+'후기 '+(total>999?'999+':total)+'건';
       }
