@@ -135,6 +135,63 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
 .hrq .st{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
 .hrq .st.queued{background:var(--warn)}.hrq .st.answered{background:#9a9aa2}
 .hrq .st.done{background:var(--ok)}
+
+/* ══ 관리자 콘솔 UI 정돈 ══ */
+/* 메뉴 15개 → 5열이면 3줄로 딱 맞습니다 */
+@media (min-width:1000px){
+  .menu{grid-template-columns:repeat(5,1fr) !important}
+}
+@media (min-width:769px) and (max-width:999px){
+  .menu{grid-template-columns:repeat(4,1fr) !important}
+}
+/* 메뉴 칸 높이 통일 — 글자 수가 달라도 같은 크기 */
+.menu a{
+  min-height:92px;
+  justify-content:center;
+  padding:14px 6px !important;
+}
+.menu a b{
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  min-height:32px;
+  font-size:11.5px;
+  word-break:keep-all;
+}
+.bd{
+  position:relative;top:-1px;
+  min-width:17px;height:17px;font-size:9.5px;
+}
+@media (max-width:640px){
+  .menu a{min-height:86px;padding:12px 5px !important}
+  .menu a b{font-size:11px;min-height:30px}
+  .menu a svg{width:20px;height:20px}
+}
+
+/* 채팅 영역 — 화면이 클수록 여유 있게 */
+@media (min-width:1000px){
+  .log{max-height:50vh}
+}
+@media (max-height:700px){
+  .log{max-height:34vh}
+}
+
+/* 할 일 목록 — 버튼이 밀리지 않도록 */
+.todo{gap:12px}
+.todo .b b{font-size:13.5px}
+.todo a{min-width:60px;text-align:center}
+@media (max-width:480px){
+  .todo{flex-wrap:wrap}
+  .todo .b{flex:1 1 calc(100% - 40px)}
+  .todo a{margin-left:35px;margin-top:2px}
+}
+
+/* 제안 버튼 줄 — 가로 스크롤 */
+.sug{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding-bottom:2px}
+.sug::-webkit-scrollbar{display:none}
+.sug button{flex:none;white-space:nowrap}
+@media (min-width:769px){
+  .sug{flex-wrap:wrap;overflow:visible}
+}
 </style>
 <link rel="stylesheet" href="assets/popup.css">
 </head>
@@ -337,7 +394,7 @@ function boot(){
     const BD={orders:(s.orders.pending||0)+(s.orders.toShip||0),
       stock:(s.stock.soldOut||0)+(s.stock.low||0),
       subs:(s.subs.pending||0)+(s.subs.due||0),
-      qna:s.qnaWaiting||0, issues:s.issuesOpen||0, cafe24:s.cafe24?0:1};
+      qna:s.qnaWaiting||0, issues:s.issuesOpen||0, cafe24:s.cafe24?0:1, help:0};
     $('menu').innerHTML = MENU.map(function(m){
       const c=BD[m[3]]||0;
       return '<a href="'+m[0]+'"><svg viewBox="0 0 24 24">'
