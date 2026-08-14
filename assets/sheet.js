@@ -9,12 +9,29 @@
   function isMobile() { return window.innerWidth <= 640; }
 
   /* ── 아래로 밀어서 닫기 ── */
+  /* 진짜로 열려 있는 팝업인지 확인 — 숨겨진 요소는 건드리지 않는다 */
+  function isOpen(el) {
+    if (!el) return false;
+    var st = getComputedStyle(el);
+    if (st.display === 'none' || st.visibility === 'hidden' || +st.opacity === 0) return false;
+    /* 화면을 덮는 배경 위에 있어야 팝업으로 본다 */
+    var p = el.parentElement;
+    if (!p) return false;
+    var ps = getComputedStyle(p);
+    if (ps.position !== 'fixed') return false;
+    if (ps.display === 'none' || ps.visibility === 'hidden') return false;
+    var r = el.getBoundingClientRect();
+    return r.height > 60 && r.width > 60;
+  }
+
   function bind(el) {
     if (!el || el.dataset.cgSheet || !isMobile()) return;
+    if (!isOpen(el)) return;
     el.dataset.cgSheet = '1';
     var sy = 0, dy = 0, dragging = false, atTop = true;
 
     el.addEventListener('touchstart', function (e) {
+      if (!isOpen(el)) { dragging = false; return; }
       atTop = el.scrollTop <= 0;
       sy = e.touches[0].clientY; dy = 0; dragging = atTop;
       if (dragging) el.style.transition = 'none';
@@ -60,9 +77,18 @@
   }
 
   /* 새로 생기는 팝업도 감지 */
+  var scanT = null;
   if (window.MutationObserver) {
-    new MutationObserver(function () { scan(); })
-      .observe(document.documentElement, { childList: true, subtree: true });
+    new MutationObserver(function (list) {
+      /* 새 요소가 추가된 경우에만, 그것도 잠시 뒤에 한 번만 */
+      var added = false;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].addedNodes && list[i].addedNodes.length) { added = true; break; }
+      }
+      if (!added) return;
+      clearTimeout(scanT);
+      scanT = setTimeout(scan, 120);
+    }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', scan);
