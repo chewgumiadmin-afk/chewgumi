@@ -273,6 +273,8 @@ function cgModal(o){
 const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
 const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 let token = null, who = '', curBoard = 'notice';
+try{ if(window.CGAuth && CGAuth.isIn()){ var _u=CGAuth.user()||{};
+  token=(JSON.parse(localStorage.getItem('cg_sb')||'{}').t)||''; who=_u.name||''; } }catch(e){}
 
 try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { token = s.t; who = s.u; } } catch(e){}
 
@@ -333,6 +335,13 @@ function loadMembers(){
   }).catch(()=>{document.getElementById('memberList').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
 }
 function sync(){
+  if(window.CGAuth && CGAuth.isIn() && !window._cgChecked){
+    window._cgChecked=1;
+    CGAuth.token().then(function(t){
+      if(t){ token=t; sync(); }
+      else { token=null; sync(); }
+    });
+  }
   const on = !!token;
   document.getElementById('loginPanel').classList.toggle('hide', on);
   document.getElementById('adminArea').classList.toggle('hide', !on);
