@@ -1466,7 +1466,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v76 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v77 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4680,49 +4680,61 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
   .hero-count{right:12px;bottom:12px;font-size:10px;padding:5px 10px}
 }
 
-/* ══ 푸터 링크 — 줄 맞춰 정돈 ══
-   알약 버튼이 글자 수대로 폭이 달라져 어긋나 보였습니다.
-   3열 격자로 폭을 고정해 가지런히 놓습니다. */
+/* ══ 푸터 링크 ══
+   PC·태블릿 : 알약 버튼 한 줄 (원래 형태)
+   모바일    : 2열 격자 (폭이 달라 어긋나던 문제 해결) */
 .ft-links{
-  display:grid !important;
-  grid-template-columns:repeat(3,1fr) !important;
-  gap:8px !important;
-  max-width:520px;
+  display:flex !important;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
   margin:28px auto 0 !important;
-  padding:0 4px;
+  max-width:none;
 }
 .ft-links a{
-  display:flex !important;
+  display:inline-flex !important;
   align-items:center;
   justify-content:center;
-  min-height:44px;
-  padding:0 8px !important;
-  font-size:11.5px !important;
-  letter-spacing:0 !important;
+  min-height:40px;
+  padding:0 22px !important;
+  font-size:11px !important;
+  letter-spacing:1.5px !important;
   font-weight:600;
-  text-align:center;
-  line-height:1.35;
-  word-break:keep-all;
-  border-radius:14px !important;
+  white-space:nowrap;
+  border-radius:999px !important;
   border:1px solid rgba(255,255,255,.85);
   background:rgba(255,255,255,.62);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
   transition:transform .16s, box-shadow .16s, background .16s;
 }
 .ft-links a:hover{
-  background:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.92);
   transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 8px 18px rgba(0,0,0,.09);
 }
 .ft-links a strong{font-weight:700}
 
+/* ── 모바일만 격자 ── */
 @media (max-width:640px){
   .ft-links{
+    display:grid !important;
     grid-template-columns:repeat(2,1fr) !important;
     gap:7px !important;
     max-width:340px;
-    margin-top:24px !important;
+    margin:24px auto 0 !important;
+    padding:0 4px;
   }
-  .ft-links a{font-size:12px !important;min-height:46px}
+  .ft-links a{
+    min-height:46px;
+    padding:0 8px !important;
+    font-size:12px !important;
+    letter-spacing:0 !important;
+    white-space:normal;
+    line-height:1.35;
+    word-break:keep-all;
+    border-radius:14px !important;
+  }
 }
 @media (max-width:340px){
   .ft-links{grid-template-columns:1fr !important;max-width:100%}
@@ -4730,10 +4742,14 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
 
 /* 저작권 줄도 함께 정돈 */
 .ft-copy{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
+  display:flex;align-items:center;justify-content:center;
+  gap:14px;flex-wrap:wrap;
   margin-top:24px;padding-top:20px;
   border-top:1px solid rgba(0,0,0,.06);
   text-align:center;
+}
+@media (max-width:640px){
+  .ft-copy{flex-direction:column;gap:5px}
 }
 .ft-copy > span:first-child{font-size:11.5px;color:var(--gray)}
 .ft-copy a{font-size:11px;letter-spacing:1px}
