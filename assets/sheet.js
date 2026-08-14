@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  var SEL = '.popup,.cartp,.detail,.kko-box,.mo-b,.bl-box,.modal';
+  var SEL = '.popup,.cartp,.kko-box,.mo-b,.bl-box,.modal,.pop-bg .detail,.mo .detail,.popup-dim .detail';
   function isMobile() { return window.innerWidth <= 640; }
 
   /* ── 아래로 밀어서 닫기 ── */
