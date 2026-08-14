@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>도움말 | CHEWGUMI</title>
+<script src="assets/auth.js"></script>
 <meta name="theme-color" content="#D82558">
 <script src="assets/site.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
@@ -220,8 +221,9 @@ const link=s=>esc(s).replace(/([a-z0-9-]+\.html)/g,'<a href="$1">$1</a>');
 const ST={answered:'답변함',queued:'접수됨',drafting:'작업 중',
   review:'확인 요청',done:'완료',closed:'종료'};
 let token=null,who='',name='',hist=[],busy=false;
-try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
-const H=()=>({apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'});
+try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
+const H=()=>({apikey:KEY,'Content-Type':'application/json',
+  Authorization:'Bearer '+((function(){try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null');return s&&s.t||'';}catch(e){return '';}})())});
 const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
   .then(r=>r.json().then(d=>({ok:r.ok,d})));
 
@@ -232,10 +234,7 @@ function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
   $('lmsg').className='msg'; $('lmsg').textContent='로그인 중…';
-  fetch(SB+'/auth/v1/token?grant_type=password',{method:'POST',
-    headers:{apikey:KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({email,password:pw})})
-  .then(r=>r.json()).then(d=>{
+  CGAuth.login(email,pw).then(function(at){ var d={access_token:at};
     if(d.access_token){token=d.access_token;who=email.split('@')[0];
       try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
       $('lmsg').textContent='';sync();}
@@ -243,7 +242,7 @@ function doLogin(){
       $('lmsg').textContent='로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.';}
   }).catch(()=>{$('lmsg').className='msg bad';$('lmsg').textContent='네트워크 오류가 발생했습니다.';});
 }
-function doLogout(){token=null;who='';name='';hist=[];
+function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}name='';hist=[];
   try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
 function grow(t){ t.style.height='auto'; t.style.height=Math.min(150,t.scrollHeight)+'px'; }
