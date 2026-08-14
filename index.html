@@ -1487,14 +1487,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-cart d-full" id="dFull" href="product.html" data-en="VIEW FULL DETAILS">상세페이지 보기</a>
+        <a class="d-cart d-full" id="dFull" href="product.html">상세페이지 보기</a>
       </div>
       <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
-      <div class="d-notice" data-en="<span class='nl'><b>Shipping</b> Same-day dispatch for orders before 2PM on weekdays</span><span class='nl'><b>Returns</b> Unopened, within 7 days</span><span class='nl'><b>Payment</b> Options and payment are completed on the official store<br><span style='opacity:.8'>NaverPay · Card · Bank transfer · Virtual account</span></span>">
-        <span class="nl"><b>배송</b> 평일 14시 이전 주문 시 당일 출고</span>
-        <span class="nl"><b>교환 · 반품</b> 미개봉 상태로 7일 이내</span>
-        <span class="nl"><b>결제</b> 옵션 선택과 결제는 공식몰에서 안전하게 진행됩니다<br>
-          <span style="opacity:.8">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span></span>
+      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch for orders before 2PM (weekdays) · <b>Returns</b> Unopened, within 7 days · Options and payment are completed on the official store (NaverPay · Card · Bank transfer).">
+        <b>배송</b> 평일 14시 이전 주문 당일 출고 · <b>교환/반품</b> 미개봉 7일 이내 · 옵션 선택과 결제는 공식몰에서 안전하게 진행됩니다. (네이버페이 · 신용카드 · 계좌이체 · 가상계좌)
       </div>
     </div>
   </div>
@@ -4865,73 +4862,80 @@ img{max-width:100%}
   object-fit:cover;
 }
 
-/* ══ 상품 팝업 정리 ══ */
-/* 닫기 버튼 — 누르기 편한 크기로 */
-.d-close{
-  position:absolute !important;top:12px !important;right:12px !important;
-  width:40px !important;height:40px !important;
-  display:flex !important;align-items:center;justify-content:center;
-  font-size:20px !important;line-height:1 !important;
-  border-radius:50% !important;border:1px solid rgba(0,0,0,.08) !important;
-  background:rgba(255,255,255,.94) !important;color:#555 !important;
-  box-shadow:0 2px 10px rgba(0,0,0,.1) !important;
-  z-index:10;cursor:pointer;
-}
-.d-close:hover{background:#fff !important;color:var(--main) !important}
-@media(max-width:640px){
-  .d-close{width:42px !important;height:42px !important;top:10px !important;right:10px !important}
+/* ══ 상품 카드 — 이미지 비율이 달라도 크기 유지 ══
+   사진마다 세로·가로 비율이 달라 카드 높이가 들쭉날쭉했습니다.
+   틀은 정사각으로 고정하고, 사진은 잘리지 않게 안에 담습니다.
+   남는 여백은 부드러운 배경으로 채워 카드가 비어 보이지 않게 합니다. */
+
+.grid .card{
+  display:flex;flex-direction:column;height:100%;
 }
 
-/* 옵션 선택 — 체크박스형 버튼 크기 통일 */
-.d-opts, .d-opt-list{display:grid !important;grid-template-columns:1fr;gap:7px !important}
-.d-opt, .d-opts label, .d-opts button{
-  display:flex !important;align-items:center;justify-content:space-between;
-  min-height:52px !important;padding:0 16px !important;
-  border-radius:14px !important;font-size:13.5px !important;
-  border:1px solid rgba(0,0,0,.1) !important;
-  background:rgba(255,255,255,.9) !important;
-  cursor:pointer;transition:.16s;
-}
-.d-opt.on, .d-opts label.on{
-  border-color:var(--main) !important;
-  background:rgba(216,37,88,.06) !important;
-  box-shadow:0 0 0 2px rgba(216,37,88,.12) !important;
-}
-.d-opt input[type="radio"], .d-opt input[type="checkbox"],
-.d-opts input[type="radio"], .d-opts input[type="checkbox"]{
-  width:20px !important;height:20px !important;flex:none;
-  accent-color:var(--main);margin:0 10px 0 0 !important;
+.grid .card .thumb{
+  position:relative;
+  aspect-ratio:1/1 !important;
+  overflow:hidden;
+  border-radius:16px;
+  /* 사진 뒤 배경 — 브랜드 톤의 옅은 그라데이션 */
+  background:
+    radial-gradient(120% 90% at 50% 12%, #FFFFFF 0%, #FFF6F8 42%, #FFEDF1 100%);
+  display:flex;align-items:center;justify-content:center;
 }
 
-/* 팝업 안 이미지 — 원본 비율 유지 */
-.detail .d-img, .detail .d-thumb{
-  aspect-ratio:1/1 !important;overflow:hidden;border-radius:16px;background:#FFF1F4;
+/* 사진을 자르지 않고 안쪽에 맞춘다 → 비율이 달라도 온전히 보임 */
+.grid .card .thumb img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  display:block;
+  padding:6%;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1);
 }
-.detail .d-img img, .detail .d-thumb img{
-  width:100% !important;height:100% !important;
-  object-fit:cover !important;display:block;
+.grid .card:hover .thumb img{ transform:scale(1.04); }
+
+/* 뱃지는 사진 위에 */
+.grid .card .thumb .prd-badge{ z-index:3; }
+
+/* ── 카드 아래 글 영역 — 높이 통일 ── */
+.grid .card .name{
+  margin-top:12px;
+  font-size:13.5px;line-height:1.5;font-weight:600;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+  min-height:calc(1.5em * 2);
+  word-break:keep-all;
+}
+.grid .card .desc, .grid .card .tagline{
+  margin-top:5px;
+  font-size:11.5px;line-height:1.55;color:var(--gray);
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
+  overflow:hidden;
+  min-height:1.55em;
+}
+/* 평점 줄 — 없는 상품도 자리를 비워둬 가격 위치를 맞춘다 */
+.grid .card .rate, .grid .card .star{
+  margin-top:6px;font-size:11.5px;min-height:16px;
+}
+.grid .card .price, .grid .card .price-row{
+  margin-top:auto;
+  padding-top:9px;
+  display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
 }
 
-/* 안내 문구 — 줄바꿈으로 읽기 편하게 */
-.d-notice{
-  margin-top:16px !important;padding:14px 16px !important;
-  border-radius:14px !important;
-  background:rgba(255,255,255,.6) !important;
-  border:1px solid rgba(0,0,0,.06) !important;
-  font-size:12px !important;line-height:1.9 !important;
-  color:#5a5a62 !important;word-break:keep-all;
+@media (max-width:640px){
+  .grid .card .thumb img{ padding:5%; }
+  .grid .card .name{font-size:12.5px}
+  .grid .card .desc, .grid .card .tagline{font-size:11px}
 }
-.d-notice b{color:var(--ink);font-weight:700}
-.d-notice .nl{display:block;margin-top:6px}
-.d-notice .nl:first-child{margin-top:0}
 
-/* 버튼 줄 */
-.d-acts{display:grid !important;grid-template-columns:1fr 1fr;gap:8px !important;margin-top:16px}
-.d-acts .d-full{grid-column:1 / -1}
-.d-acts a{min-height:50px !important;display:inline-flex !important;
-  align-items:center;justify-content:center;font-size:13.5px !important;font-weight:700}
-@media(max-width:400px){
-  .d-acts{grid-template-columns:1fr}
+/* 신제품 카드도 같은 방식 */
+.nl-card .nl-img img, .nl-thumb img{
+  object-fit:contain !important;padding:5%;
+}
+.nl-card .nl-img, .nl-thumb{
+  background:radial-gradient(120% 90% at 50% 12%, #FFFFFF 0%, #FFF6F8 42%, #FFEDF1 100%);
+  display:flex;align-items:center;justify-content:center;
 }
 </style>
 <script src="assets/nav.js" defer>
