@@ -1466,7 +1466,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v77 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v78 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4956,6 +4956,61 @@ img{max-width:100%}
   background:radial-gradient(120% 90% at 50% 12%, #FFFFFF 0%, #FFF6F8 42%, #FFEDF1 100%);
   display:flex;align-items:center;justify-content:center;
 }
+
+/* ══ 헤더 떨림 완전 차단 ══
+   원인: 스크롤 이벤트 4곳이 각각 헤더 스타일을 바꾸고,
+        흐림(backdrop-filter)이 매 프레임 다시 계산되며 떨렸습니다.
+        모바일에서는 흐림을 끄고 상태 변화도 없앱니다. */
+@media (max-width:900px){
+  header{
+    position:sticky !important;
+    top:0 !important;
+    z-index:900 !important;
+    /* 흐림 제거 — 떨림의 주원인 */
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    background:rgba(255,255,255,.96) !important;
+    border-bottom:1px solid rgba(0,0,0,.06) !important;
+    /* 상태에 따라 바뀌지 않도록 고정 */
+    transition:none !important;
+    animation:none !important;
+    transform:translate3d(0,0,0);
+    will-change:auto !important;
+    box-shadow:0 1px 8px rgba(0,0,0,.04) !important;
+  }
+  /* solid·stuck·shrink 상태가 붙어도 모양이 안 바뀌게 */
+  header.solid, header.stuck, header.shrink{
+    background:rgba(255,255,255,.96) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    box-shadow:0 1px 8px rgba(0,0,0,.04) !important;
+    padding:inherit !important;
+    height:auto !important;
+    transition:none !important;
+  }
+  header::after, header::before{ display:none !important; }
+
+  /* 본문이 헤더에 가리지 않도록 */
+  body{ overscroll-behavior-y:none; }
+}
+
+/* ── 메뉴바 위치 내리기 ── */
+.hbar, header .wrap, header > div:first-child{
+  padding-top:14px !important;
+  padding-bottom:14px !important;
+}
+@media (max-width:900px){
+  .hbar, header .wrap, header > div:first-child{
+    padding-top:12px !important;
+    padding-bottom:12px !important;
+  }
+}
+/* PC 메뉴 캡슐 — 로고와 간격 확보 */
+@media (min-width:901px){
+  header nav, .gnb, .menu-pill{
+    margin-top:10px !important;
+  }
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
@@ -5002,6 +5057,26 @@ img{max-width:100%}
     document.addEventListener('DOMContentLoaded', lock);
   else lock();
   setTimeout(lock, 600);
+})();
+
+/* 모바일 — 헤더 상태 변경 중단 (떨림 방지) */
+(function(){
+  if (window.innerWidth > 900) return;
+  var hd = document.querySelector('header');
+  if (!hd) return;
+  /* 이미 붙은 상태 클래스 제거 후 고정 */
+  function fix(){
+    hd.classList.add('solid');
+    hd.classList.remove('shrink');
+    hd.classList.remove('stuck');
+  }
+  fix();
+  /* 다른 코드가 클래스를 바꿔도 되돌린다 */
+  if (window.MutationObserver) {
+    new MutationObserver(function(){
+      if (hd.classList.contains('shrink') || hd.classList.contains('stuck')) fix();
+    }).observe(hd, { attributes:true, attributeFilter:['class'] });
+  }
 })();
 </script>
 </body>
