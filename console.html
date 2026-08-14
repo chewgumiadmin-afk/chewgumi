@@ -229,6 +229,7 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
           <button onclick="ask('재고 상태 어때?')">재고 상태</button>
           <button onclick="ask('문의 답변 남은 거 있어?')">답변 대기</button>
           <button onclick="ask('구독 현황 알려줘')">구독 현황</button>
+          <button onclick="clearChat()" style="margin-left:auto;opacity:.7">대화 지우기</button>
           <button onclick="ask('입금 확인은 어디서 하나요?')">사용법</button>
         </div>
         <div class="ask">
@@ -383,7 +384,15 @@ function boot(){
     else msg += '처리할 일이 '+t.length+'건 있습니다.\n\n'
       + t.slice(0,3).map((x,i)=>(i+1)+'. '+x.t).join('\n')
       + (t.length>3?'\n\n나머지는 아래 목록에서 확인하세요.':'');
-    bub('ai',msg);
+    /* 지난 대화 먼저 복원 */
+    if(d.past && d.past.length){
+      d.past.forEach(function(m){ bub(m.role, m.text); });
+      hist = d.past.slice(-6);
+      bub('ai', greet+', '+who+'님. 이어서 말씀해 주세요.'
+        + (t.length ? '\n\n처리할 일이 '+t.length+'건 있습니다.' : ''));
+    } else {
+      bub('ai',msg);
+    }
 
     $('todos').innerHTML = t.length ? t.map(x=>
       '<div class="todo"><span class="p p'+x.p+'">'+x.p+'</span>'
@@ -484,6 +493,14 @@ function hlLoad(){
   }).catch(()=>{$('hlMsg').textContent='요청 목록을 불러오지 못했습니다.';});
 }
 </script>
-<script src="assets/sheet.js" defer></script>
+<script src="assets/sheet.js" defer>
+function clearChat(){
+  if(!confirm('지금까지의 대화를 지울까요?')) return;
+  call({action:'clear'}).then(function(){
+    $('log').innerHTML=''; hist=[];
+    bub('ai','대화를 지웠습니다. 새로 시작할게요.');
+  }).catch(function(){});
+}
+</script>
 </body>
 </html>
