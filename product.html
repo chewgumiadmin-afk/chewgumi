@@ -403,129 +403,66 @@ const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
    ※ 주소가 없거나 잘못되면 자동으로 숨겨지므로 화면이 깨지지 않습니다.
    ───────────────────────────────────────────────────────── */
 const NN = 'https://chewgumi.com/web/upload/NNEditor/';
-const DETAIL_IMGS = {
-  /* 트래블잇 5종 — 동일 제품 구성만 다름 */
-  15:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  11:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  12:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  13:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  14:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  /* 듀잇 6종 — 상세 이미지 17장 공통 */
-  16:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  17:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  18:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  19:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  20:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  21:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  /* 트리플잇 — 출시 예정 */
-  101:[], 102:[], 103:[]
-};
+const DETAIL_SET = {
+    travel:[
+      'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+      'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+      'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png'
+    ],
+    grape:[
+      'assets/detail/dew-grape-01.jpg',
+      'assets/detail/dew-grape-02.gif',
+      'assets/detail/dew-grape-03.jpg',
+      'assets/detail/dew-grape-04.webp',
+      'assets/detail/dew-grape-05.webp',
+      'assets/detail/dew-grape-06.jpg',
+      'assets/detail/dew-grape-07.jpg',
+      'assets/detail/dew-grape-08.webp',
+      'assets/detail/dew-grape-09.jpg',
+      'assets/detail/dew-grape-10.jpg',
+      'assets/detail/dew-grape-11.jpg',
+      'assets/detail/dew-grape-12.jpg',
+      'assets/detail/dew-grape-13.jpg',
+      'assets/detail/dew-grape-14.jpg',
+      'assets/detail/dew-grape-15.jpg',
+      'assets/detail/dew-grape-16.jpg',
+      'assets/detail/dew-grape-17.jpg',
+      'assets/detail/dew-grape-18.jpg'
+    ],
+    lemon:[
+      'assets/detail/dew-lemon-01.jpg',
+      'assets/detail/dew-lemon-02.gif',
+      'assets/detail/dew-lemon-03.gif',
+      'assets/detail/dew-lemon-04.webp',
+      'assets/detail/dew-lemon-05.gif',
+      'assets/detail/dew-lemon-06.jpg',
+      'assets/detail/dew-lemon-07.jpg',
+      'assets/detail/dew-lemon-08.webp',
+      'assets/detail/dew-lemon-09.jpg',
+      'assets/detail/dew-lemon-10.jpg',
+      'assets/detail/dew-lemon-11.jpg',
+      'assets/detail/dew-lemon-12.jpg',
+      'assets/detail/dew-lemon-13.jpg',
+      'assets/detail/dew-lemon-14.jpg',
+      'assets/detail/dew-lemon-15.jpg',
+      'assets/detail/dew-lemon-16.jpg',
+      'assets/detail/dew-lemon-17.jpg',
+      'assets/detail/dew-lemon-18.jpg'
+    ]
+  };
+
+  var DETAIL_KEY = {
+    15:'travel', 11:'travel', 12:'travel', 13:'travel', 14:'travel',
+    16:'lemon', 17:'grape',
+    18:'lemon', 19:'lemon', 20:'grape', 21:'grape'
+  };
+
+  var DETAIL_IMGS = new Proxy({}, {
+    get: function(t, p){
+      var key = DETAIL_KEY[p] || DETAIL_KEY[Number(p)];
+      return key ? (DETAIL_SET[key] || []) : [];
+    }
+  });
 
 /* ─────────────────────────────────────────────────────────
    토스페이먼츠 결제링크 (상점관리자 → 결제링크에서 발급 후 붙여넣기)
@@ -939,6 +876,25 @@ loadWish();
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* 상세 이미지 — 원본 비율, 이어붙임 */
+#pDetailImgs{max-width:900px;margin:0 auto;font-size:0;line-height:0;
+  transition:max-height .3s ease}
+.pd-img{width:100% !important;height:auto !important;display:block;
+  margin:0 auto !important;border-radius:0 !important}
+#pDetailImgs .pd-img:first-child{border-radius:16px 16px 0 0 !important}
+#pDetailImgs .pd-img:last-child{border-radius:0 0 16px 16px !important}
+#pDetailImgs.fold{max-height:1300px;overflow:hidden;position:relative}
+.pd-more{display:block;width:100%;max-width:900px;margin:14px auto 0;
+  min-height:52px;border-radius:999px;font-family:inherit;
+  font-size:13.5px;font-weight:700;cursor:pointer;color:var(--ink);
+  background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.1)}
+@media(max-width:640px){
+  #pDetailImgs{max-width:100%}
+  .pd-img,#pDetailImgs .pd-img:first-child,
+  #pDetailImgs .pd-img:last-child{border-radius:0 !important}
+  #pDetailImgs.fold{max-height:900px}
+}
 </style>
 <script>
 (function(){
@@ -1011,6 +967,20 @@ loadWish();
 <script src="assets/nav.js" defer></script>
 <script src="assets/schema.js" defer></script>
 <script src="assets/sheet.js" defer></script>
-<script src="assets/float.js" defer></script>
+<script src="assets/float.js" defer>
+function pdFold(){
+  var box=document.getElementById('pDetailImgs');
+  if(!box||box.dataset.folded) return;
+  var imgs=box.querySelectorAll('.pd-img');
+  if(imgs.length<=4) return;
+  box.dataset.folded='1';
+  box.classList.add('fold');
+  var b=document.createElement('button');
+  b.className='pd-more';
+  b.textContent='상세 정보 더 보기 ('+imgs.length+'장)';
+  b.onclick=function(){ box.classList.remove('fold'); b.remove(); };
+  if(box.parentElement) box.parentElement.insertBefore(b, box.nextSibling);
+}
+</script>
 </body>
 </html>
