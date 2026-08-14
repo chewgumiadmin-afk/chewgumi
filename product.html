@@ -404,380 +404,61 @@ const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
    ───────────────────────────────────────────────────────── */
 const NN = 'https://chewgumi.com/web/upload/NNEditor/';
 const DETAIL_IMGS = {
-  /* 트래블잇 5종 — 동일 제품 구성만 다름 */
-  15:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  11:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  12:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  13:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  14:[ 'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-       'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-       'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png' ],
-  /* 듀잇 6종 — 상세 이미지 17장 공통 */
-  16:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  17:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  18:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  19:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  20:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  21:[ 'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_8.webp',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9_2.gif',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-       'https://chewgumi.com/web/upload/NNEditor/20251201/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg' ],
-  /* 트리플잇 — 출시 예정 */
-  101:[], 102:[], 103:[]
-};
-
-/* ─────────────────────────────────────────────────────────
-   토스페이먼츠 결제링크 (상점관리자 → 결제링크에서 발급 후 붙여넣기)
-   https://app.tosspayments.com  →  결제링크 → 링크 만들기 → 주소 복사
-   비워두면 버튼이 표시되지 않습니다. 예) 11:'https://pay.toss.im/xxxxx'
-   ───────────────────────────────────────────────────────── */
-const PAY_LINKS = {
-  15:'', 11:'', 12:'', 13:'', 14:'',
-  16:'', 17:'', 18:'', 19:'', 20:'', 21:''
-};
-let no = parseInt(new URLSearchParams(location.search).get('no'), 10);
-if (!P[no]) no = 11;
-let qty = 1, rate = null;
-const won = v => '₩' + v.toLocaleString();
-
-function detailUrl(n){ return 'https://chewgumi.com/product/detail.html?product_no=' + n + '&cate_no=' + P[n].cate + '&display_group=1'; }
-
-function render(){
-  const p = P[no];
-  document.title = p.n + ' | CHEWGUMI';
-  document.getElementById('pImg').src = CDN + p.img;
-  document.getElementById('pImg').alt = p.n;
-  document.getElementById('pLine').textContent = p.line === 'travel' ? 'TRAVEL-IT' : 'DEW-IT';
-  document.getElementById('pName').textContent = p.n;
-  document.getElementById('pDesc').textContent = p.d;
-  document.getElementById('crumb').textContent = '홈 › Product › ' + (p.line === 'travel' ? '트래블잇' : '듀잇') + ' › ' + p.n;
-  document.getElementById('pOrigin').textContent = p.o > p.s ? won(p.o) : '';
-  document.getElementById('pSale').textContent = won(p.s);
-  document.getElementById('pOff').textContent = p.o > p.s ? Math.round((1 - p.s / p.o) * 100) + '% OFF' : '';
-  if(p.soon){
-    document.getElementById('pOrigin').textContent='';
-    document.getElementById('pSale').textContent='출시 예정';
-    document.getElementById('pOff').textContent='';
-  }
-  document.getElementById('pSold').innerHTML = p.sold ? '<span class="soldout">SOLD OUT · 재입고 준비중</span>' : '';
-
-  const sel = document.getElementById('pOpt');
-  const same = ORDER.filter(n => P[n].line === p.line);
-  sel.innerHTML = same.map(n => '<option value="' + n + '"' + (n === no ? ' selected' : '') + '>' + P[n].n + ' — ' + won(P[n].s) + '</option>').join('');
-
-  const buy = document.getElementById('pBuy');
-  buy.href = 'checkout.html';
-  buy.className = 'buy' + (p.sold ? ' off' : '');
-  buy.textContent = p.sold ? 'SOLD OUT' : 'BUY NOW';
-
-  const toss = document.getElementById('pToss');
-  const link = PAY_LINKS[no];
-  if (link && !p.sold) { toss.href = link; toss.classList.add('on'); } else { toss.classList.remove('on'); }
-
-  const wrap = document.getElementById('pDetailWrap');
-  const imgs = DETAIL_IMGS[no] || [];
-  if (imgs.length) {
-    wrap.style.display = 'block';
-    document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
-      '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
-      'onerror="this.style.display=\'none\';checkDetail();">').join('');
-  } else {
-    wrap.style.display = 'block';
-    document.getElementById('pDetailImgs').innerHTML =
-      '<div class="pd-empty">상세 이미지를 준비 중입니다.</div>';
-  }
-
-  document.getElementById('rel').innerHTML = ORDER.filter(n => n !== no).slice(0, 4).map(n =>
-    '<a class="rel-card" href="product.html?no=' + n + '">' +
-    '<div class="t"><img src="' + CDN + P[n].img + '" alt="' + P[n].n + '" loading="lazy"></div>' +
-    '<div class="n">' + P[n].n + '</div><div class="p">' + won(P[n].s) + '</div></a>').join('');
-
-  paintWish();
-  total();
-}
-function pick(){ no = parseInt(document.getElementById('pOpt').value, 10); qty = 1;
-  document.getElementById('pQty').value = 1;
-  history.replaceState(null, '', 'product.html?no=' + no); render(); }
-function chg(d){ qty = Math.min(99, Math.max(1, qty + d)); document.getElementById('pQty').value = qty; total(); }
-function total(){
-  const v = P[no].s * qty;
-  document.getElementById('pTotal').textContent = won(v);
-  document.getElementById('pUsd').textContent = rate ? '≈ $' + (v / rate).toFixed(2) : '';
-}
-function getCart(){ try{ return JSON.parse(localStorage.getItem('cg_cart') || '[]'); }catch(e){ return []; } }
-function setCart(c){ try{ localStorage.setItem('cg_cart', JSON.stringify(c)); }catch(e){} }
-function buyNow(ev){
-  ev.preventDefault();
-  const p = P[no];
-  if (p.sold) return false;
-  const c = getCart();
-  const ex = c.find(i => i.name === p.n);
-  if (ex) ex.qty = qty; else c.push({ name: p.n, price: p.s, qty: qty });
-  setCart(c);
-  location.href = 'checkout.html';
-  return false;
-}
-function addCart(){
-  const c = getCart();
-  const ex = c.find(i => i.name === P[no].n);
-  if (ex) ex.qty += qty; else c.push({ name: P[no].n, price: P[no].s, qty: qty });
-  setCart(c); openCart();
-}
-function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open');
-  document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeCart(){ document.getElementById('cartP').classList.remove('open');
-  document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
-function cQty(i,d){ const c=getCart(); c[i].qty=Math.min(99,Math.max(1,c[i].qty+d)); setCart(c); renderCart(); }
-function cDel(i){ const c=getCart(); c.splice(i,1); setCart(c); renderCart(); }
-function renderCart(){
-  const c = getCart(), box = document.getElementById('cartBody');
-  document.getElementById('cartN').textContent = c.reduce((s,i)=>s+i.qty,0);
-  if (!c.length){ box.innerHTML = '<div class="c-empty">장바구니가 비어 있습니다</div>'; return; }
-  const total = c.reduce((s,i)=>s+i.price*i.qty,0);
-  const esc = s => String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[ch]);
-  box.innerHTML = c.map((it,i)=>{
-    const n = matchNo(it.name);
-    return '<div class="c-item"><div class="c-th"><img src="'+CDN+P[n].img+'" alt=""></div>'
-      +'<div class="c-c"><div class="c-n">'+esc(it.name)+'</div>'
-      +'<div class="c-p">'+won(it.price)+' · 소계 <b>'+won(it.price*it.qty)+'</b></div></div>'
-      +'<div class="c-ctrl"><button onclick="cQty('+i+',-1)">−</button><span>'+it.qty+'</span>'
-      +'<button onclick="cQty('+i+',1)">＋</button></div>'
-      +'<button class="c-del" onclick="cDel('+i+')" aria-label="삭제">✕</button></div>';
-  }).join('')
-  + '<div class="c-sum"><span>총 상품금액</span><b>'+won(total)+'</b></div>'
-  + '<a class="c-go" href="cart.html">장바구니 페이지에서 결제하기</a>'
-  + '<button class="c-cont" onclick="closeCart()">계속 쇼핑하기</button>';
-}
-function matchNo(name){
-  const s = String(name||'');
-  if (s.includes('트래블잇') || s.toLowerCase().includes('travel')){
-    const m = s.match(/\[(\d+)봉\]/); const map={'1':15,'3':11,'5':12,'10':13,'20':14};
-    return (m && map[m[1]]) || 11; }
-  if (s.includes('레몬민트')) return 16;
-  if (s.includes('그레이프')) return 17;
-  const m2 = s.match(/(\d+)개입/); const map2={'4':18,'6':19,'10':20,'20':21};
-  return (m2 && map2[m2[1]]) || 18;
-}
-function checkDetail(){
-  const box = document.getElementById('pDetailImgs');
-  const alive = [...box.querySelectorAll('.pd-img')].some(i => i.style.display !== 'none');
-  document.getElementById('pDetailWrap').style.display = alive ? 'block' : 'none';
-}
-fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
-  .then(r => r.json()).then(d => { if (d && d.rates) { rate = d.rates.KRW; total(); } }).catch(() => {});
-render();
-loadWish();
-</script>
-
-<!-- 챗봇 상담 -->
-<style>
-.cgbot-fab{position:fixed;right:18px;bottom:20px;z-index:2000;width:58px;height:58px;border-radius:50%;
-  border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#E95073,#D82558);box-shadow:0 10px 26px rgba(216,37,88,.4)}
-.cgbot-fab svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.8;
-  stroke-linecap:round;stroke-linejoin:round}
-.cgbot-fab .dot{position:absolute;top:2px;right:2px;width:11px;height:11px;border-radius:50%;
-  background:#FFE923;border:2px solid #fff}
-.cgbot-win{position:fixed;right:18px;bottom:88px;z-index:2001;width:min(360px,calc(100vw - 36px));
-  height:min(520px,calc(100vh - 130px));border-radius:22px;overflow:hidden;display:none;
-  flex-direction:column;background:#fff;box-shadow:0 22px 54px rgba(0,0,0,.24)}
-.cgbot-win.on{display:flex}
-.cgbot-hd{padding:15px 18px;background:linear-gradient(135deg,#E95073,#D82558);color:#fff;
-  display:flex;align-items:center;justify-content:space-between}
-.cgbot-hd b{font-size:15px}
-.cgbot-hd small{display:block;font-size:11px;opacity:.9;margin-top:2px;font-weight:400}
-.cgbot-hd button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 2px}
-.cgbot-body{flex:1;overflow-y:auto;padding:16px;background:#FDF3F5}
-.cgbot-msg{max-width:82%;padding:11px 14px;border-radius:16px;font-size:13.5px;line-height:1.75;
-  margin-bottom:10px;white-space:pre-wrap;word-break:break-word}
-.cgbot-msg.bot{background:#fff;border:1px solid rgba(0,0,0,.06);border-bottom-left-radius:5px}
-.cgbot-msg.me{background:linear-gradient(135deg,#E95073,#D82558);color:#fff;margin-left:auto;
-  border-bottom-right-radius:5px}
-.cgbot-kakao{display:block;margin:2px 0 12px;padding:13px 0;border-radius:14px;text-align:center;
-  font-size:13.5px;font-weight:700;background:#FEE500;color:#191600;text-decoration:none}
-.cgbot-quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.cgbot-quick button{padding:8px 12px;border-radius:999px;font-size:11.5px;font-weight:600;cursor:pointer;
-  background:#fff;border:1px solid rgba(0,0,0,.09);color:#555;font-family:inherit}
-.cgbot-ft{padding:12px;border-top:1px solid rgba(0,0,0,.07);display:flex;gap:8px;background:#fff}
-.cgbot-ft input{flex:1;padding:12px 14px;border-radius:999px;font-size:13.5px;font-family:inherit;
-  border:1px solid rgba(0,0,0,.1);background:#fafafa}
-.cgbot-ft button{padding:0 18px;border-radius:999px;border:0;cursor:pointer;font-family:inherit;
-  font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#E95073,#D82558)}
-.cgbot-ft button:disabled{opacity:.5;cursor:not-allowed}
-.cgbot-note{font-size:11px;color:#999;text-align:center;padding:0 16px 10px;background:#FDF3F5;line-height:1.6}
-@media(max-width:480px){.cgbot-win{right:12px;left:12px;width:auto;bottom:82px}}
-</style>
-<button class="cgbot-fab" onclick="cgbotToggle()" aria-label="상담 문의">
-  <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z"/></svg>
-  <span class="dot"></span>
-</button>
-<div class="cgbot-win" id="cgbotWin">
-  <div class="cgbot-hd">
-    <div><b>츄구미 상담</b><small>궁금한 점을 물어보세요</small></div>
-    <button onclick="cgbotToggle()" aria-label="닫기">&times;</button>
-  </div>
-  <div class="cgbot-body" id="cgbotBody"></div>
-  <div class="cgbot-note">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>
-  <div class="cgbot-ft">
-    <input id="cgbotIn" placeholder="메시지를 입력하세요"
-      onkeydown="if(event.key==='Enter')cgbotSend()">
-    <button id="cgbotBtn" onclick="cgbotSend()">전송</button>
-  </div>
-</div>
-<script>
-(function(){
-  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-  var kakaoUrl='', started=false, hist=[];
-  var sid=''; try{ sid=localStorage.getItem('cg_chat_sid')||'';
-    if(!sid){ sid=Math.random().toString(36).slice(2)+Date.now().toString(36);
-      localStorage.setItem('cg_chat_sid',sid);} }catch(e){}
-
-  function el(id){return document.getElementById(id);}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function add(role,text){
-    var d=document.createElement('div');
-    d.className='cgbot-msg '+(role==='me'?'me':'bot');
-    d.textContent=text; el('cgbotBody').appendChild(d);
-    el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
-    return d;
-  }
-  function addKakao(){
-    if(!kakaoUrl) return;
-    var a=document.createElement('a');
-    a.className='cgbot-kakao'; a.href=kakaoUrl; a.target='_blank'; a.rel='noopener';
-    a.textContent='카카오톡으로 상담원 연결';
-    el('cgbotBody').appendChild(a);
-    el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
-  }
-  function quick(){
-    var qs=['배송 얼마나 걸리나요','배송비 얼마인가요','무통장 계좌 알려주세요','트래블잇이 뭔가요'];
-    var w=document.createElement('div'); w.className='cgbot-quick';
-    qs.forEach(function(q){
-      var b=document.createElement('button'); b.textContent=q;
-      b.onclick=function(){ el('cgbotIn').value=q; cgbotSend(); w.remove(); };
-      w.appendChild(b);
-    });
-    el('cgbotBody').appendChild(w);
-  }
-  window.cgbotToggle=function(){
-    var w=el('cgbotWin'); w.classList.toggle('on');
-    if(w.classList.contains('on')){
-      if(!started){
-        started=true;
-        add('bot','안녕하세요, 츄구미입니다.\n배송·상품·주문에 대해 물어보세요.');
-        quick();
-        fetch(SB+'/functions/v1/chat',{method:'POST',
-          headers:{'Content-Type':'application/json',apikey:KEY},
-          body:JSON.stringify({action:'config'})})
-        .then(function(r){return r.json();})
-        .then(function(d){ kakaoUrl=d.kakao||''; }).catch(function(){});
-      }
-      setTimeout(function(){el('cgbotIn').focus();},80);
-    }
+    /* 트래블잇 5종 — 동일 제품, 구성만 다름 */
+    15:'travel', 11:'travel', 12:'travel', 13:'travel', 14:'travel',
+    /* 듀잇 — 레몬민트 / 그레이프 */
+    16:'lemon', 17:'grape',
+    /* 듀잇 개입 상품 — 두 맛 모두 안내 */
+    18:'lemon', 19:'lemon', 20:'grape', 21:'grape'
   };
+
+  var DETAIL_SET = {
+    travel:[
+      'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+      'https://chewgumi.com/web/product/big/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
+      'https://chewgumi.com/web/product/big/202506/dc72d6fa148062eae7417558046e467c.png'
+    ],
+    grape:[
+      'assets/detail/dew-grape-01.jpg',
+      'assets/detail/dew-grape-02.gif',
+      'assets/detail/dew-grape-03.jpg',
+      'assets/detail/dew-grape-04.webp',
+      'assets/detail/dew-grape-05.webp',
+      'assets/detail/dew-grape-06.jpg',
+      'assets/detail/dew-grape-07.jpg',
+      'assets/detail/dew-grape-08.webp',
+      'assets/detail/dew-grape-09.jpg',
+      'assets/detail/dew-grape-10.jpg',
+      'assets/detail/dew-grape-11.jpg',
+      'assets/detail/dew-grape-12.jpg',
+      'assets/detail/dew-grape-13.jpg',
+      'assets/detail/dew-grape-14.jpg',
+      'assets/detail/dew-grape-15.jpg',
+      'assets/detail/dew-grape-16.jpg',
+      'assets/detail/dew-grape-17.jpg',
+      'assets/detail/dew-grape-18.jpg'
+    ],
+    lemon:[
+      'assets/detail/dew-lemon-01.jpg',
+      'assets/detail/dew-lemon-02.gif',
+      'assets/detail/dew-lemon-03.gif',
+      'assets/detail/dew-lemon-04.webp',
+      'assets/detail/dew-lemon-05.gif',
+      'assets/detail/dew-lemon-06.jpg',
+      'assets/detail/dew-lemon-07.jpg',
+      'assets/detail/dew-lemon-08.webp',
+      'assets/detail/dew-lemon-09.jpg',
+      'assets/detail/dew-lemon-10.jpg',
+      'assets/detail/dew-lemon-11.jpg',
+      'assets/detail/dew-lemon-12.jpg',
+      'assets/detail/dew-lemon-13.jpg',
+      'assets/detail/dew-lemon-14.jpg',
+      'assets/detail/dew-lemon-15.jpg',
+      'assets/detail/dew-lemon-16.jpg',
+      'assets/detail/dew-lemon-17.jpg',
+      'assets/detail/dew-lemon-18.jpg'
+    ]
+  }; };
   window.cgbotSend=function(){
     var v=el('cgbotIn').value.trim(); if(!v) return;
     el('cgbotIn').value=''; add('me',v);
@@ -939,6 +620,34 @@ loadWish();
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* 상세 이미지 — 원본 비율 그대로, 끊김 없이 */
+.pdetail{margin-top:56px}
+#pDetailImgs{max-width:900px;margin:0 auto;font-size:0;line-height:0}
+.pd-img{
+  width:100% !important;height:auto !important;display:block;
+  margin:0 auto !important;border-radius:0 !important;
+}
+#pDetailImgs .pd-img:first-child{border-radius:16px 16px 0 0 !important}
+#pDetailImgs .pd-img:last-child{border-radius:0 0 16px 16px !important}
+.pd-more{
+  display:block;width:100%;max-width:900px;margin:16px auto 0;
+  min-height:52px;border-radius:999px;font-family:inherit;
+  font-size:13.5px;font-weight:700;cursor:pointer;
+  color:var(--ink);background:rgba(255,255,255,.9);
+  border:1px solid rgba(0,0,0,.1);
+}
+.pd-fade{position:relative;overflow:hidden}
+.pd-fade::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:120px;
+  background:linear-gradient(180deg,rgba(253,243,245,0),rgba(253,243,245,.95));
+  pointer-events:none;
+}
+@media(max-width:640px){
+  .pdetail{margin-top:40px}
+  #pDetailImgs{max-width:100%}
+  .pd-img{border-radius:0 !important}
+}
 </style>
 <script>
 (function(){
@@ -1011,6 +720,25 @@ loadWish();
 <script src="assets/nav.js" defer></script>
 <script src="assets/schema.js" defer></script>
 <script src="assets/sheet.js" defer></script>
-<script src="assets/float.js" defer></script>
+<script src="assets/float.js" defer>
+/* 상세 이미지가 많으면 처음엔 일부만 */
+function pdFold(){
+  var box=document.getElementById('pDetailImgs');
+  if(!box) return;
+  var imgs=box.querySelectorAll('.pd-img');
+  if(imgs.length<=4) return;
+  box.classList.add('pd-fade');
+  box.style.maxHeight='1400px';
+  var b=document.createElement('button');
+  b.className='pd-more';
+  b.textContent='상세 정보 더 보기 ('+imgs.length+'장)';
+  b.onclick=function(){
+    box.style.maxHeight='none';
+    box.classList.remove('pd-fade');
+    b.remove();
+  };
+  box.parentElement.insertBefore(b, box.nextSibling);
+}
+</script>
 </body>
 </html>
