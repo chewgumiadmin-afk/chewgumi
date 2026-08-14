@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v79 · 2026-08-14</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v80 · 2026-08-14</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5179,6 +5179,57 @@ img{max-width:100%}
     text-underline-offset:3px;min-height:36px;display:inline-flex;align-items:center}
   .cs-hr{font-size:11.5px;color:var(--gray,#7a7a82)}
   @media(max-width:640px){.cs-line{gap:6px;flex-direction:column}}
+
+/* ══ 상품 카드 이미지 — 가운데 정렬 (최종) ══
+   inset 7% 로 잡으니 오른쪽 아래로 쏠렸습니다.
+   flex 중앙 정렬로 확실히 가운데 놓습니다. */
+.card .thumb{
+  position:relative !important;
+  aspect-ratio:1/1 !important;
+  overflow:hidden !important;
+  border-radius:18px !important;
+  background:radial-gradient(120% 92% at 50% 10%,
+    #FFFFFF 0%, #FFF7F9 46%, #FFEFF3 100%) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:8% !important;
+}
+.card .thumb img{
+  position:static !important;
+  inset:auto !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  margin:0 !important;
+  display:block !important;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1) !important;
+}
+.card:hover .thumb img{ transform:scale(1.05) !important; }
+.card .thumb img.hover{ display:none !important; }
+.card .thumb::after{ display:none !important; }
+/* 뱃지는 절대 위치 유지 */
+.card .thumb .prd-badge{
+  position:absolute !important; top:10px !important; left:10px !important; z-index:3 !important;
+}
+@media (max-width:640px){
+  .card .thumb{ padding:7% !important; }
+  .card:hover .thumb img{ transform:none !important; }
+}
+
+/* 신제품 카드도 동일 */
+.nl-thumb, .nl-card .nl-img{
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  padding:7% !important;
+}
+.nl-thumb img, .nl-card .nl-img img{
+  position:static !important;inset:auto !important;
+  width:100% !important;height:100% !important;
+  object-fit:contain !important;margin:0 !important;
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
