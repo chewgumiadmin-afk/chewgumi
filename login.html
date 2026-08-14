@@ -127,6 +127,65 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* ══ 로그인 화면 — 읽기 편한 크기로 ══ */
+:root{
+  --lg-xs: clamp(12px, 3.2vw, 13px);
+  --lg-sm: clamp(13px, 3.6vw, 14px);
+  --lg-md: clamp(14px, 4vw, 15.5px);
+  --lg-lg: clamp(15px, 4.4vw, 17px);
+}
+
+/* 안내 문구 — 가장 많이 읽는 곳 */
+.note{
+  font-size: var(--lg-sm) !important;
+  line-height: 1.9 !important;
+  padding: 15px 17px !important;
+  color: #5a5a62 !important;
+}
+.note b{ color: var(--main) !important; font-weight: 700 !important; }
+
+/* 부제목 */
+.sub{ font-size: var(--lg-md) !important; line-height: 1.7 !important; }
+
+/* 입력칸 — 16px 미만이면 아이폰이 화면을 확대해 버림 */
+.selfbox input{
+  font-size: max(16px, var(--lg-md)) !important;
+  min-height: 50px !important;
+  padding: 0 16px !important;
+}
+
+/* 버튼 */
+.li-btn{ font-size: var(--lg-md) !important; min-height: 52px !important; }
+.btn, .btn.ghost{ font-size: var(--lg-sm) !important; min-height: 50px !important; }
+
+/* 소셜 로그인 */
+.sso a, .sso button, .sso-btn{
+  font-size: var(--lg-sm) !important;
+  min-height: 50px !important;
+}
+
+/* 안내·오류 메시지 */
+.li-msg, .sso-msg, .msg{ font-size: var(--lg-xs) !important; line-height: 1.8 !important; }
+
+/* 하단 링크 */
+.links, .links a{ font-size: var(--lg-sm) !important; }
+.links a{ min-height: 42px !important; }
+.home{ font-size: var(--lg-xs) !important; min-height: 42px; }
+
+/* 구분선 */
+.or{ font-size: var(--lg-xs) !important; }
+
+/* 모바일에서 더 크게 */
+@media (max-width:640px){
+  .note{ font-size: 13.5px !important; padding: 16px 18px !important; }
+  .selfbox input{ font-size: 16px !important; min-height: 52px !important; }
+  .li-btn{ font-size: 15px !important; min-height: 54px !important; }
+  .links a{ font-size: 13.5px !important; }
+}
+
+/* popup.css 가 로그인 화면에 영향 주지 않도록 */
+.card, .box, .login-box{ max-height: none !important; }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -194,7 +253,7 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <a href="#" onclick="toggleReset('pw');return false;">비밀번호 재설정</a>
       <a href="cart.html">장바구니</a>
     </div>
-    <div class="note">이 사이트 계정으로 로그인하시면 주문 내역과 적립금을 확인하실 수 있습니다.<br><b>카드 결제</b>는 안전을 위해 공식몰에서 진행됩니다.</div>
+    <div class="note">로그인하시면 <b>주문 내역</b>과 <b>적립금</b>을 확인하실 수 있습니다.<br>카드 결제는 안전을 위해 공식몰에서 진행됩니다.</div>
     <a class="home" href="index.html">HOME</a>
   </div>
 </div>
