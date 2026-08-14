@@ -1412,7 +1412,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v72 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v73 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4686,6 +4686,41 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
 @media (max-width:640px){
   .ft-copy{gap:4px;margin-top:20px}
 }
+
+/* ══ 스크롤 떨림 방지 ══
+   모바일에서 아래로 내렸다 올릴 때 화면이 흔들리던 문제:
+   ① 헤더 흐림 효과가 매 프레임 다시 계산됨
+   ② 등장 애니메이션이 스크롤 방향마다 다시 실행됨 */
+@media (max-width:900px){
+  html{
+    scroll-behavior:auto !important;
+    -webkit-text-size-adjust:100%;
+  }
+  body{
+    overscroll-behavior-y:none;   /* 위로 당길 때 튕김 제거 */
+    -webkit-overflow-scrolling:touch;
+  }
+  /* 헤더 — 흐림 대신 반투명만 (스크롤 중 재계산 부담 제거) */
+  header{
+    backdrop-filter:blur(14px) !important;
+    -webkit-backdrop-filter:blur(14px) !important;
+    transform:translateZ(0);
+    will-change:auto !important;
+    transition:none !important;
+  }
+  /* 한 번 나타난 요소는 되돌리지 않는다 */
+  .card, .tri-card, .nl-card, .comm-card, section{
+    transition:opacity .3s ease !important;
+  }
+  .card.inview, .tri-card.inview, .nl-card.inview,
+  .card.in, .tri-card.in{
+    opacity:1 !important;
+    transform:none !important;
+  }
+  /* 배너 슬라이드 — 스크롤 중 리페인트 최소화 */
+  .h-track{will-change:transform}
+  .hslide{backface-visibility:hidden;transform:translateZ(0)}
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
@@ -4707,6 +4742,32 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
 </script>
 <script src="assets/schema.js" defer></script>
 <script src="assets/sheet.js" defer></script>
-<script src="assets/float.js" defer></script>
+<script src="assets/float.js" defer>
+/* 스크롤 중에는 등장 애니메이션을 다시 실행하지 않는다 */
+(function(){
+  if (window.innerWidth > 900) return;
+  var seen = new WeakSet();
+  function lock(){
+    var els = document.querySelectorAll('.card,.tri-card,.nl-card,.comm-card');
+    for (var i=0;i<els.length;i++){
+      var e = els[i];
+      if (e.classList.contains('inview') || e.classList.contains('in')) {
+        if (!seen.has(e)) { seen.add(e); }
+      }
+      if (seen.has(e)) {
+        e.classList.add('inview'); e.classList.add('in');
+      }
+    }
+  }
+  var t=null;
+  window.addEventListener('scroll', function(){
+    clearTimeout(t); t=setTimeout(lock, 60);
+  }, {passive:true});
+  if (document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', lock);
+  else lock();
+  setTimeout(lock, 600);
+})();
+</script>
 </body>
 </html>
