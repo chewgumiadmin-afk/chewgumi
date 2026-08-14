@@ -1435,7 +1435,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v84 · 2026-08-14</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v85 · 2026-08-14</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2885,12 +2885,12 @@ setHead();
 
 /* ══ 팝업 — 모바일 표시 교정 ══ */
 .popup-dim{
-  display:none;position:fixed;inset:0;z-index:1500;
+  display:flex;position:fixed;inset:0;z-index:1500;
   align-items:center;justify-content:center;
   padding:20px;overflow-y:auto;
   background:rgba(26,12,18,.42);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.popup-dim.on{display:flex}
+.popup-dim.hide{display:none !important}
 .popup{
   width:min(calc(100vw - 40px),400px) !important;
   max-height:calc(100dvh - 48px) !important;
