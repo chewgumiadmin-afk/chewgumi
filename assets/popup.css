@@ -204,9 +204,8 @@
 
 @keyframes cgPop{ from{transform:scale(.94);opacity:0} to{transform:none;opacity:1} }
 
-/* 팝업이 열려 있을 때만 화면을 덮는다 */
-.popup-dim{ display:none }
-.popup-dim.on{ display:flex !important }
+/* 팝업 표시 — 페이지는 .hide 로 숨김을 제어합니다.
+   여기서 기본값을 none 으로 두면 팝업이 영영 안 뜹니다. */
 .popup-dim.hide{ display:none !important }
 
 /* 팝업으로 뜨는 상세만 대상 — 배경(dim) 안에 있을 때 */
