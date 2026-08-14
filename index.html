@@ -1263,15 +1263,66 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </a>
       </div>
     </section>
-    <section id="userfilms">
-      <div class="uf-bg" aria-hidden="true"><span class="o1"></span><span class="o2"></span></div>
-      <div class="wrap uf-in">
-        <div class="uf-head">
-          <span class="uf-eb">USER FILMS</span>
-          <h2>당신의 한입을<br>보여주세요</h2>
-          <p id="ufLead">츄구미를 즐기는 순간을 공유해 주세요.<br><span style="font-size:.92em;opacity:.8">인스타그램에 <b>#츄구미</b>와 함께 올려주시면 소개해 드립니다.</span></p>
+    <section class="ufilm" id="ufilm">
+      <div class="wrap">
+        <div class="sec-head">
+          <div class="sec-title">
+            <span class="eb">USER FILMS</span>
+            <h2 class="kr" data-en="Share your moment">당신의 한입을<br>보여주세요</h2>
+            <p class="kr" data-en="Photos and videos from customers. Send yours and we'll feature it.">
+              고객분들이 보내주신 사진과 영상입니다.<br>
+              여러분의 순간도 소개해 드릴게요.
+            </p>
+          </div>
         </div>
-        <div class="uf-grid" id="ufGrid"></div>
+
+        <div class="ufilm-grid" id="ufGrid"></div>
+
+        <div class="uf-join">
+          <div class="uf-ways">
+            <a class="uf-way" href="https://www.instagram.com/chewgumi_official/"
+              target="_blank" rel="noopener">
+              <span class="uf-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5"/>
+                  <circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/>
+                </svg>
+              </span>
+              <b class="kr" data-en="Post on Instagram">인스타그램에 올리기</b>
+              <span class="kr" data-en="Tag #chewgumi and we'll find it">#츄구미 태그하시면 저희가 찾아갑니다</span>
+            </a>
+
+            <a class="uf-way" href="reports.html">
+              <span class="uf-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10"/>
+                  <circle cx="9" cy="9" r="2"/><path d="m3 17 4-4 5 5"/>
+                  <path d="M19 16v6M16 19h6"/>
+                </svg>
+              </span>
+              <b class="kr" data-en="Send directly">사진 · 영상 보내기</b>
+              <span class="kr" data-en="Attach a link on the report page">고객 리포트에서 링크를 남겨주세요</span>
+            </a>
+
+            <a class="uf-way" data-cs="tel" href="tel:050704442706">
+              <span class="uf-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 9V5a3 3 0 0 0-6 0v7a3 3 0 0 0 6 0"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>
+                </svg>
+              </span>
+              <b class="kr" data-en="Talk to us">직접 문의하기</b>
+              <span class="kr" data-en="Weekdays 10:00 - 17:00">평일 10:00 - 17:00</span>
+            </a>
+          </div>
+          <p class="uf-note kr"
+            data-en="Selected posts are featured here with credit. We'll always ask first.">
+            소개해 드릴 때는 미리 여쭙고, 계정을 함께 표기해 드립니다.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -1412,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v73 · 2026-08-13</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v74 · 2026-08-13</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -4720,6 +4771,34 @@ header{z-index:900 !important;position:sticky;isolation:isolate}
   /* 배너 슬라이드 — 스크롤 중 리페인트 최소화 */
   .h-track{will-change:transform}
   .hslide{backface-visibility:hidden;transform:translateZ(0)}
+}
+
+/* USER FILMS — 참여 안내 */
+.uf-join{margin-top:26px}
+.uf-ways{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.uf-way{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;
+  padding:24px 16px;border-radius:20px;text-decoration:none;
+  background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 18px rgba(0,0,0,.05);
+  transition:transform .18s, box-shadow .18s, background .18s}
+.uf-way:hover{transform:translateY(-2px);background:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 12px 26px rgba(216,37,88,.14)}
+.uf-ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 6px 16px rgba(216,37,88,.24)}
+.uf-ic svg{width:21px;height:21px;stroke:#fff}
+.uf-way b{font-size:13.5px;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+.uf-way span:last-child{font-size:11.5px;line-height:1.6;color:var(--gray);word-break:keep-all}
+.uf-note{margin-top:16px;text-align:center;font-size:11.5px;line-height:1.75;color:var(--gray)}
+.ufilm-grid:empty{display:none}
+@media(max-width:768px){
+  .uf-ways{grid-template-columns:1fr;gap:9px}
+  .uf-way{flex-direction:row;text-align:left;padding:16px 18px;gap:14px;align-items:center}
+  .uf-way .uf-ic{flex:none;width:40px;height:40px}
+  .uf-way b{display:block}
+  .uf-way > span:last-child{display:block;margin-top:2px}
+  .uf-way b, .uf-way > span:last-child{flex:1}
 }
 </style>
 <script src="assets/nav.js" defer>
