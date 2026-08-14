@@ -1466,7 +1466,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v77 · 2026-08-14</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v78 · 2026-08-14</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5104,6 +5104,37 @@ img{max-width:100%}
   .uf-way b{display:block;font-size:14px}
   .uf-way > span:last-child{display:block;margin-top:3px;font-size:11.5px}
   #newline, .newline, .nl-sec{padding-top:48px !important}
+}
+
+/* ══ 상품 카드 이미지 — 최종 정리 ══
+   앞선 규칙들이 여러 겹 쌓여 충돌했습니다. 여기서 한 번에 결정합니다. */
+.card .thumb{
+  position:relative !important;
+  aspect-ratio:1/1 !important;
+  overflow:hidden !important;
+  border-radius:18px !important;
+  background:radial-gradient(120% 92% at 50% 10%,
+    #FFFFFF 0%, #FFF7F9 46%, #FFEFF3 100%) !important;
+}
+.card .thumb img{
+  position:absolute !important;
+  inset:7% !important;              /* 사방 여백 — 사진이 꽉 차지 않도록 */
+  width:86% !important;
+  height:86% !important;
+  object-fit:contain !important;    /* 자르지 않고 안에 맞춤 */
+  object-position:center !important;
+  opacity:1 !important;
+  display:block !important;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1) !important;
+}
+.card:hover .thumb img{ transform:scale(1.05) !important; }
+.card .thumb img.hover{ display:none !important; }
+.card .thumb::after{ display:none !important; }
+.card .thumb .prd-badge{ z-index:3 !important; }
+
+@media (max-width:640px){
+  .card .thumb img{ inset:6% !important; width:88% !important; height:88% !important; }
+  .card:hover .thumb img{ transform:none !important; }
 }
 </style>
 <script src="assets/nav.js" defer>
