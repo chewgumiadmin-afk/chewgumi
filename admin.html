@@ -1,455 +1,74 @@
 <!DOCTYPE html>
+<!-- ChewGumi Admin (구 화면 → 안내) · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>ADMIN | CHEWGUMI</title>
+<title>관리자 | CHEWGUMI</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-
 <script src="assets/auth.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<style>
-/* 글래스 팝업 (중앙 · 라운드) */
-.cg-dim{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;
-  background:rgba(20,10,14,.42);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-.cg-dim.on{display:flex}
-.cg-box{width:100%;max-width:360px;border-radius:26px;padding:28px 24px 22px;text-align:center;
-  background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);
-  backdrop-filter:blur(26px) saturate(125%);-webkit-backdrop-filter:blur(26px) saturate(125%);
-  box-shadow:0 24px 60px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.95);
-  animation:cgPop .28s cubic-bezier(.34,1.4,.5,1)}
-@keyframes cgPop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:none}}
-.cg-ico{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:25px;background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;
-  box-shadow:0 8px 20px rgba(216,37,88,.32)}
-.cg-t{font-size:17px;font-weight:700;line-height:1.5;word-break:keep-all;letter-spacing:-.02em}
-.cg-s{margin-top:8px;font-size:13px;color:var(--gray);line-height:1.7;word-break:keep-all}
-.cg-acts{display:flex;gap:9px;margin-top:20px}
-.cg-acts button,.cg-acts a{flex:1;height:48px;border:0;border-radius:999px;font-family:inherit;font-size:13.5px;
-  font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.cg-ok{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;box-shadow:0 8px 20px rgba(216,37,88,.3)}
-.cg-gh{background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.95);color:var(--ink)}
-@media(prefers-reduced-motion:reduce){.cg-box{animation:none}}
-
-:root{ --pink1:#EC5E86; --pink2:#E14E78; --pink3:#DA4468; --ink:#1d1d1f; --gray:#86868b;
-  --glass:rgba(255,255,255,.62); --line:rgba(255,255,255,.85); }
-*{margin:0;padding:0;box-sizing:border-box}
-body{ font-family:"Pretendard Variable",Pretendard,"Noto Sans KR",sans-serif; color:var(--ink); min-height:100vh;
-  padding:28px 16px 70px;
-  background:
-    radial-gradient(900px 500px at 12% -5%, rgba(236,94,134,.16), transparent 60%),
-    radial-gradient(700px 460px at 95% 12%, rgba(255,214,165,.24), transparent 60%),
-    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4); }
-a{color:inherit}
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
-  outline:2px solid var(--pink2); outline-offset:3px; border-radius:8px; }
-.wrap{max-width:860px;margin:0 auto}
-.top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
-.top h1{font-family:'Playfair Display',serif;font-size:28px}
-.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
-.top a.home{font-size:12px;color:var(--gray);text-decoration:underline;text-underline-offset:3px}
-.panel{ background:var(--glass); border:1px solid var(--line); border-radius:24px; padding:20px; margin-bottom:16px;
-  backdrop-filter:blur(22px) saturate(120%); -webkit-backdrop-filter:blur(22px) saturate(120%);
-  box-shadow:0 18px 44px rgba(0,0,0,.09), inset 0 1px 0 rgba(255,255,255,.9); }
-.panel h2{font-size:11px;letter-spacing:3px;color:var(--gray);font-weight:700;margin-bottom:14px}
-input,select,textarea{ width:100%; padding:12px 14px; margin-bottom:9px; border-radius:14px; font-size:13px;
-  font-family:inherit; color:var(--ink);
-  border:1px solid var(--line); background:rgba(255,255,255,.75); box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
-textarea{resize:vertical;min-height:90px}
-.row{display:flex;gap:9px;flex-wrap:wrap}
-.row>*{flex:1;min-width:130px}
-button{cursor:pointer;font-family:inherit}
-.btn{ padding:13px 22px; border:0; border-radius:999px; font-size:13px; font-weight:700; color:#fff;
-  background:linear-gradient(135deg,var(--pink1),var(--pink3)); box-shadow:0 8px 20px rgba(218,68,104,.32); }
-.btn.ghost{ background:rgba(255,255,255,.72); color:var(--ink); border:1px solid var(--line); box-shadow:none; }
-.msg{font-size:12px;color:var(--gray);margin-top:8px;min-height:16px;line-height:1.6}
-.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.tabs button{ padding:9px 18px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:1px;
-  background:rgba(255,255,255,.6); border:1px solid var(--line); color:var(--gray); }
-.tabs button.on{ background:linear-gradient(135deg,var(--pink1),var(--pink3)); color:#fff; border-color:transparent; }
-.item{ border-bottom:1px solid rgba(0,0,0,.06); padding:13px 2px; display:flex; gap:12px; align-items:flex-start; }
-.item:last-child{border-bottom:0}
-.item .c{flex:1;min-width:0}
-.item .t{font-size:14px;font-weight:600;margin-bottom:3px;word-break:break-word}
-.item .m{font-size:11.5px;color:var(--gray)}
-.item .b{font-size:12.5px;color:#555;margin-top:6px;line-height:1.7;word-break:break-word}
-.item .src{ display:inline-block;margin-top:7px;font-size:10.5px;font-weight:700;letter-spacing:.5px;
-  padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid var(--line); }
-.del{ flex:none; padding:8px 14px; border-radius:999px; font-size:11.5px; font-weight:700;
-  background:rgba(255,255,255,.7); border:1px solid var(--line); color:#c0395c; }
-.empty{font-size:13px;color:var(--gray);padding:18px 2px}
-.note{font-size:11.5px;color:var(--gray);line-height:1.8;margin-top:6px}
-.note strong{color:var(--ink)}
-.hide{display:none}
-@media (max-width:600px){ .top h1{font-size:23px} .panel{padding:16px;border-radius:20px} }
-
-.ext-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.ext{display:block;padding:15px 16px;border-radius:16px;border:1px solid var(--line);
-  background:rgba(255,255,255,.72);transition:transform .2s ease,box-shadow .2s ease}
-.ext:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
-.ext b{display:block;font-size:13.5px;font-weight:700}
-.ext span{display:block;margin-top:4px;font-size:11.5px;color:var(--gray)}
-@media(max-width:600px){.ext-grid{grid-template-columns:1fr}}
-
-.prow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.06);flex-wrap:wrap}
-.prow:last-child{border-bottom:0}
-.prow .pn{flex:1;min-width:150px;font-size:13px;font-weight:600}
-.prow .pp{font-size:12px;color:var(--gray);min-width:90px}
-.prow input[type=number]{width:84px;padding:8px 10px;margin:0;border-radius:10px;font-size:12.5px;
-  border:1px solid var(--line);background:rgba(255,255,255,.85);font-family:inherit}
-.prow .sw{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray)}
-.prow button{padding:8px 14px;border-radius:999px;font-size:11.5px;font-weight:700;
-  background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink)}
-.prow .soldout{font-size:10.5px;font-weight:700;color:#fff;background:#C0395C;padding:4px 9px;border-radius:999px}
-.mrow{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.06);flex-wrap:wrap;align-items:center}
-.mrow:last-child{border-bottom:0}
-.mrow .me{flex:1;min-width:170px;font-size:13px;font-weight:600}
-.mrow .mi{font-size:11.5px;color:var(--gray)}
-.mrow .mp{font-size:13px;font-weight:700;color:var(--main)}
-.empty{padding:26px 0;text-align:center;color:var(--gray);font-size:13px}
-
-  /* 모바일 — 긴 글자가 화면을 밀어내지 않도록 */
-  @media(max-width:640px){
-    body{overflow-x:hidden}
-    .msg,.hint,p,li,td,th,.rb,.ib,.sb,.d{word-break:keep-all;overflow-wrap:anywhere}
-    [style*="nowrap"],.nowrap{white-space:normal !important}
-    .acts,.chips,.tabs,.sug,.eps,.kinds{overflow-x:auto;-webkit-overflow-scrolling:touch;
-      scrollbar-width:none;padding-bottom:2px}
-    .acts::-webkit-scrollbar,.chips::-webkit-scrollbar,
-    .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
-    .out,pre,code{overflow-x:auto;word-break:break-all}
-  }
-</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/glass.css">
-<link rel="stylesheet" href="assets/ui.css">
-<link rel="stylesheet" href="assets/stable.css">
 <link rel="stylesheet" href="assets/admin-ui.css">
-<link rel="stylesheet" href="assets/popup.css">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ok:#2AA060;--warn:#E9A23B;
+  --ink:#17171c;--gray:#7a7a82;--line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.64)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding:26px 16px 60px;display:flex;align-items:center;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:520px;margin:0 auto;width:100%}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:32px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);text-align:center}
+.eb{font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:3px;color:var(--main);font-weight:700}
+h1{margin-top:12px;font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.35}
+p{margin-top:14px;font-size:13.5px;line-height:1.9;color:#5a5a62;word-break:keep-all}
+.btn{display:flex;align-items:center;justify-content:center;
+  width:100%;margin-top:22px;min-height:52px;border-radius:999px;
+  font-size:15px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  box-shadow:0 10px 24px rgba(216,37,88,.28)}
+.links{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+.links a{display:flex;align-items:center;justify-content:center;min-height:46px;
+  border-radius:14px;font-size:12.5px;font-weight:600;color:var(--ink);
+  background:rgba(255,255,255,.7);border:1px solid var(--line)}
+.links a:hover{background:#fff}
+.note{margin-top:18px;font-size:11.5px;color:var(--gray);line-height:1.75}
+</style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top">
-    <div>
-      <h1>ChewGumi Admin</h1>
-      <div class="s">COMMUNITY CONTENT MANAGER</div>
+  <div class="panel">
+    <div class="eb">MOVED</div>
+    <h1>관리자 화면이<br>새로워졌습니다</h1>
+    <p>이 화면의 기능은 각 전용 화면으로 나뉘었습니다.<br>
+      관리자 홈에서 AI에게 물어보시면 어디로 가야 할지 알려드립니다.</p>
+    <a class="btn" href="console.html">관리자 홈으로 이동</a>
+    <div class="links">
+      <a href="orders.html">주문 · 배송</a>
+      <a href="stock.html">재고 · 품절</a>
+      <a href="members.html">회원 조회</a>
+      <a href="posts.html">게시물 관리</a>
+      <a href="boards.html">게시판 설정</a>
+      <a href="subs-admin.html">정기구독</a>
     </div>
-    <a class="home" href="index.html">← 사이트로 돌아가기</a>
-  </div>
-
-  <!-- 로그인 -->
-  <div class="panel" id="loginPanel">
-    <h2>ADMIN LOGIN</h2>
-    <input id="aEmail" type="email" placeholder="이메일" autocomplete="email">
-    <input id="aPw" type="password" placeholder="비밀번호" autocomplete="current-password">
-    <div class="row">
-      <button class="btn" onclick="aLogin()">로그인</button>
-    </div>
-    <div class="msg" id="aMsg"></div>
-    <div class="note">
-      운영자 계정이 없다면 사이트의 <strong>JOIN US</strong>에서 먼저 가입한 뒤 이 화면에서 로그인하세요.<br>
-      주문·배송·회원·상품 관리를 이 화면에서 모두 처리합니다.
-    </div>
-  </div>
-
-  <!-- 관리 화면 -->
-  <div id="adminArea" class="hide">
-    <div class="panel">
-      <h2>운영 메뉴</h2>
-      <div class="ext-grid">
-        <a class="ext" href="orders.html">
-          <b>주문 · 배송 관리</b><span>매출 현황, 송장 등록, 환불, 배송조회</span></a>
-        <a class="ext" href="stock.html">
-          <b>상품 · 재고 관리</b><span>재고 수량, 판매 여부, 가격</span></a>
-        <a class="ext" href="members.html">
-          <b>회원 조회</b><span>다중 조건 검색, 구매이력, CSV 내보내기</span></a>
-        <a class="ext" href="posts.html">
-          <b>게시물 관리</b><span>답변 처리, 공지 지정, 삭제·복원</span></a>
-        <a class="ext" href="boards.html">
-          <b>게시판 관리</b><span>권한·표시 설정, 글 등록·수정</span></a>
-        <a class="ext" href="message.html">
-          <b>메시지 서비스</b><span>자동 알림 문자, 발송 내역, 템플릿</span></a>
-        <a class="ext" href="exports.html">
-          <b>수출 · 인증 관리</b><span>증명서 진행상황, 서류, 이메일 이력</span></a>
-        <a class="ext" href="index.html">
-          <b>사이트 보기</b><span>고객 화면 확인</span></a>
-      </div>
-      <div class="note" style="margin-top:12px">
-        주문·결제·배송·회원 데이터는 모두 츄구미 자체 서버에 저장됩니다.
-      </div>
-    </div>
-
-    <div class="panel" id="stockPanel">
-      <h2>상품 · 재고 관리</h2>
-      <div id="stockList"><div class="empty">불러오는 중…</div></div>
-      <div class="msg" id="stMsg"></div>
-    </div>
-
-    <div class="panel" id="memberPanel">
-      <h2>회원 관리</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <button class="btn ghost" onclick="checkConsentDue()" style="padding:10px 16px;font-size:12px">
-          수신동의 2년 확인 대상 조회</button>
-      </div>
-      <div class="msg" id="dueMsg" style="margin:0 0 10px"></div>
-      <div id="memberList"><div class="empty">불러오는 중…</div></div>
-    </div>
-
-    <div class="panel">
-      <h2>새 글 등록</h2>
-      <div class="row">
-        <select id="wBoard">
-          <option value="notice">공지사항 (NOTICE)</option>
-          <option value="review">리뷰 (REVIEW)</option>
-          <option value="qna">문의 (Q&amp;A)</option>
-        </select>
-        <input id="wBadge" placeholder="뱃지 (예: 공지 / 배송 / Q · 없으면 비움)">
-      </div>
-      <input id="wTitle" placeholder="제목">
-      <textarea id="wBody" placeholder="내용"></textarea>
-      <div class="row">
-        <input id="wMeta" placeholder="표시 정보 (예: 2026.08.01 또는 김O연 · Travel-it)">
-        <input id="wSource" placeholder="출처 (예: 오아시스 · 비우면 자사몰)">
-      </div>
-      <input id="wSrcUrl" placeholder="출처 링크 (외부 리뷰일 때만 · https://...)">
-      <div class="row">
-        <button class="btn" onclick="aPost()">등록하기</button>
-        <button class="btn ghost" onclick="aClear()">입력 초기화</button>
-      </div>
-      <div class="msg" id="wMsg"></div>
-    </div>
-
-    <div class="panel">
-      <h2>게시글 관리</h2>
-      <div class="tabs">
-        <button data-b="notice" class="on" onclick="aLoad('notice')">NOTICE</button>
-        <button data-b="review" onclick="aLoad('review')">REVIEW</button>
-        <button data-b="qna" onclick="aLoad('qna')">Q&amp;A</button>
-      </div>
-      <div id="aList"><div class="empty">불러오는 중…</div></div>
-    </div>
-
-    <div class="panel">
-      <h2>계정</h2>
-      <div class="msg" id="whoami" style="margin-top:0"></div>
-      <button class="btn ghost" onclick="aLogout()" style="max-width:160px">로그아웃</button>
-    </div>
+    <div class="note">이 주소는 당분간 유지되지만, 앞으로는 관리자 홈을 이용해 주세요.</div>
   </div>
 </div>
-<div class="cg-dim" id="cgDim" onclick="if(event.target===this)cgClose()">
-  <div class="cg-box" role="dialog" aria-live="polite">
-    <div class="cg-ico" id="cgIco">✓</div>
-    <div class="cg-t" id="cgT"></div>
-    <div class="cg-s" id="cgS"></div>
-    <div class="cg-acts" id="cgA"></div>
-  </div>
-</div>
-
-<script>
-/* 글래스 팝업 */
-function cgClose(){ document.getElementById('cgDim').classList.remove('on'); }
-function cgModal(o){
-  o = o || {};
-  document.getElementById('cgIco').textContent = o.icon || '✓';
-  document.getElementById('cgT').textContent = o.title || '';
-  document.getElementById('cgS').innerHTML = o.desc || '';
-  var acts = o.actions || [{ t:'확인', k:'ok' }];
-  document.getElementById('cgA').innerHTML = acts.map(function(a, i){
-    var cls = a.k === 'ok' ? 'cg-ok' : 'cg-gh';
-    return a.href
-      ? '<a class="' + cls + '" href="' + a.href + '"' + (a.blank ? ' target="_blank" rel="noopener"' : '') + '>' + a.t + '</a>'
-      : '<button class="' + cls + '" data-i="' + i + '">' + a.t + '</button>';
-  }).join('');
-  document.querySelectorAll('#cgA button').forEach(function(b){
-    b.onclick = function(){ var a = acts[+b.dataset.i]; cgClose(); if (a && typeof a.fn === 'function') a.fn(); };
-  });
-  document.getElementById('cgDim').classList.add('on');
-}
-
-const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
-const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-let token = null, who = '', curBoard = 'notice';
-try{ if(window.CGAuth && CGAuth.isIn()){ var _u=CGAuth.user()||{};
-  token=(JSON.parse(localStorage.getItem('cg_sb')||'{}').t)||''; who=_u.name||''; } }catch(e){}
-
-try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { token = s.t; who = s.u; } } catch(e){}
-
-function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
-function msg(id, t){ document.getElementById(id).textContent = t; }
-
-function loadStock(){
-  fetch(SB_URL+'/rest/v1/products?select=id,name,price_sale,stock,active&order=sort_order',
-    {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}})
-  .then(r=>r.json()).then(rows=>{
-    const box=document.getElementById('stockList');
-    if(!rows.length){box.innerHTML='<div class="empty">상품이 없습니다.</div>';return;}
-    box.innerHTML=rows.map(p=>
-      '<div class="prow"><span class="pn">'+esc(p.name)+
-      (p.stock<=0?' <span class="soldout">품절</span>':'')+'</span>'
-      +'<span class="pp">₩'+Number(p.price_sale).toLocaleString()+'</span>'
-      +'<span class="sw">재고 <input type="number" id="sk'+p.id+'" value="'+p.stock+'" min="0"></span>'
-      +'<span class="sw"><input type="checkbox" id="ac'+p.id+'"'+(p.active?' checked':'')+' style="width:18px;height:18px;margin:0"> 판매</span>'
-      +'<button onclick="saveStock('+p.id+')">저장</button></div>').join('');
-  }).catch(()=>{document.getElementById('stockList').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
-}
-function saveStock(id){
-  const body={stock:parseInt(document.getElementById('sk'+id).value,10)||0,
-    active:document.getElementById('ac'+id).checked};
-  fetch(SB_URL+'/rest/v1/products?id=eq.'+id,{method:'PATCH',
-    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify(body)})
-  .then(r=>{msg('stMsg',r.ok?'저장되었습니다.':'저장 권한이 없습니다. 운영자로 로그인해 주세요.');
-    if(r.ok)loadStock();})
-  .catch(()=>msg('stMsg','네트워크 오류가 발생했습니다.'));
-}
-function checkConsentDue(){
-  msg('dueMsg','조회 중…');
-  fetch(SB_URL+'/functions/v1/account',{method:'POST',
-    headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
-    body:JSON.stringify({action:'consentDue'})})
-  .then(r=>r.json().then(d=>({ok:r.ok,d})))
-  .then(({ok,d})=>{
-    if(!ok)return msg('dueMsg',d.error||'조회에 실패했습니다.');
-    if(!d.due.length)return msg('dueMsg','수신동의 마케팅 회원 '+d.total+'명 중, 2년 확인이 필요한 회원은 없습니다.');
-    msg('dueMsg','⚠ 확인 필요 '+d.due.length+'명 (정보통신망법 제50조 제8항) — '
-      +d.due.map(p=>esc(p.email)).join(', ')
-      +' · 이분들께 수신동의 유지 여부를 안내해 주세요.');
-  }).catch(()=>msg('dueMsg','네트워크 오류가 발생했습니다.'));
-}
-function loadMembers(){
-  fetch(SB_URL+'/rest/v1/profiles?select=email,name,phone,points,created_at,marketing_shop,marketing_sms,marketing_email&order=created_at.desc&limit=200',
-    {headers:{apikey:SB_KEY,Authorization:'Bearer '+token}})
-  .then(r=>r.ok?r.json():Promise.reject()).then(rows=>{
-    const box=document.getElementById('memberList');
-    if(!rows.length){box.innerHTML='<div class="empty">가입한 회원이 없습니다.</div>';return;}
-    box.innerHTML='<div class="msg" style="margin:0 0 8px">총 '+rows.length+'명</div>'
-      +rows.map(m=>'<div class="mrow"><span class="me">'+esc(m.name||'(이름 미등록)')
-      +'<div class="mi">'+esc(m.email)+(m.phone?' · '+esc(m.phone):'')+'</div></span>'
-      +'<span class="mi">'+new Date(m.created_at).toLocaleDateString('ko-KR')+' 가입'
-      +'<br>수신동의: '+([m.marketing_shop?'쇼핑정보':null,m.marketing_sms?'SMS':null,m.marketing_email?'이메일':null].filter(Boolean).join(', ')||'없음')+'</span>'
-      +'<span class="mp">'+Number(m.points||0).toLocaleString()+'P</span></div>').join('');
-  }).catch(()=>{document.getElementById('memberList').innerHTML='<div class="empty">운영자만 조회할 수 있습니다.</div>';});
-}
-function sync(){
-  if(window.CGAuth && CGAuth.isIn() && !window._cgChecked){
-    window._cgChecked=1;
-    CGAuth.token().then(function(t){
-      if(t){ token=t; sync(); }
-      else { token=null; sync(); }
-    });
-  }
-  const on = !!token;
-  document.getElementById('loginPanel').classList.toggle('hide', on);
-  document.getElementById('adminArea').classList.toggle('hide', !on);
-  if (on) {
-    document.getElementById('whoami').textContent = (who || '') + ' 님으로 로그인 중입니다.';
-    aLoad(curBoard);
-    loadStock();
-    loadMembers();
-  }
-}
-
-function aLogin(){
-  const email = document.getElementById('aEmail').value.trim();
-  const pw = document.getElementById('aPw').value;
-  if (!email || !pw) return msg('aMsg', '이메일과 비밀번호를 입력해 주세요.');
-  fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-    method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: pw })
-  }).then(r => r.json()).then(d => {
-    if (d.access_token) {
-      token = d.access_token; who = email.split('@')[0];
-      try { localStorage.setItem('cg_sb', JSON.stringify({ t: token, u: who })); } catch(e){}
-      msg('aMsg',''); sync();
-    } else {
-      msg('aMsg', '로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.');
-    }
-  }).catch(() => msg('aMsg', '네트워크 오류가 발생했습니다.'));
-}
-
-function aLogout(){
-  token = null; who = '';
-  try { localStorage.removeItem('cg_sb'); } catch(e){}
-  sync();
-}
-
-function aLoad(board){
-  curBoard = board;
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.b === board));
-  const list = document.getElementById('aList');
-  list.innerHTML = '<div class="empty">불러오는 중…</div>';
-  fetch(SB_URL + '/rest/v1/posts?board=eq.' + board + '&select=id,title,content,meta,badge,source,source_url,created_at&order=created_at.desc',
-    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(rows => {
-      if (!rows.length) { list.innerHTML = '<div class="empty">등록된 글이 없습니다.</div>'; return; }
-      list.innerHTML = rows.map(r => `
-        <div class="item">
-          <div class="c">
-            <div class="t">${r.badge ? '[' + esc(r.badge) + '] ' : ''}${esc(r.title)}</div>
-            <div class="m">${esc(r.meta)} · ${new Date(r.created_at).toLocaleDateString('ko-KR')}</div>
-            <div class="b">${esc(r.content)}</div>
-            ${r.source_url ? `<a class="src" href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(r.source || 'LINK')} →</a>` : ''}
-          </div>
-          <button class="del" onclick="aDel(${r.id}, this)">삭제</button>
-        </div>`).join('');
-    })
-    .catch(() => { list.innerHTML = '<div class="empty">불러오지 못했습니다. 새로고침해 주세요.</div>'; });
-}
-
-function aPost(){
-  const board = document.getElementById('wBoard').value;
-  const title = document.getElementById('wTitle').value.trim();
-  const content = document.getElementById('wBody').value.trim();
-  if (!title || !content) return msg('wMsg', '제목과 내용을 입력해 주세요.');
-  const d = new Date();
-  const meta = document.getElementById('wMeta').value.trim()
-    || (d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0'));
-  const body = {
-    board, title, content, meta,
-    badge: document.getElementById('wBadge').value.trim(),
-    source: document.getElementById('wSource').value.trim(),
-    source_url: document.getElementById('wSrcUrl').value.trim()
-  };
-  fetch(SB_URL + '/rest/v1/posts', {
-    method: 'POST',
-    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-    body: JSON.stringify(body)
-  }).then(r => {
-    if (r.status === 401) { aLogout(); return msg('wMsg', '로그인이 만료되었습니다. 다시 로그인해 주세요.'); }
-    if (!r.ok) return msg('wMsg', '등록에 실패했습니다.');
-    aClear(); msg('wMsg', '등록되었습니다.');
-    aLoad(board);
-  }).catch(() => msg('wMsg', '네트워크 오류가 발생했습니다.'));
-}
-
-function aClear(){
-  ['wTitle','wBody','wMeta','wBadge','wSource','wSrcUrl'].forEach(id => document.getElementById(id).value = '');
-  msg('wMsg','');
-}
-
-function aDel(id, btn){
-  if (!confirm('이 글을 삭제할까요? 되돌릴 수 없습니다.')) return;
-  btn.disabled = true; btn.textContent = '삭제 중';
-  fetch(SB_URL + '/rest/v1/posts?id=eq.' + id, {
-    method: 'DELETE',
-    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + token }
-  }).then(r => {
-    if (r.ok) { aLoad(curBoard); return; }
-    btn.disabled = false; btn.textContent = '삭제';
-    cgModal({ icon:'!', title: r.status === 401 ? '로그인이 만료되었습니다' : '삭제 권한이 없습니다',
-      desc: r.status === 401 ? '다시 로그인해 주세요.' : '운영자 계정으로 로그인했는지 확인해 주세요.' });
-  }).catch(() => { btn.disabled = false; btn.textContent = '삭제'; cgModal({ icon:'!', title:'네트워크 오류', desc:'잠시 후 다시 시도해 주세요.' }); });
-}
-
-sync();
-</script>
-<script src="assets/nav.js" defer></script>
-<script src="assets/sheet.js" defer></script>
 <script src="assets/lite.js" defer></script>
+<script src="assets/nav.js" defer></script>
+<script>
+/* 3초 뒤 자동 이동 */
+setTimeout(function(){
+  if(!document.hidden) location.replace('console.html');
+}, 3000);
+</script>
 </body>
 </html>
