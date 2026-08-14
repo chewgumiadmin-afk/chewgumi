@@ -24,8 +24,7 @@
 }
 
 /* 제목 */
-.popup h2, .popup h3, .cartp h2, .cartp h3,
-.detail h2, .detail h3, .kko-box h3, .mo-b h3,
+.popup h2, .popup h3, .cartp h2, .cartp h3, .kko-box h3, .mo-b h3,
 .bl-box h2, .bl-box h3, .cgbot-win h3, .modal h2, .modal h3{
   font-size: var(--pop-xl) !important;
   line-height: 1.35;
@@ -37,9 +36,9 @@
 }
 
 /* 본문 */
-.popup p, .cartp p, .detail p, .kko-box p, .mo-b p,
+.popup p, .cartp p, .kko-box p, .mo-b p,
 .bl-box p, .modal p, .sheet p,
-.popup li, .detail li, .bl-box li{
+.popup li, .bl-box li{
   font-size: var(--pop-md);
   line-height: 1.85;
   word-break: keep-all;
@@ -47,7 +46,7 @@
 
 /* 보조 설명 */
 .popup .sub, .popup .hint, .popup .note, .popup .msg,
-.detail .sub, .detail .hint, .cartp .sub,
+.cartp .sub,
 .bl-box .sub, .bl-box .meta, .mo-b .msg, .kko-box .who{
   font-size: var(--pop-sm) !important;
   line-height: 1.75;
@@ -55,41 +54,40 @@
 
 /* 아주 작은 글자 (날짜·라벨) */
 .popup .date, .popup .tag, .popup .badge,
-.detail .date, .bl-box .date, .bl-box .num,
+.bl-box .date, .bl-box .num,
 .kko-box .kko-tabs button, .mo-b .diff{
   font-size: var(--pop-xs) !important;
 }
 
 /* 버튼 */
-.popup button, .cartp button, .detail button,
+.popup button, .cartp button,
 .kko-box button, .mo-b button, .bl-box button,
 .modal button, .sheet button,
-.popup .btn, .detail .btn, .mo-b .btn{
+.popup .btn, .mo-b .btn{
   font-size: var(--pop-sm) !important;
   min-height: clamp(42px, 11vw, 50px);
   padding-left: clamp(16px, 4.5vw, 26px);
   padding-right: clamp(16px, 4.5vw, 26px);
 }
-.popup .mini, .detail .mini, .mo-b .mini, .bl-box .mini{
+.popup .mini, .mo-b .mini, .bl-box .mini{
   font-size: var(--pop-xs) !important;
   min-height: clamp(34px, 9vw, 40px);
 }
 
 /* 입력칸 */
 .popup input, .popup select, .popup textarea,
-.detail input, .detail select, .detail textarea,
 .mo-b input, .mo-b select, .mo-b textarea,
 .kko-box textarea, .bl-box input, .bl-box textarea{
   font-size: max(16px, var(--pop-md)) !important;  /* 16px 미만이면 iOS가 확대함 */
   min-height: clamp(44px, 11.5vw, 52px);
 }
-.popup textarea, .detail textarea, .mo-b textarea, .kko-box textarea{
+.popup textarea, .mo-b textarea, .kko-box textarea{
   min-height: clamp(80px, 22vw, 140px);
   line-height: 1.75;
 }
 
 /* 여백 */
-.popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+.popup, .cartp, .kko-box, .mo-b, .bl-box, .modal{
   padding: var(--pop-pad);
 }
 
@@ -98,7 +96,7 @@
   /* ── 모바일 팝업 = 바텀시트 ──
      화면을 가득 덮지 않고 아래 60~72%만 차지합니다.
      뒤 화면이 보이면 "갇힌 느낌"이 줄어듭니다. */
-  .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+  .cartp, .kko-box, .mo-b, .bl-box, .modal{
     max-width: 100% !important;
     width: 100% !important;
     max-height: 72vh !important;
@@ -116,7 +114,7 @@
   }
   .popup-dim{ align-items: center !important; padding: 20px !important; }
   /* 위에 손잡이 표시 — 내려서 닫을 수 있다는 신호 */
-  .cartp::before, .detail::before,
+  .cartp::before,
   .kko-box::before, .mo-b::before, .bl-box::before, .modal::before{
     content:''; position:absolute; top:9px; left:50%;
     width:38px; height:4px; margin-left:-19px; border-radius:99px;
@@ -132,7 +130,7 @@
     animation: cgFade .2s ease;
   }
   /* 내용이 길면 그 안에서만 스크롤 */
-  .cartp, .detail, .bl-box, .modal{
+  .cartp, .bl-box, .modal{
     overscroll-behavior: contain;
   }
 }
@@ -160,14 +158,14 @@
 }
 @media (min-width:641px) and (max-width:1024px){
   /* 태블릿 — 가운데 적당한 크기 */
-  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+  .popup, .cartp, .kko-box, .mo-b, .bl-box, .modal{
     max-width: min(560px, 88vw) !important;
     max-height: 86vh;
   }
 }
 @media (min-width:1025px){
   /* PC */
-  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+  .popup, .cartp, .kko-box, .mo-b, .bl-box, .modal{
     max-width: min(600px, 70vw) !important;
     max-height: 84vh;
   }
@@ -176,7 +174,7 @@
 /* 가로 모드 — 세로가 짧을 때 */
 @media (max-height:560px) and (orientation:landscape){
   :root{ --pop-pad: 14px; --pop-xl: 17px; --pop-2xl: 19px; }
-  .popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+  .popup, .cartp, .kko-box, .mo-b, .bl-box, .modal{
     max-height: 92vh !important;
     border-radius: 18px !important;
   }
@@ -193,7 +191,7 @@
 }
 
 /* 스크롤 영역 */
-.popup, .cartp, .detail, .kko-box, .mo-b, .bl-box, .modal{
+.popup, .cartp, .kko-box, .mo-b, .bl-box, .modal{
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -201,7 +199,7 @@
 
 /* 접근성 — 확대 설정 존중 */
 @media (prefers-reduced-motion:reduce){
-  .popup, .cartp, .detail, .modal{ transition: none !important; }
+  .popup, .cartp, .modal{ transition: none !important; }
 }
 
 @keyframes cgPop{ from{transform:scale(.94);opacity:0} to{transform:none;opacity:1} }
@@ -210,3 +208,18 @@
 .popup-dim{ display:none }
 .popup-dim.on{ display:flex !important }
 .popup-dim.hide{ display:none !important }
+
+/* 팝업으로 뜨는 상세만 대상 — 배경(dim) 안에 있을 때 */
+.pop-bg .detail, .mo .detail, .popup-dim .detail{
+  max-width: min(600px, 92vw) !important;
+  max-height: 84vh !important;
+  overflow-y: auto;
+  padding: var(--pop-pad);
+}
+@media (max-width:640px){
+  .pop-bg .detail, .mo .detail, .popup-dim .detail{
+    max-width: 100% !important; width: 100% !important;
+    max-height: 72vh !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+}
