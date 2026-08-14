@@ -265,7 +265,7 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
       <div class="info">
         <b>배송</b> 택배 · 무료배송 · 평일 14시 이전 결제 시 당일 출고<br>
         <b>교환/반품</b> 미개봉 상태에 한해 수령 후 7일 이내 가능<br>
-        <b>문의</b> chewgumi24@gmail.com (평일 9:00–18:00)
+        <b>문의</b> 0507-0444-2706 · chewgumi24@gmail.com
       </div>
     </div>
   </div>
@@ -515,7 +515,7 @@ function render(){
   const wrap = document.getElementById('pDetailWrap');
   const imgs = DETAIL_IMGS[no] || [];
   if (imgs.length) {
-    wrap.style.display = 'block';
+    wrap.style.display = 'block'; setTimeout(pdFold, 200);
     document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
       '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
       'onerror="this.style.display=\'none\';checkDetail();">').join('');
