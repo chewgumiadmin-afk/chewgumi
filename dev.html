@@ -304,7 +304,14 @@ try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e
 const H=()=>({apikey:KEY,'Content-Type':'application/json',
   Authorization:'Bearer '+((function(){try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null');return s&&s.t||'';}catch(e){return '';}})())});
 
-function sync(){const on=!!token;
+function sync(){
+  if(window.CGAuth && CGAuth.isIn() && !window._cgChecked){
+    window._cgChecked=1;
+    CGAuth.token().then(function(t){
+      if(t){ token=t; sync(); }
+      else { token=null; sync(); }
+    });
+  }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
   if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();isInit();}}
 function doLogin(){
@@ -312,7 +319,7 @@ function doLogin(){
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
   CGAuth.login(email,pw).then(function(at){ var d={access_token:at};
     if(d.access_token){token=d.access_token;who=email.split('@')[0];
-      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      
       $('lmsg').textContent='';sync();}
     else $('lmsg').textContent='로그인 실패: 운영자 계정인지 확인해 주세요.';
   }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
