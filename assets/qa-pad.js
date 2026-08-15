@@ -65,8 +65,10 @@
     '.cgp-sec{font-size:9.5px;letter-spacing:1.3px;color:#9a8b55;font-weight:800;',
     '  margin:11px 0 5px}',
     '.cgp-sec:first-of-type{margin-top:0}',
-    '.cgp-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));',
+    '.cgp-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr));',
     '  gap:4px;margin-bottom:8px}',
+    '.cgp-t{flex-wrap:wrap}',
+    '.cgp-t button{min-width:70px}',
     '.cgp-k button{height:30px;border:0;border-radius:8px;cursor:pointer;',
     '  background:rgba(255,255,255,.72);font-family:inherit;font-size:11px;',
     '  font-weight:600;color:#5a4f2a;padding:0}',
@@ -105,14 +107,19 @@
     '.cgp-m.ok{color:#1a6e44}.cgp-m.bad{color:#a82042}',
     '.cgp-sh{margin-top:7px;border-radius:9px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}',
     '.cgp-sh img{width:100%;display:block;max-height:96px;object-fit:cover;object-position:top}',
-    '.cgp-rz{position:sticky;float:right;right:0;bottom:0;width:18px;height:18px;',
-    '  cursor:nwse-resize;margin-top:-18px;',
+    '.cgp-rz{position:fixed;width:20px;height:20px;z-index:2147483002;',
+    '  cursor:nwse-resize;touch-action:none;display:none}',
+    '.cgp-rz.on{display:block}',
     '  z-index:2;touch-action:none}',
     '.cgp-rz::after{content:"";position:absolute;right:4px;bottom:4px;width:8px;height:8px;',
     '  border-right:2px solid rgba(0,0,0,.28);border-bottom:2px solid rgba(0,0,0,.28);',
     '  border-radius:0 0 2px 0}',
-    '.cgp-rzx{position:absolute;right:0;top:34px;bottom:18px;width:8px;cursor:ew-resize;',
-    '  z-index:2;touch-action:none}',
+    '.cgp-rzx{position:fixed;width:10px;z-index:2147483002;cursor:ew-resize;',
+    '  touch-action:none;display:none}',
+    '.cgp-rzx.on{display:block}',
+    '.cgp-rzx::after{content:"";position:absolute;top:50%;left:3px;',
+    '  width:4px;height:26px;margin-top:-13px;border-radius:2px;',
+    '  background:rgba(0,0,0,.16)}',
     '.cgp-hi{position:fixed;z-index:2147482999;pointer-events:none;border:2px solid #D82558;',
     '  border-radius:5px;background:rgba(216,37,88,.12)}',
     '.cgp{overflow-y:auto !important;overflow-x:hidden !important}',
@@ -601,7 +608,7 @@
         '<button class="cgp-send">보내기</button>' +
         '<div class="cgp-m"></div>' +
       '</div>' +
-      '<div class="cgp-rzx"></div><div class="cgp-rz"></div>';
+      '';
     document.body.appendChild(pad);
 
     /* 크기 복원 */
@@ -653,13 +660,15 @@
       pad.classList.toggle('fold', st.fold);
       e.currentTarget.textContent = st.fold ? '+' : '−';
       if (st.fold) pad.style.maxHeight = ''; else fitHeight();
+      moveHandles();
     };
     pad.querySelector('.cgp-close').onclick = function () {
       pad.style.display = 'none';
+      moveHandles();
       var f = document.createElement('button');
       f.className = 'cgp-fab'; f.textContent = '✎';
       f.style.right = '16px'; f.style.bottom = '160px';
-      f.onclick = function () { pad.style.display = ''; f.remove(); };
+      f.onclick = function () { pad.style.display = ''; f.remove(); moveHandles(); };
       document.body.appendChild(f);
     };
 
@@ -711,6 +720,7 @@
           st.h = Math.round(hh);
         }
         st.w = Math.round(w);
+        moveHandles();
       }
       function rup() {
         if (!on) return;
@@ -723,10 +733,14 @@
       document.addEventListener('mouseup', rup);
       document.addEventListener('touchend', rup);
     }
-    bindResize(pad.querySelector('.cgp-rz'), true);
-    bindResize(pad.querySelector('.cgp-rzx'), false);
+    makeHandles();
+    bindResize(hz, true);
+    bindResize(hzx, false);
     fitHeight();
-    window.addEventListener('resize', fitHeight);
+    moveHandles();
+    window.addEventListener('resize', function(){ fitHeight(); moveHandles(); });
+    window.addEventListener('scroll', moveHandles, { passive: true });
+    setInterval(moveHandles, 700);
 
     h.addEventListener('mousedown', down);
     h.addEventListener('touchstart', down, { passive: true });
@@ -739,6 +753,35 @@
 
   /* 점검판이 화면을 넘지 않도록 높이를 맞춘다 */
   /* 노트가 화면을 넘지 않도록 전체 높이를 맞춘다 */
+
+  /* 크기 손잡이 — 노트 밖에 두고 위치만 따라간다 */
+  var hzx, hz;
+  function makeHandles() {
+    if (hz) return;
+    hzx = document.createElement('div');
+    hzx.className = 'cgp-rzx';
+    hz = document.createElement('div');
+    hz.className = 'cgp-rz';
+    hz.innerHTML = '<span style="position:absolute;right:4px;bottom:4px;width:9px;' +
+      'height:9px;border-right:2px solid rgba(0,0,0,.3);' +
+      'border-bottom:2px solid rgba(0,0,0,.3);border-radius:0 0 2px 0"></span>';
+    document.body.appendChild(hzx);
+    document.body.appendChild(hz);
+  }
+  function moveHandles() {
+    if (!pad || !hz) return;
+    if (pad.style.display === 'none' || pad.classList.contains('fold')) {
+      hz.classList.remove('on'); hzx.classList.remove('on'); return;
+    }
+    var r = pad.getBoundingClientRect();
+    hzx.style.left = (r.right - 5) + 'px';
+    hzx.style.top = (r.top + 36) + 'px';
+    hzx.style.height = Math.max(30, r.height - 54) + 'px';
+    hz.style.left = (r.right - 20) + 'px';
+    hz.style.top = (r.bottom - 20) + 'px';
+    hz.classList.add('on'); hzx.classList.add('on');
+  }
+
   function fitHeight() {
     if (!pad) return;
     var top = pad.getBoundingClientRect().top;
@@ -753,6 +796,7 @@
     y = Math.max(6, Math.min(window.innerHeight - 50, y));
     pad.style.left = x + 'px'; pad.style.top = y + 'px';
     fitHeight();
+    moveHandles();
   }
 
   function start() {
