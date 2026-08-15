@@ -70,6 +70,22 @@
     '  cursor:pointer;background:#D82558;color:#fff;font-family:inherit;',
     '  font-size:13.5px;font-weight:700}',
     '.cgp-send:disabled{opacity:.55}',
+    '.cgp-run{width:100%;height:34px;margin-top:6px;border:0;border-radius:9px;',
+    '  cursor:pointer;background:rgba(0,0,0,.72);color:#fff;font-family:inherit;',
+    '  font-size:11.5px;font-weight:700}',
+    '.cgp-run:disabled{opacity:.55}',
+    '.cgp-res{margin-top:7px;max-height:180px;overflow-y:auto;font-size:11px;',
+    '  line-height:1.65;display:none}',
+    '.cgp-res.on{display:block}',
+    '.cgp-res .v{padding:6px 8px;border-radius:7px;font-weight:700;margin-bottom:5px}',
+    '.cgp-res .v.ok{background:rgba(26,110,68,.14);color:#14562f}',
+    '.cgp-res .v.bad{background:rgba(168,32,66,.13);color:#8a1a35}',
+    '.cgp-res .r{display:flex;gap:5px;padding:3px 2px;align-items:flex-start}',
+    '.cgp-res .r i{flex:none;width:12px;font-style:normal;font-weight:800}',
+    '.cgp-res .r i.y{color:#1a6e44}.cgp-res .r i.n{color:#a82042}',
+    '.cgp-res .r i.q{color:#8a7b45}',
+    '.cgp-res .r b{font-weight:700;color:#3d3520}',
+    '.cgp-res .r span{color:#6a5f3a;word-break:break-all}',
     '.cgp-m{margin-top:6px;font-size:11px;font-weight:600;min-height:15px;color:#7a6a3a}',
     '.cgp-m.ok{color:#1a6e44}.cgp-m.bad{color:#a82042}',
     '.cgp-sh{margin-top:7px;border-radius:9px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}',
@@ -268,6 +284,44 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+
+  /* 화면별 자동 검증 */
+  function runFlow() {
+    var btn = pad.querySelector('.cgp-run');
+    var box = pad.querySelector('.cgp-res');
+    var act = /join|login|reset/.test(page) ? 'signupFlow'
+            : (/checkout|cart|product|index/.test(page) ? 'orderFlow' : '');
+    if (!act) {
+      box.className = 'cgp-res on';
+      box.innerHTML = '<div class="v bad">이 화면은 자동 검증 대상이 아닙니다</div>';
+      return;
+    }
+    btn.disabled = true; btn.textContent = '검증 중…';
+    box.className = 'cgp-res on';
+    box.innerHTML = '<div class="r"><i class="q">·</i><span>확인하고 있습니다…</span></div>';
+
+    fetch(SB + '/functions/v1/qa-flow', {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: act })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      btn.disabled = false; btn.textContent = '이 화면 자동 검증';
+      if (!d || !d.steps) throw new Error();
+      var bad = d.steps.filter(function (x) { return x.ok === false; }).length;
+      box.innerHTML =
+        '<div class="v ' + (bad ? 'bad' : 'ok') + '">' + esc(d.verdict || '') + '</div>' +
+        d.steps.map(function (x) {
+          var mk = x.ok === true ? 'y' : (x.ok === false ? 'n' : 'q');
+          var ch = x.ok === true ? '✓' : (x.ok === false ? '✕' : '?');
+          return '<div class="r"><i class="' + mk + '">' + ch + '</i>' +
+            '<span><b>' + esc(x.name) + '</b> · ' + esc(x.msg) + '</span></div>';
+        }).join('');
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = '이 화면 자동 검증';
+      box.innerHTML = '<div class="v bad">검증하지 못했습니다</div>';
+    });
+  }
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
@@ -288,6 +342,8 @@
         '</div>' +
         '<button class="cgp-send">보내기</button>' +
         '<div class="cgp-m"></div>' +
+        '<button class="cgp-run">이 화면 자동 검증</button>' +
+        '<div class="cgp-res"></div>' +
       '</div>';
     document.body.appendChild(pad);
 
@@ -306,6 +362,7 @@
       };
     });
     pad.querySelector('.cgp-send').onclick = send;
+    pad.querySelector('.cgp-run').onclick = runFlow;
     pad.querySelector('.cgp-pick').onclick = function () {
       picking ? stopPick() : startPick();
     };
