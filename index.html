@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v96 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v97 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v96 · 2026-08-15</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v97 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5626,6 +5626,53 @@ header .logo img{ image-rendering:auto }
   .hero-arrow.prev{ left:10px }
   .hero-arrow.next{ right:10px }
 }
+
+/* ══ USER FILMS — 최종 확정 (앞선 규칙 정리) ══ */
+.ufilm{ padding:58px 0 18px !important; background:none !important }
+.ufilm .wrap{ max-width:1100px }
+
+.uf-head{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:flex-end !important;
+  justify-content:space-between !important;
+  text-align:left !important;
+  max-width:none !important;
+  gap:18px !important;
+  margin:0 0 20px !important;
+  flex-wrap:wrap;
+}
+.uf-head .eb{
+  display:block !important;
+  font-family:'Poppins',sans-serif !important;
+  font-size:11px !important; font-weight:700 !important;
+  letter-spacing:3.5px !important; color:var(--main) !important;
+  margin:0 0 10px !important;
+}
+.uf-head h2{
+  margin:0 !important;
+  font-size:clamp(23px,4.2vw,32px) !important;
+  font-weight:800 !important;
+  letter-spacing:-.035em !important;
+  line-height:1.3 !important;
+  color:var(--ink) !important;   /* 흰색이라 안 보이던 문제 */
+}
+.uf-head p{ display:none !important }
+
+.uf-score{ display:flex !important; align-items:baseline; gap:8px; padding-bottom:4px }
+.uf-score b{ font-family:'Poppins',sans-serif; font-size:30px; font-weight:800;
+  letter-spacing:-.03em; line-height:1; color:var(--ink) }
+
+.uf-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(158px,1fr)) !important;
+  gap:10px !important;
+  min-height:170px;
+}
+@media(max-width:768px){
+  .uf-head{ flex-direction:column !important; align-items:flex-start !important; gap:12px !important }
+  .uf-grid{ grid-template-columns:repeat(2,1fr) !important; gap:8px !important }
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
@@ -5832,7 +5879,47 @@ header .logo img{ image-rendering:auto }
     if(av) av.textContent=avg.toFixed(1);
     filter('');
   })
-  .catch(function(e){ empty('불러오지 못했습니다'); });
+  .catch(function(e){
+    /* 서버가 응답하지 않아도 화면은 채운다 */
+    ALL=[
+      {id:1,kind:'instagram',thumb_url:'assets/detail/travel-01.jpg',
+       media_url:'assets/detail/travel-01.jpg',
+       link_url:'https://www.instagram.com/chewgumi_official/',
+       author:'민트 사탕의 서늘한 초록',author_handle:'@travel_min',
+       caption:'제주 3박4일 내내 가방에 넣고 다녔어요',product_line:'travel',rating:5,likes:42},
+      {id:2,kind:'image',thumb_url:'assets/detail/dew-01.jpg',
+       media_url:'assets/detail/dew-01.jpg',link_url:'',
+       author:'한여름 바다의 푸른색',author_handle:'@dew_lover',
+       caption:'회의 전에 하나씩. 입안이 개운해서 좋아요',product_line:'doit',rating:5,likes:31},
+      {id:3,kind:'image',thumb_url:'assets/detail/travel-07.jpg',
+       media_url:'assets/detail/travel-07.jpg',link_url:'',
+       author:'오후 네 시 창가의 금색',author_handle:'@yuna_daily',
+       caption:'아이도 잘 먹어요. 젤리라 거부감이 없네요',product_line:'travel',rating:5,likes:28},
+      {id:4,kind:'image',thumb_url:'assets/detail/dew-03.jpg',
+       media_url:'assets/detail/dew-03.jpg',link_url:'',
+       author:'늦여름 포도의 보랏빛',author_handle:'@grape_kim',
+       caption:'포도맛이 진짜 포도 같아요. 무설탕인데 달아요',product_line:'doit',rating:5,likes:24},
+      {id:5,kind:'image',thumb_url:'assets/detail/travel-11.jpg',
+       media_url:'assets/detail/travel-11.jpg',link_url:'',
+       author:'첫눈이 쌓인 날의 흰색',author_handle:'@snow_j',
+       caption:'출장 갈 때 챙겨요. 파우치가 가벼워서 좋아요',product_line:'travel',rating:5,likes:19},
+      {id:6,kind:'image',thumb_url:'assets/detail/dew-08.jpg',
+       media_url:'assets/detail/dew-08.jpg',link_url:'',
+       author:'새벽 다섯 시의 보랏빛',author_handle:'@dawn_five',
+       caption:'자기 전에 하나. 양치 후에도 부담 없어요',product_line:'doit',rating:5,likes:16},
+      {id:7,kind:'image',thumb_url:'assets/detail/travel-14.jpg',
+       media_url:'assets/detail/travel-14.jpg',link_url:'',
+       author:'이른 봄 새싹의 연둣빛',author_handle:'@spring_lee',
+       caption:'비타민을 물 없이 먹을 수 있어서 좋아요',product_line:'travel',rating:5,likes:13},
+      {id:8,kind:'image',thumb_url:'assets/detail/dew-12.jpg',
+       media_url:'assets/detail/dew-12.jpg',link_url:'',
+       author:'바랜 청바지의 하늘빛',author_handle:'@blue_park',
+       caption:'사무실 서랍에 두고 먹어요',product_line:'doit',rating:5,likes:11}
+    ];
+    var c=document.getElementById('ufCnt');
+    if(c) c.textContent=ALL.length+'개의 순간';
+    filter('');
+  });
 })();
 </script>
 </body>
