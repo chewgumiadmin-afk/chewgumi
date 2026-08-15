@@ -5762,25 +5762,40 @@ header .logo img{ image-rendering:auto }
   if(mb) mb.onclick=function(){ draw(false); };
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') ufClose(); });
 
-  fetch(SBu+'/rest/v1/user_films?select=*&status=eq.approved'
-    +'&order=featured.desc,sort_order.asc,created_at.desc&limit=40',
-    {headers:{apikey:Ku,Authorization:'Bearer '+Ku}})
-  .then(function(r){ return r.ok?r.json():[]; })
-  .then(function(rows){
-    ALL=rows||[];
+  function empty(msg){
+    grid.innerHTML='<div class="uf-card" onclick="location.href=\'reports.html\'" '
+      +'style="display:flex;flex-direction:column;align-items:center;justify-content:center;'
+      +'gap:8px;background:linear-gradient(160deg,#FFF7FA,#FFEFF3);'
+      +'border:1.5px dashed rgba(216,37,88,.3);box-shadow:none;cursor:pointer">'
+      +'<span style="font-size:28px;color:var(--main);font-weight:300">+</span>'
+      +'<b style="font-size:12.5px;text-align:center;line-height:1.4">여기에 당신의<br>순간이 들어갑니다</b>'
+      +(msg?'<span style="font-size:10px;color:#999">'+esc(msg)+'</span>':'')+'</div>';
     var c=document.getElementById('ufCnt');
-    if(c) c.textContent=ALL.length?(ALL.length+'개의 순간'):'첫 주인공을 기다립니다';
-    if(!ALL.length){
-      grid.innerHTML='<div class="uf-card" onclick="location.href=\'reports.html\'" '
-        +'style="display:flex;flex-direction:column;align-items:center;justify-content:center;'
-        +'gap:8px;background:linear-gradient(160deg,#FFF7FA,#FFEFF3);'
-        +'border:1.5px dashed rgba(216,37,88,.3);box-shadow:none">'
-        +'<span style="font-size:28px;color:var(--main);font-weight:300">+</span>'
-        +'<b style="font-size:12.5px">여기에 당신의<br>순간이 들어갑니다</b></div>';
-      return;
-    }
+    if(c) c.textContent='첫 주인공을 기다립니다';
+  }
+
+  fetch(SBu+'/rest/v1/user_films?select=*&status=eq.approved&order=sort_order.asc&limit=40',
+    {headers:{apikey:Ku,Authorization:'Bearer '+Ku}})
+  .then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  })
+  .then(function(rows){
+    ALL=(rows||[]).filter(function(x){ return x && (x.thumb_url||x.media_url); });
+    /* 대표를 앞으로 */
+    ALL.sort(function(a,b){
+      if(a.featured!==b.featured) return a.featured?-1:1;
+      return (a.sort_order||0)-(b.sort_order||0);
+    });
+    var c=document.getElementById('ufCnt');
+    if(!ALL.length){ empty(''); return; }
+    if(c) c.textContent=ALL.length+'개의 순간';
+    var avg=ALL.reduce(function(s,x){return s+(x.rating||5);},0)/ALL.length;
+    var av=document.getElementById('ufAvg');
+    if(av) av.textContent=avg.toFixed(1);
     filter('');
-  }).catch(function(){});
+  })
+  .catch(function(e){ empty('불러오지 못했습니다'); });
 })();
 </script>
 </body>
