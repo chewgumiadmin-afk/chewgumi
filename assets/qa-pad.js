@@ -211,24 +211,71 @@
   }
   function capture() {
     pad.setAttribute('data-skip', '1');
+
+    /* 다른 사이트 이미지가 섞이면 브라우저가 캡처를 막습니다.
+       잠시 우리 쪽 이미지로 바꿔 찍고, 끝나면 되돌립니다. */
+    var swapped = [];
+    var imgs = document.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      var im = imgs[i];
+      var src = im.getAttribute('src') || '';
+      if (!src) continue;
+      if (src.indexOf('data:') === 0) continue;
+      var sameHost = src.indexOf('http') !== 0 ||
+        src.indexOf(location.origin) === 0;
+      if (sameHost) continue;
+      swapped.push([im, src]);
+      im.setAttribute('src', 'assets/logo-rainbow.png');
+    }
+
+    function restore() {
+      pad.removeAttribute('data-skip');
+      for (var j = 0; j < swapped.length; j++) {
+        swapped[j][0].setAttribute('src', swapped[j][1]);
+      }
+      swapped = [];
+    }
+
     return loadLib().then(function () {
       return html2canvas(document.body, {
-        backgroundColor: '#fff', scale: 1, useCORS: true, allowTaint: true,
-        logging: false, imageTimeout: 6000,
-        width: document.documentElement.clientWidth, height: window.innerHeight,
-        x: window.scrollX, y: window.scrollY, scrollX: 0, scrollY: 0,
+        backgroundColor: '#ffffff',
+        scale: 1,
+        useCORS: false,
+        allowTaint: false,
+        foreignObjectRendering: false,
+        logging: false,
+        imageTimeout: 4000,
+        width: document.documentElement.clientWidth,
+        height: window.innerHeight,
+        x: window.scrollX,
+        y: window.scrollY,
+        scrollX: 0,
+        scrollY: 0,
         ignoreElements: function (el) {
           if (el.getAttribute && el.getAttribute('data-skip')) return true;
+          if (el.tagName === 'IFRAME' || el.tagName === 'VIDEO') return true;
           return el.classList && (el.classList.contains('cgp') ||
             el.classList.contains('cgp-hi') || el.classList.contains('cgm-fab'));
         }
       });
     }).then(function (cv) {
-      pad.removeAttribute('data-skip');
-      shot = cv.toDataURL('image/jpeg', 0.7);
+      var d;
+      try {
+        d = cv.toDataURL('image/jpeg', 0.7);
+      } catch (e) {
+        restore();
+        throw new Error('보안 제한');
+      }
+      restore();
+      if (!d || d.length < 3000) throw new Error('빈 이미지');
+      shot = d;
       pad.querySelector('.cgp-sh').innerHTML = '<img src="' + shot + '" alt="캡처">';
       return shot;
-    }).catch(function (e) { pad.removeAttribute('data-skip'); shot = null; throw e; });
+    }).catch(function (e) {
+      restore();
+      shot = null;
+      throw e;
+    });
   }
 
   function send() {
@@ -578,10 +625,13 @@
     pad.querySelector('.cgp-cap').onclick = function (e) {
       var b = e.currentTarget; b.textContent = '…'; b.disabled = true;
       capture().then(function () { b.textContent = '캡처'; b.disabled = false; })
-        .catch(function () {
+        .catch(function (err) {
           b.textContent = '캡처'; b.disabled = false;
           var m = pad.querySelector('.cgp-m');
-          m.className = 'cgp-m bad'; m.textContent = '캡처 실패 — 내용만 보내셔도 됩니다';
+          m.className = 'cgp-m bad';
+          m.textContent = (err && err.message === '보안 제한')
+            ? '외부 이미지 때문에 못 찍었습니다 — 휴대폰 캡처를 써주세요'
+            : '캡처 실패 — 내용만 보내셔도 됩니다';
         });
     };
     pad.querySelector('.cgp-fill').onclick = function () {
