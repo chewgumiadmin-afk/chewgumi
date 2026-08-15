@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v89 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v90 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1436,7 +1436,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v89 · 2026-08-15</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v90 · 2026-08-15</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5437,6 +5437,19 @@ header.shrink .logo img{ height:34px !important; }
 /* ══ 접수 #2 첫 진입 팝업 ══
    "오늘 그만 보기"를 누르면 하루 동안 저장되는데,
    점검 중에는 항상 보이도록 합니다. */
+
+/* 팝업 일러스트 — 정사각 그림에 맞춰 크기 조정 */
+.popup .p-illust{
+  display:block !important;
+  width:min(52vw,178px) !important;
+  height:auto !important;
+  margin:6px auto 14px !important;
+  aspect-ratio:1/1;
+  object-fit:contain;
+}
+@media(max-width:640px){
+  .popup .p-illust{width:min(46vw,150px) !important;margin:4px auto 12px !important}
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
