@@ -36,6 +36,21 @@
     '  line-height:1;display:flex;align-items:center;justify-content:center;padding:0}',
     '.cgp-b{padding:11px}',
     '.cgp.fold .cgp-b{display:none}',
+    '.cgp-guide{margin-bottom:9px;border-radius:10px;overflow:hidden;',
+    '  background:rgba(255,255,255,.72);display:none}',
+    '.cgp-guide.on{display:block}',
+    '.cgp-gh{display:flex;align-items:center;gap:6px;padding:8px 10px;cursor:pointer;',
+    '  font-size:11.5px;font-weight:700;color:#5a4f2a;user-select:none}',
+    '.cgp-gh span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+    '.cgp-gb{padding:0 10px 10px;font-size:11.5px;line-height:1.7;color:#4d442a;',
+    '  max-height:210px;overflow-y:auto}',
+    '.cgp-guide.fold .cgp-gb{display:none}',
+    '.cgp-gs{margin-top:7px}',
+    '.cgp-gs b{display:block;font-size:10px;letter-spacing:.6px;color:#8a7b45;',
+    '  margin-bottom:3px}',
+    '.cgp-gs div{padding-left:9px;text-indent:-9px;margin-bottom:2px}',
+    '.cgp-warn{background:rgba(216,37,88,.1);border-radius:7px;padding:6px 8px;margin-top:7px}',
+    '.cgp-warn b{color:#a82042}',
     '.cgp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px}',
     '.cgp-k button{height:30px;border:0;border-radius:8px;cursor:pointer;',
     '  background:rgba(255,255,255,.72);font-family:inherit;font-size:11px;',
@@ -214,6 +229,45 @@
     });
   }
 
+
+  /* 화면에 들어오면 코드를 읽고 안내를 띄운다 */
+  function loadGuide() {
+    var box = pad.querySelector('.cgp-guide');
+    if (!box) return;
+    fetch(SB + '/functions/v1/qa-guide', {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page: page })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var g = d && d.guide;
+      if (!g) return;
+      var fold = st.gfold ? ' fold' : '';
+      var html = '<div class="cgp-gh"><span>' + esc(g.what || '이 화면') +
+        '</span><i>' + (st.gfold ? '+' : '−') + '</i></div><div class="cgp-gb">';
+      function sec(title, arr, warn) {
+        if (!arr || !arr.length) return '';
+        return '<div class="cgp-gs' + (warn ? ' cgp-warn' : '') + '"><b>' + title + '</b>' +
+          arr.map(function (t) { return '<div>· ' + esc(t) + '</div>'; }).join('') + '</div>';
+      }
+      html += sec('실제로 전송됩니다', g.send, true);
+      html += sec('점검 순서', g.steps);
+      html += sec('확인할 것', g.check);
+      html += sec('주의', g.watch, true);
+      html += '</div>';
+      box.innerHTML = html;
+      box.className = 'cgp-guide on' + fold;
+      box.querySelector('.cgp-gh').onclick = function () {
+        st.gfold = !st.gfold; save();
+        box.classList.toggle('fold', st.gfold);
+        box.querySelector('i').textContent = st.gfold ? '+' : '−';
+      };
+    }).catch(function () {});
+  }
+  function esc(t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
@@ -222,6 +276,7 @@
         '<button class="cgp-fold" aria-label="접기">' + (st.fold ? '+' : '−') + '</button>' +
         '<button class="cgp-close" aria-label="숨기기">×</button></div>' +
       '<div class="cgp-b">' +
+        '<div class="cgp-guide"></div>' +
         '<div class="cgp-k">' + KINDS.map(function (k) {
           return '<button data-k="' + k + '">' + k + '</button>'; }).join('') + '</div>' +
         '<textarea placeholder="무엇이 이상한가요"></textarea>' +
@@ -306,6 +361,8 @@
       var r = pad.getBoundingClientRect();
       st.x = r.left; st.y = r.top; save();
     }
+    loadGuide();
+
     h.addEventListener('mousedown', down);
     h.addEventListener('touchstart', down, { passive: true });
     document.addEventListener('mousemove', move);
