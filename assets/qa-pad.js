@@ -52,6 +52,9 @@
     '.cgp-gs div{padding-left:9px;text-indent:-9px;margin-bottom:2px}',
     '.cgp-warn{background:rgba(216,37,88,.1);border-radius:7px;padding:6px 8px;margin-top:7px}',
     '.cgp-warn b{color:#a82042}',
+    '.cgp-sec{font-size:9.5px;letter-spacing:1.3px;color:#9a8b55;font-weight:800;',
+    '  margin:11px 0 5px}',
+    '.cgp-sec:first-of-type{margin-top:0}',
     '.cgp-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));',
     '  gap:4px;margin-bottom:8px}',
     '.cgp-k button{height:30px;border:0;border-radius:8px;cursor:pointer;',
@@ -76,7 +79,7 @@
     '  cursor:pointer;background:rgba(0,0,0,.72);color:#fff;font-family:inherit;',
     '  font-size:11.5px;font-weight:700}',
     '.cgp-run:disabled{opacity:.55}',
-    '.cgp-res{margin-top:7px;max-height:180px;overflow-y:auto;font-size:11px;',
+    '.cgp-res{max-height:180px;overflow-y:auto;font-size:11px;',
     '  line-height:1.65;display:none}',
     '.cgp-res.on{display:block}',
     '.cgp-res .v{padding:6px 8px;border-radius:7px;font-weight:700;margin-bottom:5px}',
@@ -513,23 +516,26 @@
         '<button class="cgp-close" aria-label="숨기기">×</button></div>' +
       '<div class="cgp-b">' +
         '<div class="cgp-guide"></div>' +
+        '<div class="cgp-res"></div>' +
+        '<div class="cgp-sec">검사</div>' +
+        '<div class="cgp-t">' +
+          '<button class="cgp-read">화면 읽기</button>' +
+          '<button class="cgp-run">자동 검증</button>' +
+          '<button class="cgp-fill">값 채우기</button>' +
+        '</div>' +
+        '<div class="cgp-sec">신고</div>' +
         '<div class="cgp-k">' + KINDS.map(function (k) {
           return '<button data-k="' + k + '">' + k + '</button>'; }).join('') + '</div>' +
         '<textarea placeholder="무엇이 이상한가요"></textarea>' +
         '<div class="cgp-sh"></div>' +
-        '<div class="cgp-t">' +
+        '<div class="cgp-t" style="margin-top:6px">' +
           '<button class="cgp-pick">콕 집기</button>' +
           '<button class="cgp-cap">캡처</button>' +
-          '<button class="cgp-fill">값 채우기</button>' +
         '</div>' +
         '<button class="cgp-send">보내기</button>' +
         '<div class="cgp-m"></div>' +
-        '<div class="cgp-t" style="margin-top:6px">' +
-          '<button class="cgp-read">화면 읽기</button>' +
-          '<button class="cgp-run">자동 검증</button>' +
-        '</div>' +
-        '<div class="cgp-res"></div>' +
-      '</div>';
+      '</div>' +
+      '<div class="cgp-rzx"></div><div class="cgp-rz"></div>';
     document.body.appendChild(pad);
 
     /* 크기 복원 */
