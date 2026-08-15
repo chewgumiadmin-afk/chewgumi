@@ -55,6 +55,9 @@
     '.cgm-acc b{color:#D82558}',
     '.cgm-acc code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;',
     '  background:rgba(0,0,0,.05);padding:1px 5px;border-radius:4px}',
+    '.cgm-cp{margin-left:5px;height:20px;padding:0 7px;border:0;border-radius:5px;',
+    '  background:rgba(216,37,88,.12);color:#D82558;font-family:inherit;font-size:10px;',
+    '  font-weight:700;cursor:pointer;vertical-align:1px}',
     '.cgm-act{display:flex;gap:7px;margin-top:14px}',
     '.cgm-act button{flex:1;height:46px;border:0;border-radius:12px;cursor:pointer;',
     '  font-family:inherit;font-size:13.5px;font-weight:700}',
@@ -107,9 +110,21 @@
 
         '<div class="cgm-lb">테스트 계정</div>' +
         '<div class="cgm-acc">' +
-          '<b>관리자</b> <code>test@chewgumi.com</code><br>' +
-          '<b>비밀번호</b> <code>Chewgumi!2026</code><br>' +
-          '<span style="color:#8a8a92">이 계정으로 주문·회원·발송을 모두 다뤄보실 수 있습니다.</span>' +
+          '<b>QA 관리자</b> <code id="qaEm">qa@chewgumi.com</code>' +
+            '<button class="cgm-cp" data-v="qa@chewgumi.com">복사</button><br>' +
+          '<b>비밀번호</b> <code>QAtest!2026</code>' +
+            '<button class="cgm-cp" data-v="QAtest!2026">복사</button><br>' +
+          '<span style="color:#8a8a92">점검용 계정입니다. 오픈 전 삭제합니다.</span>' +
+          '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.07)">' +
+            '<b>받는 메일</b> <code>chewgumi24@gmail.com</code>' +
+              '<button class="cgm-cp" data-v="chewgumi24@gmail.com">복사</button><br>' +
+            '<b>받는 번호</b> <code>010-8497-9634</code>' +
+              '<button class="cgm-cp" data-v="010-8497-9634">복사</button>' +
+          '</div>' +
+          '<button class="cgm-mk" style="width:100%;height:36px;margin-top:9px;border:0;' +
+            'border-radius:9px;background:#17171c;color:#fff;font-family:inherit;' +
+            'font-size:12px;font-weight:700;cursor:pointer">QA 계정 만들기 · 초기화</button>' +
+          '<div class="cgm-mkm" style="margin-top:6px;font-size:11px;min-height:14px"></div>' +
         '</div>' +
 
         '<div class="cgm-lb">관리자 화면</div>' +
@@ -146,6 +161,37 @@
         paint();
       };
     });
+    bg.querySelectorAll('.cgm-cp').forEach(function (b) {
+      b.onclick = function () {
+        navigator.clipboard.writeText(b.dataset.v).then(function () {
+          var t = b.textContent; b.textContent = '됨';
+          setTimeout(function () { b.textContent = t; }, 1200);
+        });
+      };
+    });
+    var mk = bg.querySelector('.cgm-mk');
+    var mkm = bg.querySelector('.cgm-mkm');
+    mk.onclick = function () {
+      mk.disabled = true; mk.textContent = '만드는 중…';
+      fetch(SB + '/functions/v1/qa-account', {
+        method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'setup' })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        mk.disabled = false; mk.textContent = 'QA 계정 만들기 · 초기화';
+        if (d.ok) {
+          mkm.style.color = '#1a6e44';
+          mkm.textContent = d.created ? '만들었습니다. 바로 쓰실 수 있습니다.'
+            : '비밀번호를 다시 맞췄습니다.';
+        } else {
+          mkm.style.color = '#a82042';
+          mkm.textContent = d.error || '만들지 못했습니다';
+        }
+      }).catch(function () {
+        mk.disabled = false; mk.textContent = 'QA 계정 만들기 · 초기화';
+        mkm.style.color = '#a82042'; mkm.textContent = '연결하지 못했습니다';
+      });
+    };
+
     var dbBtn = bg.querySelector('.cgm-dbbtn');
     var dbBox = bg.querySelector('.cgm-db');
     dbBtn.onclick = function () {
