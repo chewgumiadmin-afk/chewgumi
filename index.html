@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v95 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v96 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v95 · 2026-08-15</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v96 · 2026-08-15</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5439,7 +5439,7 @@ header .logo img{ image-rendering:auto }
 }
 
 /* ── 이름 없는 버튼에 설명 붙이기 ── */
-.hero-arrow, .h-dots button{ min-width:32px; min-height:32px }
+
 
 /* ══ USER FILMS — 고객 사진·영상 ══ */
 .ufilm{padding:60px 0 16px}
@@ -5588,6 +5588,43 @@ header .logo img{ image-rendering:auto }
   .popup .p-desc,
   .popup .p-acts{ padding-left:18px; padding-right:18px }
   .popup .p-acts{ padding-bottom:18px }
+}
+
+/* ══ 배너 조작부 — 최종 ══
+   점은 작게 보이되, 손가락으로 누를 영역은 넓게 잡습니다.
+   (보이는 크기와 누르는 영역을 분리) */
+.h-dots{
+  gap:8px !important;
+  padding:8px 13px !important;
+  bottom:14px !important;
+}
+.h-dots button{
+  position:relative;
+  width:7px !important;
+  height:7px !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  border-radius:99px !important;
+  flex:none;
+}
+.h-dots button.on{ width:24px !important; }
+/* 눌리는 영역만 넓힌다 — 보이지는 않음 */
+.h-dots button::after{
+  content:'';position:absolute;top:-13px;bottom:-13px;left:-5px;right:-5px;
+}
+
+.hero-arrow{
+  width:34px !important;
+  height:34px !important;
+  font-size:16px !important;
+}
+@media (max-width:640px){
+  .h-dots{ bottom:11px !important; padding:7px 11px !important; gap:7px !important }
+  .h-dots button{ width:6px !important; height:6px !important }
+  .h-dots button.on{ width:20px !important }
+  .hero-arrow{ width:30px !important; height:30px !important; font-size:15px !important }
+  .hero-arrow.prev{ left:10px }
+  .hero-arrow.next{ right:10px }
 }
 </style>
 <script src="assets/nav.js" defer>
