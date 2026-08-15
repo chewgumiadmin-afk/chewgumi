@@ -115,154 +115,25 @@
     });
   }
 
-  function upload(dataUrl) {
-    var bin = atob(dataUrl.split(',')[1]);
-    var arr = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-    var name = page.replace(/[^\w.-]/g, '_') + '_' + Date.now() + '.jpg';
-    return fetch(SB + '/storage/v1/object/qa-shots/' + name, {
-      method: 'POST',
-      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'image/jpeg' },
-      body: arr
-    }).then(function (r) {
-      if (!r.ok) return '';
-      return SB + '/storage/v1/object/public/qa-shots/' + name;
-    }).catch(function () { return ''; });
-  }
-
-
-  function toast(t, ok) {
-    var d = document.createElement('div');
-    d.className = 'qa-toast';
-    if (ok) d.style.background = 'rgba(26,110,68,.95)';
-    d.textContent = t;
-    document.body.appendChild(d);
-    setTimeout(function () { d.remove(); }, 2400);
-  }
-
-  /* 요소를 사람이 알아볼 수 있게 설명 */
-  function describe(el) {
-    if (!el) return '';
-    var parts = [];
-    var t = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 34);
-    if (t) parts.push('"' + t + '"');
-    var tag = el.tagName.toLowerCase();
-    var role = { a: '링크', button: '버튼', img: '이미지', input: '입력칸',
-      select: '선택칸', textarea: '입력칸', h1: '제목', h2: '제목', h3: '제목' }[tag];
-    if (role) parts.push(role);
-    else if (el.className && typeof el.className === 'string') {
-      var c = el.className.split(/\s+/).filter(Boolean)[0];
-      if (c) parts.push(c);
-    }
-    if (tag === 'img') {
-      var src = (el.getAttribute('src') || '').split('/').pop();
-      if (src) parts.push(src.slice(0, 30));
-    }
-    return parts.join(' · ') || tag;
-  }
-
-  /* 기술적 위치 — 개발자용 */
-  function path(el) {
-    var out = [], n = el, d = 0;
-    while (n && n.nodeType === 1 && d < 4) {
-      var s = n.tagName.toLowerCase();
-      if (n.id) { s += '#' + n.id; out.unshift(s); break; }
-      if (n.className && typeof n.className === 'string') {
-        var c = n.className.split(/\s+/).filter(function (x) {
-          return x && x.indexOf('qa-') !== 0;
-        })[0];
-        if (c) s += '.' + c;
-      }
-      out.unshift(s); n = n.parentElement; d++;
-    }
-    return out.join(' > ');
-  }
-
-  function clearHi() {
-    if (hi) { hi.remove(); hi = null; }
-    if (tip) { tip.remove(); tip = null; }
-  }
-
-  function showHi(el) {
-    clearHi();
-    var r = el.getBoundingClientRect();
-    hi = document.createElement('div');
-    hi.className = 'qa-hi';
-    hi.style.left = r.left + 'px'; hi.style.top = r.top + 'px';
-    hi.style.width = r.width + 'px'; hi.style.height = r.height + 'px';
-    document.body.appendChild(hi);
-
-    tip = document.createElement('div');
-    tip.className = 'qa-tip';
-    tip.textContent = describe(el);
-    var ty = r.top > 40 ? r.top - 30 : r.bottom + 8;
-    tip.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 200)) + 'px';
-    tip.style.top = ty + 'px';
-    document.body.appendChild(tip);
-  }
-
-  function onMove(e) {
-    if (!picking) return;
-    var el = document.elementFromPoint(
-      e.touches ? e.touches[0].clientX : e.clientX,
-      e.touches ? e.touches[0].clientY : e.clientY);
-    if (!el || el.closest('.qa-bar') || el.classList.contains('qa-hi')) return;
-    showHi(el);
-  }
-
-  function onPick(e) {
-    if (!picking) return;
-    var x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-    var y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-    var el = document.elementFromPoint(x, y);
-    if (!el || el.closest('.qa-bar')) return;
-    e.preventDefault(); e.stopPropagation();
-    target = { el: el, x: Math.round(x), y: Math.round(y) };
-    stopPick();
-    openBox();
-  }
-
-  function startPick() {
-    picking = true;
-    document.body.style.cursor = 'crosshair';
-    document.addEventListener('mousemove', onMove, true);
-    document.addEventListener('touchmove', onMove, true);
-    document.addEventListener('click', onPick, true);
-    document.addEventListener('touchend', onPick, true);
-    var b = document.querySelector('.qa-pick');
-    if (b) { b.classList.add('hot'); b.textContent = '눌러서 지목'; }
-    toast('이상한 곳을 눌러주세요');
-  }
-
-  function stopPick() {
-    picking = false;
-    document.body.style.cursor = '';
-    document.removeEventListener('mousemove', onMove, true);
-    document.removeEventListener('touchmove', onMove, true);
-    document.removeEventListener('click', onPick, true);
-    document.removeEventListener('touchend', onPick, true);
-    clearHi();
-    var b = document.querySelector('.qa-pick');
-    if (b) { b.classList.remove('hot'); b.textContent = '콕 집기'; }
-  }
-
-  function post(kind, note, status, shotUrl) {
+  function post(kind, note, status) {
     var where = '';
     if (target) {
       where = describe(target.el) + '  [' + path(target.el) + ']  '
         + target.x + ',' + target.y;
     }
-    return fetch(SB + '/rest/v1/qa_reports', {
+    return fetch(SB + '/functions/v1/qa', {
       method: 'POST',
-      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY,
-        'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        page: page, kind: kind,
-        note: (where ? '위치 — ' + where + '\n' : '') + note,
-        device: navigator.userAgent.slice(0, 110),
-        viewport: window.innerWidth + 'x' + window.innerHeight,
-        status: status || 'open',
-        shot_url: shotUrl || ''
+        action: 'report',
+        report: {
+          page: page, kind: kind,
+          note: (where ? '위치 — ' + where + '\n' : '') + note,
+          device: navigator.userAgent.slice(0, 110),
+          viewport: window.innerWidth + 'x' + window.innerHeight,
+          status: status || 'open',
+          shot: shot || ''
+        }
       })
     });
   }
@@ -317,9 +188,7 @@
         msg.textContent = '항목을 고르거나 내용을 적어주세요'; return;
       }
       msg.style.color = '#8a8a92'; msg.textContent = '보내는 중…';
-      (shot ? upload(shot) : Promise.resolve('')).then(function (url) {
-        return post(picked || '기타', note, 'open', url);
-      }).then(function (r) {
+      post(picked || '기타', note, 'open').then(function (r) {
         if (!r.ok) throw new Error();
         bg.remove(); target = null; shot = null; toast('접수했습니다');
       }).catch(function () {
