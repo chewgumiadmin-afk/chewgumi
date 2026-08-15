@@ -185,7 +185,7 @@
     });
   }
   function capture() {
-    pad.style.visibility = 'hidden';
+    pad.setAttribute('data-skip', '1');
     return loadLib().then(function () {
       return html2canvas(document.body, {
         backgroundColor: '#fff', scale: 1, useCORS: true, allowTaint: true,
@@ -193,16 +193,17 @@
         width: document.documentElement.clientWidth, height: window.innerHeight,
         x: window.scrollX, y: window.scrollY, scrollX: 0, scrollY: 0,
         ignoreElements: function (el) {
+          if (el.getAttribute && el.getAttribute('data-skip')) return true;
           return el.classList && (el.classList.contains('cgp') ||
             el.classList.contains('cgp-hi') || el.classList.contains('cgm-fab'));
         }
       });
     }).then(function (cv) {
-      pad.style.visibility = '';
+      pad.removeAttribute('data-skip');
       shot = cv.toDataURL('image/jpeg', 0.7);
       pad.querySelector('.cgp-sh').innerHTML = '<img src="' + shot + '" alt="캡처">';
       return shot;
-    }).catch(function (e) { pad.style.visibility = ''; shot = null; throw e; });
+    }).catch(function (e) { pad.removeAttribute('data-skip'); shot = null; throw e; });
   }
 
   function send() {
@@ -322,6 +323,114 @@
     });
   }
 
+
+  function readScreen() {
+    var bad = [], stat = { t: 0, i: 0, b: 0, f: 0 };
+    var seen = {};
+
+    var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var n, c = 0;
+    while ((n = tw.nextNode()) && c < 150) {
+      var t = (n.nodeValue || '').trim();
+      if (t.length < 2 || seen[t]) continue;
+      var p = n.parentElement;
+      if (!p || p.closest('.cgp')) continue;
+      var r = p.getBoundingClientRect();
+      if (!r.width || r.bottom < 0 || r.top > window.innerHeight) continue;
+      seen[t] = 1; stat.t++; c++;
+      var sz = parseFloat(getComputedStyle(p).fontSize);
+      if (sz < 11) bad.push('작은 글씨 ' + Math.round(sz) + 'px : ' + t.slice(0, 22));
+    }
+
+    var imgs = document.querySelectorAll('img');
+    for (var i = 0; i < imgs.length && i < 40; i++) {
+      var im = imgs[i];
+      if (im.closest('.cgp')) continue;
+      var ir = im.getBoundingClientRect();
+      if (!ir.width) continue;
+      stat.i++;
+      var src = (im.getAttribute('src') || '').split('/').pop().slice(0, 28);
+      if (!im.complete || !im.naturalWidth) { bad.push('안 뜨는 이미지 : ' + src); continue; }
+      if (im.getAttribute('alt') === null) bad.push('alt 없음 : ' + src);
+      var nr = im.naturalWidth / im.naturalHeight, dr = ir.width / ir.height;
+      var fit = getComputedStyle(im).objectFit;
+      if (Math.abs(nr - dr) / nr > 0.18 && (fit === 'fill' || fit === 'none'))
+        bad.push('찌그러짐 : ' + src);
+      if (im.naturalWidth > ir.width * 3)
+        bad.push('원본 너무 큼 : ' + src + ' ' + im.naturalWidth + 'px');
+    }
+
+    var bs = document.querySelectorAll('button, a[href], [role=button]');
+    for (var j = 0; j < bs.length && j < 60; j++) {
+      var b = bs[j];
+      if (b.closest('.cgp')) continue;
+      var br = b.getBoundingClientRect();
+      if (!br.width || br.bottom < 0 || br.top > window.innerHeight) continue;
+      stat.b++;
+      var lb = (b.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 26) ||
+        b.getAttribute('aria-label') || '';
+      if (!lb) bad.push('이름 없는 버튼');
+      else if (br.height < 36 && br.width < 120)
+        bad.push('누르기 작음 ' + Math.round(br.height) + 'px : ' + lb.slice(0, 16));
+    }
+
+    var fs = document.querySelectorAll('input:not([type=hidden]), textarea, select');
+    for (var k = 0; k < fs.length && k < 30; k++) {
+      var f = fs[k];
+      if (f.closest('.cgp') || f.offsetParent === null) continue;
+      stat.f++;
+      var fl = (f.closest('label') && f.closest('label').textContent.trim()) ||
+        f.getAttribute('aria-label') || f.placeholder || '';
+      if (!fl) bad.push('안내 없는 입력칸 : ' + (f.name || f.id || f.type));
+      if (/INPUT|TEXTAREA/.test(f.tagName) &&
+          parseFloat(getComputedStyle(f).fontSize) < 16)
+        bad.push('입력칸 16px 미만 — 아이폰에서 확대됨');
+    }
+
+    var over = 0;
+    var all = document.body.querySelectorAll('*');
+    for (var q = 0; q < all.length && q < 500; q++) {
+      var e = all[q];
+      if (e.closest('.cgp')) continue;
+      var er = e.getBoundingClientRect();
+      if (er.width && er.right > window.innerWidth + 2) over++;
+    }
+    if (over > 2) bad.push('화면 밖으로 나간 요소 ' + over + '개 — 좌우 밀림');
+
+    var uniq = [];
+    var mark = {};
+    for (var z = 0; z < bad.length; z++) {
+      if (mark[bad[z]]) continue;
+      mark[bad[z]] = 1; uniq.push(bad[z]);
+    }
+    return { bad: uniq, stat: stat };
+  }
+
+  function runRead() {
+    var box = pad.querySelector('.cgp-res');
+    var d = readScreen();
+    box.className = 'cgp-res on';
+    var head = d.bad.length
+      ? '<div class="v bad">' + d.bad.length + '건 발견</div>'
+      : '<div class="v ok">눈에 띄는 문제 없음</div>';
+    var rows = '';
+    for (var i = 0; i < d.bad.length && i < 14; i++) {
+      rows += '<div class="r"><i class="n">!</i><span>' + esc(d.bad[i]) + '</span></div>';
+    }
+    rows += '<div class="r"><i class="q">.</i><span>글자 ' + d.stat.t +
+      ' · 이미지 ' + d.stat.i + ' · 버튼 ' + d.stat.b +
+      ' · 입력칸 ' + d.stat.f + '</span></div>';
+    box.innerHTML = head + rows;
+    if (d.bad.length) {
+      var ta = pad.querySelector('textarea');
+      if (!ta.value.trim()) {
+        var lines = [];
+        for (var j = 0; j < d.bad.length && j < 10; j++) lines.push('· ' + d.bad[j]);
+        ta.value = '[화면 읽기]\n' + lines.join('\n');
+      }
+    }
+  }
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
@@ -342,7 +451,10 @@
         '</div>' +
         '<button class="cgp-send">보내기</button>' +
         '<div class="cgp-m"></div>' +
-        '<button class="cgp-run">이 화면 자동 검증</button>' +
+        '<div class="cgp-t" style="margin-top:6px">' +
+          '<button class="cgp-read">화면 읽기</button>' +
+          '<button class="cgp-run">자동 검증</button>' +
+        '</div>' +
         '<div class="cgp-res"></div>' +
       '</div>';
     document.body.appendChild(pad);
@@ -363,6 +475,7 @@
     });
     pad.querySelector('.cgp-send').onclick = send;
     pad.querySelector('.cgp-run').onclick = runFlow;
+    pad.querySelector('.cgp-read').onclick = runRead;
     pad.querySelector('.cgp-pick').onclick = function () {
       picking ? stopPick() : startPick();
     };
