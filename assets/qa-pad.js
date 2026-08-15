@@ -21,6 +21,7 @@
   var css = document.createElement('style');
   css.textContent = [
     '.cgp{position:fixed;z-index:2147483000;width:268px;border-radius:16px;',
+    '  min-width:220px;max-width:min(92vw,520px);resize:none;',
     '  background:linear-gradient(160deg,#FFF9DB,#FFF3B8);',
     '  box-shadow:0 10px 30px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.8);',
     '  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;',
@@ -51,7 +52,8 @@
     '.cgp-gs div{padding-left:9px;text-indent:-9px;margin-bottom:2px}',
     '.cgp-warn{background:rgba(216,37,88,.1);border-radius:7px;padding:6px 8px;margin-top:7px}',
     '.cgp-warn b{color:#a82042}',
-    '.cgp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px}',
+    '.cgp-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));',
+    '  gap:4px;margin-bottom:8px}',
     '.cgp-k button{height:30px;border:0;border-radius:8px;cursor:pointer;',
     '  background:rgba(255,255,255,.72);font-family:inherit;font-size:11px;',
     '  font-weight:600;color:#5a4f2a;padding:0}',
@@ -90,6 +92,13 @@
     '.cgp-m.ok{color:#1a6e44}.cgp-m.bad{color:#a82042}',
     '.cgp-sh{margin-top:7px;border-radius:9px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}',
     '.cgp-sh img{width:100%;display:block;max-height:96px;object-fit:cover;object-position:top}',
+    '.cgp-rz{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;',
+    '  z-index:2;touch-action:none}',
+    '.cgp-rz::after{content:"";position:absolute;right:4px;bottom:4px;width:8px;height:8px;',
+    '  border-right:2px solid rgba(0,0,0,.28);border-bottom:2px solid rgba(0,0,0,.28);',
+    '  border-radius:0 0 2px 0}',
+    '.cgp-rzx{position:absolute;right:0;top:34px;bottom:18px;width:8px;cursor:ew-resize;',
+    '  z-index:2;touch-action:none}',
     '.cgp-hi{position:fixed;z-index:2147482999;pointer-events:none;border:2px solid #D82558;',
     '  border-radius:5px;background:rgba(216,37,88,.12)}',
     '.cgp-fab{position:fixed;z-index:2147483000;width:46px;height:46px;border-radius:50%;',
@@ -459,6 +468,13 @@
       '</div>';
     document.body.appendChild(pad);
 
+    /* 크기 복원 */
+    if (st.w) pad.style.width = st.w + 'px';
+    if (st.h) {
+      var b = pad.querySelector('.cgp-b');
+      if (b) { b.style.maxHeight = st.h + 'px'; b.style.overflowY = 'auto'; }
+    }
+
     /* 위치 복원 */
     var x = st.x, y = st.y;
     if (typeof x !== 'number') x = window.innerWidth - 288;
@@ -532,6 +548,45 @@
       st.x = r.left; st.y = r.top; save();
     }
     loadGuide();
+
+    /* 크기 조절 — 모서리(가로세로) · 오른쪽(가로만) */
+    function bindResize(el, both) {
+      var rw = 0, rh = 0, sx = 0, sy = 0, on = false;
+      function rdown(e) {
+        e.preventDefault(); e.stopPropagation();
+        var t = e.touches ? e.touches[0] : e;
+        var r = pad.getBoundingClientRect();
+        rw = r.width; rh = pad.querySelector('.cgp-b').offsetHeight;
+        sx = t.clientX; sy = t.clientY; on = true;
+        pad.classList.add('drag');
+      }
+      function rmove(e) {
+        if (!on) return;
+        e.preventDefault();
+        var t = e.touches ? e.touches[0] : e;
+        var w = Math.max(220, Math.min(window.innerWidth * 0.92, rw + (t.clientX - sx)));
+        pad.style.width = w + 'px';
+        if (both) {
+          var hh = Math.max(120, Math.min(window.innerHeight * 0.8, rh + (t.clientY - sy)));
+          var b = pad.querySelector('.cgp-b');
+          b.style.maxHeight = hh + 'px'; b.style.overflowY = 'auto';
+          st.h = Math.round(hh);
+        }
+        st.w = Math.round(w);
+      }
+      function rup() {
+        if (!on) return;
+        on = false; pad.classList.remove('drag'); save();
+      }
+      el.addEventListener('mousedown', rdown);
+      el.addEventListener('touchstart', rdown, { passive: false });
+      document.addEventListener('mousemove', rmove);
+      document.addEventListener('touchmove', rmove, { passive: false });
+      document.addEventListener('mouseup', rup);
+      document.addEventListener('touchend', rup);
+    }
+    bindResize(pad.querySelector('.cgp-rz'), true);
+    bindResize(pad.querySelector('.cgp-rzx'), false);
 
     h.addEventListener('mousedown', down);
     h.addEventListener('touchstart', down, { passive: true });
