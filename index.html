@@ -934,7 +934,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <header>
   <div class="wrap head-top">
     <button class="burger" onclick="toggleDrawer(true)" aria-label="메뉴 열기">☰</button>
-    <a class="logo" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;"><img src="logo.png" alt="ChewGumi" onerror="this.outerHTML='CHEWGUMI'"></a>
+    <a class="logo" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;"><img src="logo.png" alt="ChewGumi" width="200" height="105" decoding="sync" fetchpriority="high" onerror="this.src='assets/logo-rainbow.png'"></a>
     <div class="util">
       <a href="login.html">LOGIN</a><a href="join.html">JOIN US</a><a href="mypage.html">MY PAGE</a>
       <button id="langBtn" onclick="setLang(cgLang==='ko'?'en':'ko')" style="font-size:11px;letter-spacing:1px;font-weight:600;color:inherit;">EN</button>
@@ -1435,7 +1435,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v87 · 2026-08-14</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v88 · 2026-08-14</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5379,6 +5379,26 @@ header .logo img{
   overflow-y:auto;-webkit-overflow-scrolling:touch}
 .popup .p-illust{flex:none;width:min(58vw,210px) !important;height:auto !important;
   margin:22px auto 8px !important;display:block !important}
+
+/* 로고 — 크기를 미리 잡아 로딩 중 흔들림 방지 */
+header .logo{min-width:120px;min-height:46px}
+header .logo img{
+  height:46px !important;width:auto !important;
+  object-fit:contain !important;display:block !important;
+  background:transparent;
+}
+@media(max-width:900px){
+  header .logo{min-height:40px}
+  header .logo img{height:40px !important}
+}
+@media(max-width:420px){
+  header .logo{min-height:36px}
+  header .logo img{height:36px !important}
+}
+/* 뒤로가기 복귀 순간 레이어가 스치는 것 방지 */
+.detail-dim.hide, .bl-dim.hide, .popup-dim.hide{
+  display:none !important; visibility:hidden !important; opacity:0 !important;
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
@@ -5475,6 +5495,36 @@ header .logo img{
     });
     row.innerHTML = html + ADD;
   }).catch(function(){ row.innerHTML=ADD; });
+})();
+
+/* 뒤로가기로 돌아왔을 때 열린 레이어 정리 — 화면 겹침 방지 */
+(function(){
+  function cleanLayers(){
+    ['detail','boardLayer'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.classList.add('hide');
+    });
+    ['drawer','drawerDim','cartDim','cartPanel'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('open');
+    });
+    /* 쿠폰 팝업 — 오늘 그만 보기를 눌렀으면 계속 숨김 */
+    var p = document.getElementById('popup');
+    if (p) {
+      var until = 0;
+      try{ until = Number(localStorage.getItem('cg_popup_until') || 0); }catch(e){}
+      if (Date.now() < until) p.classList.add('hide');
+    }
+    document.body.style.overflow = '';
+  }
+  window.addEventListener('pageshow', function(e){
+    cleanLayers();
+    if (e.persisted) setTimeout(cleanLayers, 30);
+  });
+  window.addEventListener('popstate', function(){ setTimeout(cleanLayers, 20); });
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') setTimeout(cleanLayers, 20);
+  });
 })();
 </script>
 </body>
