@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v90 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v91 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -109,7 +109,7 @@
 /* 첫 방문 팝업 (가이드: 405×455 · 라운드20 · 버튼 160×47 라운드4) */
 .popup { width:405px; max-width:calc(100vw - 40px); border-radius:20px !important; background:#fff !important;
   padding:0 0 26px !important; text-align:center; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,.22) !important; }
-.popup .p-illust { display:block; width:62%; max-width:250px; height:auto; margin:26px auto 10px; }
+.popup 
 .popup .p-title { font-size:23px; font-weight:700; color:#000; padding:0 28px; letter-spacing:-.03em;
   line-height:1.35; word-break:keep-all; }
 .popup .p-desc { font-size:15.5px; font-weight:400; color:#555; line-height:1.6; padding:9px 28px 0;
@@ -124,7 +124,7 @@
 @media (max-width:480px){
   .popup .p-title { font-size:19px; padding:0 20px; } .popup .p-desc { font-size:13.5px; padding:8px 20px 0; }
   .popup .p-acts { padding:18px 20px 0; gap:9px; } .popup .p-acts button { height:44px; font-size:13.5px; }
-  .popup .p-illust { width:56%; margin:20px auto 8px; }
+  .popup 
 }
 
 /* 상단 알림바 (디자인 가이드: 1920×45, 고정 문구) */
@@ -491,7 +491,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
   background:rgba(255,255,255,.78); backdrop-filter:blur(30px) saturate(120%); -webkit-backdrop-filter:blur(30px) saturate(120%);
   border:1px solid rgba(255,255,255,.75);
   box-shadow:0 24px 70px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -10px 20px rgba(255,255,255,.18); }
-.popup img { width:100%; aspect-ratio:4/3; object-fit:cover; background:#f4f4f6; }
+/* 팝업 안 이미지는 아래 .p-illust 규칙으로만 다룹니다 */
 
 .popup-body { padding:22px 24px 16px; text-align:center; }
 .popup-body .p-en { font-size:11px; letter-spacing:3px; color:var(--gray); }
@@ -1436,7 +1436,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v90 · 2026-08-15</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v91 · 2026-08-15</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -2631,7 +2631,7 @@ setHead();
   /* 팝업 — 화면 폭에 맞추고 세로도 넘치지 않게 */
   .popup{width:calc(100vw - 32px) !important;max-width:400px !important;
     max-height:86vh !important;overflow-y:auto !important}
-  .popup .p-illust{width:min(66vw,230px) !important;height:auto !important}
+  .popup 
   .popup .p-acts{display:flex !important;gap:8px !important;flex-wrap:wrap !important;
     padding:0 18px !important}
   .popup .p-acts button,.popup .p-acts a{width:auto !important;flex:1 1 46% !important;
@@ -2913,7 +2913,7 @@ setHead();
   .popup .p-acts button{flex:1 1 100% !important}
 }
 @media (max-height:620px){
-  .popup .p-illust{width:min(42vw,150px) !important}
+  .popup 
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -4100,7 +4100,7 @@ body.at-foot .kko-fab{
   max-height:min(86dvh,640px) !important;
   overflow:hidden !important;
   border-radius:24px !important}
-.popup .p-illust{flex:none}
+.popup 
 /* 제목부터 버튼까지를 하나의 스크롤 영역으로 */
 .popup .p-title,.popup .p-desc{flex:none}
 .popup .p-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -5379,8 +5379,7 @@ header .logo img{
   margin:auto !important;
   display:flex !important;flex-direction:column !important;
   overflow-y:auto;-webkit-overflow-scrolling:touch}
-.popup .p-illust{flex:none;width:min(58vw,210px) !important;height:auto !important;
-  margin:22px auto 8px !important;display:block !important}
+.popup 
 
 /* 로고 — 크기를 미리 잡아 로딩 중 흔들림 방지 */
 header .logo{min-width:120px;min-height:46px}
@@ -5439,16 +5438,28 @@ header.shrink .logo img{ height:34px !important; }
    점검 중에는 항상 보이도록 합니다. */
 
 /* 팝업 일러스트 — 정사각 그림에 맞춰 크기 조정 */
-.popup .p-illust{
-  display:block !important;
-  width:min(52vw,178px) !important;
-  height:auto !important;
-  margin:6px auto 14px !important;
-  aspect-ratio:1/1;
-  object-fit:contain;
-}
+.popup 
 @media(max-width:640px){
-  .popup .p-illust{width:min(46vw,150px) !important;margin:4px auto 12px !important}
+  .popup 
+}
+
+/* ══ 팝업 쿠폰 그림 — 최종 (앞선 규칙 정리) ══
+   원본 420×420 정사각 · 배경 투명.
+   테두리나 배경을 두지 않고 그림만 보이게 합니다. */
+.popup .p-illust{
+  display:block;
+  width:min(48vw,170px);
+  height:auto;
+  aspect-ratio:1/1;
+  margin:10px auto 14px;
+  object-fit:contain;
+  background:none;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+@media (max-width:640px){
+  .popup .p-illust{ width:min(42vw,144px); margin:6px auto 12px; }
 }
 </style>
 <script src="assets/nav.js" defer>
