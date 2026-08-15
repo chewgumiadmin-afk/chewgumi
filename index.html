@@ -1435,7 +1435,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v88 · 2026-08-14</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v89 · 2026-08-15</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1828,11 +1828,12 @@ function closePopup(today){
   if (today) { try { localStorage.setItem('cg_popup_until', String(Date.now() + 864e5)); } catch(e){} }
 }
 (function(){
-  const p = document.getElementById('popup');
-  try {
-    const until = Number(localStorage.getItem('cg_popup_until') || 0);
-    if (Date.now() < until) p.classList.add('hide');
-  } catch(e){}
+      const p = document.getElementById('popup');
+      const qa = /[?&]qa=1/.test(location.search);
+      try {
+        const until = Number(localStorage.getItem('cg_popup_until') || 0);
+        if (!qa && Date.now() < until) p.classList.add('hide');
+      } catch(e){}
   document.body.style.overflow = p.classList.contains('hide') ? '' : 'hidden';
 })();
 
@@ -5399,6 +5400,42 @@ header .logo img{
 .detail-dim.hide, .bl-dim.hide, .popup-dim.hide{
   display:none !important; visibility:hidden !important; opacity:0 !important;
 }
+
+/* ══ 접수 #1 로고 겹침 ══
+   헤더 높이(50px)보다 로고(46px)가 커서 위아래로 눌리고 있었습니다.
+   헤더를 로고에 맞춰 넉넉히 잡습니다. */
+.head-top{
+  height:auto !important;
+  min-height:66px !important;
+  padding:8px 0 !important;
+  align-items:center !important;
+}
+header.shrink .head-top{ min-height:56px !important; padding:5px 0 !important; }
+header .logo{
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  min-height:0 !important;line-height:0 !important;
+}
+header .logo img{
+  height:42px !important;width:auto !important;max-height:100% !important;
+  object-fit:contain !important;display:block !important;
+}
+header.shrink .logo img{ height:34px !important; }
+.head-top .util{ display:flex;align-items:center;gap:2px;justify-self:end }
+.head-top .burger{ align-self:center }
+
+@media (max-width:900px){
+  .head-top{ min-height:58px !important; }
+  header .logo img{ height:36px !important; }
+  header.shrink .logo img{ height:30px !important; }
+}
+@media (max-width:420px){
+  .head-top{ min-height:54px !important; }
+  header .logo img{ height:32px !important; }
+}
+
+/* ══ 접수 #2 첫 진입 팝업 ══
+   "오늘 그만 보기"를 누르면 하루 동안 저장되는데,
+   점검 중에는 항상 보이도록 합니다. */
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
