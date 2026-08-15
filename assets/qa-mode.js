@@ -116,8 +116,8 @@
             '<button class="cgm-cp" data-v="QAtest!2026">복사</button><br>' +
           '<span style="color:#8a8a92">점검용 계정입니다. 오픈 전 삭제합니다.</span>' +
           '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.07)">' +
-            '<b>받는 메일</b> <code>chewgumi24@gmail.com</code>' +
-              '<button class="cgm-cp" data-v="chewgumi24@gmail.com">복사</button><br>' +
+            '<b>받는 메일</b> <code>chewgumiadmin@gmail.com</code>' +
+              '<button class="cgm-cp" data-v="chewgumiadmin@gmail.com">복사</button><br>' +
             '<b>받는 번호</b> <code>010-8497-9634</code>' +
               '<button class="cgm-cp" data-v="010-8497-9634">복사</button>' +
           '</div>' +
