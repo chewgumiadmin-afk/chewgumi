@@ -158,13 +158,13 @@
     });
   }
 
-  function openBox() {
+  function openBox(withShot) {
     var picked = '';
     var bg = document.createElement('div');
     bg.className = 'qa-bg';
     bg.innerHTML =
       '<div class="qa-box">' +
-      '<h3>무엇이 이상한가요</h3>' +
+      '<h3>' + (withShot ? '무엇이 이상한지 적어주세요' : '무엇이 이상한가요') + '</h3>' +
       '<div class="tg">' + page + (target ? ' · <b>' + describe(target.el) + '</b>' : '') + '</div>' +
       '<div class="qa-k">' + KINDS.map(function (k, i) {
         return '<button data-i="' + i + '">' + k + '</button>'; }).join('') + '</div>' +
@@ -179,7 +179,18 @@
     document.body.appendChild(bg);
 
     var msg = bg.querySelector('.qa-msg');
-    bg.onclick = function (e) { if (e.target === bg) { bg.remove(); target = null; } };
+    var ta = bg.querySelector('textarea');
+    if (withShot && ta) setTimeout(function () { ta.focus(); }, 250);
+    bg.onclick = function (e) {
+      if (e.target !== bg) return;
+      var t = bg.querySelector('textarea');
+      if (shot || picked || (t && t.value.trim())) {
+        msg.style.color = '#C0395C';
+        msg.textContent = '적으신 내용이 있습니다. 보내거나 닫기를 눌러주세요';
+        return;
+      }
+      bg.remove(); target = null;
+    };
     bg.querySelector('.qa-cancel').onclick = function () { bg.remove(); target = null; };
     bg.querySelectorAll('.qa-k button').forEach(function (b) {
       b.onclick = function () {
@@ -237,16 +248,16 @@
     };
     bar.querySelector('.qa-shot').onclick = function (e) {
       e.stopPropagation();
-      var b = e.target;
+      var b = e.currentTarget;
       b.textContent = '담는 중…'; b.disabled = true;
       target = null;
       capture().then(function () {
         b.textContent = '캡처'; b.disabled = false;
-        openBox();
+        openBox(true);
       }).catch(function () {
         b.textContent = '캡처'; b.disabled = false;
         toast('캡처는 실패했지만 내용은 적으실 수 있습니다');
-        openBox();
+        openBox(true);
       });
     };
     bar.querySelector('.qa-note').onclick = function (e) {
@@ -291,4 +302,33 @@
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', start);
   else start();
+
+  /* 화면이 바뀌어도 막대가 사라지지 않도록 */
+  function ensure() {
+    if (!document.querySelector('.qa-bar')) start();
+  }
+  setInterval(ensure, 1200);
+  window.addEventListener('pageshow', ensure);
+  window.addEventListener('popstate', function () { setTimeout(ensure, 200); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') setTimeout(ensure, 200);
+  });
+
+  /* 다른 화면으로 넘어갈 때 ?qa=1 유지 */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var h = a.getAttribute('href') || '';
+    if (!h || h.charAt(0) === '#' || /^(https?:|mailto:|tel:|javascript:)/.test(h)) {
+      if (h.indexOf(location.origin) !== 0) return;
+    }
+    if (h.indexOf('qa=1') > -1) return;
+    if (!/\.html/.test(h)) return;
+    e.preventDefault();
+    var sep = h.indexOf('?') > -1 ? '&' : '?';
+    var hash = '', hi = h.indexOf('#');
+    var base = h;
+    if (hi > -1) { hash = h.slice(hi); base = h.slice(0, hi); }
+    location.href = base + sep + 'qa=1' + hash;
+  }, true);
 })();
