@@ -780,6 +780,30 @@ $('payBtn').addEventListener('click',async()=>{
     .item{padding-right:36px}
     .item .n{font-size:13px}
   }
+
+/* ══ 접수 #16 #17 반영 ══ */
+/* 상품 썸네일 — 배너가 잘리지 않게 */
+.item .th, .c-th, .cart-th{
+  background:#FFF7F9 !important;
+  display:flex !important;align-items:center;justify-content:center;
+  overflow:hidden;border-radius:12px;
+}
+.item .th img, .c-th img, .cart-th img{
+  width:100% !important;height:100% !important;
+  object-fit:contain !important;padding:9% !important;
+}
+/* 누르기 작던 버튼 */
+.item .qty button{ width:40px !important;height:40px !important;font-size:17px !important }
+.item .rm{ width:38px !important;height:38px !important }
+/* 아이폰 확대 방지 */
+input:not([type=checkbox]):not([type=radio]), textarea, select{
+  font-size:16px !important;
+}
+@media(min-width:1024px){
+  input:not([type=checkbox]):not([type=radio]), textarea, select{
+    font-size:14.5px !important;
+  }
+}
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
