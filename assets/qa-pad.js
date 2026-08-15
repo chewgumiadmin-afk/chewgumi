@@ -206,7 +206,10 @@
     return new Promise(function (ok, no) {
       var s = document.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-      s.onload = ok; s.onerror = no; document.head.appendChild(s);
+      s.onload = ok;
+      s.onerror = function () { no(new Error('도구를 못 불러왔습니다')); };
+      document.head.appendChild(s);
+      setTimeout(function () { if (!window.html2canvas) no(new Error('도구 로딩 시간 초과')); }, 9000);
     });
   }
   function capture() {
@@ -274,6 +277,8 @@
     }).catch(function (e) {
       restore();
       shot = null;
+      /* 무엇 때문인지 남긴다 */
+      try { console.warn('[QA] 캡처 실패:', e && (e.message || e)); } catch (x) {}
       throw e;
     });
   }
@@ -629,9 +634,11 @@
           b.textContent = '캡처'; b.disabled = false;
           var m = pad.querySelector('.cgp-m');
           m.className = 'cgp-m bad';
-          m.textContent = (err && err.message === '보안 제한')
-            ? '외부 이미지 때문에 못 찍었습니다 — 휴대폰 캡처를 써주세요'
-            : '캡처 실패 — 내용만 보내셔도 됩니다';
+          var msg = (err && (err.message || String(err))) || '알 수 없음';
+          m.textContent = msg === '보안 제한'
+            ? '외부 이미지 때문에 못 찍었습니다'
+            : (msg === '빈 이미지' ? '화면이 비어 담기지 않았습니다'
+               : '캡처 실패 — ' + msg.slice(0, 30));
         });
     };
     pad.querySelector('.cgp-fill').onclick = function () {
