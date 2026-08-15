@@ -5673,6 +5673,22 @@ header .logo img{ image-rendering:auto }
   .uf-head{ flex-direction:column !important; align-items:flex-start !important; gap:12px !important }
   .uf-grid{ grid-template-columns:repeat(2,1fr) !important; gap:8px !important }
 }
+
+/* 접수 #12 — 상품 팝업 이미지가 잘리던 문제 */
+.detail .d-img{
+  background:radial-gradient(120% 92% at 50% 12%,#fff 0%,#FFF7F9 46%,#FFEFF3 100%) !important;
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  overflow:hidden;
+}
+.detail .d-img img{
+  width:100% !important;height:auto !important;
+  max-height:100% !important;min-height:0 !important;
+  object-fit:contain !important;padding:7% !important;
+}
+@media(max-width:860px){
+  .detail .d-img{ max-height:280px }
+  .detail .d-img img{ max-height:280px !important;padding:5% !important }
+}
 </style>
 <script src="assets/nav.js" defer>
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
