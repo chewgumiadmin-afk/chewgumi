@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v94 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v95 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -914,7 +914,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
 <div class="popup-dim" id="popup">
   <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
-    <img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true">
+    <div class="p-top"><img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true"></div>
     <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
     <div class="p-desc" data-en="Join now and get a &lt;b&gt;₩2,000&lt;/b&gt; coupon you can use right away!">지금 가입하시면 즉시 사용 가능한 <b>2000원</b> 할인쿠폰을 드려요!</div>
     <div class="p-acts">
@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v94 · 2026-08-15</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v95 · 2026-08-15</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5656,6 +5656,54 @@ header .logo img{ image-rendering:auto }
   .uf-box{grid-template-columns:1fr;max-height:90vh;width:calc(100vw - 32px)}
   .uf-media{max-height:46vh}
   .uf-info{padding:18px 18px 22px}
+}
+
+/* ══ 팝업 위쪽 — 흰 배경 영역 ══
+   쿠폰 그림이 흰 배경에 그려져 있어, 위 절반을 흰색으로 나눕니다. */
+.popup{
+  padding-top:0 !important;
+  overflow:hidden !important;
+}
+.popup .p-top{
+  background:#fff;
+  margin:0 0 20px;
+  padding:24px 20px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+.popup .p-top .p-illust{
+  display:block !important;
+  width:min(46vw,164px) !important;
+  height:auto !important;
+  margin:0 !important;
+  aspect-ratio:auto !important;
+  object-fit:contain !important;
+  background:none !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  position:static !important;
+  inset:auto !important;
+  padding:0 !important;
+}
+/* 아래쪽 글·버튼은 좌우 여백을 유지 */
+.popup .p-title,
+.popup .p-desc,
+.popup .p-acts{
+  padding-left:22px;
+  padding-right:22px;
+}
+.popup .p-acts{ padding-bottom:22px; }
+
+@media (max-width:640px){
+  .popup .p-top{ padding:20px 18px 16px; margin-bottom:17px }
+  .popup .p-top .p-illust{ width:min(40vw,140px) !important }
+  .popup .p-title,
+  .popup .p-desc,
+  .popup .p-acts{ padding-left:18px; padding-right:18px }
+  .popup .p-acts{ padding-bottom:18px }
 }
 </style>
 <script src="assets/nav.js" defer>
