@@ -440,6 +440,70 @@
     }
   }
 
+
+  /* 화면이 다 그려지면 스스로 읽는다 */
+  var autoDone = false;
+  function autoRead() {
+    if (autoDone) return;
+    autoDone = true;
+    var d = readScreen();
+    var box = pad.querySelector('.cgp-res');
+    if (!box) return;
+    if (!d.bad.length) {
+      box.className = 'cgp-res on';
+      box.innerHTML = '<div class="v ok">화면 읽음 · 문제 없음</div>' +
+        '<div class="r"><i class="q">.</i><span>글자 ' + d.stat.t +
+        ' · 이미지 ' + d.stat.i + ' · 버튼 ' + d.stat.b +
+        ' · 입력칸 ' + d.stat.f + '</span></div>';
+      return;
+    }
+    box.className = 'cgp-res on';
+    var rows = '';
+    for (var i = 0; i < d.bad.length && i < 14; i++) {
+      rows += '<div class="r"><i class="n">!</i><span>' + esc(d.bad[i]) + '</span></div>';
+    }
+    box.innerHTML = '<div class="v bad">' + d.bad.length + '건 발견 — 아래 확인</div>' + rows +
+      '<button class="cgp-put" style="width:100%;height:30px;margin-top:7px;border:0;' +
+      'border-radius:8px;cursor:pointer;background:#D82558;color:#fff;font-family:inherit;' +
+      'font-size:11px;font-weight:700">이 내용으로 신고 준비</button>';
+    var put = box.querySelector('.cgp-put');
+    if (put) put.onclick = function () {
+      var ta = pad.querySelector('textarea');
+      var lines = [];
+      for (var j = 0; j < d.bad.length && j < 12; j++) lines.push('· ' + d.bad[j]);
+      ta.value = '[화면 읽기]\n' + lines.join('\n');
+      ta.focus();
+    };
+    /* 접혀 있으면 펴서 보여준다 */
+    if (st.fold) {
+      st.fold = false; save();
+      pad.classList.remove('fold');
+      var fb = pad.querySelector('.cgp-fold');
+      if (fb) fb.textContent = '−';
+    }
+  }
+
+  /* 이미지가 다 뜬 뒤에 읽어야 정확하다 */
+  function waitImages(cb) {
+    var imgs = [].slice.call(document.images).filter(function (im) {
+      return !im.closest('.cgp') && im.getBoundingClientRect().width;
+    });
+    var left = imgs.filter(function (im) { return !im.complete; }).length;
+    if (!left) { setTimeout(cb, 400); return; }
+    var done = 0, fired = false;
+    function tick() {
+      done++;
+      if (!fired && done >= left) { fired = true; setTimeout(cb, 300); }
+    }
+    imgs.forEach(function (im) {
+      if (im.complete) return;
+      im.addEventListener('load', tick, { once: true });
+      im.addEventListener('error', tick, { once: true });
+    });
+    /* 오래 걸리면 그냥 진행 */
+    setTimeout(function () { if (!fired) { fired = true; cb(); } }, 4000);
+  }
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
@@ -548,6 +612,7 @@
       st.x = r.left; st.y = r.top; save();
     }
     loadGuide();
+    waitImages(autoRead);
 
     /* 크기 조절 — 모서리(가로세로) · 오른쪽(가로만) */
     function bindResize(el, both) {
@@ -607,6 +672,18 @@
     if (document.querySelector('.cgp')) return;
     build();
   }
+
+  /* 스크롤이 멈추면 새로 보이는 영역을 다시 읽는다 */
+  var scT = null, lastY = 0;
+  window.addEventListener('scroll', function () {
+    if (Math.abs(window.scrollY - lastY) < 400) return;
+    clearTimeout(scT);
+    scT = setTimeout(function () {
+      lastY = window.scrollY;
+      autoDone = false;
+      if (pad) autoRead();
+    }, 900);
+  }, { passive: true });
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', start);
   else start();
