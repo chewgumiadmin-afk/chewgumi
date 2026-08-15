@@ -95,22 +95,42 @@
   function capture() {
     var bar = document.querySelector('.qa-bar');
     if (bar) bar.style.visibility = 'hidden';
-    toast('화면을 담는 중…');
     return loadLib().then(function () {
+      var vw = document.documentElement.clientWidth;
+      var vh = window.innerHeight;
       return html2canvas(document.body, {
         backgroundColor: '#ffffff',
-        scale: Math.min(2, window.devicePixelRatio || 1),
-        useCORS: true, allowTaint: true, logging: false,
-        windowWidth: document.documentElement.clientWidth,
-        height: Math.min(document.body.scrollHeight, window.innerHeight * 2),
-        y: window.scrollY
+        scale: 1,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        foreignObjectRendering: false,
+        imageTimeout: 6000,
+        width: vw,
+        height: vh,
+        x: window.scrollX,
+        y: window.scrollY,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: vw,
+        windowHeight: vh,
+        ignoreElements: function (el) {
+          return el.classList && (
+            el.classList.contains('qa-bar') ||
+            el.classList.contains('qa-hi') ||
+            el.classList.contains('qa-tip') ||
+            el.classList.contains('qa-bg') ||
+            el.classList.contains('qa-toast'));
+        }
       });
     }).then(function (cv) {
       if (bar) bar.style.visibility = '';
-      shot = cv.toDataURL('image/jpeg', 0.8);
+      shot = cv.toDataURL('image/jpeg', 0.72);
+      if (shot.length < 3000) throw new Error('빈 이미지');
       return shot;
     }).catch(function (e) {
       if (bar) bar.style.visibility = '';
+      shot = null;
       throw e;
     });
   }
@@ -148,7 +168,7 @@
       '<div class="tg">' + page + (target ? ' · <b>' + describe(target.el) + '</b>' : '') + '</div>' +
       '<div class="qa-k">' + KINDS.map(function (k, i) {
         return '<button data-i="' + i + '">' + k + '</button>'; }).join('') + '</div>' +
-      '<textarea placeholder="어떻게 보이는지 적어주세요"></textarea>' +
+      '<textarea placeholder="어떻게 보이는지 적어주세요. 짧아도 괜찮습니다."></textarea>' +
       '<div class="qa-shotbox">' +
         (shot ? '<img src="' + shot + '" alt="캡처"><span>화면이 함께 전송됩니다</span>'
               : '<button class="qa-grab">이 화면 캡처해서 함께 보내기</button>') +
@@ -170,14 +190,14 @@
     var grab = bg.querySelector('.qa-grab');
     if (grab) grab.onclick = function () {
       grab.textContent = '담는 중…'; grab.disabled = true;
-      bg.style.visibility = 'hidden';
+      bg.style.display = 'none';
       capture().then(function (d) {
-        bg.style.visibility = '';
+        bg.style.display = '';
         bg.querySelector('.qa-shotbox').innerHTML =
           '<img src="' + d + '" alt="캡처"><span>화면이 함께 전송됩니다</span>';
       }).catch(function () {
-        bg.style.visibility = '';
-        grab.textContent = '캡처하지 못했습니다'; grab.disabled = false;
+        bg.style.display = '';
+        grab.textContent = '다시 시도'; grab.disabled = false;
       });
     };
 
@@ -185,7 +205,9 @@
       var note = bg.querySelector('textarea').value.trim();
       if (!picked && !note) {
         msg.style.color = '#C0395C';
-        msg.textContent = '항목을 고르거나 내용을 적어주세요'; return;
+        msg.textContent = '항목을 고르거나 내용을 적어주세요';
+        bg.querySelector('textarea').focus();
+        return;
       }
       msg.style.color = '#8a8a92'; msg.textContent = '보내는 중…';
       post(picked || '기타', note, 'open').then(function (r) {
@@ -215,10 +237,17 @@
     };
     bar.querySelector('.qa-shot').onclick = function (e) {
       e.stopPropagation();
+      var b = e.target;
+      b.textContent = '담는 중…'; b.disabled = true;
+      target = null;
       capture().then(function () {
-        toast('담았습니다. 이어서 적어주세요');
-        target = null; openBox();
-      }).catch(function () { toast('캡처하지 못했습니다'); });
+        b.textContent = '캡처'; b.disabled = false;
+        openBox();
+      }).catch(function () {
+        b.textContent = '캡처'; b.disabled = false;
+        toast('캡처는 실패했지만 내용은 적으실 수 있습니다');
+        openBox();
+      });
     };
     bar.querySelector('.qa-note').onclick = function (e) {
       e.stopPropagation(); target = null; openBox();
