@@ -21,6 +21,8 @@
   var css = document.createElement('style');
   css.textContent = [
     '.cgp{position:fixed;z-index:2147483000;width:268px;border-radius:16px;',
+    '  overflow-y:auto;overscroll-behavior:contain;',
+    '  -webkit-overflow-scrolling:touch;',
     '  min-width:220px;max-width:min(92vw,520px);resize:none;',
     '  background:linear-gradient(160deg,#FFF9DB,#FFF3B8);',
     '  box-shadow:0 10px 30px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.8);',
@@ -28,17 +30,23 @@
     '  color:#3d3520;overflow:hidden;transition:box-shadow .2s}',
     '.cgp.drag{box-shadow:0 18px 44px rgba(0,0,0,.3);opacity:.96}',
     '.cgp-h{display:flex;align-items:center;gap:7px;padding:9px 11px;cursor:grab;',
-    '  background:rgba(0,0,0,.05);user-select:none;touch-action:none}',
+    '  background:rgba(250,244,200,.97);user-select:none;touch-action:none;',
+    '  position:sticky;top:0;z-index:3;',
+    '  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
+    '  box-shadow:0 1px 0 rgba(0,0,0,.06)}',
     '.cgp-h.drag{cursor:grabbing}',
     '.cgp-h b{flex:1;font-size:12px;font-weight:800;letter-spacing:-.01em;',
     '  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
     '.cgp-h button{width:22px;height:22px;border:0;border-radius:6px;cursor:pointer;',
     '  background:rgba(0,0,0,.08);color:#3d3520;font-size:13px;font-weight:700;',
     '  line-height:1;display:flex;align-items:center;justify-content:center;padding:0}',
-    '.cgp-b{padding:11px;overflow-y:auto;overscroll-behavior:contain;',
-    '  -webkit-overflow-scrolling:touch}',
-    '.cgp-b::-webkit-scrollbar{width:6px}',
-    '.cgp-b::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:3px}',
+    '.cgp-b{padding:11px}',
+    '.cgp::-webkit-scrollbar{width:7px}',
+    '.cgp::-webkit-scrollbar-track{background:transparent}',
+    '.cgp::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:4px;',
+    '  border:2px solid transparent;background-clip:content-box}',
+    '.cgp::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.32);',
+    '  border:2px solid transparent;background-clip:content-box}',
     '.cgp.fold .cgp-b{display:none}',
     '.cgp-guide{margin-bottom:9px;border-radius:10px;overflow:hidden;',
     '  background:rgba(255,255,255,.72);display:none}',
@@ -97,7 +105,8 @@
     '.cgp-m.ok{color:#1a6e44}.cgp-m.bad{color:#a82042}',
     '.cgp-sh{margin-top:7px;border-radius:9px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}',
     '.cgp-sh img{width:100%;display:block;max-height:96px;object-fit:cover;object-position:top}',
-    '.cgp-rz{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;',
+    '.cgp-rz{position:sticky;float:right;right:0;bottom:0;width:18px;height:18px;',
+    '  cursor:nwse-resize;margin-top:-18px;',
     '  z-index:2;touch-action:none}',
     '.cgp-rz::after{content:"";position:absolute;right:4px;bottom:4px;width:8px;height:8px;',
     '  border-right:2px solid rgba(0,0,0,.28);border-bottom:2px solid rgba(0,0,0,.28);',
@@ -584,7 +593,7 @@
       st.fold = !st.fold; save();
       pad.classList.toggle('fold', st.fold);
       e.currentTarget.textContent = st.fold ? '+' : '−';
-      fitHeight();
+      if (st.fold) pad.style.maxHeight = ''; else fitHeight();
     };
     pad.querySelector('.cgp-close').onclick = function () {
       pad.style.display = 'none';
@@ -627,7 +636,7 @@
         e.preventDefault(); e.stopPropagation();
         var t = e.touches ? e.touches[0] : e;
         var r = pad.getBoundingClientRect();
-        rw = r.width; rh = pad.querySelector('.cgp-b').offsetHeight;
+        rw = r.width; rh = r.height;
         sx = t.clientX; sy = t.clientY; on = true;
         pad.classList.add('drag');
       }
@@ -638,9 +647,8 @@
         var w = Math.max(220, Math.min(window.innerWidth * 0.92, rw + (t.clientX - sx)));
         pad.style.width = w + 'px';
         if (both) {
-          var hh = Math.max(120, Math.min(window.innerHeight * 0.8, rh + (t.clientY - sy)));
-          var b = pad.querySelector('.cgp-b');
-          b.style.maxHeight = hh + 'px'; b.style.overflowY = 'auto';
+          var hh = Math.max(140, Math.min(window.innerHeight * 0.86, rh + (t.clientY - sy)));
+          pad.style.maxHeight = hh + 'px';
           st.h = Math.round(hh);
         }
         st.w = Math.round(w);
@@ -671,15 +679,13 @@
 
 
   /* 점검판이 화면을 넘지 않도록 높이를 맞춘다 */
+  /* 노트가 화면을 넘지 않도록 전체 높이를 맞춘다 */
   function fitHeight() {
     if (!pad) return;
-    var b = pad.querySelector('.cgp-b');
-    if (!b) return;
     var top = pad.getBoundingClientRect().top;
-    var head = pad.querySelector('.cgp-h').offsetHeight;
-    var room = window.innerHeight - top - head - 16;
+    var room = window.innerHeight - top - 14;
     var want = st.h ? Math.min(st.h, room) : room;
-    b.style.maxHeight = Math.max(120, want) + 'px';
+    pad.style.maxHeight = Math.max(140, want) + 'px';
   }
 
   function place(x, y) {
