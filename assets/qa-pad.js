@@ -35,7 +35,10 @@
     '.cgp-h button{width:22px;height:22px;border:0;border-radius:6px;cursor:pointer;',
     '  background:rgba(0,0,0,.08);color:#3d3520;font-size:13px;font-weight:700;',
     '  line-height:1;display:flex;align-items:center;justify-content:center;padding:0}',
-    '.cgp-b{padding:11px}',
+    '.cgp-b{padding:11px;overflow-y:auto;overscroll-behavior:contain;',
+    '  -webkit-overflow-scrolling:touch}',
+    '.cgp-b::-webkit-scrollbar{width:6px}',
+    '.cgp-b::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:3px}',
     '.cgp.fold .cgp-b{display:none}',
     '.cgp-guide{margin-bottom:9px;border-radius:10px;overflow:hidden;',
     '  background:rgba(255,255,255,.72);display:none}',
@@ -43,8 +46,7 @@
     '.cgp-gh{display:flex;align-items:center;gap:6px;padding:8px 10px;cursor:pointer;',
     '  font-size:11.5px;font-weight:700;color:#5a4f2a;user-select:none}',
     '.cgp-gh span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-    '.cgp-gb{padding:0 10px 10px;font-size:11.5px;line-height:1.7;color:#4d442a;',
-    '  max-height:210px;overflow-y:auto}',
+    '.cgp-gb{padding:0 10px 10px;font-size:11.5px;line-height:1.7;color:#4d442a}',
     '.cgp-guide.fold .cgp-gb{display:none}',
     '.cgp-gs{margin-top:7px}',
     '.cgp-gs b{display:block;font-size:10px;letter-spacing:.6px;color:#8a7b45;',
@@ -484,6 +486,7 @@
       var fb = pad.querySelector('.cgp-fold');
       if (fb) fb.textContent = '−';
     }
+    fitHeight();
   }
 
   /* 이미지가 다 뜬 뒤에 읽어야 정확하다 */
@@ -540,10 +543,6 @@
 
     /* 크기 복원 */
     if (st.w) pad.style.width = st.w + 'px';
-    if (st.h) {
-      var b = pad.querySelector('.cgp-b');
-      if (b) { b.style.maxHeight = st.h + 'px'; b.style.overflowY = 'auto'; }
-    }
 
     /* 위치 복원 */
     var x = st.x, y = st.y;
@@ -585,6 +584,7 @@
       st.fold = !st.fold; save();
       pad.classList.toggle('fold', st.fold);
       e.currentTarget.textContent = st.fold ? '+' : '−';
+      fitHeight();
     };
     pad.querySelector('.cgp-close').onclick = function () {
       pad.style.display = 'none';
@@ -658,6 +658,8 @@
     }
     bindResize(pad.querySelector('.cgp-rz'), true);
     bindResize(pad.querySelector('.cgp-rzx'), false);
+    fitHeight();
+    window.addEventListener('resize', fitHeight);
 
     h.addEventListener('mousedown', down);
     h.addEventListener('touchstart', down, { passive: true });
@@ -667,11 +669,25 @@
     document.addEventListener('touchend', up);
   }
 
+
+  /* 점검판이 화면을 넘지 않도록 높이를 맞춘다 */
+  function fitHeight() {
+    if (!pad) return;
+    var b = pad.querySelector('.cgp-b');
+    if (!b) return;
+    var top = pad.getBoundingClientRect().top;
+    var head = pad.querySelector('.cgp-h').offsetHeight;
+    var room = window.innerHeight - top - head - 16;
+    var want = st.h ? Math.min(st.h, room) : room;
+    b.style.maxHeight = Math.max(120, want) + 'px';
+  }
+
   function place(x, y) {
     var w = pad.offsetWidth || 268, hh = pad.offsetHeight || 200;
     x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
     y = Math.max(6, Math.min(window.innerHeight - 50, y));
     pad.style.left = x + 'px'; pad.style.top = y + 'px';
+    fitHeight();
   }
 
   function start() {
