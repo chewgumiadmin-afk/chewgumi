@@ -63,6 +63,13 @@
     '.qa-send{background:#D82558;color:#fff}',
     '.qa-cancel{background:#f2eff3;color:#555}',
     '.qa-msg{margin-top:9px;font-size:12.5px;min-height:17px;font-weight:600}',
+    '.qa-shotbox{margin-top:11px}',
+    '.qa-shotbox img{width:100%;border-radius:11px;border:1px solid #e6e3e8;display:block;',
+    '  max-height:220px;object-fit:cover;object-position:top}',
+    '.qa-shotbox span{display:block;margin-top:6px;font-size:11.5px;color:#2AA060;font-weight:600}',
+    '.qa-grab{width:100%;height:44px;border:1px dashed #c9c4ce;border-radius:11px;',
+    '  background:#fafafa;font-family:inherit;font-size:12.5px;font-weight:600;',
+    '  color:#555;cursor:pointer}',
     '.qa-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;',
     '  z-index:2147483003;padding:13px 22px;border-radius:14px;background:rgba(23,23,28,.95);',
     '  color:#fff;font-size:13.5px;font-weight:600;font-family:inherit;',
@@ -71,6 +78,58 @@
   document.head.appendChild(css);
 
   var picking = false, hi = null, tip = null, target = null;
+
+  /* ── 화면 캡처 ── */
+  var shot = null;   /* dataURL */
+
+  function loadLib() {
+    if (window.html2canvas) return Promise.resolve();
+    return new Promise(function (ok, no) {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = ok; s.onerror = no;
+      document.head.appendChild(s);
+    });
+  }
+
+  function capture() {
+    var bar = document.querySelector('.qa-bar');
+    if (bar) bar.style.visibility = 'hidden';
+    toast('화면을 담는 중…');
+    return loadLib().then(function () {
+      return html2canvas(document.body, {
+        backgroundColor: '#ffffff',
+        scale: Math.min(2, window.devicePixelRatio || 1),
+        useCORS: true, allowTaint: true, logging: false,
+        windowWidth: document.documentElement.clientWidth,
+        height: Math.min(document.body.scrollHeight, window.innerHeight * 2),
+        y: window.scrollY
+      });
+    }).then(function (cv) {
+      if (bar) bar.style.visibility = '';
+      shot = cv.toDataURL('image/jpeg', 0.8);
+      return shot;
+    }).catch(function (e) {
+      if (bar) bar.style.visibility = '';
+      throw e;
+    });
+  }
+
+  function upload(dataUrl) {
+    var bin = atob(dataUrl.split(',')[1]);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    var name = page.replace(/[^\w.-]/g, '_') + '_' + Date.now() + '.jpg';
+    return fetch(SB + '/storage/v1/object/qa-shots/' + name, {
+      method: 'POST',
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'image/jpeg' },
+      body: arr
+    }).then(function (r) {
+      if (!r.ok) return '';
+      return SB + '/storage/v1/object/public/qa-shots/' + name;
+    }).catch(function () { return ''; });
+  }
+
 
   function toast(t, ok) {
     var d = document.createElement('div');
@@ -187,7 +246,7 @@
     if (b) { b.classList.remove('hot'); b.textContent = '콕 집기'; }
   }
 
-  function post(kind, note, status) {
+  function post(kind, note, status, shotUrl) {
     var where = '';
     if (target) {
       where = describe(target.el) + '  [' + path(target.el) + ']  '
@@ -202,7 +261,8 @@
         note: (where ? '위치 — ' + where + '\n' : '') + note,
         device: navigator.userAgent.slice(0, 110),
         viewport: window.innerWidth + 'x' + window.innerHeight,
-        status: status || 'open'
+        status: status || 'open',
+        shot_url: shotUrl || ''
       })
     });
   }
@@ -218,6 +278,10 @@
       '<div class="qa-k">' + KINDS.map(function (k, i) {
         return '<button data-i="' + i + '">' + k + '</button>'; }).join('') + '</div>' +
       '<textarea placeholder="어떻게 보이는지 적어주세요"></textarea>' +
+      '<div class="qa-shotbox">' +
+        (shot ? '<img src="' + shot + '" alt="캡처"><span>화면이 함께 전송됩니다</span>'
+              : '<button class="qa-grab">이 화면 캡처해서 함께 보내기</button>') +
+      '</div>' +
       '<div class="qa-act"><button class="qa-cancel">닫기</button>' +
       '<button class="qa-send">보내기</button></div>' +
       '<div class="qa-msg"></div></div>';
@@ -232,6 +296,20 @@
         b.classList.add('on'); picked = KINDS[+b.dataset.i];
       };
     });
+    var grab = bg.querySelector('.qa-grab');
+    if (grab) grab.onclick = function () {
+      grab.textContent = '담는 중…'; grab.disabled = true;
+      bg.style.visibility = 'hidden';
+      capture().then(function (d) {
+        bg.style.visibility = '';
+        bg.querySelector('.qa-shotbox').innerHTML =
+          '<img src="' + d + '" alt="캡처"><span>화면이 함께 전송됩니다</span>';
+      }).catch(function () {
+        bg.style.visibility = '';
+        grab.textContent = '캡처하지 못했습니다'; grab.disabled = false;
+      });
+    };
+
     bg.querySelector('.qa-send').onclick = function () {
       var note = bg.querySelector('textarea').value.trim();
       if (!picked && !note) {
@@ -239,9 +317,11 @@
         msg.textContent = '항목을 고르거나 내용을 적어주세요'; return;
       }
       msg.style.color = '#8a8a92'; msg.textContent = '보내는 중…';
-      post(picked || '기타', note, 'open').then(function (r) {
+      (shot ? upload(shot) : Promise.resolve('')).then(function (url) {
+        return post(picked || '기타', note, 'open', url);
+      }).then(function (r) {
         if (!r.ok) throw new Error();
-        bg.remove(); target = null; toast('접수했습니다');
+        bg.remove(); target = null; shot = null; toast('접수했습니다');
       }).catch(function () {
         msg.style.color = '#C0395C';
         msg.textContent = '보내지 못했습니다. 다시 시도해 주세요';
@@ -255,6 +335,7 @@
     bar.innerHTML =
       '<span class="gp">⣿</span>' +
       '<button class="qa-pick">콕 집기</button>' +
+      '<button class="qa-shot">캡처</button>' +
       '<button class="qa-note">적기</button>' +
       '<button class="qa-ok ok">이상 없음</button>';
     document.body.appendChild(bar);
@@ -262,6 +343,13 @@
     bar.querySelector('.qa-pick').onclick = function (e) {
       e.stopPropagation();
       picking ? stopPick() : startPick();
+    };
+    bar.querySelector('.qa-shot').onclick = function (e) {
+      e.stopPropagation();
+      capture().then(function () {
+        toast('담았습니다. 이어서 적어주세요');
+        target = null; openBox();
+      }).catch(function () { toast('캡처하지 못했습니다'); });
     };
     bar.querySelector('.qa-note').onclick = function (e) {
       e.stopPropagation(); target = null; openBox();
