@@ -158,6 +158,28 @@ input::placeholder,textarea::placeholder{color:#b4b4bc}
     text-underline-offset:3px;min-height:36px;display:inline-flex;align-items:center}
   .cs-hr{font-size:11.5px;color:var(--gray,#7a7a82)}
   @media(max-width:640px){.cs-line{gap:6px;flex-direction:column}}
+
+  .up-box{display:flex;flex-direction:column;gap:9px;padding:14px;border-radius:14px;
+    background:rgba(255,255,255,.5);border:1px dashed rgba(216,37,88,.28)}
+  .up-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    min-height:44px;border:0;border-radius:11px;cursor:pointer;
+    font-family:inherit;font-size:13px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,var(--main2),var(--main));
+    box-shadow:0 6px 16px rgba(216,37,88,.22)}
+  .up-or{text-align:center;font-size:11px;color:var(--gray);letter-spacing:1px}
+  .up-box input[type=text],.up-box input:not([type=file]){
+    min-height:44px;padding:0 13px;border:1px solid var(--line);border-radius:11px;
+    font-family:inherit;font-size:14px;background:#fff;width:100%;box-sizing:border-box}
+  .up-prev{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+  .up-prev:empty{display:none}
+  .up-item{position:relative;width:88px;height:88px;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);background:#FFF1F4}
+  .up-item img,.up-item video{width:100%;height:100%;object-fit:cover;display:block}
+  .up-item .x{position:absolute;top:4px;right:4px;width:22px;height:22px;border:0;
+    border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:13px;
+    cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+  .up-item .tag{position:absolute;left:0;right:0;bottom:0;padding:3px 5px;
+    font-size:9.5px;color:#fff;background:rgba(0,0,0,.5);text-align:center}
 </style>
 <link rel="stylesheet" href="assets/popup.css">
 </head>
@@ -204,7 +226,24 @@ input::placeholder,textarea::placeholder{color:#b4b4bc}
     <textarea id="body" placeholder="언제, 어떤 상황에서 그렇게 느끼셨는지 적어주시면 큰 도움이 됩니다."></textarea>
     <div class="hint">10자 이상 적어주세요. 구체적일수록 반영될 가능성이 높습니다.</div>
 
-    <label>만족도 (선택)</label>
+    <label>사진 · 영상 (선택)</label>
+      <div class="up-box" id="upBox">
+        <input type="file" id="upFile" accept="image/*,video/mp4" style="display:none"
+          onchange="pickFile(this)">
+        <button class="up-btn" onclick="document.getElementById('upFile').click()">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="4"/>
+            <circle cx="8.5" cy="8.5" r="1.8"/><path d="m21 15-5-5L5 21"/>
+          </svg>사진 · 영상 올리기</button>
+        <div class="up-or">또는</div>
+        <input id="upLink" placeholder="인스타그램 · 유튜브 링크 붙여넣기">
+      </div>
+      <div class="up-prev" id="upPrev"></div>
+      <div class="hint">올려주신 사진은 확인 후 메인 화면에 소개해 드립니다.
+        계정을 함께 표기하며, 원치 않으시면 알려주세요.</div>
+
+      <label>만족도 (선택)</label>
     <div class="stars" id="stars">
       <button data-v="1">★</button><button data-v="2">★</button>
       <button data-v="3">★</button><button data-v="4">★</button>
@@ -313,6 +352,8 @@ function setSort(b,s){
 }
 
 function submit(){
+  /* 사진·영상이 있으면 함께 등록 */
+  window.__filmPending = true;
   const t=$('title').value.trim(), b=$('body').value.trim();
   if(!t) return $('msg').textContent='한 줄 요약을 적어주세요.';
   if(b.length<10) return $('msg').textContent='내용을 10자 이상 적어주세요.';
@@ -376,6 +417,66 @@ load();
 <script src="assets/sheet.js" defer></script>
 <script src="assets/qa-fill.js" defer></script>
 <script src="assets/qa-mode.js" defer></script>
-<script src="assets/qa-pad.js" defer></script>
+<script src="assets/qa-pad.js" defer>
+/* ── 사진 · 영상 첨부 ── */
+var upData = null;
+
+function pickFile(inp){
+  var f = inp.files && inp.files[0];
+  if(!f) return;
+  if(f.size > 10*1024*1024){
+    alert('10MB 이하 파일만 올릴 수 있습니다.');
+    inp.value=''; return;
+  }
+  var isVideo = /^video\//.test(f.type);
+  var rd = new FileReader();
+  rd.onload = function(){
+    upData = { data: rd.result, name: f.name, type: f.type, video: isVideo };
+    document.getElementById('upPrev').innerHTML =
+      '<div class="up-item">' +
+      (isVideo ? '<video src="'+rd.result+'" muted></video>'
+               : '<img src="'+rd.result+'" alt="">') +
+      '<button class="x" onclick="dropFile()">×</button>' +
+      '<span class="tag">'+(isVideo?'영상':'사진')+'</span></div>';
+  };
+  rd.readAsDataURL(f);
+}
+function dropFile(){
+  upData = null;
+  document.getElementById('upPrev').innerHTML='';
+  document.getElementById('upFile').value='';
+}
+
+/* 올린 파일을 저장소에 보낸다 */
+function uploadFilm(){
+  var link = (document.getElementById('upLink')||{}).value || '';
+  link = link.trim();
+  if(!upData && !link) return Promise.resolve(null);
+
+  if(!upData){
+    /* 링크만 있는 경우 */
+    var kind = /instagram/.test(link) ? 'instagram'
+             : (/youtu/.test(link) ? 'youtube' : 'image');
+    return Promise.resolve({ kind:kind, media_url:'', thumb_url:'', link_url:link });
+  }
+
+  var bin = atob(upData.data.split(',')[1]);
+  var arr = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  var ext = (upData.name.split('.').pop()||'jpg').toLowerCase().slice(0,4);
+  var name = 'f' + Date.now() + '.' + ext;
+
+  return fetch(SB+'/storage/v1/object/films/'+name,{
+    method:'POST',
+    headers:{ apikey:KEY, Authorization:'Bearer '+KEY, 'Content-Type':upData.type },
+    body:arr
+  }).then(function(r){
+    if(!r.ok) throw new Error('업로드 실패');
+    var url = SB+'/storage/v1/object/public/films/'+name;
+    return { kind: upData.video?'video':'image',
+      media_url:url, thumb_url:url, link_url:link };
+  });
+}
+</script>
 </body>
 </html>
