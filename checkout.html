@@ -132,16 +132,16 @@ textarea{resize:vertical;min-height:70px}
       <div>
         <div class="panel">
           <h2>ORDERER · 주문자 정보</h2>
-          <label>이름 <span>*</span></label><input id="fName" autocomplete="name">
-          <label>휴대전화 <span>*</span></label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel">
-          <label>이메일 <em class="req">필수</em></label><input id="fEmail" type="email" autocomplete="email">
+          <label>이름 <em class="req">*</em></label><input id="fName" autocomplete="name">
+          <label>휴대전화 <em class="req">*</em></label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel">
+          <label>이메일 <em class="req">*</em></label><input id="fEmail" type="email" autocomplete="email">
         </div>
         <div class="panel">
           <h2>SHIPPING · 배송지</h2>
-          <label>우편번호 <em class="req">필수</em></label>
+          <label>우편번호 <em class="req">*</em></label>
           <div class="row2"><input id="fZip" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
-          <label>주소 <em class="req">필수</em></label><input id="fAddr1" readonly>
-          <label>상세주소 <em class="req">필수</em></label><input id="fAddr2" autocomplete="address-line2">
+          <label>주소 <em class="req">*</em></label><input id="fAddr1" readonly>
+          <label>상세주소 <em class="req">*</em></label><input id="fAddr2" autocomplete="address-line2">
           <label>배송 메모 <span class="opt">선택</span></label><textarea id="fMemo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea>
         </div>
       </div>
@@ -815,6 +815,17 @@ input:not([type=checkbox]):not([type=radio]), textarea, select{
     border-color:var(--main) !important;
     box-shadow:0 0 0 3px rgba(216,37,88,.12) !important}
   .miss-msg{margin-top:5px;font-size:11.5px;color:var(--main);font-weight:600}
+
+  /* 필수 · 선택 표시 통일 */
+  .req{
+    display:inline;margin-left:3px;font-style:normal;font-weight:700;
+    font-size:1em;color:var(--main);letter-spacing:0;
+    background:none;padding:0;border-radius:0;
+  }
+  .opt{
+    display:inline;margin-left:5px;font-size:11px;font-weight:500;
+    color:var(--gray);font-style:normal;
+  }
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
