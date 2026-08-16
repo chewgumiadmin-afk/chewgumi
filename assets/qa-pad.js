@@ -417,6 +417,75 @@
     });
   }
 
+
+  /* ── 배포 감시 ──
+     내가 보고 있는 화면이 새로 배포되면 알려주고, 눌러서 바로 새로고침 */
+  var myTag = null, bar = null;
+
+  function checkDeploy() {
+    fetch(location.pathname + '?_c=' + Date.now(), { method: 'HEAD', cache: 'no-store' })
+      .then(function (r) {
+        var tag = r.headers.get('etag') || r.headers.get('last-modified') || '';
+        if (!tag) return;
+        if (myTag === null) { myTag = tag; return; }
+        if (tag !== myTag) { myTag = tag; showUpdate(); }
+      }).catch(function () {});
+  }
+
+  function showUpdate() {
+    if (bar) return;
+    bar = document.createElement('div');
+    bar.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);' +
+      'top:calc(14px + env(safe-area-inset-top));z-index:2147483005;' +
+      'display:flex;align-items:center;gap:10px;padding:11px 14px 11px 18px;' +
+      'border-radius:999px;background:#17171c;color:#fff;' +
+      'box-shadow:0 10px 28px rgba(0,0,0,.32);' +
+      'font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;' +
+      'font-size:13px;font-weight:600;animation:cgDrop .3s cubic-bezier(.2,.8,.3,1)';
+    bar.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;' +
+      'background:#4ADE80;flex:none;animation:cgBlink 1.4s infinite"></span>' +
+      '<span>수정이 반영되었습니다</span>' +
+      '<button style="height:32px;padding:0 14px;border:0;border-radius:999px;' +
+      'background:#D82558;color:#fff;font-family:inherit;font-size:12.5px;' +
+      'font-weight:700;cursor:pointer">새로고침</button>' +
+      '<button aria-label="닫기" style="width:26px;height:26px;border:0;border-radius:50%;' +
+      'background:rgba(255,255,255,.14);color:#fff;font-size:15px;line-height:1;' +
+      'cursor:pointer;padding:0">×</button>';
+    var bs = bar.querySelectorAll('button');
+    bs[0].onclick = function () { reloadKeep(); };
+    bs[1].onclick = function () { bar.remove(); bar = null; };
+    document.body.appendChild(bar);
+
+    var st2 = document.createElement('style');
+    st2.textContent = '@keyframes cgDrop{from{opacity:0;transform:translateX(-50%) translateY(-14px)}' +
+      'to{opacity:1;transform:translateX(-50%)}}' +
+      '@keyframes cgBlink{0%,100%{opacity:1}50%{opacity:.35}}';
+    document.head.appendChild(st2);
+
+    /* 자동 새로고침이 켜져 있으면 3초 뒤 */
+    if (st.auto) setTimeout(function () { if (bar) reloadKeep(); }, 3000);
+  }
+
+  function reloadKeep() {
+    /* 스크롤 위치를 기억했다 돌아온다 */
+    try { sessionStorage.setItem('cg_scroll', String(window.scrollY)); } catch (e) {}
+    var u = new URL(location.href);
+    u.searchParams.set('_r', Date.now());
+    location.replace(u.toString());
+  }
+
+  /* 돌아오면 원래 보던 자리로 */
+  (function () {
+    var y = null;
+    try { y = sessionStorage.getItem('cg_scroll'); } catch (e) {}
+    if (y === null) return;
+    try { sessionStorage.removeItem('cg_scroll'); } catch (e) {}
+    setTimeout(function () { window.scrollTo(0, +y); }, 250);
+  })();
+
+  setInterval(checkDeploy, 12000);
+  setTimeout(checkDeploy, 1500);
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
@@ -492,6 +561,22 @@
         m.className = 'cgp-m bad'; m.textContent = '이 화면에는 입력칸이 없습니다';
       }
     };
+    var ab = pad.querySelector('.cgp-auto');
+    if (ab) {
+      ab.style.color = st.auto ? '#1a6e44' : '#3d3520';
+      ab.style.background = st.auto ? 'rgba(26,110,68,.16)' : 'rgba(0,0,0,.08)';
+      ab.onclick = function (e) {
+        e.stopPropagation();
+        st.auto = !st.auto; save();
+        ab.textContent = st.auto ? '\u21bb' : '\u21ba';
+        ab.style.color = st.auto ? '#1a6e44' : '#3d3520';
+        ab.style.background = st.auto ? 'rgba(26,110,68,.16)' : 'rgba(0,0,0,.08)';
+        var m = pad.querySelector('.cgp-m');
+        m.className = 'cgp-m ok';
+        m.textContent = st.auto ? '수정되면 자동으로 새로고침합니다' : '자동 새로고침 꺼짐';
+        setTimeout(function () { m.textContent = ''; }, 2400);
+      };
+    }
     pad.querySelector('.cgp-fold').onclick = function (e) {
       st.fold = !st.fold; save();
       pad.classList.toggle('fold', st.fold);
