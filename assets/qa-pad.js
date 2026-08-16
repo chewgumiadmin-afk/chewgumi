@@ -376,210 +376,45 @@
   function runFlow() {
     var btn = pad.querySelector('.cgp-run');
     var box = pad.querySelector('.cgp-res');
-    var act = /join|login|reset/.test(page) ? 'signupFlow'
-            : (/checkout|cart|product|index/.test(page) ? 'orderFlow' : '');
-    if (!act) {
-      box.className = 'cgp-res on';
-      box.innerHTML = '<div class="v bad">이 화면은 자동 검증 대상이 아닙니다</div>';
-      return;
-    }
+    var no = new URLSearchParams(location.search).get('no') || '';
+
     btn.disabled = true; btn.textContent = '검증 중…';
     box.className = 'cgp-res on';
-    box.innerHTML = '<div class="r"><i class="q">·</i><span>확인하고 있습니다…</span></div>';
+    box.innerHTML = '<div class="r"><i class="q">.</i><span>확인하고 있습니다…</span></div>';
 
     fetch(SB + '/functions/v1/qa-flow', {
       method: 'POST',
       headers: { apikey: KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: act })
+      body: JSON.stringify({ page: page, no: no, keep: false })
     }).then(function (r) { return r.json(); }).then(function (d) {
-      btn.disabled = false; btn.textContent = '이 화면 자동 검증';
+      btn.disabled = false; btn.textContent = '자동 검증';
       if (!d || !d.steps) throw new Error();
       var bad = d.steps.filter(function (x) { return x.ok === false; }).length;
       box.innerHTML =
-        '<div class="v ' + (bad ? 'bad' : 'ok') + '">' + esc(d.verdict || '') + '</div>' +
+        '<div class="v ' + (bad ? 'bad' : 'ok') + '">' +
+          esc(d.name || '') + ' · ' + esc(d.verdict || '') + '</div>' +
         d.steps.map(function (x) {
           var mk = x.ok === true ? 'y' : (x.ok === false ? 'n' : 'q');
-          var ch = x.ok === true ? '✓' : (x.ok === false ? '✕' : '?');
+          var ch = x.ok === true ? '\u2713' : (x.ok === false ? '\u2715' : '\u00b7');
           return '<div class="r"><i class="' + mk + '">' + ch + '</i>' +
-            '<span><b>' + esc(x.name) + '</b> · ' + esc(x.msg) + '</span></div>';
-        }).join('');
+            '<span><b>' + esc(x.n) + '</b> · ' + esc(x.m) + '</span></div>';
+        }).join('') +
+        (bad ? '<button class="cgp-put" style="width:100%;height:30px;margin-top:7px;' +
+          'border:0;border-radius:8px;cursor:pointer;background:#D82558;color:#fff;' +
+          'font-family:inherit;font-size:11px;font-weight:700">이 내용으로 신고 준비</button>' : '');
+      var put = box.querySelector('.cgp-put');
+      if (put) put.onclick = function () {
+        var ta = pad.querySelector('textarea');
+        ta.value = '[' + (d.name || '') + ' 자동 검증]\n' +
+          d.steps.filter(function (x) { return x.ok === false; })
+            .map(function (x) { return '· ' + x.n + ' — ' + x.m; }).join('\n');
+        ta.focus();
+      };
+      fitHeight();
     }).catch(function () {
-      btn.disabled = false; btn.textContent = '이 화면 자동 검증';
+      btn.disabled = false; btn.textContent = '자동 검증';
       box.innerHTML = '<div class="v bad">검증하지 못했습니다</div>';
     });
-  }
-
-
-  function readScreen() {
-    var bad = [], stat = { t: 0, i: 0, b: 0, f: 0 };
-    var seen = {};
-
-    var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-    var n, c = 0;
-    while ((n = tw.nextNode()) && c < 150) {
-      var t = (n.nodeValue || '').trim();
-      if (t.length < 2 || seen[t]) continue;
-      var p = n.parentElement;
-      if (!p || p.closest('.cgp')) continue;
-      var r = p.getBoundingClientRect();
-      if (!r.width || r.bottom < 0 || r.top > window.innerHeight) continue;
-      seen[t] = 1; stat.t++; c++;
-      var sz = parseFloat(getComputedStyle(p).fontSize);
-      if (sz < 11) bad.push('작은 글씨 ' + Math.round(sz) + 'px : ' + t.slice(0, 22));
-    }
-
-    var imgs = document.querySelectorAll('img');
-    for (var i = 0; i < imgs.length && i < 40; i++) {
-      var im = imgs[i];
-      if (im.closest('.cgp')) continue;
-      var ir = im.getBoundingClientRect();
-      if (!ir.width) continue;
-      stat.i++;
-      var src = (im.getAttribute('src') || '').split('/').pop().slice(0, 28);
-      if (!im.complete || !im.naturalWidth) { bad.push('안 뜨는 이미지 : ' + src); continue; }
-      if (im.getAttribute('alt') === null) bad.push('alt 없음 : ' + src);
-      var nr = im.naturalWidth / im.naturalHeight, dr = ir.width / ir.height;
-      var fit = getComputedStyle(im).objectFit;
-      if (Math.abs(nr - dr) / nr > 0.18 && (fit === 'fill' || fit === 'none'))
-        bad.push('찌그러짐 : ' + src);
-      if (im.naturalWidth > ir.width * 3)
-        bad.push('원본 너무 큼 : ' + src + ' ' + im.naturalWidth + 'px');
-    }
-
-    var bs = document.querySelectorAll('button, a[href], [role=button]');
-    for (var j = 0; j < bs.length && j < 60; j++) {
-      var b = bs[j];
-      if (b.closest('.cgp')) continue;
-      var br = b.getBoundingClientRect();
-      if (!br.width || br.bottom < 0 || br.top > window.innerHeight) continue;
-      stat.b++;
-      var lb = (b.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 26) ||
-        b.getAttribute('aria-label') || '';
-      if (!lb) bad.push('이름 없는 버튼');
-      else if (br.height < 36 && br.width < 120)
-        bad.push('누르기 작음 ' + Math.round(br.height) + 'px : ' + lb.slice(0, 16));
-    }
-
-    var fs = document.querySelectorAll('input:not([type=hidden]), textarea, select');
-    for (var k = 0; k < fs.length && k < 30; k++) {
-      var f = fs[k];
-      if (f.closest('.cgp') || f.offsetParent === null) continue;
-      stat.f++;
-      var fl = (f.closest('label') && f.closest('label').textContent.trim()) ||
-        f.getAttribute('aria-label') || f.placeholder || '';
-      if (!fl) bad.push('안내 없는 입력칸 : ' + (f.name || f.id || f.type));
-      if (/INPUT|TEXTAREA/.test(f.tagName) &&
-          parseFloat(getComputedStyle(f).fontSize) < 16)
-        bad.push('입력칸 16px 미만 — 아이폰에서 확대됨');
-    }
-
-    var over = 0;
-    var all = document.body.querySelectorAll('*');
-    for (var q = 0; q < all.length && q < 500; q++) {
-      var e = all[q];
-      if (e.closest('.cgp')) continue;
-      var er = e.getBoundingClientRect();
-      if (er.width && er.right > window.innerWidth + 2) over++;
-    }
-    if (over > 2) bad.push('화면 밖으로 나간 요소 ' + over + '개 — 좌우 밀림');
-
-    var uniq = [];
-    var mark = {};
-    for (var z = 0; z < bad.length; z++) {
-      if (mark[bad[z]]) continue;
-      mark[bad[z]] = 1; uniq.push(bad[z]);
-    }
-    return { bad: uniq, stat: stat };
-  }
-
-  function runRead() {
-    var box = pad.querySelector('.cgp-res');
-    var d = readScreen();
-    box.className = 'cgp-res on';
-    var head = d.bad.length
-      ? '<div class="v bad">' + d.bad.length + '건 발견</div>'
-      : '<div class="v ok">눈에 띄는 문제 없음</div>';
-    var rows = '';
-    for (var i = 0; i < d.bad.length && i < 14; i++) {
-      rows += '<div class="r"><i class="n">!</i><span>' + esc(d.bad[i]) + '</span></div>';
-    }
-    rows += '<div class="r"><i class="q">.</i><span>글자 ' + d.stat.t +
-      ' · 이미지 ' + d.stat.i + ' · 버튼 ' + d.stat.b +
-      ' · 입력칸 ' + d.stat.f + '</span></div>';
-    box.innerHTML = head + rows;
-    if (d.bad.length) {
-      var ta = pad.querySelector('textarea');
-      if (!ta.value.trim()) {
-        var lines = [];
-        for (var j = 0; j < d.bad.length && j < 10; j++) lines.push('· ' + d.bad[j]);
-        ta.value = '[화면 읽기]\n' + lines.join('\n');
-      }
-    }
-  }
-
-
-  /* 화면이 다 그려지면 스스로 읽는다 */
-  var autoDone = false;
-  function autoRead() {
-    if (autoDone) return;
-    autoDone = true;
-    var d = readScreen();
-    var box = pad.querySelector('.cgp-res');
-    if (!box) return;
-    if (!d.bad.length) {
-      box.className = 'cgp-res on';
-      box.innerHTML = '<div class="v ok">화면 읽음 · 문제 없음</div>' +
-        '<div class="r"><i class="q">.</i><span>글자 ' + d.stat.t +
-        ' · 이미지 ' + d.stat.i + ' · 버튼 ' + d.stat.b +
-        ' · 입력칸 ' + d.stat.f + '</span></div>';
-      return;
-    }
-    box.className = 'cgp-res on';
-    var rows = '';
-    for (var i = 0; i < d.bad.length && i < 14; i++) {
-      rows += '<div class="r"><i class="n">!</i><span>' + esc(d.bad[i]) + '</span></div>';
-    }
-    box.innerHTML = '<div class="v bad">' + d.bad.length + '건 발견 — 아래 확인</div>' + rows +
-      '<button class="cgp-put" style="width:100%;height:30px;margin-top:7px;border:0;' +
-      'border-radius:8px;cursor:pointer;background:#D82558;color:#fff;font-family:inherit;' +
-      'font-size:11px;font-weight:700">이 내용으로 신고 준비</button>';
-    var put = box.querySelector('.cgp-put');
-    if (put) put.onclick = function () {
-      var ta = pad.querySelector('textarea');
-      var lines = [];
-      for (var j = 0; j < d.bad.length && j < 12; j++) lines.push('· ' + d.bad[j]);
-      ta.value = '[화면 읽기]\n' + lines.join('\n');
-      ta.focus();
-    };
-    /* 접혀 있으면 펴서 보여준다 */
-    if (st.fold) {
-      st.fold = false; save();
-      pad.classList.remove('fold');
-      var fb = pad.querySelector('.cgp-fold');
-      if (fb) fb.textContent = '−';
-    }
-    fitHeight();
-  }
-
-  /* 이미지가 다 뜬 뒤에 읽어야 정확하다 */
-  function waitImages(cb) {
-    var imgs = [].slice.call(document.images).filter(function (im) {
-      return !im.closest('.cgp') && im.getBoundingClientRect().width;
-    });
-    var left = imgs.filter(function (im) { return !im.complete; }).length;
-    if (!left) { setTimeout(cb, 400); return; }
-    var done = 0, fired = false;
-    function tick() {
-      done++;
-      if (!fired && done >= left) { fired = true; setTimeout(cb, 300); }
-    }
-    imgs.forEach(function (im) {
-      if (im.complete) return;
-      im.addEventListener('load', tick, { once: true });
-      im.addEventListener('error', tick, { once: true });
-    });
-    /* 오래 걸리면 그냥 진행 */
-    setTimeout(function () { if (!fired) { fired = true; cb(); } }, 4000);
   }
 
   function build() {
