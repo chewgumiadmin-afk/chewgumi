@@ -358,13 +358,32 @@ function submit(){
   if(!t) return $('msg').textContent='한 줄 요약을 적어주세요.';
   if(b.length<10) return $('msg').textContent='내용을 10자 이상 적어주세요.';
   $('go').disabled=true; $('msg').className='msg'; $('msg').textContent='보내는 중…';
-  call({action:'create',report:{kind,title:t,body:b,rating:rating||null,
+  uploadFilm().then(function(film){
+  return call({action:'create',report:{kind,title:t,body:b,rating:rating||null,
     reporter:$('who').value.trim(),contact:$('contact').value.trim()}})
-  .then(({ok,d})=>{
+  .then(function(res){
+    /* 사진·영상이 있으면 User Films 에 함께 등록 */
+    if(film && (film.media_url || film.link_url)){
+      var who = $('who').value.trim() || '익명';
+      fetch(SB+'/rest/v1/user_films',{method:'POST',
+        headers:{apikey:KEY,Authorization:'Bearer '+KEY,
+          'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify({
+          kind: film.kind, media_url: film.media_url, thumb_url: film.thumb_url,
+          link_url: film.link_url, author: who, caption: t,
+          rating: rating || 5, status: 'pending', source: 'report',
+          report_id: (res.d && res.d.id) || null
+        })}).catch(function(){});
+    }
+    return res;
+  });
+  }).then(({ok,d})=>{
     $('go').disabled=false;
     if(!ok){ $('msg').textContent=d.error||'등록에 실패했습니다.'; return; }
     $('form').classList.add('hide'); $('thanks').classList.remove('hide');
-    $('thanksTxt').innerHTML='<b>#'+d.no+'번</b>으로 등록되었습니다.<br><br>'
+    var hasFilm = !!(upData || ($('upLink')||{}).value);
+      $('thanksTxt').innerHTML='<b>#'+d.no+'번</b>으로 등록되었습니다.<br><br>'
+        +(hasFilm?'보내주신 사진은 확인 후 메인 화면에 소개해 드립니다.<br><br>':'')
       +'담당자가 확인 후 검토합니다.<br>반영이 결정되면 이 게시판에 공개해 알려드리겠습니다.';
     $('title').value=''; $('body').value=''; rating=0;
     document.querySelectorAll('#stars button').forEach(x=>x.classList.remove('on'));
