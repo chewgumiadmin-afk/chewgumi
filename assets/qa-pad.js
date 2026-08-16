@@ -202,11 +202,12 @@
     e.preventDefault(); e.stopPropagation();
     target = { el: el, x: Math.round(x), y: Math.round(y) };
     stopPick();
-    var ta = pad.querySelector('textarea');
+        var ta = pad.querySelector('textarea');
     var line = '[' + describe(el) + ']';
     ta.value = ta.value.trim() ? (ta.value.trim() + '\n' + line) : (line + '\n');
     ta.focus();
     try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+    ta.focus();
   }
   function startPick() {
     picking = true;
@@ -754,12 +755,7 @@
         });
     });
     on('.cgp-fill', function () {
-      var ta = pad.querySelector('textarea');
-      var keep = ta ? ta.value : '';
       if (window.cgFill) window.cgFill();
-      setTimeout(function () {
-        if (ta && keep && !ta.value) ta.value = keep;
-      }, 400);
       else {
         var m = pad.querySelector('.cgp-m');
         m.className = 'cgp-m bad'; m.textContent = '이 화면에는 입력칸이 없습니다';
