@@ -501,6 +501,153 @@
   setInterval(checkDeploy, 12000);
   setTimeout(checkDeploy, 1500);
 
+
+  /* ── 화면 읽기 ── */
+  function readScreen() {
+    var bad = [], stat = { t: 0, i: 0, b: 0, f: 0 }, seen = {};
+
+    var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var n, c = 0;
+    while ((n = tw.nextNode()) && c < 150) {
+      var t = (n.nodeValue || '').trim();
+      if (t.length < 2 || seen[t]) continue;
+      var p = n.parentElement;
+      if (!p || p.closest('.cgp')) continue;
+      var r = p.getBoundingClientRect();
+      if (!r.width || r.bottom < 0 || r.top > window.innerHeight) continue;
+      seen[t] = 1; stat.t++; c++;
+      var sz = parseFloat(getComputedStyle(p).fontSize);
+      if (sz < 11) bad.push('작은 글씨 ' + Math.round(sz) + 'px : ' + t.slice(0, 22));
+    }
+
+    var imgs = document.querySelectorAll('img');
+    for (var i = 0; i < imgs.length && i < 40; i++) {
+      var im = imgs[i];
+      if (im.closest('.cgp')) continue;
+      var ir = im.getBoundingClientRect();
+      if (!ir.width) continue;
+      stat.i++;
+      var src = (im.getAttribute('src') || '').split('/').pop().slice(0, 28);
+      if (!im.complete || !im.naturalWidth) { bad.push('안 뜨는 이미지 : ' + src); continue; }
+      if (im.getAttribute('alt') === null) bad.push('alt 없음 : ' + src);
+      var nr = im.naturalWidth / im.naturalHeight, dr = ir.width / ir.height;
+      var fit = getComputedStyle(im).objectFit;
+      if (Math.abs(nr - dr) / nr > 0.18 && (fit === 'fill' || fit === 'none'))
+        bad.push('찌그러짐 : ' + src);
+      if (im.naturalWidth > ir.width * 3)
+        bad.push('원본 너무 큼 : ' + src + ' ' + im.naturalWidth + 'px');
+    }
+
+    var bs = document.querySelectorAll('button, a[href], [role=button]');
+    for (var j = 0; j < bs.length && j < 60; j++) {
+      var b = bs[j];
+      if (b.closest('.cgp')) continue;
+      var br = b.getBoundingClientRect();
+      if (!br.width || br.bottom < 0 || br.top > window.innerHeight) continue;
+      stat.b++;
+      var lb = (b.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 26) ||
+        b.getAttribute('aria-label') || '';
+      if (!lb) bad.push('이름 없는 버튼');
+      else if (br.height < 36 && br.width < 120)
+        bad.push('누르기 작음 ' + Math.round(br.height) + 'px : ' + lb.slice(0, 16));
+    }
+
+    var fs = document.querySelectorAll('input:not([type=hidden]), textarea, select');
+    for (var k = 0; k < fs.length && k < 30; k++) {
+      var f = fs[k];
+      if (f.closest('.cgp') || f.offsetParent === null) continue;
+      stat.f++;
+      var fl = (f.closest('label') && f.closest('label').textContent.trim()) ||
+        f.getAttribute('aria-label') || f.placeholder || '';
+      var prev = f.previousElementSibling;
+      if (!fl && prev && /LABEL|SPAN/.test(prev.tagName)) fl = prev.textContent.trim();
+      if (!fl) bad.push('안내 없는 입력칸 : ' + (f.name || f.id || f.type));
+      if (/INPUT|TEXTAREA/.test(f.tagName) &&
+          parseFloat(getComputedStyle(f).fontSize) < 16)
+        bad.push('입력칸 16px 미만 — 아이폰에서 확대됨');
+    }
+
+    var over = 0, all = document.body.querySelectorAll('*');
+    for (var q = 0; q < all.length && q < 500; q++) {
+      var e = all[q];
+      if (e.closest('.cgp')) continue;
+      var er = e.getBoundingClientRect();
+      if (er.width && er.right > window.innerWidth + 2) over++;
+    }
+    if (over > 2) bad.push('화면 밖으로 나간 요소 ' + over + '개 — 좌우 밀림');
+
+    var uniq = [], mark = {};
+    for (var z = 0; z < bad.length; z++) {
+      if (mark[bad[z]]) continue;
+      mark[bad[z]] = 1; uniq.push(bad[z]);
+    }
+    return { bad: uniq, stat: stat };
+  }
+
+  function paintRead(d, auto) {
+    var box = pad.querySelector('.cgp-res');
+    if (!box) return;
+    box.className = 'cgp-res on';
+    var sum = '<div class="r"><i class="q">.</i><span>글자 ' + d.stat.t +
+      ' · 이미지 ' + d.stat.i + ' · 버튼 ' + d.stat.b +
+      ' · 입력칸 ' + d.stat.f + '</span></div>';
+    if (!d.bad.length) {
+      box.innerHTML = '<div class="v ok">화면 읽음 · 문제 없음</div>' + sum;
+      fitHeight(); return;
+    }
+    var rows = '';
+    for (var i = 0; i < d.bad.length && i < 14; i++) {
+      rows += '<div class="r"><i class="n">!</i><span>' + esc(d.bad[i]) + '</span></div>';
+    }
+    box.innerHTML = '<div class="v bad">' + d.bad.length + '건 발견</div>' + rows + sum +
+      '<button class="cgp-put" style="width:100%;height:30px;margin-top:7px;border:0;' +
+      'border-radius:8px;cursor:pointer;background:#D82558;color:#fff;font-family:inherit;' +
+      'font-size:11px;font-weight:700">이 내용으로 신고 준비</button>';
+    var put = box.querySelector('.cgp-put');
+    if (put) put.onclick = function () {
+      var ta = pad.querySelector('textarea');
+      var lines = [];
+      for (var j = 0; j < d.bad.length && j < 12; j++) lines.push('· ' + d.bad[j]);
+      ta.value = '[화면 읽기]\n' + lines.join('\n');
+      ta.focus();
+    };
+    if (auto && st.fold) {
+      st.fold = false; save();
+      pad.classList.remove('fold');
+      var fb = pad.querySelector('.cgp-fold');
+      if (fb) fb.textContent = '−';
+    }
+    fitHeight();
+  }
+
+  function runRead() { paintRead(readScreen(), false); }
+
+  var autoDone = false;
+  function autoRead() {
+    if (autoDone || !pad) return;
+    autoDone = true;
+    paintRead(readScreen(), true);
+  }
+
+  function waitImages(cb) {
+    var imgs = [].slice.call(document.images).filter(function (im) {
+      return !im.closest('.cgp') && im.getBoundingClientRect().width;
+    });
+    var left = imgs.filter(function (im) { return !im.complete; }).length;
+    if (!left) { setTimeout(cb, 500); return; }
+    var done = 0, fired = false;
+    function tick() {
+      done++;
+      if (!fired && done >= left) { fired = true; setTimeout(cb, 350); }
+    }
+    imgs.forEach(function (im) {
+      if (im.complete) return;
+      im.addEventListener('load', tick, { once: true });
+      im.addEventListener('error', tick, { once: true });
+    });
+    setTimeout(function () { if (!fired) { fired = true; cb(); } }, 4500);
+  }
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
