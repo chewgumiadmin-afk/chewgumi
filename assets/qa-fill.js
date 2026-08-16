@@ -12,44 +12,65 @@
   var page = location.pathname.split('/').pop() || 'index.html';
 
   /* 입력칸 성격 파악 */
+  function labelText(el) {
+    var out = [];
+    /* 바로 앞 형제가 label 인 구조 */
+    var p = el.previousElementSibling;
+    var hop = 0;
+    while (p && hop < 3) {
+      if (/LABEL|SPAN|DIV|B|STRONG/.test(p.tagName)) {
+        out.push(p.textContent || '');
+        if (p.tagName === 'LABEL') break;
+      }
+      p = p.previousElementSibling; hop++;
+    }
+    var l = el.closest('label');
+    if (l) out.push(l.textContent || '');
+    if (el.id) {
+      var f = document.querySelector('label[for="' + el.id + '"]');
+      if (f) out.push(f.textContent || '');
+    }
+    return out.join(' ');
+  }
+
   function guess(el) {
     var s = [
       el.name, el.id, el.placeholder,
       el.getAttribute('aria-label') || '',
-      (el.previousElementSibling && el.previousElementSibling.textContent) || '',
-      (el.closest('label') && el.closest('label').textContent) || '',
-      (el.closest('div') && el.closest('div').querySelector('label')
-        && el.closest('div').querySelector('label').textContent) || ''
+      el.getAttribute('autocomplete') || '',
+      el.getAttribute('inputmode') || '',
+      labelText(el)
     ].join(' ').toLowerCase();
 
     if (el.type === 'email' || /메일|email/.test(s)) return 'email';
-    if (el.type === 'tel' || /전화|휴대|연락|phone|tel|hp/.test(s)) return 'phone';
-    if (el.type === 'password') return 'pw';
+    if (el.type === 'tel' || /전화|휴대|연락|phone|tel|hp|mobile/.test(s)) return 'phone';
+    if (el.type === 'password' || /비밀번호|password/.test(s)) return 'pw';
     if (/우편|zip|post/.test(s)) return 'zip';
-    if (/상세|나머지|addr2|detail/.test(s)) return 'addr2';
-    if (/주소|addr|address/.test(s)) return 'addr1';
-    if (/메모|요청|배송.?시|memo|message/.test(s)) return 'memo';
-    if (/제목|title|subject|한 줄/.test(s)) return 'title';
+    if (/상세주소|상세|나머지|addr2|address-line2|detail/.test(s)) return 'addr2';
+    if (/주소|addr|address|street/.test(s)) return 'addr1';
+    if (/메모|요청|배송.?시|memo|message|note/.test(s)) return 'memo';
+    if (/제목|title|subject/.test(s)) return 'title';
+    if (/입금자|depositor/.test(s)) return 'name';
     if (/이름|성함|받는|수령|별명|name|닉/.test(s)) return 'name';
     if (el.tagName === 'TEXTAREA') return 'body';
     return '';
   }
 
   function label(el) {
-    var l = el.closest('label');
-    if (l) return l.textContent.trim().slice(0, 30);
-    var p = el.previousElementSibling;
-    if (p && /LABEL|SPAN|DIV/.test(p.tagName)) return p.textContent.trim().slice(0, 30);
-    return el.placeholder || el.name || '';
+    var t = labelText(el).trim().replace(/\s+/g, ' ');
+    return (t || el.placeholder || el.name || '').slice(0, 30);
   }
 
   function setVal(el, v) {
+    var ro = el.readOnly;
+    if (ro) el.readOnly = false;
     var proto = el.tagName === 'TEXTAREA'
       ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
     Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, v);
     ['input', 'change', 'blur'].forEach(function (t) {
       el.dispatchEvent(new Event(t, { bubbles: true }));
     });
+    if (ro) el.readOnly = true;
     el.style.outline = '2px solid #2AA060';
     setTimeout(function () { el.style.outline = ''; }, 1500);
   }
@@ -60,8 +81,8 @@
       'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]), textarea');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.closest('.qa-bar, .qa-bg, .cgbot-win')) continue;
-      if (el.disabled || el.readOnly || el.offsetParent === null) continue;
+      if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp')) continue;
+      if (el.disabled || el.offsetParent === null) continue;
       if (el.value && el.value.trim()) continue;
       var g = guess(el);
       if (!g) continue;
