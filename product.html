@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v25 · MedIT -->
+<!-- ChewGumi Product Detail v26 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1078,22 +1078,16 @@ function pdFold(){
 
   /* 서버가 안 되면 쓸 기본 목록 */
   var P_ = 'assets/prod/';
-  var FALLBACK = {
-    travel: ['travel.jpg'].map(function(x){return P_+x;}),
-    lemon:  ['dew-lemon.jpg','dew-grape.jpg','dew-6.jpg','dew-10.jpg','travel-5.jpg',
-             'dew-green.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg'].map(function(x){return P_+x;}),
-    grape:  ['travel-1.jpg','dew-purple.jpg','travel-3.jpg','dew-grape.jpg','travel-5.jpg',
-             'travel-10.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg'].map(function(x){return P_+x;}),
-    dew:    ['dew-lemon.jpg','travel-1.jpg','dew-purple.jpg','dew-grape.jpg','dew-6.jpg',
-             'dew-10.jpg','travel-5.jpg','travel-10.jpg','dew-green.jpg','travel-20.jpg',
-             'dew-4.jpg','dew-20.jpg'].map(function(x){return P_+x;})
-  };
+  var DEW = ['dew-lemon.jpg','travel-1.jpg','dew-purple.jpg','travel-3.jpg',
+             'dew-grape.jpg','dew-6.jpg','dew-10.jpg','travel-5.jpg',
+             'travel-10.jpg','dew-green.jpg','travel-20.jpg','dew-4.jpg',
+             'dew-20.jpg'].map(function(x){return P_+x;});
+  var TRV = ['travel.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg']
+             .map(function(x){return P_+x;});
+  var FALLBACK = { travel: TRV, dew: DEW };
   function pick(no){
     no = +no;
-    if(no>=11 && no<=15) return FALLBACK.travel;
-    if(no===16) return FALLBACK.lemon;
-    if(no===17) return FALLBACK.grape;
-    return FALLBACK.dew;
+    return (no>=11 && no<=15) ? FALLBACK.travel : FALLBACK.dew;
   }
 
   function show(imgs){
