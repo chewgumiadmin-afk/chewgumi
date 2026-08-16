@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v98 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v99 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v98 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v99 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5688,6 +5688,57 @@ header .logo img{ image-rendering:auto }
 @media(max-width:860px){
   .detail .d-img{ max-height:280px }
   .detail .d-img img{ max-height:280px !important;padding:5% !important }
+}
+
+/* ══ USER FILMS 카드 — 최종 확정 ══
+   앞선 규칙 20여 개가 겹쳐 세로 비율이 사라졌습니다.
+   여기서 한 번에 확정합니다. */
+.uf-grid > .uf-card,
+.uf-card{
+  position:relative !important;
+  display:block !important;
+  aspect-ratio:1/1 !important;
+  min-height:150px !important;
+  width:auto !important;
+  height:auto !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  cursor:pointer !important;
+  background:#FFF1F4 !important;
+  border:1px solid rgba(255,255,255,.8) !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.06) !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none;
+  transition:transform .22s, box-shadow .22s;
+}
+.uf-card:hover{
+  transform:translateY(-3px) !important;
+  box-shadow:0 12px 28px rgba(216,37,88,.15) !important;
+}
+.uf-card img{
+  width:100% !important; height:100% !important;
+  object-fit:cover !important; display:block !important;
+  position:static !important; inset:auto !important; padding:0 !important;
+}
+.uf-card .ov{
+  position:absolute !important; inset:auto 0 0 0 !important;
+  padding:26px 10px 9px !important; color:#fff !important;
+  background:linear-gradient(to top,rgba(0,0,0,.66),rgba(0,0,0,0)) !important;
+}
+.uf-card .ov b{display:block;font-size:11.5px;font-weight:700;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uf-card .ov span{display:block;font-size:10.5px;opacity:.86;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uf-card .pin{position:absolute !important;top:8px;right:8px;width:24px;height:24px;
+  border-radius:50%;background:rgba(0,0,0,.42);display:flex;
+  align-items:center;justify-content:center}
+.uf-card .pin svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2}
+.uf-card .lk{position:absolute !important;top:8px;left:8px;padding:3px 8px;
+  border-radius:999px;background:rgba(0,0,0,.42);color:#fff;
+  font-size:10.5px;font-weight:700}
+@media(max-width:768px){
+  .uf-card{border-radius:14px !important;min-height:130px !important}
 }
 </style>
 <script src="assets/nav.js" defer></script>
