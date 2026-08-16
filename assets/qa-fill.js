@@ -99,7 +99,7 @@
       'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]), textarea');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp')) continue;
+      if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]')) continue;
       if (el.disabled || el.offsetParent === null) continue;
       if (el.value && el.value.trim()) continue;
       var g = guess(el);
@@ -136,7 +136,7 @@
     var cbs = document.querySelectorAll('input[type=checkbox]');
     for (var j = 0; j < cbs.length; j++) {
       var c = cbs[j];
-      if (c.closest('.qa-bar, .qa-bg')) continue;
+      if (c.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]')) continue;
       if (c.offsetParent === null || c.checked) continue;
       var t = ((c.closest('label') || {}).textContent || c.id || '').toLowerCase();
       if (/동의|약관|필수|agree/.test(t)) { c.click(); n++; }
@@ -152,7 +152,7 @@
       var els = document.querySelectorAll('input');
       for (var i = 0; i < els.length; i++) {
         var el = els[i];
-        if (el.closest('.qk, .cgp') || el.offsetParent === null) continue;
+        if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]') || el.offsetParent === null) continue;
         if (el.value && el.value.trim()) continue;
         if (guess(el) !== kind) continue;
         setVal(el, val); done++;
@@ -203,7 +203,7 @@
     var els = document.querySelectorAll('input:not([type=hidden]), textarea');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.closest('.qa-bar, .qa-bg')) continue;
+      if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]')) continue;
       if (el.type === 'checkbox' || el.type === 'radio') { if (el.checked) el.click(); }
       else if (el.value) setVal(el, '');
     }
