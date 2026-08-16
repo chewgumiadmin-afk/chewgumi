@@ -696,13 +696,26 @@
         else picked = '';
       };
     });
-    pad.querySelector('.cgp-send').onclick = send;
-    pad.querySelector('.cgp-run').onclick = runFlow;
-    pad.querySelector('.cgp-read').onclick = runRead;
-    pad.querySelector('.cgp-pick').onclick = function () {
-      picking ? stopPick() : startPick();
-    };
-    pad.querySelector('.cgp-cap').onclick = function (e) {
+    function on(sel, fn) {
+      try {
+        var el = pad.querySelector(sel);
+        if (el) el.onclick = function (e) {
+          try { fn(e); }
+          catch (err) {
+            var m = pad.querySelector('.cgp-m');
+            if (m) { m.className = 'cgp-m bad'; m.textContent = '오류: ' + (err.message || err); }
+            try { console.error('[QA]', sel, err); } catch (x) {}
+          }
+        };
+        else try { console.warn('[QA] 버튼 없음', sel); } catch (x) {}
+      } catch (err) { try { console.error('[QA] 연결 실패', sel, err); } catch (x) {} }
+    }
+
+    on('.cgp-send', send);
+    on('.cgp-run', runFlow);
+    on('.cgp-read', runRead);
+    on('.cgp-pick', function () { picking ? stopPick() : startPick(); });
+    on('.cgp-cap', function (e) {
       var b = e.currentTarget; b.textContent = '…'; b.disabled = true;
       capture().then(function () { b.textContent = '캡처'; b.disabled = false; })
         .catch(function (err) {
@@ -715,14 +728,14 @@
             : (msg === '빈 이미지' ? '화면이 비어 담기지 않았습니다'
                : '캡처 실패 — ' + msg.slice(0, 30));
         });
-    };
-    pad.querySelector('.cgp-fill').onclick = function () {
+    });
+    on('.cgp-fill', function () {
       if (window.cgFill) window.cgFill();
       else {
         var m = pad.querySelector('.cgp-m');
         m.className = 'cgp-m bad'; m.textContent = '이 화면에는 입력칸이 없습니다';
       }
-    };
+    });
     var ab = pad.querySelector('.cgp-auto');
     if (ab) {
       ab.style.color = st.auto ? '#1a6e44' : '#3d3520';
@@ -778,8 +791,9 @@
       var r = pad.getBoundingClientRect();
       st.x = r.left; st.y = r.top; save();
     }
-    loadGuide();
-    waitImages(autoRead);
+    try { loadGuide(); } catch (e) { try { console.warn('[QA] 안내 실패', e); } catch (x) {} }
+    try { waitImages(autoRead); }
+    catch (e) { try { console.warn('[QA] 자동읽기 실패', e); } catch (x) {} }
 
     /* 크기 조절 — 모서리(가로세로) · 오른쪽(가로만) */
     function bindResize(el, both) {
