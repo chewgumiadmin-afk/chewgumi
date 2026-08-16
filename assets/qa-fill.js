@@ -12,6 +12,21 @@
   var page = location.pathname.split('/').pop() || 'index.html';
 
   /* 입력칸 성격 파악 */
+
+  /* 자주 쓰는 입력칸은 id 로 바로 알아본다 */
+  var BY_ID = {
+    fname:'name', name:'name', buyer:'name', depositor:'name', nick:'name',
+    fphone:'phone', phone:'phone', tel:'phone', hp:'phone', mobile:'phone',
+    femail:'email', email:'email', mail:'email',
+    fzip:'zip', zip:'zip', zipcode:'zip', postcode:'zip',
+    faddr1:'addr1', addr1:'addr1', addr:'addr1', address:'addr1',
+    faddr2:'addr2', addr2:'addr2', detail:'addr2',
+    fmemo:'memo', memo:'memo', message:'memo', request:'memo',
+    pw:'pw', pw2:'pw', password:'pw', passwd:'pw',
+    title:'title', subject:'title',
+    body:'body', content:'body', text:'body'
+  };
+
   function labelText(el) {
     var out = [];
     /* 바로 앞 형제가 label 인 구조 */
@@ -34,6 +49,9 @@
   }
 
   function guess(el) {
+    var byId = BY_ID[String(el.id || '').toLowerCase()] ||
+               BY_ID[String(el.name || '').toLowerCase()];
+    if (byId) return byId;
     var s = [
       el.name, el.id, el.placeholder,
       el.getAttribute('aria-label') || '',
@@ -124,6 +142,24 @@
       if (/동의|약관|필수|agree/.test(t)) { c.click(); n++; }
     }
     return n;
+  }
+
+  /* 주소 칸은 검색으로만 채우게 막혀 있어 직접 넣는다 */
+  function fillAddr(V) {
+    var done = 0;
+    [['zip', V.zip], ['addr1', V.addr1], ['addr2', V.addr2]].forEach(function (pair) {
+      var kind = pair[0], val = pair[1];
+      var els = document.querySelectorAll('input');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el.closest('.qk, .cgp') || el.offsetParent === null) continue;
+        if (el.value && el.value.trim()) continue;
+        if (guess(el) !== kind) continue;
+        setVal(el, val); done++;
+        break;
+      }
+    });
+    return done;
   }
 
   function fill(btn) {
