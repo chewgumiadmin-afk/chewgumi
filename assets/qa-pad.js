@@ -648,6 +648,27 @@
     setTimeout(function () { if (!fired) { fired = true; cb(); } }, 4500);
   }
 
+
+  /* 무엇이 준비됐는지 노트 안에 보여준다 */
+  function selfCheck() {
+    var r = [];
+    r.push(['화면 읽기', typeof readScreen === 'function']);
+    r.push(['자동 검증', typeof runFlow === 'function']);
+    r.push(['값 채우기', typeof window.cgFill === 'function']);
+    r.push(['캡처', typeof capture === 'function']);
+    r.push(['보내기', typeof send === 'function']);
+    var bad = r.filter(function (x) { return !x[1]; });
+    var box = pad.querySelector('.cgp-res');
+    if (!box) return;
+    if (!bad.length) return;   /* 정상이면 조용히 */
+    box.className = 'cgp-res on';
+    box.innerHTML = '<div class="v bad">준비되지 않은 기능 ' + bad.length + '개</div>' +
+      r.map(function (x) {
+        return '<div class="r"><i class="' + (x[1] ? 'y' : 'n') + '">' +
+          (x[1] ? '✓' : '✕') + '</i><span>' + x[0] + '</span></div>';
+      }).join('');
+  }
+
   function build() {
     pad = document.createElement('div');
     pad.className = 'cgp' + (st.fold ? ' fold' : '');
@@ -791,6 +812,7 @@
       var r = pad.getBoundingClientRect();
       st.x = r.left; st.y = r.top; save();
     }
+    try { selfCheck(); } catch (e) {}
     try { loadGuide(); } catch (e) { try { console.warn('[QA] 안내 실패', e); } catch (x) {} }
     try { waitImages(autoRead); }
     catch (e) { try { console.warn('[QA] 자동읽기 실패', e); } catch (x) {} }
