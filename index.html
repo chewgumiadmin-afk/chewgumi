@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v99 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v100 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1277,7 +1277,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <div class="uf-score">
             <b id="ufAvg">5.0</b>
             <span class="uf-stars">★★★★★</span>
-            <span class="uf-cnt" id="ufCnt">—</span>
+            <span class="uf-cnt" id="ufCnt">8개의 순간</span>
           </div>
         </div>
 
@@ -1288,7 +1288,16 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <button data-f="video">영상</button>
         </div>
 
-        <div class="uf-grid" id="ufGrid"></div>
+        <div class="uf-grid" id="ufGrid">
+          <div class="uf-card" data-line="travel" data-kind="instagram" onclick="ufOpen(0)"><img src="assets/detail/travel-01.jpg" alt="제주 3박4일 내내 가방에 넣고 다녔어요" loading="lazy"><span class="pin"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></span><span class="lk">♥ 42</span><span class="ov"><b>민트 사탕의 서늘한 초록</b><span>제주 3박4일 내내 가방에 넣고 다녔어요</span></span></div>
+          <div class="uf-card" data-line="doit" data-kind="image" onclick="ufOpen(1)"><img src="assets/detail/dew-01.jpg" alt="회의 전에 하나씩. 입안이 개운해서 좋아요" loading="lazy"><span class="lk">♥ 31</span><span class="ov"><b>한여름 바다의 푸른색</b><span>회의 전에 하나씩. 입안이 개운해서 좋아요</span></span></div>
+          <div class="uf-card" data-line="travel" data-kind="image" onclick="ufOpen(2)"><img src="assets/detail/travel-07.jpg" alt="아이도 잘 먹어요. 젤리라 거부감이 없네요" loading="lazy"><span class="lk">♥ 28</span><span class="ov"><b>오후 네 시 창가의 금색</b><span>아이도 잘 먹어요. 젤리라 거부감이 없네요</span></span></div>
+          <div class="uf-card" data-line="doit" data-kind="image" onclick="ufOpen(3)"><img src="assets/detail/dew-03.jpg" alt="포도맛이 진짜 포도 같아요. 무설탕인데 달아요" loading="lazy"><span class="lk">♥ 24</span><span class="ov"><b>늦여름 포도의 보랏빛</b><span>포도맛이 진짜 포도 같아요. 무설탕인데 달아요</span></span></div>
+          <div class="uf-card" data-line="travel" data-kind="instagram" onclick="ufOpen(4)"><img src="assets/detail/travel-11.jpg" alt="출장 갈 때 챙겨요. 파우치가 가벼워서 좋아요" loading="lazy"><span class="pin"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></span><span class="lk">♥ 19</span><span class="ov"><b>첫눈이 쌓인 날의 흰색</b><span>출장 갈 때 챙겨요. 파우치가 가벼워서 좋아요</span></span></div>
+          <div class="uf-card" data-line="doit" data-kind="image" onclick="ufOpen(5)"><img src="assets/detail/dew-08.jpg" alt="자기 전에 하나. 양치 후에도 부담 없어요" loading="lazy"><span class="lk">♥ 16</span><span class="ov"><b>새벽 다섯 시의 보랏빛</b><span>자기 전에 하나. 양치 후에도 부담 없어요</span></span></div>
+          <div class="uf-card" data-line="travel" data-kind="image" onclick="ufOpen(6)"><img src="assets/detail/travel-14.jpg" alt="비타민을 물 없이 먹을 수 있어서 좋아요" loading="lazy"><span class="lk">♥ 13</span><span class="ov"><b>이른 봄 새싹의 연둣빛</b><span>비타민을 물 없이 먹을 수 있어서 좋아요</span></span></div>
+          <div class="uf-card" data-line="doit" data-kind="image" onclick="ufOpen(7)"><img src="assets/detail/dew-12.jpg" alt="사무실 서랍에 두고 먹어요" loading="lazy"><span class="lk">♥ 11</span><span class="ov"><b>바랜 청바지의 하늘빛</b><span>사무실 서랍에 두고 먹어요</span></span></div>
+        </div>
         <button class="uf-more" id="ufMore" style="display:none">더 보기</button>
 
         <div class="uf-join">
@@ -1463,7 +1472,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v99 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v100 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5998,6 +6007,25 @@ header .logo img{ image-rendering:auto }
 })();
 
 </script>
-<script src="assets/drag.js" defer></script>
+<script src="assets/drag.js" defer>
+/* 탭 — JS 없이도 카드가 보이고, 눌러야 걸러진다 */
+(function(){
+  var tabs=document.getElementById('ufTabs');
+  var grid=document.getElementById('ufGrid');
+  if(!tabs||!grid) return;
+  tabs.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    tabs.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    var f=b.dataset.f||'';
+    grid.querySelectorAll('.uf-card').forEach(function(c){
+      var ok = !f ? true
+        : (f==='video' ? (c.dataset.kind==='video'||c.dataset.kind==='youtube')
+                       : c.dataset.line===f);
+      c.style.display = ok ? '' : 'none';
+    });
+  });
+})();
+</script>
 </body>
 </html>
