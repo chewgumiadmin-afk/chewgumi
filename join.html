@@ -152,7 +152,7 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6px;top:3p
 
     <div class="panel">
       <h2>ACCOUNT · 계정 정보</h2>
-      <label class="f">아이디 (이메일) <em>*</em></label>
+      <label class="f">아이디 (이메일) <em class="req">*</em></label>
       <div class="row2">
         <input id="email" type="email" placeholder="example@email.com" autocomplete="email" oninput="onEmailInput()">
         <button class="btn-sm" id="vBtn" onclick="sendVerify()">인증 메일 받기</button>
@@ -166,25 +166,25 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6px;top:3p
         <button class="vre" onclick="recheck()">인증 확인</button>
       </div>
 
-      <label class="f">비밀번호 <em>*</em></label>
+      <label class="f">비밀번호 <em class="req">*</em></label>
       <input id="pw1" type="password" placeholder="6자 이상" autocomplete="new-password" oninput="check()">
       <div class="hint" id="hPw1">6자 이상 입력해 주세요.</div>
 
-      <label class="f">비밀번호 확인 <em>*</em></label>
+      <label class="f">비밀번호 확인 <em class="req">*</em></label>
       <input id="pw2" type="password" placeholder="비밀번호를 한 번 더 입력" autocomplete="new-password" oninput="check()">
       <div class="hint" id="hPw2"></div>
     </div>
 
     <div class="panel">
       <h2>PROFILE · 기본 정보</h2>
-      <label class="f">이름 <em>*</em></label>
+      <label class="f">이름 <em class="req">*</em></label>
       <input id="name" placeholder="받는 분 성함" autocomplete="name" oninput="check()">
 
-      <label class="f">휴대전화 <em>*</em></label>
+      <label class="f">휴대전화 <em class="req">*</em></label>
       <input id="phone" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel" oninput="check()">
       <div class="hint">주문·배송 안내를 받으실 번호입니다.</div>
 
-      <label class="f">주소 <em class="req">필수</em></label>
+      <label class="f">주소 <em class="req">*</em></label>
       <div class="row2"><input id="zip" readonly placeholder="우편번호"><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
       <input id="addr1" readonly placeholder="주소" style="margin-top:8px">
       <input id="addr2" placeholder="상세주소" style="margin-top:8px" autocomplete="address-line2">
@@ -614,6 +614,17 @@ check();
     color:var(--main);background:rgba(216,37,88,.1)}
   .opt{display:inline-block;margin-left:5px;font-size:10.5px;font-weight:500;
     color:var(--gray)}
+
+  /* 필수 · 선택 표시 통일 */
+  .req{
+    display:inline;margin-left:3px;font-style:normal;font-weight:700;
+    font-size:1em;color:var(--main);letter-spacing:0;
+    background:none;padding:0;border-radius:0;
+  }
+  .opt{
+    display:inline;margin-left:5px;font-size:11px;font-weight:500;
+    color:var(--gray);font-style:normal;
+  }
 </style>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
