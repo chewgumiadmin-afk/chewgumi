@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v97 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v98 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1463,7 +1463,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v97 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v98 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3579,7 +3579,7 @@ body.at-foot .kko-fab{
 /* ═══════════ User Films ═══════════ */
 .uf-lead{text-align:center;font-size:13px;line-height:1.85;color:#5a5055;
   margin:-8px auto 22px;max-width:440px;word-break:keep-all}
-.uf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
 .uf-card{position:relative;aspect-ratio:9/16;border-radius:20px;overflow:hidden;
   background:#EFE2E7;display:block;text-decoration:none;
   border:.5px solid rgba(255,255,255,.7);
@@ -3623,9 +3623,9 @@ body.at-foot .kko-fab{
 .uf-add .rw{margin-top:2px;padding:4px 11px;border-radius:999px;font-size:10.5px;font-weight:700;
   background:rgba(255,233,35,.34);color:#8a6a12}
 
-@media(max-width:900px){ .uf-grid{grid-template-columns:repeat(3,1fr);gap:11px} }
+@media(max-width:900px){  }
 @media(max-width:640px){
-  .uf-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  
   .uf-add b{font-size:12px}
   .uf-add span{font-size:10px}
 }
@@ -5464,7 +5464,7 @@ header .logo img{ image-rendering:auto }
   font-family:inherit;font-size:12.5px;font-weight:600;color:#666;cursor:pointer}
 .uf-tabs button.on{background:var(--ink);color:#fff;border-color:transparent}
 
-.uf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}
+
 .uf-card{position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;
   cursor:pointer;background:#FFF1F4;border:1px solid rgba(255,255,255,.8);
   box-shadow:0 4px 14px rgba(0,0,0,.06);transition:transform .22s,box-shadow .22s}
@@ -5535,7 +5535,7 @@ header .logo img{ image-rendering:auto }
 @media(max-width:768px){
   .ufilm{padding:46px 0 10px}
   .uf-head{flex-direction:column;align-items:flex-start;gap:12px}
-  .uf-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  
   .uf-card{border-radius:14px}
   .uf-box{grid-template-columns:1fr;max-height:90vh;width:calc(100vw - 32px)}
   .uf-media{max-height:46vh}
@@ -5690,7 +5690,9 @@ header .logo img{ image-rendering:auto }
   .detail .d-img img{ max-height:280px !important;padding:5% !important }
 }
 </style>
-<script src="assets/nav.js" defer>
+<script src="assets/nav.js" defer></script>
+<script>
+
 /* 모바일에서는 등장 애니메이션 없이 바로 표시 */
 (function(){
   if (window.innerWidth > 900) return;
@@ -5707,10 +5709,13 @@ header .logo img{ image-rendering:auto }
   setTimeout(showAll, 400);
   window.addEventListener('load', showAll);
 })();
+
 </script>
 <script src="assets/schema.js" defer></script>
 <script src="assets/sheet.js" defer></script>
-<script src="assets/float.js" defer>
+<script src="assets/float.js" defer></script>
+<script>
+
 /* 스크롤 중에는 등장 애니메이션을 다시 실행하지 않는다 */
 (function(){
   if (window.innerWidth > 900) return;
@@ -5758,10 +5763,13 @@ header .logo img{ image-rendering:auto }
 })();
 
 
+
 </script>
 <script src="assets/qa-fill.js" defer></script>
 <script src="assets/qa-mode.js" defer></script>
-<script src="assets/qa-pad.js" defer>
+<script src="assets/qa-pad.js" defer></script>
+<script>
+
 /* ── USER FILMS ── */
 (function(){
   var SBu='https://psynvpuedzjvytsgdhgg.supabase.co';
@@ -5937,6 +5945,7 @@ header .logo img{ image-rendering:auto }
     filter('');
   });
 })();
+
 </script>
 <script src="assets/drag.js" defer></script>
 </body>
