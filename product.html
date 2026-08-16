@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v24 · MedIT -->
+<!-- ChewGumi Product Detail v25 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -964,6 +964,15 @@ input, textarea, select{ font-size:16px !important }
 @media(min-width:1024px){
   input, textarea, select{ font-size:14.5px !important }
 }
+
+/* 상세 이미지 — 정사각 제품컷이 이어지도록 */
+#pDetailImgs{max-width:860px;margin:0 auto;border-radius:18px;overflow:hidden;
+  background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.06);
+  display:flex;flex-direction:column;gap:0}
+#pDetailImgs .pd-img{width:100%;height:auto;display:block;margin:0;border-radius:0}
+@media(max-width:640px){
+  #pDetailImgs{border-radius:0;box-shadow:none;margin:0 -20px;max-width:none}
+}
 </style>
 <script>
 (function(){
@@ -1068,39 +1077,23 @@ function pdFold(){
   if(!pno) return;
 
   /* 서버가 안 되면 쓸 기본 목록 */
-  var NN = 'https://chewgumi.com/web/upload/NNEditor/';
+  var P_ = 'assets/prod/';
   var FALLBACK = {
-    travel: ['20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_1.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_3.gif',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_6.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_7.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_9.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_10.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_11.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_12.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_13.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_14.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_15.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_16.jpg',
-             '20251118/EB9380EC9E87_EBA088EBAAACEBAFBCED8AB8_17.jpg'].map(function(x){return NN+x;}),
-    dew:    ['20251201/copy1764593763EB9380EC9E87_ED8FACEB8F84_1.jpg',
-             '20251201/copy1764593771EB9380EC9E87_ED8FACEB8F84_2.gif',
-             '20251201/copy1764593779EB9380EC9E87_ED8FACEB8F84_3.jpg',
-             '20251201/copy1764593827EB9380EC9E87_ED8FACEB8F84_6.jpg',
-             '20251201/copy1764593841EB9380EC9E87_ED8FACEB8F84_7.jpg',
-             '20251201/copy1764593857EB9380EC9E87_ED8FACEB8F84_9.jpg',
-             '20251201/copy1764593872EB9380EC9E87_ED8FACEB8F84_10.jpg',
-             '20251201/copy1764593879EB9380EC9E87_ED8FACEB8F84_11.jpg',
-             '20251201/copy1764593888EB9380EC9E87_ED8FACEB8F84_12.jpg',
-             '20251201/copy1764593895EB9380EC9E87_ED8FACEB8F84_13.jpg',
-             '20251201/copy1764593910EB9380EC9E87_ED8FACEB8F84_14.jpg',
-             '20251201/copy1764593917EB9380EC9E87_ED8FACEB8F84_15.jpg',
-             '20251201/copy1764593925EB9380EC9E87_ED8FACEB8F84_16.jpg',
-             '20251201/copy1764593935EB9380EC9E87_ED8FACEB8F84_17.jpg'].map(function(x){return NN+x;})
+    travel: ['travel.jpg'].map(function(x){return P_+x;}),
+    lemon:  ['dew-lemon.jpg','dew-grape.jpg','dew-6.jpg','dew-10.jpg','travel-5.jpg',
+             'dew-green.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg'].map(function(x){return P_+x;}),
+    grape:  ['travel-1.jpg','dew-purple.jpg','travel-3.jpg','dew-grape.jpg','travel-5.jpg',
+             'travel-10.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg'].map(function(x){return P_+x;}),
+    dew:    ['dew-lemon.jpg','travel-1.jpg','dew-purple.jpg','dew-grape.jpg','dew-6.jpg',
+             'dew-10.jpg','travel-5.jpg','travel-10.jpg','dew-green.jpg','travel-20.jpg',
+             'dew-4.jpg','dew-20.jpg'].map(function(x){return P_+x;})
   };
   function pick(no){
     no = +no;
-    return (no>=11 && no<=15) ? FALLBACK.travel : FALLBACK.dew;
+    if(no>=11 && no<=15) return FALLBACK.travel;
+    if(no===16) return FALLBACK.lemon;
+    if(no===17) return FALLBACK.grape;
+    return FALLBACK.dew;
   }
 
   function show(imgs){
