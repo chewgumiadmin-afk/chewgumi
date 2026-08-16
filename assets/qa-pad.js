@@ -130,7 +130,21 @@
     '.cgp-fab{position:fixed;z-index:2147483000;width:46px;height:46px;border-radius:50%;',
     '  border:0;cursor:pointer;background:linear-gradient(160deg,#FFE923,#FFD84D);',
     '  box-shadow:0 8px 22px rgba(0,0,0,.25);font-size:18px;line-height:1;',
-    '  display:flex;align-items:center;justify-content:center}'
+    '  display:flex;align-items:center;justify-content:center}',
+    /* 버튼 줄 정렬 확정 */
+    '.cgp-t{display:grid !important;grid-auto-flow:column !important;',
+    '  grid-auto-columns:1fr !important;gap:4px !important;',
+    '  align-items:stretch !important;margin-top:7px !important}',
+    '.cgp-t > button{height:34px !important;min-height:34px !important;',
+    '  max-height:34px !important;padding:0 !important;margin:0 !important;',
+    '  line-height:34px !important;border:0 !important;border-radius:8px !important;',
+    '  display:block !important;text-align:center !important;',
+    '  font-family:inherit !important;font-size:11px !important;font-weight:600 !important;',
+    '  white-space:nowrap !important;overflow:hidden !important;',
+    '  text-overflow:ellipsis !important;letter-spacing:-.03em !important;',
+    '  vertical-align:top !important;box-sizing:border-box !important;',
+    '  align-self:stretch !important;background:rgba(255,255,255,.72);color:#5a4f2a}',
+    '.cgp-t > button.hot{background:#17171c !important;color:#fff !important}'
   ].join('');
   document.head.appendChild(css);
 
