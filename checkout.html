@@ -134,15 +134,15 @@ textarea{resize:vertical;min-height:70px}
           <h2>ORDERER · 주문자 정보</h2>
           <label>이름 <span>*</span></label><input id="fName" autocomplete="name">
           <label>휴대전화 <span>*</span></label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel">
-          <label>이메일</label><input id="fEmail" type="email" autocomplete="email">
+          <label>이메일 <em class="req">필수</em></label><input id="fEmail" type="email" autocomplete="email">
         </div>
         <div class="panel">
           <h2>SHIPPING · 배송지</h2>
-          <label>우편번호</label>
+          <label>우편번호 <em class="req">필수</em></label>
           <div class="row2"><input id="fZip" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
-          <label>주소</label><input id="fAddr1" readonly>
-          <label>상세주소</label><input id="fAddr2" autocomplete="address-line2">
-          <label>배송 메모</label><textarea id="fMemo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea>
+          <label>주소 <em class="req">필수</em></label><input id="fAddr1" readonly>
+          <label>상세주소 <em class="req">필수</em></label><input id="fAddr2" autocomplete="address-line2">
+          <label>배송 메모 <span class="opt">선택</span></label><textarea id="fMemo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea>
         </div>
       </div>
       <div>
@@ -804,6 +804,17 @@ input:not([type=checkbox]):not([type=radio]), textarea, select{
     font-size:14.5px !important;
   }
 }
+
+  /* 필수 입력 표시 */
+  .req{font-style:normal;font-size:10px;font-weight:700;color:var(--main);
+    margin-left:5px;padding:2px 6px;border-radius:5px;
+    background:rgba(216,37,88,.1);vertical-align:1px}
+  .opt{font-size:10px;font-weight:600;color:var(--gray);margin-left:5px;
+    padding:2px 6px;border-radius:5px;background:rgba(0,0,0,.045);vertical-align:1px}
+  input.miss, textarea.miss{
+    border-color:var(--main) !important;
+    box-shadow:0 0 0 3px rgba(216,37,88,.12) !important}
+  .miss-msg{margin-top:5px;font-size:11.5px;color:var(--main);font-weight:600}
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>
@@ -844,6 +855,46 @@ window.chgQty=function(ix,d){
 })();
 </script>
 <script src="assets/qa-mode.js" defer></script>
-<script src="assets/qa-pad.js" defer></script>
+<script src="assets/qa-pad.js" defer>
+/* 필수 입력 확인 */
+function checkRequired(){
+  var need=[
+    ['fName','이름'],['fPhone','연락처'],['fEmail','이메일'],
+    ['fZip','우편번호'],['fAddr1','주소'],['fAddr2','상세주소']
+  ];
+  var miss=[];
+  need.forEach(function(x){
+    var el=document.getElementById(x[0]);
+    if(!el) return;
+    el.classList.remove('miss');
+    var v=(el.value||'').trim();
+    if(!v){ miss.push(x[1]); el.classList.add('miss'); }
+  });
+  /* 형식도 확인 */
+  var em=document.getElementById('fEmail');
+  if(em && em.value.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em.value.trim())){
+    miss.push('이메일 형식'); em.classList.add('miss');
+  }
+  var ph=document.getElementById('fPhone');
+  if(ph && ph.value.trim() && ph.value.replace(/\D/g,'').length<10){
+    miss.push('연락처 형식'); ph.classList.add('miss');
+  }
+  var box=document.getElementById('missMsg');
+  if(!box){
+    box=document.createElement('div');
+    box.id='missMsg'; box.className='miss-msg';
+    var btn=document.getElementById('payBtn');
+    if(btn && btn.parentNode) btn.parentNode.insertBefore(box, btn);
+  }
+  if(miss.length){
+    box.textContent='다음 항목을 채워주세요 — '+miss.join(', ');
+    var first=document.querySelector('input.miss');
+    if(first) first.scrollIntoView({block:'center',behavior:'smooth'});
+    return false;
+  }
+  box.textContent='';
+  return true;
+}
+</script>
 </body>
 </html>
