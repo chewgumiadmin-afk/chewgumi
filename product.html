@@ -552,7 +552,7 @@ function render(){
     wrap.style.display = 'block'; setTimeout(pdFold, 200);
     document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
       '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
-      'onerror="this.style.display='none';checkDetail();">').join('');
+      'onerror="cgImgFail(this)">').join('');
   } else {
     wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML =
