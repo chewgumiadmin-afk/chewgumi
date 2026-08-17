@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v106 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v107 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1058,6 +1058,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <section id="best">
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">Best Items</h2><a class="sec-more" href="#all" onclick="filterLine('all')" data-en="VIEW ALL">VIEW ALL ▶</a></div>
+        <div class="best-tabs" id="bestTabs">
+          <button class="on" data-b="">전체</button>
+          <button data-b="travel">트래블잇</button>
+          <button data-b="doit">듀잇</button>
+        </div>
     <div class="grid">
       <a class="card" href="#all" data-line="travel" data-desc="비타민 A·B·C·E, 마그네슘, 테아닌 등 12가지 영양소를 담은 여행용 에너지 부스터 젤리. 물 없이 씹는 40g 파우치." data-desc-en="A travel energy-booster gummy with 12 nutrients including vitamins A, B, C, E, magnesium and theanine. 40g chewable pouch." onclick="openDetail(this);return false;" data-no="11">
         <div class="thumb"><span class="prd-badge" style="position:absolute;top:10px;left:10px;background:var(--ink);color:#fff;font-size:11px;padding:4px 9px;letter-spacing:1px;border-radius:999px;z-index:2;">BEST</span>
@@ -1496,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v106 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v107 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5821,6 +5826,20 @@ header .logo img{ image-rendering:auto }
   .rev-head{flex-direction:column;align-items:flex-start;gap:12px}
   .rev-card{width:min(82vw,290px);padding:16px 17px}
 }
+
+/* BEST ITEMS 라인 탭 */
+.best-tabs{display:flex;gap:7px;margin:-4px 0 18px;overflow-x:auto;scrollbar-width:none}
+.best-tabs::-webkit-scrollbar{display:none}
+.best-tabs button{flex:none;min-height:38px;padding:0 18px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.8);
+  font-family:inherit;font-size:13px;font-weight:600;color:#666;cursor:pointer;
+  transition:background .18s,color .18s}
+.best-tabs button.on{background:var(--ink);color:#fff;border-color:transparent}
+#best .card.hidden{display:none !important}
+@media(max-width:640px){
+  .best-tabs{margin:-2px 0 14px;gap:6px}
+  .best-tabs button{min-height:36px;padding:0 15px;font-size:12.5px}
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6145,6 +6164,26 @@ header .logo img{ image-rendering:auto }
     draw('');
   }).catch(function(){
     row.innerHTML='<p style="font-size:13px;color:var(--gray)">후기를 불러오지 못했습니다.</p>';
+  });
+})();
+</script>
+
+<script>
+/* BEST ITEMS 라인 탭 */
+(function(){
+  var tabs = document.getElementById('bestTabs');
+  var sec = document.getElementById('best');
+  if (!tabs || !sec) return;
+  var cards = sec.querySelectorAll('.card');
+  tabs.querySelectorAll('button').forEach(function(b){
+    b.onclick = function(){
+      tabs.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      var f = b.dataset.b;
+      cards.forEach(function(c){
+        c.classList.toggle('hidden', !!f && c.dataset.line !== f);
+      });
+    };
   });
 })();
 </script>
