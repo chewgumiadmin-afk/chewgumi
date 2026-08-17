@@ -1125,7 +1125,9 @@ function pdFold(){
   var TRV = ['travel.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg']
              .map(function(x){return P_+x;});
   var FALLBACK = {
-    travel: ['assets/prod/travel.jpg'],
+    travel: ['assets/detail/tvd-01.jpg','assets/detail/tvd-02.jpg',
+             'assets/detail/tvd-03.jpg','assets/detail/tvd-04.jpg',
+             'assets/detail/tvd-05.jpg'],
     lemon: ['assets/detail/dew-lemon-01.jpg','assets/detail/dew-lemon-02.gif','assets/detail/dew-lemon-03.gif','assets/detail/dew-lemon-04.webp','assets/detail/dew-lemon-05.gif','assets/detail/dew-lemon-06.jpg','assets/detail/dew-lemon-07.jpg','assets/detail/dew-lemon-08.webp','assets/detail/dew-lemon-09.jpg','assets/detail/dew-lemon-10.jpg','assets/detail/dew-lemon-11.jpg','assets/detail/dew-lemon-12.jpg','assets/detail/dew-lemon-13.jpg','assets/detail/dew-lemon-14.jpg','assets/detail/dew-lemon-15.jpg','assets/detail/dew-lemon-16.jpg','assets/detail/dew-lemon-17.jpg','assets/detail/dew-lemon-18.jpg'],
     grape: ['assets/detail/dew-grape-01.jpg','assets/detail/dew-grape-02.gif','assets/detail/dew-grape-03.jpg','assets/detail/dew-grape-04.webp','assets/detail/dew-grape-05.webp','assets/detail/dew-grape-06.jpg','assets/detail/dew-grape-07.jpg','assets/detail/dew-grape-08.webp','assets/detail/dew-grape-09.jpg','assets/detail/dew-grape-10.jpg','assets/detail/dew-grape-11.jpg','assets/detail/dew-grape-12.jpg','assets/detail/dew-grape-13.jpg','assets/detail/dew-grape-14.jpg','assets/detail/dew-grape-15.jpg','assets/detail/dew-grape-16.jpg','assets/detail/dew-grape-17.jpg','assets/detail/dew-grape-18.jpg'],
     dew: ['assets/detail/dew-01.jpg','assets/detail/dew-02.gif','assets/detail/dew-03.jpg','assets/detail/dew-04.jpg','assets/detail/dew-05.jpg','assets/detail/dew-06.jpg','assets/detail/dew-07.gif','assets/detail/dew-08.jpg','assets/detail/dew-09.jpg','assets/detail/dew-10.jpg','assets/detail/dew-11.gif','assets/detail/dew-12.jpg','assets/detail/dew-13.jpg','assets/detail/dew-14.jpg','assets/detail/dew-15.jpg','assets/detail/dew-16.jpg','assets/detail/dew-17.jpg','assets/detail/dew-18.jpg','assets/detail/dew-19.jpg']
@@ -1143,14 +1145,6 @@ function pdFold(){
     var wrap=document.getElementById('pDetailWrap');
     var box=document.getElementById('pDetailImgs');
     if(!wrap||!box) return;
-    var n2 = +pno;
-    if(n2>=11 && n2<=15 && !box.previousElementSibling){
-      var note=document.createElement('div');
-      note.className='soon-note';
-      note.innerHTML='<b>출시 예정 상품입니다</b><span>상세 이미지는 준비 중입니다.<br>'
-        +'출시 소식을 먼저 받아보시려면 카카오톡 채널을 추가해 주세요.</span>';
-      box.parentNode.insertBefore(note, box);
-    }
     box.innerHTML=imgs.map(function(u,i){
       return '<img class="pd-img" src="'+u+'" alt="상품 상세 '+(i+1)+'" '
         +'loading="'+(i<2?'eager':'lazy')+'" '
