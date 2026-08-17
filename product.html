@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v36 · MedIT -->
+<!-- ChewGumi Product Detail v37 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1125,25 +1125,56 @@ input, textarea, select{ font-size:16px !important }
              'dew-20.jpg'].map(function(x){return P_+x;});
   var TRV = ['travel.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg']
              .map(function(x){return P_+x;});
-  var FALLBACK = {
-    travel: ['https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449303-1.png',
-             'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
-             'https://chewgumi.com/web/upload/NNEditor/20250609/3.png',
-             'https://chewgumi.com/web/upload/NNEditor/20250609/4.png',
-             'https://chewgumi.com/web/upload/NNEditor/20250609/5.png',
-             'https://chewgumi.com/web/upload/NNEditor/20250609/6.png',
-             'https://chewgumi.com/web/upload/NNEditor/20250609/7.png'],
-    lemon: ['assets/detail/dew-lemon-01.jpg','assets/detail/dew-lemon-02.gif','assets/detail/dew-lemon-03.gif','assets/detail/dew-lemon-04.webp','assets/detail/dew-lemon-05.gif','assets/detail/dew-lemon-06.jpg','assets/detail/dew-lemon-07.jpg','assets/detail/dew-lemon-08.webp','assets/detail/dew-lemon-09.jpg','assets/detail/dew-lemon-10.jpg','assets/detail/dew-lemon-11.jpg','assets/detail/dew-lemon-12.jpg','assets/detail/dew-lemon-13.jpg','assets/detail/dew-lemon-14.jpg','assets/detail/dew-lemon-15.jpg','assets/detail/dew-lemon-16.jpg','assets/detail/dew-lemon-17.jpg','assets/detail/dew-lemon-18.jpg'],
-    grape: ['assets/detail/dew-grape-01.jpg','assets/detail/dew-grape-02.gif','assets/detail/dew-grape-03.jpg','assets/detail/dew-grape-04.webp','assets/detail/dew-grape-05.webp','assets/detail/dew-grape-06.jpg','assets/detail/dew-grape-07.jpg','assets/detail/dew-grape-08.webp','assets/detail/dew-grape-09.jpg','assets/detail/dew-grape-10.jpg','assets/detail/dew-grape-11.jpg','assets/detail/dew-grape-12.jpg','assets/detail/dew-grape-13.jpg','assets/detail/dew-grape-14.jpg','assets/detail/dew-grape-15.jpg','assets/detail/dew-grape-16.jpg','assets/detail/dew-grape-17.jpg','assets/detail/dew-grape-18.jpg'],
-    dew: ['assets/detail/dew-01.jpg','assets/detail/dew-02.gif','assets/detail/dew-03.jpg','assets/detail/dew-04.jpg','assets/detail/dew-05.jpg','assets/detail/dew-06.jpg','assets/detail/dew-07.gif','assets/detail/dew-08.jpg','assets/detail/dew-09.jpg','assets/detail/dew-10.jpg','assets/detail/dew-11.gif','assets/detail/dew-12.jpg','assets/detail/dew-13.jpg','assets/detail/dew-14.jpg','assets/detail/dew-15.jpg','assets/detail/dew-16.jpg','assets/detail/dew-17.jpg','assets/detail/dew-18.jpg','assets/detail/dew-19.jpg']
+/* 상세 이미지 — 파일을 하나씩 불러 있는 만큼만 보여준다.
+   DB 에 목록을 넣지 않아도, assets/detail 에 파일만 올리면 자동으로 늘어납니다.
+   이름 규칙 : <계열>-01.jpg / -02.gif / -03.webp …  (번호는 두 자리) */
+  var DETAIL_SET = {
+    travel: 'travel',   /* 트래블잇 */
+    lemon:  'dew-lemon',
+    grape:  'dew-grape',
+    dew:    'dew'
   };
-  function pick(no){
-    no = +no;
-    if(no>=11 && no<=15) return FALLBACK.travel;
-    if(no===16) return FALLBACK.lemon;
-    if(no===17) return FALLBACK.grape;
-    return FALLBACK.dew;
+  var EXTS = ['jpg','gif','webp','png','jpeg'];
+
+  /* 한 장이 실제로 있는지 확인 */
+  function findOne(base, n){
+    var name = base + '-' + (n<10 ? '0'+n : n);
+    return EXTS.reduce(function(chain, ext){
+      return chain.then(function(found){
+        if (found) return found;
+        var url = 'assets/detail/' + name + '.' + ext;
+        return new Promise(function(ok){
+          var im = new Image();
+          im.onload  = function(){ ok(url); };
+          im.onerror = function(){ ok(null); };
+          im.src = url;
+        });
+      });
+    }, Promise.resolve(null));
   }
+
+  /* 1번부터 차례로 찾다가 두 번 연속 없으면 멈춘다 */
+  function collect(base, max){
+    var out = [], miss = 0;
+    function step(n){
+      if (n > (max||30) || miss >= 2) return Promise.resolve(out);
+      return findOne(base, n).then(function(u){
+        if (u) { out.push(u); miss = 0; }
+        else miss++;
+        return step(n+1);
+      });
+    }
+    return step(1);
+  }
+
+  function setOf(no){
+    no = +no;
+    if (no>=11 && no<=15) return DETAIL_SET.travel;
+    if (no===16) return DETAIL_SET.lemon;
+    if (no===17) return DETAIL_SET.grape;
+    return DETAIL_SET.dew;
+  }
+
 
 window.cgImgFail = function(el){
     if (el.dataset.done) { el.style.display='none'; return; }
@@ -1165,19 +1196,19 @@ window.cgImgFail = function(el){
     wrap.style.display='';
   }
 
-  fetch(SB2+'/rest/v1/products?select=detail_images&id=eq.'+pno,
-    {headers:{apikey:K2,Authorization:'Bearer '+K2}})
-  .then(function(r){ return r.ok?r.json():[]; })
-  .then(function(rows){
-    var p=(rows||[])[0];
-    var imgs=(p&&p.detail_images)||[];
-    show(imgs.length ? imgs : pick(pno));
-  }).catch(function(){ show(pick(pno)); });
-  /* 서버가 늦어도 3초 뒤에는 반드시 보여준다 */
-  setTimeout(function(){
-    var box=document.getElementById('pDetailImgs');
-    if(box && !box.innerHTML.trim()) show(pick(pno));
-  }, 3000);
+  collect(setOf(pno)).then(function(imgs){
+    if (imgs.length) { show(imgs); return; }
+    /* 파일이 없으면 DB 목록을 쓴다 */
+    return fetch(SB2+'/rest/v1/products?select=detail_images&id=eq.'+pno,
+      {headers:{apikey:K2,Authorization:'Bearer '+K2}})
+      .then(function(r){ return r.ok?r.json():[]; })
+      .then(function(rows){
+        var p=(rows||[])[0];
+        var d=(p&&p.detail_images)||[];
+        if (d.length) show(d);
+      });
+  }).catch(function(){});
+
 })();
 
 </script>
