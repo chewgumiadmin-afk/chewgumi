@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v107 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v108 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v107 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v108 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5839,6 +5839,44 @@ header .logo img{ image-rendering:auto }
 @media(max-width:640px){
   .best-tabs{margin:-2px 0 14px;gap:6px}
   .best-tabs button{min-height:36px;padding:0 15px;font-size:12.5px}
+}
+
+/* ══ REVIEW · USER FILMS — 가운데 배치 ══ */
+.revsec .wrap, .ufilm .wrap{ max-width:1100px; margin:0 auto }
+
+.rev-head{
+  flex-direction:column !important;
+  align-items:center !important;
+  text-align:center !important;
+  gap:14px !important;
+  margin-bottom:22px !important;
+}
+.rev-head h2{ text-align:center !important }
+.rev-head .eb{ text-align:center !important }
+.rev-score{ justify-content:center !important; padding-bottom:0 !important }
+.rev-tabs{ justify-content:center !important }
+.rev-row{ scroll-padding-left:0 }
+.revsec .rev-more{
+  display:flex !important;
+  width:fit-content;
+  margin:6px auto 0 !important;
+  justify-content:center;
+}
+
+.uf-head{
+  flex-direction:column !important;
+  align-items:center !important;
+  text-align:center !important;
+  gap:14px !important;
+}
+.uf-head h2{ text-align:center !important }
+.uf-head .eb{ text-align:center !important }
+.uf-score{ justify-content:center !important; padding-bottom:0 !important }
+.uf-tabs{ justify-content:center !important }
+
+@media(max-width:768px){
+  .rev-head, .uf-head{ align-items:center !important; gap:11px !important }
+  .rev-tabs, .uf-tabs{ justify-content:flex-start !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
