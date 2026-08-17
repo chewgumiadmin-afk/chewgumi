@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v28 · MedIT -->
+<!-- ChewGumi Product Detail v29 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -383,22 +383,50 @@ function toggleWish(){
 
 /* 공식몰 실제 상품 데이터 (상품번호·가격·이미지 검증 완료) */
 const CDN='https://chewgumi.com/web/product/medium/';
+/* 상품 정보 — 데이터베이스에서 불러옵니다.
+   화면이 뜨는 즉시 보이도록 기본값을 두고, 서버 값이 오면 갱신합니다. */
 const P = {
-  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:3500,  s:3500,  img:'202511/9e01d14282da90dfce9b6cecef79044d.png', d:'여행의 모든 순간을 활기차게! 종합비타민·비타민C·글루콘산마그네슘·타우린을 담은 감귤맛 젤리.'},
-  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:18000, s:9900,  img:'202511/a613606b1993ee46b245871cef885fa3.png', d:'가볍게 시작하는 3봉 구성. 짧은 여행이나 첫 구매에 적당합니다.'},
-  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:30000, s:14900, img:'202511/62b0681bd9464871b96fb0be365a828b.png', d:'가장 인기 있는 5봉 구성. 일주일 여행에 딱 맞습니다.'},
-  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:60000, s:27900, img:'202511/3cebc0f3dd89b5a930cdd19b4c309602.png', d:'넉넉한 10봉 구성. 가족 여행이나 선물용으로 좋습니다.'},
-  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:120000,s:52500, img:'202511/d7b93d93f846e37de5fa33da43de5c37.png', d:'가장 알뜰한 20봉 대용량 구성.'},
-  16:{n:'듀잇 레몬민트', line:'doit', cate:47, o:39000, s:19900, img:'202512/afad3d6dddd247af314c05157948d298.png', d:'상쾌한 레몬민트 향. 핀란드산 자일리톨 무설탕 캔디로 입 안을 개운하게.'},
-  17:{n:'듀잇 그레이프', line:'doit', cate:47, o:39000, s:19900, img:'202512/55a36711d9dc4b14c9ee46972c6afc3c.png', d:'달콤한 포도향. 당 걱정 없이 개운하게 즐기는 무설탕 캔디.'},
-  18:{n:'듀잇 4개입', line:'doit', cate:47, o:39000, s:19900, img:'202512/2c58793be7f900d4997e26451366b9cb.png', d:'가볍게 시작하는 4개입 구성.'},
-  19:{n:'듀잇 6개입', line:'doit', cate:47, o:54800, s:27900, img:'202512/4f3394ac34364fc0e1f88744141a8c99.png', d:'실속 있는 6개입 구성.'},
-  20:{n:'듀잇 10개입', line:'doit', cate:47, o:84200, s:42900, img:'202512/f89d6da91dd672a5f25a7a295ebf3be6.png', d:'넉넉한 10개입 구성.'},
-  101:{n:'DREAM-IT 드림 잇 — 복숭아맛 젤리',l:'triple',c:42,o:0,s:0,i:'',d:'L-테아닌 200mg 함유. 하루의 끝을 편안하게 마무리하는 복숭아맛 젤리. 40g / 138kcal',soon:true,local:'assets/product-dream-it.png'},
-  102:{n:'SPARK-IT 스파크 잇 — 블루베리맛 젤리',l:'triple',c:42,o:0,s:0,i:'',d:'L-아르기닌 1000mg 함유. 활력이 필요한 순간을 위한 블루베리맛 젤리. 40g / 138kcal',soon:true,local:'assets/product-spark-it.png'},
-  103:{n:'RESET-IT 리셋 잇 — 청포도맛 젤리',l:'triple',c:42,o:0,s:0,i:'',d:'포스트바이오틱스 2억마리 배합. 속을 가볍게 리셋하는 청포도맛 젤리. 40g / 138kcal',soon:true,local:'assets/product-reset-it.png'},
-  21:{n:'듀잇 20개입', line:'doit', cate:47, o:158900,s:81000, img:'202512/942a7d4949aa31bea2c60e76208c1b76.png', d:'가장 알뜰한 20개입 대용량 구성. 레몬민트·포도 맛을 원하는 수량으로 조합할 수 있습니다.'}
+  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:3500,   s:3500,  img:'', d:''},
+  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:18000,  s:9900,  img:'', d:''},
+  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', line:'travel', cate:42, o:30000,  s:14900, img:'', d:''},
+  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)',line:'travel', cate:42, o:60000,  s:27900, img:'', d:''},
+  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)',line:'travel', cate:42, o:120000, s:52500, img:'', d:''},
+  16:{n:'듀잇 레몬민트',  line:'doit', cate:47, o:12000, s:6900,  img:'', d:''},
+  17:{n:'듀잇 그레이프',  line:'doit', cate:47, o:12000, s:6900,  img:'', d:''},
+  18:{n:'듀잇 4개입',    line:'doit', cate:47, o:39000, s:19900, img:'', d:''},
+  19:{n:'듀잇 6개입',    line:'doit', cate:47, o:58000, s:28900, img:'', d:''},
+  20:{n:'듀잇 10개입',   line:'doit', cate:47, o:95000, s:46900, img:'', d:''},
+  21:{n:'듀잇 20개입',   line:'doit', cate:47, o:190000,s:89900, img:'', d:''}
 };
+
+/* 데이터베이스에서 상품 정보를 가져와 채운다 */
+/* 이미지 주소 — 이미 전체 주소면 그대로, 아니면 CDN 을 붙인다 */
+function imgUrl(src){
+  if(!src) return 'assets/prod/travel.jpg';
+  if(/^(https?:|assets\/|\.\/)/.test(src)) return src;
+  return CDN + src;
+}
+
+function loadProducts(){
+  return fetch(SB+'/rest/v1/products?select=id,name,line,price_origin,price_sale,image,summary,stock,active'
+      +'&active=eq.true&order=id',
+      {headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      (rows||[]).forEach(function(x){
+        var t = P[x.id] || (P[x.id] = {cate: x.line==='travel'?42:47});
+        t.n    = x.name || t.n;
+        t.line = x.line || t.line;
+        t.o    = x.price_origin || t.o;
+        t.s    = x.price_sale   || t.s;
+        t.img  = x.image  || t.img;
+        t.d    = x.summary || t.d;
+        t.stock = x.stock;
+      });
+      return P;
+    })
+    .catch(function(){ return P; });
+}
 const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
 
 /* ─────────────────────────────────────────────────────────
@@ -488,7 +516,7 @@ function detailUrl(n){ return 'https://chewgumi.com/product/detail.html?product_
 function render(){
   const p = P[no];
   document.title = p.n + ' | CHEWGUMI';
-  document.getElementById('pImg').src = CDN + p.img;
+  document.getElementById('pImg').src = imgUrl(p.img);
   document.getElementById('pImg').alt = p.n;
   document.getElementById('pLine').textContent = p.line === 'travel' ? 'TRAVEL-IT' : 'DEW-IT';
   document.getElementById('pName').textContent = p.n;
@@ -532,7 +560,7 @@ function render(){
 
   document.getElementById('rel').innerHTML = ORDER.filter(n => n !== no).slice(0, 4).map(n =>
     '<a class="rel-card" href="product.html?no=' + n + '">' +
-    '<div class="t"><img src="' + CDN + P[n].img + '" alt="' + P[n].n + '" loading="lazy"></div>' +
+    '<div class="t"><img src="' + imgUrl(P[n].img) + '" alt="' + P[n].n + '" loading="lazy"></div>' +
     '<div class="n">' + P[n].n + '</div><div class="p">' + won(P[n].s) + '</div></a>').join('');
 
   paintWish();
@@ -608,7 +636,7 @@ function checkDetail(){
 }
 fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
   .then(r => r.json()).then(d => { if (d && d.rates) { rate = d.rates.KRW; total(); } }).catch(() => {});
-render();
+loadProducts().then(render);
 loadWish();
 </script>
 
