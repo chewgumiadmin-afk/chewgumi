@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v35 · MedIT -->
+<!-- ChewGumi Product Detail v36 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -560,7 +560,7 @@ function render(){
   const wrap = document.getElementById('pDetailWrap');
   const imgs = DETAIL_IMGS[no] || [];
   if (imgs.length) {
-    wrap.style.display = 'block'; setTimeout(pdFold, 200);
+    wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
       '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
       'onerror="cgImgFail(this)">').join('');
@@ -934,16 +934,13 @@ loadWish();
   margin:0 auto !important;border-radius:0 !important}
 #pDetailImgs .pd-img:first-child{border-radius:16px 16px 0 0 !important}
 #pDetailImgs .pd-img:last-child{border-radius:0 0 16px 16px !important}
-#pDetailImgs.fold{max-height:1300px;overflow:hidden;position:relative}
-.pd-more{display:block;width:100%;max-width:900px;margin:14px auto 0;
-  min-height:52px;border-radius:999px;font-family:inherit;
-  font-size:13.5px;font-weight:700;cursor:pointer;color:var(--ink);
-  background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.1)}
+
+
 @media(max-width:640px){
   #pDetailImgs{max-width:100%}
   .pd-img,#pDetailImgs .pd-img:first-child,
   #pDetailImgs .pd-img:last-child{border-radius:0 !important}
-  #pDetailImgs.fold{max-height:900px}
+  
 }
 
 /* 리뷰 요약 — 레디블룸 방식 */
@@ -1023,6 +1020,11 @@ input, textarea, select{ font-size:16px !important }
   text-align:center}
 .soon-note b{display:block;font-size:15px;font-weight:800;color:var(--main);margin-bottom:5px}
 .soon-note span{font-size:13px;color:var(--gray);line-height:1.7}
+
+/* 상세 이미지 — 전부 펼쳐 보임 */
+#pDetailImgs{max-height:none !important;overflow:visible !important}
+#pDetailImgs::after{display:none !important}
+.pd-more{display:none !important}
 </style>
 <script>
 (function(){
@@ -1106,19 +1108,7 @@ input, textarea, select{ font-size:16px !important }
 <script src="assets/sheet.js" defer></script>
 <script src="assets/float.js" defer></script>
 <script>
-function pdFold(){
-  var box=document.getElementById('pDetailImgs');
-  if(!box||box.dataset.folded) return;
-  var imgs=box.querySelectorAll('.pd-img');
-  if(imgs.length<=4) return;
-  box.dataset.folded='1';
-  box.classList.add('fold');
-  var b=document.createElement('button');
-  b.className='pd-more';
-  b.textContent='상세 정보 더 보기 ('+imgs.length+'장)';
-  b.onclick=function(){ box.classList.remove('fold'); b.remove(); };
-  if(box.parentElement) box.parentElement.insertBefore(b, box.nextSibling);
-}
+
 
 /* ── 상품 상세 이미지 ── */
 (function(){
