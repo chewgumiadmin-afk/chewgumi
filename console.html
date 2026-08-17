@@ -415,7 +415,8 @@ function boot(){
 }
 sync();
 </script>
-<script src="assets/nav.js" defer>
+<script src="assets/nav.js" defer></script>
+<script>
 /* 웹 푸시 */
 const FN_PUSH = SB + '/functions/v1/push';
 function pshCall(p){
@@ -494,7 +495,8 @@ function hlLoad(){
   }).catch(()=>{$('hlMsg').textContent='요청 목록을 불러오지 못했습니다.';});
 }
 </script>
-<script src="assets/sheet.js" defer>
+<script src="assets/sheet.js" defer></script>
+<script>
 function clearChat(){
   if(!confirm('지금까지의 대화를 지울까요?')) return;
   call({action:'clear'}).then(function(){
