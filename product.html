@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v31 · MedIT -->
+<!-- ChewGumi Product Detail v32 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1125,9 +1125,13 @@ function pdFold(){
   var TRV = ['travel.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg']
              .map(function(x){return P_+x;});
   var FALLBACK = {
-    travel: ['assets/detail/tvd-01.jpg','assets/detail/tvd-02.jpg',
-             'assets/detail/tvd-03.jpg','assets/detail/tvd-04.jpg',
-             'assets/detail/tvd-05.jpg'],
+    travel: ['https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449303-1.png',
+             'https://chewgumi.com/web/upload/NNEditor/20250609/copy-1749449300-2.jpg',
+             'https://chewgumi.com/web/upload/NNEditor/20250609/3.png',
+             'https://chewgumi.com/web/upload/NNEditor/20250609/4.png',
+             'https://chewgumi.com/web/upload/NNEditor/20250609/5.png',
+             'https://chewgumi.com/web/upload/NNEditor/20250609/6.png',
+             'https://chewgumi.com/web/upload/NNEditor/20250609/7.png'],
     lemon: ['assets/detail/dew-lemon-01.jpg','assets/detail/dew-lemon-02.gif','assets/detail/dew-lemon-03.gif','assets/detail/dew-lemon-04.webp','assets/detail/dew-lemon-05.gif','assets/detail/dew-lemon-06.jpg','assets/detail/dew-lemon-07.jpg','assets/detail/dew-lemon-08.webp','assets/detail/dew-lemon-09.jpg','assets/detail/dew-lemon-10.jpg','assets/detail/dew-lemon-11.jpg','assets/detail/dew-lemon-12.jpg','assets/detail/dew-lemon-13.jpg','assets/detail/dew-lemon-14.jpg','assets/detail/dew-lemon-15.jpg','assets/detail/dew-lemon-16.jpg','assets/detail/dew-lemon-17.jpg','assets/detail/dew-lemon-18.jpg'],
     grape: ['assets/detail/dew-grape-01.jpg','assets/detail/dew-grape-02.gif','assets/detail/dew-grape-03.jpg','assets/detail/dew-grape-04.webp','assets/detail/dew-grape-05.webp','assets/detail/dew-grape-06.jpg','assets/detail/dew-grape-07.jpg','assets/detail/dew-grape-08.webp','assets/detail/dew-grape-09.jpg','assets/detail/dew-grape-10.jpg','assets/detail/dew-grape-11.jpg','assets/detail/dew-grape-12.jpg','assets/detail/dew-grape-13.jpg','assets/detail/dew-grape-14.jpg','assets/detail/dew-grape-15.jpg','assets/detail/dew-grape-16.jpg','assets/detail/dew-grape-17.jpg','assets/detail/dew-grape-18.jpg'],
     dew: ['assets/detail/dew-01.jpg','assets/detail/dew-02.gif','assets/detail/dew-03.jpg','assets/detail/dew-04.jpg','assets/detail/dew-05.jpg','assets/detail/dew-06.jpg','assets/detail/dew-07.gif','assets/detail/dew-08.jpg','assets/detail/dew-09.jpg','assets/detail/dew-10.jpg','assets/detail/dew-11.gif','assets/detail/dew-12.jpg','assets/detail/dew-13.jpg','assets/detail/dew-14.jpg','assets/detail/dew-15.jpg','assets/detail/dew-16.jpg','assets/detail/dew-17.jpg','assets/detail/dew-18.jpg','assets/detail/dew-19.jpg']
@@ -1148,7 +1152,9 @@ function pdFold(){
     box.innerHTML=imgs.map(function(u,i){
       return '<img class="pd-img" src="'+u+'" alt="상품 상세 '+(i+1)+'" '
         +'loading="'+(i<2?'eager':'lazy')+'" '
-        +'onerror="this.style.display=\'none\'">';
+        +'onerror="if(!this.dataset.fb){this.dataset.fb=1;'
+        +'this.src=\'assets/detail/tvd-0\'+((i%5)+1)+\'.jpg\';}'
+        +'else{this.style.display=\'none\';}">';
     }).join('');
     wrap.style.display='';
   }
