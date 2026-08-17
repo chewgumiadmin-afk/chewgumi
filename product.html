@@ -1144,13 +1144,13 @@ function pdFold(){
     return FALLBACK.dew;
   }
 
-  window.cgImgFail = function(el){
+window.cgImgFail = function(el){
     if (el.dataset.done) { el.style.display='none'; return; }
     el.dataset.done = '1';
     el.src = el.dataset.fb || 'assets/prod/travel.jpg';
   };
 
-  function show(imgs){
+    function show(imgs){
     if(!imgs || !imgs.length) return;
     var wrap=document.getElementById('pDetailWrap');
     var box=document.getElementById('pDetailImgs');
@@ -1159,8 +1159,7 @@ function pdFold(){
       var fb = 'assets/detail/tvd-0' + ((i % 5) + 1) + '.jpg';
       return '<img class="pd-img" src="' + u + '" alt="상품 상세 ' + (i+1) + '"'
         + ' loading="' + (i<2 ? 'eager' : 'lazy') + '"'
-        + ' data-fb="' + fb + '"'
-        + ' onerror="cgImgFail(this)">';
+        + ' data-fb="' + fb + '" onerror="cgImgFail(this)">';
     }).join('');
     wrap.style.display='';
   }
