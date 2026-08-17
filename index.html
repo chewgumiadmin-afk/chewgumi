@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v108 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v109 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v108 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v109 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5878,6 +5878,30 @@ header .logo img{ image-rendering:auto }
   .rev-head, .uf-head{ align-items:center !important; gap:11px !important }
   .rev-tabs, .uf-tabs{ justify-content:flex-start !important }
 }
+
+/* ══ USER FILMS 카드 — 최종 확정 ══ */
+#ufGrid{ display:grid !important; gap:10px !important;
+  grid-template-columns:repeat(auto-fill,minmax(158px,1fr)) !important }
+#ufGrid > .uf-card{
+  position:relative !important; display:block !important;
+  aspect-ratio:1/1 !important; min-height:150px !important;
+  width:auto !important; height:auto !important;
+  border-radius:16px !important; overflow:hidden !important;
+  cursor:pointer !important; background:#FFF1F4 !important;
+  border:1px solid rgba(255,255,255,.8) !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.06) !important;
+  opacity:1 !important; visibility:visible !important;
+}
+#ufGrid > .uf-card.hide{ display:none !important }
+#ufGrid > .uf-card > img{
+  width:100% !important; height:100% !important;
+  object-fit:cover !important; display:block !important;
+  position:static !important; padding:0 !important;
+}
+@media(max-width:768px){
+  #ufGrid{ grid-template-columns:repeat(2,1fr) !important; gap:8px !important }
+  #ufGrid > .uf-card{ border-radius:14px !important; min-height:130px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -5958,183 +5982,15 @@ header .logo img{ image-rendering:auto }
 <script src="assets/qa-mode.js" defer></script>
 <script src="assets/qa-pad.js" defer></script>
 <script>
-
-/* ── USER FILMS ── */
+/* USER FILMS — 화면 마크업의 카드를 그대로 씁니다.
+   승인된 고객 사진이 늘어나면 관리자 화면에서 교체하세요. */
 (function(){
-  var SBu='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var Ku='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-  var grid=document.getElementById('ufGrid');
-  if(!grid) return;
-  var ALL=[], view=[], shown=0, PAGE=8, cur=null, liked={};
-  try{ liked=JSON.parse(localStorage.getItem('cg_film_like')||'{}'); }catch(e){}
-  function fp(){
-    var k='cg_fp';
-    try{ var v=localStorage.getItem(k);
-      if(!v){ v=Math.random().toString(36).slice(2)+Date.now().toString(36);
-        localStorage.setItem(k,v); } return v; }catch(e){ return 'anon'; }
-  }
-  function esc(s){ return String(s==null?'':s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  var IC={instagram:'<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/>',
-    video:'<polygon points="6 4 20 12 6 20 6 4"/>',
-    youtube:'<polygon points="6 4 20 12 6 20 6 4"/>'};
-
-  function card(f,i){
-    var th=f.thumb_url||f.media_url||'';
-    var ic=IC[f.kind]||'';
-    return '<div class="uf-card" onclick="ufOpen('+i+')">'
-      +(th?'<img src="'+esc(th)+'" alt="'+esc(f.caption).slice(0,30)+'" loading="lazy">':'')
-      +(ic?'<span class="pin"><svg viewBox="0 0 24 24">'+ic+'</svg></span>':'')
-      +(f.likes>0?'<span class="lk">♥ '+f.likes+'</span>':'')
-      +'<span class="ov"><b>'+esc(f.author||'익명')+'</b>'
-      +'<span>'+esc(f.caption).slice(0,26)+'</span></span></div>';
-  }
-
-  function draw(reset){
-    if(reset) shown=0;
-    shown=Math.min(view.length, shown+PAGE);
-    grid.innerHTML=view.slice(0,shown).map(function(f,i){return card(f,i);}).join('');
-    var mb=document.getElementById('ufMore');
-    if(mb) mb.style.display = shown<view.length ? '' : 'none';
-  }
-
-  function filter(f){
-    view = !f ? ALL.slice()
-      : (f==='video' ? ALL.filter(function(x){return x.kind==='video'||x.kind==='youtube';})
-                     : ALL.filter(function(x){return x.product_line===f;}));
-    draw(true);
-  }
-
-  window.ufOpen=function(i){
-    var f=view[i]; if(!f) return;
-    cur=f;
-    var m=document.getElementById('ufMedia');
-    var src=f.media_url||f.thumb_url;
-    m.innerHTML = (f.kind==='video' && /\.mp4/i.test(src))
-      ? '<video src="'+esc(src)+'" controls playsinline></video>'
-      : '<img src="'+esc(src)+'" alt="">';
-    document.getElementById('ufWho').textContent=f.author||'익명';
-    document.getElementById('ufHandle').textContent=f.author_handle||'';
-    document.getElementById('ufCap').textContent=f.caption||'';
-    document.getElementById('ufRate').textContent='★★★★★'.slice(0,f.rating||5);
-    document.getElementById('ufLikeN').textContent=f.likes||0;
-    var lb=document.getElementById('ufLike');
-    lb.classList.toggle('on', !!liked[f.id]);
-    var lk=document.getElementById('ufLink');
-    if(f.link_url){ lk.href=f.link_url; lk.style.display=''; } else lk.style.display='none';
-    document.getElementById('ufView').classList.remove('hide');
-    document.body.style.overflow='hidden';
-  };
-  window.ufClose=function(){
-    document.getElementById('ufView').classList.add('hide');
-    document.body.style.overflow='';
-    var v=document.querySelector('#ufMedia video'); if(v) v.pause();
-  };
-  window.ufLike=function(){
-    if(!cur||liked[cur.id]) return;
-    liked[cur.id]=1;
-    try{ localStorage.setItem('cg_film_like',JSON.stringify(liked)); }catch(e){}
-    cur.likes=(cur.likes||0)+1;
-    document.getElementById('ufLikeN').textContent=cur.likes;
-    document.getElementById('ufLike').classList.add('on');
-    fetch(SBu+'/rest/v1/film_likes',{method:'POST',
-      headers:{apikey:Ku,Authorization:'Bearer '+Ku,'Content-Type':'application/json',
-        Prefer:'return=minimal'},
-      body:JSON.stringify({film_id:cur.id,fp:fp()})}).catch(function(){});
-    fetch(SBu+'/rest/v1/user_films?id=eq.'+cur.id,{method:'PATCH',
-      headers:{apikey:Ku,Authorization:'Bearer '+Ku,'Content-Type':'application/json',
-        Prefer:'return=minimal'},
-      body:JSON.stringify({likes:cur.likes})}).catch(function(){});
-    draw(false);
-  };
-
-  document.querySelectorAll('#ufTabs button').forEach(function(b){
-    b.onclick=function(){
-      document.querySelectorAll('#ufTabs button').forEach(function(x){x.classList.remove('on');});
-      b.classList.add('on'); filter(b.dataset.f);
-    };
-  });
-  var mb=document.getElementById('ufMore');
-  if(mb) mb.onclick=function(){ draw(false); };
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape') ufClose(); });
-
-  function empty(msg){
-    grid.innerHTML='<div class="uf-card" onclick="location.href=\'reports.html\'" '
-      +'style="display:flex;flex-direction:column;align-items:center;justify-content:center;'
-      +'gap:8px;background:linear-gradient(160deg,#FFF7FA,#FFEFF3);'
-      +'border:1.5px dashed rgba(216,37,88,.3);box-shadow:none;cursor:pointer">'
-      +'<span style="font-size:28px;color:var(--main);font-weight:300">+</span>'
-      +'<b style="font-size:12.5px;text-align:center;line-height:1.4">여기에 당신의<br>순간이 들어갑니다</b>'
-      +(msg?'<span style="font-size:10px;color:#999">'+esc(msg)+'</span>':'')+'</div>';
-    var c=document.getElementById('ufCnt');
-    if(c) c.textContent='첫 주인공을 기다립니다';
-  }
-
-  fetch(SBu+'/rest/v1/user_films?select=*&status=eq.approved&order=sort_order.asc&limit=40',
-    {headers:{apikey:Ku,Authorization:'Bearer '+Ku}})
-  .then(function(r){
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    return r.json();
-  })
-  .then(function(rows){
-    ALL=(rows||[]).filter(function(x){ return x && (x.thumb_url||x.media_url); });
-    /* 대표를 앞으로 */
-    ALL.sort(function(a,b){
-      if(a.featured!==b.featured) return a.featured?-1:1;
-      return (a.sort_order||0)-(b.sort_order||0);
-    });
-    var c=document.getElementById('ufCnt');
-    if(!ALL.length){ empty(''); return; }
-    if(c) c.textContent=ALL.length+'개의 순간';
-    var avg=ALL.reduce(function(s,x){return s+(x.rating||5);},0)/ALL.length;
-    var av=document.getElementById('ufAvg');
-    if(av) av.textContent=avg.toFixed(1);
-    filter('');
-  })
-  .catch(function(e){
-    /* 서버가 응답하지 않아도 화면은 채운다 */
-    ALL=[
-      {id:1,kind:'instagram',thumb_url:'assets/detail/travel-01.jpg',
-       media_url:'assets/detail/travel-01.jpg',
-       link_url:'https://www.instagram.com/chewgumi_official/',
-       author:'민트 사탕의 서늘한 초록',author_handle:'@travel_min',
-       caption:'제주 3박4일 내내 가방에 넣고 다녔어요',product_line:'travel',rating:5,likes:42},
-      {id:2,kind:'image',thumb_url:'assets/detail/dew-01.jpg',
-       media_url:'assets/detail/dew-01.jpg',link_url:'',
-       author:'한여름 바다의 푸른색',author_handle:'@dew_lover',
-       caption:'회의 전에 하나씩. 입안이 개운해서 좋아요',product_line:'doit',rating:5,likes:31},
-      {id:3,kind:'image',thumb_url:'assets/detail/travel-07.jpg',
-       media_url:'assets/detail/travel-07.jpg',link_url:'',
-       author:'오후 네 시 창가의 금색',author_handle:'@yuna_daily',
-       caption:'아이도 잘 먹어요. 젤리라 거부감이 없네요',product_line:'travel',rating:5,likes:28},
-      {id:4,kind:'image',thumb_url:'assets/detail/dew-03.jpg',
-       media_url:'assets/detail/dew-03.jpg',link_url:'',
-       author:'늦여름 포도의 보랏빛',author_handle:'@grape_kim',
-       caption:'포도맛이 진짜 포도 같아요. 무설탕인데 달아요',product_line:'doit',rating:5,likes:24},
-      {id:5,kind:'image',thumb_url:'assets/detail/travel-11.jpg',
-       media_url:'assets/detail/travel-11.jpg',link_url:'',
-       author:'첫눈이 쌓인 날의 흰색',author_handle:'@snow_j',
-       caption:'출장 갈 때 챙겨요. 파우치가 가벼워서 좋아요',product_line:'travel',rating:5,likes:19},
-      {id:6,kind:'image',thumb_url:'assets/detail/dew-08.jpg',
-       media_url:'assets/detail/dew-08.jpg',link_url:'',
-       author:'새벽 다섯 시의 보랏빛',author_handle:'@dawn_five',
-       caption:'자기 전에 하나. 양치 후에도 부담 없어요',product_line:'doit',rating:5,likes:16},
-      {id:7,kind:'image',thumb_url:'assets/detail/travel-14.jpg',
-       media_url:'assets/detail/travel-14.jpg',link_url:'',
-       author:'이른 봄 새싹의 연둣빛',author_handle:'@spring_lee',
-       caption:'비타민을 물 없이 먹을 수 있어서 좋아요',product_line:'travel',rating:5,likes:13},
-      {id:8,kind:'image',thumb_url:'assets/detail/dew-12.jpg',
-       media_url:'assets/detail/dew-12.jpg',link_url:'',
-       author:'바랜 청바지의 하늘빛',author_handle:'@blue_park',
-       caption:'사무실 서랍에 두고 먹어요',product_line:'doit',rating:5,likes:11}
-    ];
-    var c=document.getElementById('ufCnt');
-    if(c) c.textContent=ALL.length+'개의 순간';
-    filter('');
-  });
+  var grid = document.getElementById('ufGrid');
+  if (!grid) return;
+  var cards = grid.querySelectorAll('.uf-card');
+  var c = document.getElementById('ufCnt');
+  if (c) c.textContent = cards.length ? (cards.length + '개의 순간') : '첫 주인공을 기다립니다';
 })();
-
 </script>
 <script src="assets/drag.js" defer></script>
 <script>
@@ -6152,7 +6008,7 @@ header .logo img{ image-rendering:auto }
       var ok = !f ? true
         : (f==='video' ? (c.dataset.kind==='video'||c.dataset.kind==='youtube')
                        : c.dataset.line===f);
-      c.style.display = ok ? '' : 'none';
+      c.classList.toggle('hide', !ok);
     });
   });
 })();
