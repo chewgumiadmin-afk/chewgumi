@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v34 · MedIT -->
+<!-- ChewGumi Product Detail v35 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -407,10 +407,13 @@ function imgUrl(src){
   return CDN + src;
 }
 
+var PSB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+var PKEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
 function loadProducts(){
-  return fetch(SB+'/rest/v1/products?select=id,name,line,price_origin,price_sale,image,detail_images,stock,active'
+  return fetch(PSB+'/rest/v1/products?select=id,name,line,price_origin,price_sale,image,detail_images,stock,active'
       +'&active=eq.true&order=id',
-      {headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+      {headers:{apikey:PKEY,Authorization:'Bearer '+PKEY}})
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){
       (rows||[]).forEach(function(x){
