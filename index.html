@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v109 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v110 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v109 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v110 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -3720,102 +3720,7 @@ body.at-foot .kko-fab{
   </div>
 </div>
 
-<script>
-/* ═══ User Films ═══ */
-(function(){
-  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-  var FN=SB+'/functions/v1/films';
-  var $=function(i){return document.getElementById(i);};
-  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
-  var REWARD=0;
 
-  function hd(){
-    var h={'Content-Type':'application/json',apikey:KEY};
-    try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s&&s.t) h.Authorization='Bearer '+s.t;}catch(e){}
-    return h;
-  }
-  function call(p){
-    return fetch(FN,{method:'POST',headers:hd(),body:JSON.stringify(p)})
-      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); });
-  }
-  var SRC={instagram:'Instagram',youtube:'YouTube',link:'Link',upload:'영상'};
-
-  function load(){
-    var g=$('ufGrid'); if(!g) return;
-    call({action:'list'}).then(function(res){
-      var d=res.d||{}; REWARD=d.reward||0;
-      var items=d.items||[];
-      if(d.guide) $('ufGuide').textContent=d.guide;
-      $('ufLead').textContent = items.length
-        ? '츄구미를 즐기는 순간을 공유해 주세요. 채택되면 적립금을 드립니다.'
-        : '첫 번째 영상의 주인공이 되어 주세요.';
-
-      var html=items.map(function(v){
-        return '<a class="uf-card" href="'+esc(v.video_url)+'" target="_blank" rel="noopener">'
-          +(v.thumb_url?'<img src="'+esc(v.thumb_url)+'" alt="" loading="lazy">':'')
-          +'<span class="src">'+esc(SRC[v.source]||'영상')+'</span>'
-          +'<span class="play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>'
-          +'<span class="who">'+esc(v.author||'')+(v.title?' · '+esc(v.title):'')+'</span>'
-          +'</a>';
-      }).join('');
-
-      html+='<div class="uf-add" onclick="filmOpen()">'
-        +'<span class="ic">+</span>'
-        +'<b>여기에 당신의<br>영상이 들어갑니다</b>'
-        +'<span>인스타 · 유튜브 링크로<br>간단하게 참여하세요</span>'
-        +(REWARD?'<span class="rw">적립금 '+REWARD.toLocaleString()+'원</span>':'')
-        +'</div>';
-      g.innerHTML=html;
-    }).catch(function(){
-      $('ufGrid').innerHTML='<div class="uf-add" onclick="filmOpen()">'
-        +'<span class="ic">+</span><b>여기에 당신의<br>영상이 들어갑니다</b>'
-        +'<span>인스타 · 유튜브 링크로<br>간단하게 참여하세요</span></div>';
-    });
-  }
-
-  window.filmOpen=function(){
-    $('ufPop').classList.add('on');
-    $('ufMsg').textContent='';
-    document.body.style.overflow='hidden';
-  };
-  window.filmClose=function(){
-    $('ufPop').classList.remove('on');
-    document.body.style.overflow='';
-  };
-  window.filmSubmit=function(){
-    var name=$('ufName').value.trim(), url=$('ufUrl').value.trim();
-    if(!name) return $('ufMsg').textContent='이름을 입력해 주세요.';
-    if(!url) return $('ufMsg').textContent='영상 링크를 넣어주세요.';
-    $('ufGo').disabled=true; $('ufMsg').textContent='등록 중…';
-    call({action:'submit',author:name,url:url,
-      title:$('ufTitle').value.trim(),memo:$('ufMemo').value.trim()})
-    .then(function(res){
-      $('ufGo').disabled=false;
-      if(!res.ok){
-        if(res.d.needLogin){
-          $('ufMsg').innerHTML='로그인 후 참여하실 수 있습니다. '
-            +'<a href="login.html" style="text-decoration:underline">로그인하기</a>';
-        } else $('ufMsg').textContent=res.d.error||'등록에 실패했습니다.';
-        return;
-      }
-      $('ufMsg').style.color='#2AA060';
-      $('ufMsg').textContent='등록되었습니다. 확인 후 게시해 드리겠습니다.'
-        +(res.d.reward?' 채택되면 적립금 '+res.d.reward.toLocaleString()+'원을 드립니다.':'');
-      $('ufName').value=''; $('ufUrl').value=''; $('ufTitle').value=''; $('ufMemo').value='';
-      setTimeout(filmClose,2600);
-    }).catch(function(){
-      $('ufGo').disabled=false;
-      $('ufMsg').textContent='네트워크 오류가 발생했습니다.';
-    });
-  };
-  $('ufPop').onclick=function(e){ if(e.target===$('ufPop')) filmClose(); };
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',load);
-  else load();
-})();
-</script>
 
 <style>
 /* ═══ 영상 — 포스터 + 유리 재생버튼 ═══ */
