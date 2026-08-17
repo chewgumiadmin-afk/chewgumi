@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v104 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v105 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1472,7 +1472,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v104 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v105 · 2026-08-16</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1815,7 +1815,10 @@ function openDetail(card){
   document.getElementById('dImg').src = img.src;
   document.getElementById('dName').textContent = card.querySelector('.name').textContent;
   document.getElementById('dLine').textContent = card.dataset.line === 'travel' ? 'TRAVEL-IT' : 'DEW-IT';
-  document.getElementById('dOrigin').textContent = card.querySelector('.p-origin').textContent;
+  var _og = card.querySelector('.p-origin');
+  var _ogEl = document.getElementById('dOrigin');
+  if (_og) { _ogEl.textContent = _og.textContent; _ogEl.style.display = ''; }
+  else { _ogEl.textContent = ''; _ogEl.style.display = 'none'; }
   const sale = card.querySelector('.p-sale').textContent;
   document.getElementById('dSale').textContent = sale;
   window._curCard = card;
