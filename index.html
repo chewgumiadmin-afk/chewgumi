@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v115 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v116 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v115 · 2026-08-18</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v116 · 2026-08-18</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5912,6 +5912,59 @@ footer{ padding-bottom:56px !important }
   .card{ -webkit-tap-highlight-color:rgba(216,37,88,.08) }
   .card:active{ transform:scale(.985);transition:transform .12s }
 }
+
+/* ══ 모바일 메뉴 겹침 수정 ══
+   헤더가 z-index:900 이라 서랍(201)이 아래로 깔리던 문제.
+   서랍을 헤더보다 위로 올리고, 열려 있을 때 헤더를 잠시 내립니다. */
+.drawer-dim{ z-index:1200 !important }
+.drawer{
+  z-index:1201 !important;
+  width:min(86vw,340px) !important;
+  height:100% !important;
+  max-height:100svh !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding-top:calc(18px + env(safe-area-inset-top)) !important;
+  padding-bottom:calc(24px + env(safe-area-inset-bottom)) !important;
+  background:rgba(255,255,255,.96) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(120%);
+  backdrop-filter:blur(24px) saturate(120%);
+  box-shadow:0 0 40px rgba(0,0,0,.18);
+}
+/* 서랍이 열리면 헤더·플로팅 버튼을 내린다 */
+body:has(.drawer.open) header,
+body:has(.drawer.open) .topbar{ z-index:50 !important }
+body:has(.drawer.open) .float-wrap,
+body:has(.drawer.open) .fl-btns,
+body:has(.drawer.open) .cgbot-fab,
+body:has(.drawer.open) .kko-fab{ opacity:0 !important;pointer-events:none !important }
+body:has(.drawer.open){ overflow:hidden }
+
+/* :has() 를 모르는 브라우저 대비 — 스크립트가 붙이는 표시 */
+body.drawer-on header,
+body.drawer-on .topbar{ z-index:50 !important }
+body.drawer-on .float-wrap,
+body.drawer-on .fl-btns,
+body.drawer-on .cgbot-fab,
+body.drawer-on .kko-fab{ opacity:0 !important;pointer-events:none !important }
+body.drawer-on{ overflow:hidden }
+
+/* 닫기 버튼 — 안전영역 안쪽으로 */
+.drawer .d-close{
+  top:calc(14px + env(safe-area-inset-top)) !important;
+  right:16px !important;
+  width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:rgba(0,0,0,.05);
+  z-index:2;
+}
+.drawer .d-brand, .drawer > .d-top{ padding-right:52px }
+
+@media(max-width:640px){
+  .drawer{ width:min(88vw,330px) !important }
+  .drawer nav a{ min-height:48px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6187,6 +6240,26 @@ footer{ padding-bottom:56px !important }
 
   var c = document.getElementById('ufCnt');
   if (c) c.textContent = cards.length ? (cards.length + '개의 순간') : '첫 주인공을 기다립니다';
+})();
+</script>
+
+<script>
+/* 모바일 메뉴 — 열림 상태를 본문에 표시 (헤더 겹침 방지) */
+(function(){
+  var dr = document.querySelector('.drawer');
+  if (!dr) return;
+  function sync(){
+    document.body.classList.toggle('drawer-on', dr.classList.contains('open'));
+  }
+  if (window.MutationObserver) {
+    new MutationObserver(sync).observe(dr, { attributes:true, attributeFilter:['class'] });
+  }
+  sync();
+  /* 뒤로가기로 나갈 때 정리 */
+  window.addEventListener('pageshow', function(){
+    dr.classList.remove('open');
+    document.body.classList.remove('drawer-on');
+  });
 })();
 </script>
 </body>
