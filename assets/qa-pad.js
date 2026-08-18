@@ -529,7 +529,11 @@
   /* ── 화면 읽기 ── */
   function readScreen() {
     var bad = [], stat = { t: 0, i: 0, b: 0, f: 0 }, seen = {};
+    var VW = document.documentElement.clientWidth;
+    var isNarrow = VW <= 768;
 
+    /* 글자 — 화면 폭에 따라 기준을 다르게 */
+    var minFont = isNarrow ? 12 : 11;
     var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
     var n, c = 0;
     while ((n = tw.nextNode()) && c < 150) {
@@ -540,10 +544,17 @@
       var r = p.getBoundingClientRect();
       if (!r.width || r.bottom < 0 || r.top > window.innerHeight) continue;
       seen[t] = 1; stat.t++; c++;
-      var sz = parseFloat(getComputedStyle(p).fontSize);
-      if (sz < 11) bad.push('작은 글씨 ' + Math.round(sz) + 'px : ' + t.slice(0, 22));
+      var cs = getComputedStyle(p);
+      var sz = parseFloat(cs.fontSize);
+      if (sz < minFont) bad.push('작은 글씨 ' + Math.round(sz) + 'px : ' + t.slice(0, 22));
+      /* 줄 간격 */
+      var lh = parseFloat(cs.lineHeight);
+      if (lh && sz && lh / sz < 1.35 && t.length > 30)
+        bad.push('줄 간격 좁음 : ' + t.slice(0, 20));
     }
 
+    /* 이미지 — 비율·화소밀도까지 */
+    var dpr = window.devicePixelRatio || 1;
     var imgs = document.querySelectorAll('img');
     for (var i = 0; i < imgs.length && i < 40; i++) {
       var im = imgs[i];
@@ -551,18 +562,27 @@
       var ir = im.getBoundingClientRect();
       if (!ir.width) continue;
       stat.i++;
-      var src = (im.getAttribute('src') || '').split('/').pop().slice(0, 28);
+      var src = (im.getAttribute('src') || '').split('/').pop().slice(0, 26);
       if (!im.complete || !im.naturalWidth) { bad.push('안 뜨는 이미지 : ' + src); continue; }
       if (im.getAttribute('alt') === null) bad.push('alt 없음 : ' + src);
+      /* 자리 미리 잡기 — 화면 튐 방지 */
+      if (!im.getAttribute('width') && !getComputedStyle(im).aspectRatio.match(/\d/))
+        bad.push('크기 미지정 : ' + src + ' (화면이 튑니다)');
       var nr = im.naturalWidth / im.naturalHeight, dr = ir.width / ir.height;
       var fit = getComputedStyle(im).objectFit;
       if (Math.abs(nr - dr) / nr > 0.18 && (fit === 'fill' || fit === 'none'))
         bad.push('찌그러짐 : ' + src);
-      if (im.naturalWidth > ir.width * 3)
-        bad.push('원본 너무 큼 : ' + src + ' ' + im.naturalWidth + 'px');
+      /* 화소 밀도 — 레티나에서 흐림 */
+      if (im.naturalWidth < ir.width * dpr * 0.85)
+        bad.push('흐릿함 : ' + src + ' (원본 ' + im.naturalWidth + 'px, 필요 ' +
+          Math.ceil(ir.width * dpr) + 'px)');
+      if (im.naturalWidth > ir.width * dpr * 2.5)
+        bad.push('원본 과다 : ' + src + ' ' + im.naturalWidth + 'px');
     }
 
-    var bs = document.querySelectorAll('button, a[href], [role=button]');
+    /* 버튼 — 손가락 크기 기준 */
+    var minTap = isNarrow ? 44 : 32;
+    var bs = document.querySelectorAll('button, a[href], [role=button], input[type=submit]');
     for (var j = 0; j < bs.length && j < 60; j++) {
       var b = bs[j];
       if (b.closest('.cgp')) continue;
@@ -572,10 +592,11 @@
       var lb = (b.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 26) ||
         b.getAttribute('aria-label') || '';
       if (!lb) bad.push('이름 없는 버튼');
-      else if (br.height < 36 && br.width < 120)
+      else if (br.height < minTap && br.width < 120)
         bad.push('누르기 작음 ' + Math.round(br.height) + 'px : ' + lb.slice(0, 16));
     }
 
+    /* 입력칸 — 아이폰 확대 방지 16px */
     var fs = document.querySelectorAll('input:not([type=hidden]), textarea, select');
     for (var k = 0; k < fs.length && k < 30; k++) {
       var f = fs[k];
@@ -583,36 +604,62 @@
       stat.f++;
       var fl = (f.closest('label') && f.closest('label').textContent.trim()) ||
         f.getAttribute('aria-label') || f.placeholder || '';
-      var prev = f.previousElementSibling;
-      if (!fl && prev && /LABEL|SPAN/.test(prev.tagName)) fl = prev.textContent.trim();
+      var pv = f.previousElementSibling;
+      if (!fl && pv && /LABEL|SPAN/.test(pv.tagName)) fl = pv.textContent.trim();
       if (!fl) bad.push('안내 없는 입력칸 : ' + (f.name || f.id || f.type));
-      if (/INPUT|TEXTAREA/.test(f.tagName) &&
+      if (/INPUT|TEXTAREA|SELECT/.test(f.tagName) &&
           parseFloat(getComputedStyle(f).fontSize) < 16)
-        bad.push('입력칸 16px 미만 — 아이폰에서 확대됨');
+        bad.push('입력칸 16px 미만 — 아이폰에서 화면이 확대됩니다');
     }
 
-    var over = 0, all = document.body.querySelectorAll('*');
-    for (var q = 0; q < all.length && q < 500; q++) {
+    /* 가로 넘침 — 좌우로 밀리는 원인 */
+    var over = [], all = document.body.querySelectorAll('*');
+    for (var q = 0; q < all.length && q < 600; q++) {
       var e = all[q];
       if (e.closest('.cgp')) continue;
       var er = e.getBoundingClientRect();
-      if (er.width && er.right > window.innerWidth + 2) over++;
+      if (er.width && er.right > VW + 2) {
+        var nm = e.tagName.toLowerCase() +
+          (e.className && typeof e.className === 'string' && e.className.split(' ')[0]
+            ? '.' + e.className.split(' ')[0] : '');
+        if (over.indexOf(nm) < 0) over.push(nm);
+      }
     }
-    if (over > 2) bad.push('화면 밖으로 나간 요소 ' + over + '개 — 좌우 밀림');
+    if (over.length)
+      bad.push('화면 밖으로 나감 : ' + over.slice(0, 3).join(', ') +
+        (over.length > 3 ? ' 외 ' + (over.length - 3) : ''));
+
+    /* 안전영역 — 아이폰 아래 버튼 가림 */
+    if (isNarrow) {
+      var sab = getComputedStyle(document.documentElement)
+        .getPropertyValue('--sab') ||
+        (window.CSS && CSS.supports('padding:env(safe-area-inset-bottom)') ? 'ok' : '');
+      var fixed = document.querySelectorAll('[style*="position:fixed"], .float-wrap, .fl-btns');
+      for (var z = 0; z < fixed.length; z++) {
+        var fe = fixed[z];
+        if (fe.closest('.cgp')) continue;
+        var fr = fe.getBoundingClientRect();
+        if (fr.bottom > window.innerHeight - 8 && fr.height) {
+          bad.push('아래 끝에 붙음 : 홈 버튼에 가릴 수 있습니다');
+          break;
+        }
+      }
+    }
 
     var uniq = [], mark = {};
-    for (var z = 0; z < bad.length; z++) {
-      if (mark[bad[z]]) continue;
-      mark[bad[z]] = 1; uniq.push(bad[z]);
+    for (var y = 0; y < bad.length; y++) {
+      if (mark[bad[y]]) continue;
+      mark[bad[y]] = 1; uniq.push(bad[y]);
     }
-    return { bad: uniq, stat: stat };
+    return { bad: uniq, stat: stat, vw: VW, dpr: dpr };
   }
 
   function paintRead(d, auto) {
     var box = pad.querySelector('.cgp-res');
     if (!box) return;
     box.className = 'cgp-res on';
-    var sum = '<div class="r"><i class="q">.</i><span>글자 ' + d.stat.t +
+    var sum = '<div class="r"><i class="q">.</i><span>' +
+      (d.vw ? d.vw + 'px · ' + (d.dpr || 1) + '배 · ' : '') + '글자 ' + d.stat.t +
       ' · 이미지 ' + d.stat.i + ' · 버튼 ' + d.stat.b +
       ' · 입력칸 ' + d.stat.f + '</span></div>';
     if (!d.bad.length) {
