@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v116 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v117 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v116 · 2026-08-18</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v117 · 2026-08-18</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5965,6 +5965,65 @@ body.drawer-on{ overflow:hidden }
   .drawer{ width:min(88vw,330px) !important }
   .drawer nav a{ min-height:48px !important }
 }
+
+/* ══ 모바일 메뉴 — 최종 확정 ══
+   서랍을 항상 맨 위에 두고, 열려 있을 때 다른 층을 모두 내립니다. */
+.drawer-dim{
+  position:fixed !important; inset:0 !important;
+  z-index:2147482000 !important;
+  background:rgba(15,10,14,.42) !important;
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.drawer{
+  position:fixed !important;
+  top:0 !important; left:0 !important; bottom:0 !important; right:auto !important;
+  z-index:2147482001 !important;
+  width:min(86vw,340px) !important;
+  height:100% !important; max-height:100svh !important;
+  margin:0 !important;
+  overflow-y:auto !important; overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:calc(20px + env(safe-area-inset-top)) 18px
+          calc(28px + env(safe-area-inset-bottom)) 18px !important;
+  background:#fff !important;
+  opacity:1 !important;
+  box-shadow:6px 0 40px rgba(0,0,0,.2) !important;
+  isolation:isolate;
+}
+.drawer > *{ opacity:1 !important }
+
+/* 열려 있는 동안 다른 층을 확실히 내린다 */
+body.drawer-on header,
+body.drawer-on .topbar,
+body.drawer-on .float-wrap,
+body.drawer-on .fl-btns,
+body.drawer-on .cgbot-fab,
+body.drawer-on .kko-fab,
+body.drawer-on .tabbar,
+body.drawer-on .bottom-nav{
+  z-index:1 !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  visibility:hidden !important;
+}
+body.drawer-on{ overflow:hidden !important; touch-action:none }
+
+/* 닫기 버튼 */
+.drawer .d-close{
+  position:absolute !important;
+  top:calc(16px + env(safe-area-inset-top)) !important;
+  right:16px !important;
+  width:38px; height:38px; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  border:0; border-radius:50%; cursor:pointer;
+  background:rgba(0,0,0,.06); color:#17171c; font-size:16px;
+  z-index:3;
+}
+.drawer .d-logo{ padding-right:50px; margin-bottom:14px }
+
+@media(max-width:640px){
+  .drawer{ width:min(88vw,330px) !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6259,6 +6318,51 @@ body.drawer-on{ overflow:hidden }
   window.addEventListener('pageshow', function(){
     dr.classList.remove('open');
     document.body.classList.remove('drawer-on');
+  });
+})();
+</script>
+
+<script>
+/* 모바일 메뉴 — 항상 맨 위에 오도록 본문 끝으로 옮긴다 */
+(function(){
+  var dr  = document.getElementById('drawer');
+  var dim = document.getElementById('drawerDim');
+  if (!dr) return;
+
+  /* 헤더 안에 있으면 층 순서가 꼬이므로 body 마지막으로 이동 */
+  if (dr.parentElement !== document.body) document.body.appendChild(dr);
+  if (dim && dim.parentElement !== document.body) document.body.appendChild(dim);
+
+  function sync(){
+    var open = dr.classList.contains('open');
+    document.body.classList.toggle('drawer-on', open);
+  }
+  if (window.MutationObserver) {
+    new MutationObserver(sync).observe(dr, { attributes:true, attributeFilter:['class'] });
+  }
+  sync();
+
+  /* Esc 로 닫기 */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && dr.classList.contains('open')) {
+      if (window.toggleDrawer) toggleDrawer(false);
+      else { dr.classList.remove('open'); sync(); }
+    }
+  });
+
+  /* 화면을 옮기거나 돌아올 때 정리 */
+  function reset(){
+    dr.classList.remove('open');
+    if (dim) dim.classList.remove('on');
+    document.body.classList.remove('drawer-on');
+  }
+  window.addEventListener('pageshow', reset);
+  window.addEventListener('popstate', reset);
+
+  /* 메뉴 안 링크를 누르면 닫는다 */
+  dr.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (a && a.getAttribute('href') && a.getAttribute('href').charAt(0) !== '#') reset();
   });
 })();
 </script>
