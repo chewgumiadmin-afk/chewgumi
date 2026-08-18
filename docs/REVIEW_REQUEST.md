@@ -1,7 +1,7 @@
 # 대표님 검토 요청 — 오픈 전 점검
 
 작성일 2026-08-13 · 작성 MedIT
-검토 대상 https://hyunjeongshin83.github.io/chewgumi/
+검토 대상 https://chewgumiadmin-afk.github.io/chewgumi/
 
 ---
 
@@ -179,13 +179,13 @@
 **모바일에서 확인하실 것을 권합니다.** 고객 대부분이 휴대폰으로 접속합니다.
 
 ```
-https://hyunjeongshin83.github.io/chewgumi/
+https://chewgumiadmin-afk.github.io/chewgumi/
 ```
 
 **이상한 점은 이슈 보드에 남겨주세요.**
 
 ```
-https://hyunjeongshin83.github.io/chewgumi/issue.html
+https://chewgumiadmin-afk.github.io/chewgumi/issue.html
 ```
 
 로그인 없이 등록 가능하며, 등록 즉시 담당자 메일과 GitHub로 전달됩니다.
