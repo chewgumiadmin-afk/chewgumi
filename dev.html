@@ -127,6 +127,22 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* ══ 선택 상자 — 화살표 하나만 ══
+   브라우저 기본 화살표와 배경으로 넣은 화살표가 겹쳐
+   두 개로 보이던 문제. */
+select{
+  -webkit-appearance:none !important;
+  -moz-appearance:none !important;
+  appearance:none !important;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%237a7a82' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:right 15px center !important;
+  background-size:12px 8px !important;
+  padding-right:40px !important;
+  cursor:pointer;
+}
+select::-ms-expand{ display:none !important }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
