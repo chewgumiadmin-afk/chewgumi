@@ -9,6 +9,7 @@
 
   var SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
   var KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var EXCL = '.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]';
   var page = location.pathname.split('/').pop() || 'index.html';
 
   /* 입력칸 성격 파악 */
@@ -93,23 +94,72 @@
     setTimeout(function () { el.style.outline = ''; }, 1500);
   }
 
+  /* 형식만 보고도 알맞은 값을 만든다 — 인식 실패한 칸도 비우지 않는다 */
+  function byType(el) {
+    var t = (el.type || '').toLowerCase();
+    var stamp = new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '');
+    if (t === 'number') {
+      var mn = parseFloat(el.min), mx = parseFloat(el.max);
+      var v = isNaN(mn) ? 1 : mn;
+      if (!isNaN(mx) && v > mx) v = mx;
+      return String(v || 1);
+    }
+    if (t === 'date')  return new Date().toISOString().slice(0, 10);
+    if (t === 'time')  return '14:00';
+    if (t === 'datetime-local') return new Date().toISOString().slice(0, 16);
+    if (t === 'month') return new Date().toISOString().slice(0, 7);
+    if (t === 'week')  return new Date().toISOString().slice(0, 4) + '-W33';
+    if (t === 'url')   return 'https://chewgumi.com';
+    if (t === 'search') return '트래블잇';
+    if (t === 'color') return '#D82558';
+    if (t === 'range') {
+      var a = parseFloat(el.min) || 0, b = parseFloat(el.max) || 100;
+      return String(Math.round((a + b) / 2));
+    }
+    if (el.tagName === 'TEXTAREA') return '[테스트] 점검 중 입력한 내용입니다.';
+    if (el.maxLength > 0 && el.maxLength <= 6) return '1234'.slice(0, el.maxLength);
+    return '테스트' + stamp.slice(-4);
+  }
+
+  /* select 는 첫 번째 실제 항목을 고른다 */
+  function pickSelect(el) {
+    if (el.value && el.value.trim()) return 0;
+    var n = 0;
+    for (var i = 0; i < el.options.length; i++) {
+      var o = el.options[i];
+      var t = (o.textContent || '').trim();
+      if (!o.value || o.disabled) continue;
+      if (/선택|choose|select|^--/.test(t)) continue;
+      el.selectedIndex = i;
+      ['input', 'change'].forEach(function (ev) {
+        el.dispatchEvent(new Event(ev, { bubbles: true }));
+      });
+      el.style.outline = '2px solid #2AA060';
+      setTimeout(function () { el.style.outline = ''; }, 1500);
+      n = 1; break;
+    }
+    return n;
+  }
+
   function targets() {
     var out = [];
     var els = document.querySelectorAll(
-      'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]), textarea');
+      'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file])' +
+      ':not([type=submit]):not([type=button]):not([type=image]):not([type=reset]), textarea');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]')) continue;
-      if (el.disabled || el.offsetParent === null) continue;
+      if (el.closest(EXCL)) continue;
+      if (el.disabled) continue;
+      if (el.offsetParent === null && el.type !== 'hidden') continue;
       if (el.value && el.value.trim()) continue;
       var g = guess(el);
-      if (!g) continue;
-      out.push({ el: el, key: 'f' + i, guess: g, label: label(el), type: el.type || 'text' });
+      out.push({ el: el, key: 'f' + i, guess: g || 'free',
+        label: label(el), type: el.type || 'text',
+        fallback: byType(el) });
     }
     return out;
   }
 
-  /* 화면 맥락 — 제목과 주요 글자 */
   function context() {
     var t = [];
     var h = document.querySelector('h1, h2, .sec-title, .head h1');
@@ -136,7 +186,7 @@
     var cbs = document.querySelectorAll('input[type=checkbox]');
     for (var j = 0; j < cbs.length; j++) {
       var c = cbs[j];
-      if (c.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]')) continue;
+      if (c.closest(EXCL)) continue;
       if (c.offsetParent === null || c.checked) continue;
       var t = ((c.closest('label') || {}).textContent || c.id || '').toLowerCase();
       if (/동의|약관|필수|agree/.test(t)) { c.click(); n++; }
@@ -152,7 +202,7 @@
       var els = document.querySelectorAll('input');
       for (var i = 0; i < els.length; i++) {
         var el = els[i];
-        if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]') || el.offsetParent === null) continue;
+        if (el.closest(EXCL) || el.offsetParent === null) continue;
         if (el.value && el.value.trim()) continue;
         if (guess(el) !== kind) continue;
         setVal(el, val); done++;
@@ -162,10 +212,22 @@
     return done;
   }
 
+  function fillSelects() {
+    var n = 0;
+    var ss = document.querySelectorAll('select');
+    for (var i = 0; i < ss.length; i++) {
+      var el = ss[i];
+      if (el.closest(EXCL) || el.disabled || el.offsetParent === null) continue;
+      n += pickSelect(el);
+    }
+    return n;
+  }
+
   function fill(btn) {
     var fs = targets();
+    var pre = fillSelects();
     if (!fs.length) {
-      var n0 = checkAgree();
+      var n0 = checkAgree() + pre;
       toast(n0 ? (n0 + '곳을 선택했습니다') : '채울 입력칸이 없습니다', !n0);
       return;
     }
@@ -189,8 +251,10 @@
         var v = (d && d.values) || {};
         var n = 0;
         fs.forEach(function (f) {
-          if (v[f.key]) { setVal(f.el, String(v[f.key])); n++; }
+          var val = v[f.key] || f.fallback;
+          if (val) { setVal(f.el, String(val)); n++; }
         });
+        n += fillSelects();
         n += checkAgree();
         toast(n + '곳을 채웠습니다' + (d.by === 'ai' ? '' : ' (기본값)'));
       }).catch(function () {
@@ -203,7 +267,7 @@
     var els = document.querySelectorAll('input:not([type=hidden]), textarea');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.closest('.qa-bar, .qa-bg, .cgbot-win, .cgp, .cgp-b, .qk, .cgm-bg, [data-qa-skip]')) continue;
+      if (el.closest(EXCL)) continue;
       if (el.type === 'checkbox' || el.type === 'radio') { if (el.checked) el.click(); }
       else if (el.value) setVal(el, '');
     }
