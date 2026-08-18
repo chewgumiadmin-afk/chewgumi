@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v38 · MedIT -->
+<!-- ChewGumi Product Detail v39 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1025,74 +1025,100 @@ input, textarea, select{ font-size:16px !important }
 #pDetailImgs::after{display:none !important}
 .pd-more{display:none !important}
 
-/* ══ 상세 이미지 — 최종 확정 ══
-   여러 겹 쌓인 규칙을 마지막에 한 번에 정리합니다.
-   원본이 868px 이라 모바일 레티나(3배)에서 흐릿해 보이던 문제도 함께. */
-#pDetailWrap{
-  padding-left:0 !important;
-  padding-right:0 !important;
-}
-#pDetailImgs{
-  display:block !important;
-  width:100% !important;
-  max-width:900px !important;
-  margin:0 auto !important;
-  padding:0 !important;
-  border-radius:18px !important;
-  overflow:hidden !important;
-  background:#fff !important;
-  box-shadow:0 10px 30px rgba(0,0,0,.06) !important;
-  font-size:0 !important;
-  line-height:0 !important;
-  max-height:none !important;
-}
+/* ══ 상세 이미지 — 화면 크기별로 완전히 나눔 ══
+   PC 규칙과 모바일 규칙이 서로 건드리지 않도록
+   각각 미디어쿼리 안에만 둡니다. */
+
+/* ── 공통 (크기와 무관한 것만) ── */
 #pDetailImgs .pd-img{
-  width:100% !important;
-  height:auto !important;
-  max-width:none !important;
-  display:block !important;
-  margin:0 !important;
-  padding:0 !important;
-  border-radius:0 !important;
-  object-fit:contain !important;
-  /* 확대해서 그릴 때 또렷하게 */
-  image-rendering:auto;
+  height:auto;
+  display:block;
+  object-fit:contain;
   -webkit-transform:translateZ(0);
   transform:translateZ(0);
   backface-visibility:hidden;
 }
 
-/* 대표 이미지 — 모바일에서 크게 */
-#pImg{
-  width:100% !important;
-  height:auto !important;
-  max-height:none !important;
-  aspect-ratio:1/1;
-  object-fit:contain !important;
-  padding:5% !important;
-  display:block !important;
-  background:radial-gradient(120% 100% at 50% 15%,#fff,#FFF6F8) !important;
-}
-
-@media (max-width:768px){
-  /* 상세는 화면 끝까지 — 여백 없이 */
+/* ── PC · 태블릿 (769px 이상) ── */
+@media (min-width:769px){
   #pDetailImgs{
-    border-radius:0 !important;
-    box-shadow:none !important;
-    max-width:none !important;
-    width:100vw !important;
-    margin-left:calc(50% - 50vw) !important;
-    margin-right:calc(50% - 50vw) !important;
+    display:block;
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding:0;
+    border-radius:18px;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+    font-size:0;
+    line-height:0;
+    max-height:none;
+  }
+  #pDetailImgs .pd-img{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:0;
+    border-radius:0;
   }
   #pImg{
-    padding:4% !important;
-    aspect-ratio:1/1;
+    width:100%;
+    height:auto;
+    max-height:520px;
+    object-fit:contain;
+    padding:6%;
+    display:block;
+    background:radial-gradient(120% 100% at 50% 15%,#fff,#FFF6F8);
   }
-  .pdetail{ padding-left:0 !important;padding-right:0 !important }
-  .pdetail h2, .pdetail .pd-note{ padding-left:20px;padding-right:20px }
 }
+
+/* ── 모바일 (768px 이하) ── */
+@media (max-width:768px){
+  .pdetail{
+    padding-left:0;
+    padding-right:0;
+  }
+  .pdetail h2,
+  .pdetail .pd-note{
+    padding-left:20px;
+    padding-right:20px;
+  }
+  #pDetailImgs{
+    display:block;
+    width:100vw;
+    max-width:none;
+    margin-left:calc(50% - 50vw);
+    margin-right:calc(50% - 50vw);
+    padding:0;
+    border-radius:0;
+    box-shadow:none;
+    background:#fff;
+    font-size:0;
+    line-height:0;
+    max-height:none;
+  }
+  #pDetailImgs .pd-img{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:0;
+    border-radius:0;
+  }
+  #pImg{
+    width:100%;
+    height:auto;
+    max-height:none;
+    aspect-ratio:1/1;
+    object-fit:contain;
+    padding:4%;
+    display:block;
+    background:radial-gradient(120% 100% at 50% 15%,#fff,#FFF6F8);
+  }
+}
+
 @media (max-width:400px){
-  #pImg{ padding:3% !important }
+  #pImg{ padding:3% }
 }
 </style>
 <script>
