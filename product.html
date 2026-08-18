@@ -1120,6 +1120,48 @@ input, textarea, select{ font-size:16px !important }
 @media (max-width:400px){
   #pImg{ padding:3% }
 }
+
+/* ══ 이미지 — 원본 비율 그대로, 크기 손대지 않음 ══
+   가로만 화면에 맞추고 세로는 비율대로 따라갑니다.
+   잘라내거나 늘이지 않으므로 어떤 비율의 원본이든 그대로 보입니다. */
+#pDetailImgs .pd-img{
+  width:100% !important;
+  height:auto !important;
+  max-width:none !important;
+  max-height:none !important;
+  aspect-ratio:auto !important;
+  object-fit:fill !important;   /* 원본 그대로 — 잘림·여백 없음 */
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+
+/* 대표 이미지도 비율 그대로 */
+#pImg{
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  aspect-ratio:auto !important;
+  object-fit:contain !important;
+  padding:0 !important;
+  display:block !important;
+  background:#fff !important;
+}
+.p-img, .pimg-wrap{
+  aspect-ratio:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  padding:0 !important;
+  background:#fff !important;
+  overflow:visible !important;
+}
+
+@media (max-width:768px){
+  #pImg{ padding:0 !important }
+  .p-img, .pimg-wrap{ padding:0 !important }
+}
 </style>
 <script>
 (function(){
