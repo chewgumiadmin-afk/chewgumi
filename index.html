@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v117 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v118 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v117 · 2026-08-18</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v118 · 2026-08-18</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -6023,6 +6023,58 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
 
 @media(max-width:640px){
   .drawer{ width:min(88vw,330px) !important }
+}
+
+/* ══ 헤더 로고 — 화면 정중앙 고정 ══
+   오른쪽 메뉴(LOGIN·JOIN US·MY PAGE·EN·CART)가 넓어서
+   격자 가운데 칸이 왼쪽으로 밀리던 문제. */
+.head-top{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px;
+}
+.head-top .burger{
+  order:1;
+  flex:none;
+  justify-self:start;
+  z-index:2;
+}
+.head-top .logo{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate(-50%,-50%) !important;
+  margin:0 !important;
+  z-index:1;
+  pointer-events:auto;
+}
+.head-top .util{
+  order:3;
+  flex:none;
+  margin-left:auto;
+  z-index:2;
+  position:relative;
+}
+
+/* 모바일 — 오른쪽 메뉴를 줄여 로고 자리를 확보 */
+@media (max-width:768px){
+  .head-top .util a:not(.cart){ display:none !important }
+  .head-top .util{ gap:4px !important }
+  .head-top .util .cart,
+  .head-top #langBtn{ padding:0 6px !important;font-size:11px !important }
+  .head-top .logo img{ height:38px !important }
+}
+@media (max-width:400px){
+  .head-top .logo img{ height:34px !important }
+  .head-top #langBtn{ display:none !important }
+}
+
+/* 로고가 좌우 메뉴에 가리지 않도록 최대 폭 제한 */
+.head-top .logo{ max-width:calc(100% - 200px) }
+@media (max-width:768px){
+  .head-top .logo{ max-width:calc(100% - 150px) }
 }
 </style>
 <script src="assets/nav.js" defer></script>
