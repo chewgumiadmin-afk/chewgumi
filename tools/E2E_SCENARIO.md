@@ -3,7 +3,7 @@
 AI 에이전트(Claude in Chrome · Cowork · GPT Agent)에게 그대로 넘겨서 쓰는 문서입니다.
 사람이 직접 따라 해도 됩니다.
 
-**대상** https://hyunjeongshin83.github.io/chewgumi/
+**대상** https://chewgumiadmin-afk.github.io/chewgumi/
 **최종 갱신** 2026-08-13
 
 ---
@@ -44,7 +44,7 @@ AI 에이전트(Claude in Chrome · Cowork · GPT Agent)에게 그대로 넘겨�
 
 ### A-1. 관리자 로그인 (자체 사이트)
 
-1. `https://hyunjeongshin83.github.io/chewgumi/console.html` 열기
+1. `https://chewgumiadmin-afk.github.io/chewgumi/console.html` 열기
 2. 「ADMIN LOGIN」 영역이 보이는지 확인
 3. 이메일 칸에 `test@chewgumi.com` 입력
 4. 비밀번호 칸에 `Chewgumi!2026` 입력
@@ -250,7 +250,7 @@ AI 에이전트(Claude in Chrome · Cowork · GPT Agent)에게 그대로 넘겨�
 ```
 아래 문서의 시나리오를 순서대로 실행해 주세요.
 
-https://hyunjeongshin83.github.io/chewgumi/ 사이트 테스트입니다.
+https://chewgumiadmin-afk.github.io/chewgumi/ 사이트 테스트입니다.
 
 규칙:
 1. 문서 맨 위 "절대 하지 말 것" 항목을 먼저 읽고 반드시 지켜주세요.
