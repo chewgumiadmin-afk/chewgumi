@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v39 · MedIT -->
+<!-- ChewGumi Product Detail v40 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10,6 +10,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 
+<script src="assets/drive.js" defer></script>
 <script src="assets/site.js"></script>
 
 <meta property="og:type" content="website">
@@ -1409,18 +1410,36 @@ window.cgImgFail = function(el){
     wrap.style.display='';
   }
 
-  collect(setOf(pno)).then(function(imgs){
-    if (imgs.length) { show(imgs); return; }
-    /* 파일이 없으면 DB 목록을 쓴다 */
-    return fetch(SB2+'/rest/v1/products?select=detail_images&id=eq.'+pno,
-      {headers:{apikey:K2,Authorization:'Bearer '+K2}})
-      .then(function(r){ return r.ok?r.json():[]; })
-      .then(function(rows){
-        var p=(rows||[])[0];
-        var d=(p&&p.detail_images)||[];
+  /* 1순위 · 드라이브 원본 → 2순위 · 저장소 파일 → 3순위 · DB 목록 */
+  var line = (+pno >= 11 && +pno <= 15) ? 'travel' : 'doit';
+  fetch(SB2 + '/rest/v1/drive_assets?select=file_id,title,sort_order'
+      + '&active=eq.true&kind=eq.image&purpose=eq.detail&line=eq.' + line
+      + '&order=sort_order',
+      { headers: { apikey: K2, Authorization: 'Bearer ' + K2 } })
+  .then(function (r) { return r.ok ? r.json() : []; })
+  .then(function (rows) {
+    var ids = (rows || []).map(function (x) { return x.file_id; })
+      .filter(function (x) { return x; });
+    if (ids.length && window.cgDrive) {
+      var box = document.getElementById('pDetailImgs');
+      var w = window.cgDrive.bestWidth(box);
+      show(ids.map(function (id) { return window.cgDrive.img(id, w); }));
+      return null;
+    }
+    return collect(setOf(pno));
+  })
+  .then(function (imgs) {
+    if (imgs === null) return;
+    if (imgs && imgs.length) { show(imgs); return; }
+    return fetch(SB2 + '/rest/v1/products?select=detail_images&id=eq.' + pno,
+      { headers: { apikey: K2, Authorization: 'Bearer ' + K2 } })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (rows2) {
+        var p = (rows2 || [])[0];
+        var d = (p && p.detail_images) || [];
         if (d.length) show(d);
       });
-  }).catch(function(){});
+  }).catch(function () {});
 
 })();
 
