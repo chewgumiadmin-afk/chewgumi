@@ -1840,6 +1840,21 @@ function matchNo(name){
 }
 
 function openDetail(card){
+  /* 모바일에서는 팝업 없이 상세 페이지로 바로 이동 */
+  var narrow = window.matchMedia('(max-width:768px)').matches ||
+               ('ontouchstart' in window && window.innerWidth < 900);
+  if (narrow) {
+    var _n = card.dataset.no || (function(){
+      var nm = card.querySelector('.name');
+      return nm ? matchNo(nm.textContent) : '';
+    })();
+    if (_n) {
+      var q = /[?&]qa=1/.test(location.search) ? '&qa=1' : '';
+      location.href = 'product.html?no=' + _n + q;
+      return;
+    }
+  }
+
   /* 모바일(좁은 화면·터치)에서는 팝업 대신 상세 페이지로 바로 이동 */
   try {
     var narrow = window.innerWidth <= 820;
@@ -5890,6 +5905,12 @@ footer{ padding-bottom:56px !important }
   .detail-dim{ display:none !important }
   .card{ -webkit-tap-highlight-color:rgba(216,37,88,.08) }
   .card:active{ transform:scale(.985);transition:transform .1s }
+}
+
+/* 모바일 — 카드를 누르면 상세로 바로 갑니다 */
+@media (max-width:768px){
+  .card{ -webkit-tap-highlight-color:rgba(216,37,88,.08) }
+  .card:active{ transform:scale(.985);transition:transform .12s }
 }
 </style>
 <script src="assets/nav.js" defer></script>
