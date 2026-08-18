@@ -1,6 +1,6 @@
 # 저장소 이전 안내 (츄구미 계정으로)
 
-현재 `hyunjeongshin83/chewgumi` (MedIT 개인 계정) → 츄구미 계정으로 옮길 때
+현재 `chewgumiadmin-afk/chewgumi` (MedIT 개인 계정) → 츄구미 계정으로 옮길 때
 반드시 함께 처리해야 하는 항목을 정리합니다.
 
 ---
@@ -22,7 +22,7 @@ Settings → 맨 아래 Danger Zone → Transfer ownership
 ### 2-1. 사이트 주소가 바뀝니다
 
 ```
-현재  https://hyunjeongshin83.github.io/chewgumi/
+현재  https://chewgumiadmin-afk.github.io/chewgumi/
 이후  https://<새계정>.github.io/chewgumi/
 ```
 
