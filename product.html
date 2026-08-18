@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v37 · MedIT -->
+<!-- ChewGumi Product Detail v38 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1024,6 +1024,76 @@ input, textarea, select{ font-size:16px !important }
 #pDetailImgs{max-height:none !important;overflow:visible !important}
 #pDetailImgs::after{display:none !important}
 .pd-more{display:none !important}
+
+/* ══ 상세 이미지 — 최종 확정 ══
+   여러 겹 쌓인 규칙을 마지막에 한 번에 정리합니다.
+   원본이 868px 이라 모바일 레티나(3배)에서 흐릿해 보이던 문제도 함께. */
+#pDetailWrap{
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+#pDetailImgs{
+  display:block !important;
+  width:100% !important;
+  max-width:900px !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+  box-shadow:0 10px 30px rgba(0,0,0,.06) !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  max-height:none !important;
+}
+#pDetailImgs .pd-img{
+  width:100% !important;
+  height:auto !important;
+  max-width:none !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  object-fit:contain !important;
+  /* 확대해서 그릴 때 또렷하게 */
+  image-rendering:auto;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+
+/* 대표 이미지 — 모바일에서 크게 */
+#pImg{
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  aspect-ratio:1/1;
+  object-fit:contain !important;
+  padding:5% !important;
+  display:block !important;
+  background:radial-gradient(120% 100% at 50% 15%,#fff,#FFF6F8) !important;
+}
+
+@media (max-width:768px){
+  /* 상세는 화면 끝까지 — 여백 없이 */
+  #pDetailImgs{
+    border-radius:0 !important;
+    box-shadow:none !important;
+    max-width:none !important;
+    width:100vw !important;
+    margin-left:calc(50% - 50vw) !important;
+    margin-right:calc(50% - 50vw) !important;
+  }
+  #pImg{
+    padding:4% !important;
+    aspect-ratio:1/1;
+  }
+  .pdetail{ padding-left:0 !important;padding-right:0 !important }
+  .pdetail h2, .pdetail .pd-note{ padding-left:20px;padding-right:20px }
+}
+@media (max-width:400px){
+  #pImg{ padding:3% !important }
+}
 </style>
 <script>
 (function(){
@@ -1190,6 +1260,8 @@ window.cgImgFail = function(el){
       var fb = 'assets/detail/tvd-0' + ((i % 5) + 1) + '.jpg';
       return '<img class="pd-img" src="' + u + '" alt="상품 상세 ' + (i+1) + '"'
         + ' loading="' + (i<2 ? 'eager' : 'lazy') + '"'
+        + (i<1 ? ' fetchpriority="high"' : '')
+        + ' decoding="async"'
         + ' data-fb="' + fb + '" onerror="cgImgFail(this)">';
     }).join('');
     wrap.style.display='';
