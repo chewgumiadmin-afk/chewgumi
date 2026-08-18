@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v113 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v114 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1301,7 +1301,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <div class="uf-head">
           <div>
             <span class="eb">USER FILMS</span>
-            <h2 class="kr" data-en="Real moments">당신의 한입을<br>보여주세요</h2>
+            <h2 class="kr" data-en="Moments with ChewGumi">고객분들이<br>츄구미와 함께한 순간</h2>
           </div>
           <div class="uf-score">
             <b id="ufAvg">5.0</b>
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v113 · 2026-08-16</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v114 · 2026-08-17</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -5818,6 +5818,52 @@ header .logo img{ image-rendering:auto }
 #ufGrid > .uf-card[data-kind="video"] .pin svg{
   width:16px !important;height:16px !important;
   fill:#fff !important;stroke:none !important;margin-left:2px;
+}
+
+/* ══ 이슈 #14 반영 ══ */
+
+/* ④ 구역 제목 굵게 */
+.sec-title, #best .sec-title, #all .sec-title,
+.rev-head h2, .uf-head h2, .ufilm h2{
+  font-weight:900 !important;
+  letter-spacing:-.04em !important;
+}
+.sec-head .sec-title{ font-weight:900 !important }
+
+/* ⑤ 줄무늬 위 글씨가 겹치지 않게 */
+.tri-band .kr, .tri-band h2, .band-txt,
+.hero .cap, .hero-cap{
+  position:relative;
+  z-index:3;
+  text-shadow:0 1px 3px rgba(255,255,255,.55);
+  padding:2px 0;
+}
+.tri-band, .band{ padding-top:26px !important; padding-bottom:26px !important }
+.tri-band::before, .band::before{ opacity:.5 !important }
+
+/* ⑥ 크게 보기 창 확대 */
+.uf-box{
+  width:min(96vw,1080px) !important;
+  max-height:92vh !important;
+}
+.uf-media{ min-height:380px !important }
+.uf-media img, .uf-media video{ max-height:88vh !important }
+.uf-info{ padding:30px 28px !important }
+.uf-info p{ font-size:15px !important; line-height:1.9 !important }
+.uf-who{ font-size:15px !important }
+@media(max-width:860px){
+  .uf-box{ width:calc(100vw - 24px) !important; max-height:94vh !important }
+  .uf-media{ min-height:0 !important; max-height:56vh !important }
+  .uf-info{ padding:20px 18px 24px !important }
+}
+
+/* ⑦ 카카오톡 문의 아래 여백 */
+.cs-block, .cs-center, .footer-cs{ padding-bottom:34px !important }
+.float-wrap, .fl-btns{ bottom:calc(96px + env(safe-area-inset-bottom)) !important }
+footer{ padding-bottom:56px !important }
+@media(max-width:640px){
+  footer{ padding-bottom:76px !important }
+  .float-wrap, .fl-btns{ bottom:calc(108px + env(safe-area-inset-bottom)) !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
