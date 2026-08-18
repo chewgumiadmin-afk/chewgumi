@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v118 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v119 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1500,7 +1500,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v118 · 2026-08-18</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v119 · 2026-08-18</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -1524,7 +1524,15 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-cart d-full" id="dFull" href="product.html">상세페이지 보기</a>
+        <a class="d-cart d-full" id="dFull" href="product.html">자세히 보기</a>
+        <div class="d-rev" id="dRev">
+          <div class="d-rev-h">
+            <span class="eb">REVIEW</span>
+            <span class="sc"><b id="dRevAvg">—</b><i>★★★★★</i><span id="dRevN"></span></span>
+          </div>
+          <div class="d-rev-list" id="dRevList"></div>
+          <a class="d-rev-more" href="review.html">후기 전체 보기 →</a>
+        </div>
       </div>
       <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
       <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
@@ -1884,6 +1892,12 @@ function openDetail(card){
   const sale = card.querySelector('.p-sale').textContent;
   document.getElementById('dSale').textContent = sale;
   window._curCard = card;
+  try {
+    var _rn = card.dataset.no || '';
+    if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
+    var _di = document.getElementById('dImg');
+    if (_di) _di.parentElement.scrollTop = 0;
+  } catch(e) {}
   document.getElementById('dBuy').href = 'checkout.html';
     /* 상세 페이지 링크 — 카드에서 상품번호 추출 */
     try{
@@ -6075,6 +6089,86 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
 @media (max-width:768px){
   .head-top .logo{ max-width:calc(100% - 150px) }
 }
+
+/* ══ 상품 팝업 — 크게 · 끌어서 보기 · 리뷰 ══ */
+.detail{
+  width:min(96vw,1080px) !important;
+  max-height:92svh !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) !important;
+  gap:0 !important;
+  overflow:hidden !important;
+  border-radius:24px !important;
+}
+.detail .d-img{
+  position:relative;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  background:#FFF6F8;
+  max-height:92svh;
+  cursor:grab;
+}
+.detail .d-img:active{cursor:grabbing}
+.detail .d-img img{
+  width:100% !important;height:auto !important;
+  display:block;object-fit:contain;
+  -webkit-user-drag:none;user-select:none;
+}
+.detail .d-img::after{
+  content:"↕ 끌어서 더 보기";
+  position:sticky;bottom:12px;left:0;right:0;
+  display:block;width:fit-content;margin:0 auto;
+  padding:6px 14px;border-radius:999px;
+  background:rgba(0,0,0,.42);color:#fff;
+  font-size:11px;letter-spacing:.5px;
+  pointer-events:none;opacity:.9;
+}
+.detail .d-info{
+  overflow-y:auto;max-height:92svh;
+  padding:28px 26px calc(28px + env(safe-area-inset-bottom)) !important;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* 리뷰 */
+.d-rev{margin-top:22px;padding-top:20px;border-top:1px solid rgba(0,0,0,.07)}
+.d-rev-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.d-rev-h .eb{
+  font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;
+  letter-spacing:2.4px;color:var(--main);
+}
+.d-rev-h .sc{margin-left:auto;display:flex;align-items:baseline;gap:6px}
+.d-rev-h .sc b{font-size:17px;font-weight:800;letter-spacing:-.03em}
+.d-rev-h .sc i{color:#F5A623;font-size:12px;font-style:normal}
+.d-rev-h .sc span{font-size:11.5px;color:var(--gray)}
+
+.d-rev-list{display:flex;flex-direction:column;gap:11px;max-height:290px;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;padding-right:2px}
+.d-rv{display:flex;gap:10px;padding-bottom:11px;border-bottom:1px solid rgba(0,0,0,.05)}
+.d-rv:last-child{border-bottom:0;padding-bottom:0}
+.d-rv img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex:none;background:#FFF1F4}
+.d-rv .t{flex:1;min-width:0}
+.d-rv .st{color:#F5A623;font-size:11px;letter-spacing:.5px}
+.d-rv p{font-size:12.5px;line-height:1.7;color:#3d3d44;margin-top:2px;word-break:keep-all;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.d-rv .who{font-size:11px;color:var(--gray);margin-top:4px}
+.d-rev-more{
+  display:inline-flex;align-items:center;min-height:42px;margin-top:12px;
+  padding:0 18px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.85);font-size:12.5px;font-weight:600;
+}
+
+@media(max-width:860px){
+  .detail{
+    grid-template-columns:1fr !important;
+    width:calc(100vw - 20px) !important;
+    max-height:94svh !important;
+    overflow-y:auto !important;
+  }
+  .detail .d-img{max-height:46svh;border-radius:24px 24px 0 0}
+  .detail .d-info{max-height:none;padding:22px 20px 28px !important}
+  .d-rev-list{max-height:none}
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6412,6 +6506,62 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
     var a = e.target.closest && e.target.closest('a[href]');
     if (a && a.getAttribute('href') && a.getAttribute('href').charAt(0) !== '#') reset();
   });
+})();
+</script>
+
+<script>
+/* 상품 팝업 — 리뷰 표시 · 이미지 끌어서 보기 */
+(function(){
+  var SBd='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var Kd='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  function esc(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  window.loadDetailReviews = function(no){
+    var box = document.getElementById('dRevList');
+    if (!box) return;
+    box.innerHTML = '<p style="font-size:12.5px;color:var(--gray)">불러오는 중…</p>';
+    fetch(SBd + '/rest/v1/product_reviews?select=author,body,rating,image_url,created_at'
+      + '&visible=eq.true&product_id=eq.' + no + '&order=created_at.desc&limit=8',
+      { headers:{ apikey:Kd, Authorization:'Bearer '+Kd } })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      if (!rows.length) {
+        box.innerHTML = '<p style="font-size:12.5px;color:var(--gray)">첫 후기를 남겨주세요.</p>';
+        var a=document.getElementById('dRevAvg'); if(a) a.textContent='—';
+        var n=document.getElementById('dRevN'); if(n) n.textContent='';
+        return;
+      }
+      var avg = rows.reduce(function(s,x){ return s + (x.rating||5); }, 0) / rows.length;
+      var ae=document.getElementById('dRevAvg'); if(ae) ae.textContent=avg.toFixed(1);
+      var ne=document.getElementById('dRevN'); if(ne) ne.textContent=rows.length+'개';
+      box.innerHTML = rows.map(function(v){
+        var d=new Date(v.created_at);
+        return '<div class="d-rv">'
+          + (v.image_url ? '<img src="'+esc(v.image_url)+'" alt="" loading="lazy" '
+              + 'referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">' : '')
+          + '<span class="t"><span class="st">'+'★★★★★'.slice(0,v.rating||5)+'</span>'
+          + '<p>'+esc(v.body)+'</p>'
+          + '<span class="who">'+esc(v.author||'구매자')+' · '
+          + (d.getMonth()+1)+'월 '+d.getDate()+'일</span></span></div>';
+      }).join('');
+    })
+    .catch(function(){ box.innerHTML='<p style="font-size:12.5px;color:var(--gray)">불러오지 못했습니다.</p>'; });
+  };
+
+  /* 이미지 칸을 끌어서 위아래로 */
+  var img = document.querySelector('.detail .d-img');
+  if (img) {
+    var down=false, sy=0, st=0;
+    img.addEventListener('mousedown', function(e){
+      down=true; sy=e.clientY; st=img.scrollTop; e.preventDefault();
+    });
+    window.addEventListener('mousemove', function(e){
+      if(!down) return;
+      img.scrollTop = st - (e.clientY - sy);
+    });
+    window.addEventListener('mouseup', function(){ down=false; });
+  }
 })();
 </script>
 </body>
