@@ -239,76 +239,97 @@
       setTimeout(function () { if (!window.html2canvas) no(new Error('도구 로딩 시간 초과')); }, 9000);
     });
   }
-  function capture() {
+  /* 캡처 — snapdom 우선, 실패 시 html2canvas.
+     전체 페이지(스크롤 포함)를 담습니다. */
+  function loadOne(url) {
+    return new Promise(function (ok, no) {
+      var t = document.createElement('script');
+      t.src = url; t.onload = ok;
+      t.onerror = function () { no(new Error('도구를 못 불러왔습니다')); };
+      document.head.appendChild(t);
+      setTimeout(function () { no(new Error('도구 로딩 시간 초과')); }, 9000);
+    });
+  }
+
+  function libSnap() {
+    if (window.snapdom) return Promise.resolve('snap');
+    return loadOne('https://cdn.jsdelivr.net/npm/@zumer/snapdom@1/dist/snapdom.min.js')
+      .then(function () { return window.snapdom ? 'snap' : Promise.reject(new Error('x')); });
+  }
+  function libH2C() {
+    if (window.html2canvas) return Promise.resolve('h2c');
+    return loadOne('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js')
+      .then(function () { return 'h2c'; });
+  }
+
+  function skipEl(el) {
+    if (!el || !el.classList) return false;
+    if (el.getAttribute && el.getAttribute('data-skip')) return true;
+    return el.classList.contains('cgp') || el.classList.contains('cgp-hi') ||
+           el.classList.contains('cgm-fab') || el.classList.contains('cgp-rz') ||
+           el.classList.contains('cgp-rzx') || el.tagName === 'IFRAME';
+  }
+
+  function capture(full) {
     pad.setAttribute('data-skip', '1');
 
-    /* 다른 사이트 이미지가 섞이면 브라우저가 캡처를 막습니다.
-       잠시 우리 쪽 이미지로 바꿔 찍고, 끝나면 되돌립니다. */
+    /* 다른 사이트 이미지는 잠시 우리 것으로 — 보안 제한 회피 */
     var swapped = [];
     var imgs = document.querySelectorAll('img');
     for (var i = 0; i < imgs.length; i++) {
       var im = imgs[i];
       var src = im.getAttribute('src') || '';
-      if (!src) continue;
-      if (src.indexOf('data:') === 0) continue;
-      var sameHost = src.indexOf('http') !== 0 ||
-        src.indexOf(location.origin) === 0;
-      if (sameHost) continue;
+      if (!src || src.indexOf('data:') === 0) continue;
+      if (src.indexOf('http') !== 0 || src.indexOf(location.origin) === 0) continue;
       swapped.push([im, src]);
       im.setAttribute('src', 'assets/logo-rainbow.png');
     }
-
     function restore() {
       pad.removeAttribute('data-skip');
-      for (var j = 0; j < swapped.length; j++) {
-        swapped[j][0].setAttribute('src', swapped[j][1]);
-      }
+      for (var k = 0; k < swapped.length; k++) swapped[k][0].setAttribute('src', swapped[k][1]);
       swapped = [];
     }
 
-    return loadLib().then(function () {
-      return html2canvas(document.body, {
-        backgroundColor: '#ffffff',
-        scale: 1,
-        useCORS: false,
-        allowTaint: false,
-        foreignObjectRendering: false,
-        logging: false,
-        imageTimeout: 4000,
-        width: document.documentElement.clientWidth,
-        height: window.innerHeight,
-        x: window.scrollX,
-        y: window.scrollY,
-        scrollX: 0,
-        scrollY: 0,
-        ignoreElements: function (el) {
-          if (el.getAttribute && el.getAttribute('data-skip')) return true;
-          if (el.tagName === 'IFRAME' || el.tagName === 'VIDEO') return true;
-          return el.classList && (el.classList.contains('cgp') ||
-            el.classList.contains('cgp-hi') || el.classList.contains('cgm-fab'));
-        }
+    var H = full
+      ? Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
+      : window.innerHeight;
+    var W = document.documentElement.clientWidth;
+
+    return libSnap().then(function () {
+      return window.snapdom.toCanvas(document.body, {
+        scale: 1, backgroundColor: '#ffffff', embedFonts: false,
+        filter: function (el) { return !skipEl(el); }
+      });
+    }).catch(function () {
+      return libH2C().then(function () {
+        return html2canvas(document.body, {
+          backgroundColor: '#ffffff', scale: 1,
+          useCORS: false, allowTaint: false, foreignObjectRendering: false,
+          logging: false, imageTimeout: 5000,
+          width: W, height: H,
+          x: 0, y: full ? 0 : window.scrollY,
+          scrollX: 0, scrollY: full ? 0 : 0,
+          windowWidth: W, windowHeight: H,
+          ignoreElements: skipEl
+        });
       });
     }).then(function (cv) {
       var d;
-      try {
-        d = cv.toDataURL('image/jpeg', 0.7);
-      } catch (e) {
-        restore();
-        throw new Error('보안 제한');
-      }
+      try { d = cv.toDataURL('image/jpeg', 0.68); }
+      catch (e) { restore(); throw new Error('보안 제한'); }
       restore();
       if (!d || d.length < 3000) throw new Error('빈 이미지');
       shot = d;
-      pad.querySelector('.cgp-sh').innerHTML = '<img src="' + shot + '" alt="캡처">';
+      var box = pad.querySelector('.cgp-sh');
+      if (box) box.innerHTML = '<img src="' + shot + '" alt="캡처">';
       return shot;
     }).catch(function (e) {
-      restore();
-      shot = null;
-      /* 무엇 때문인지 남긴다 */
+      restore(); shot = null;
       try { console.warn('[QA] 캡처 실패:', e && (e.message || e)); } catch (x) {}
       throw e;
     });
   }
+
 
   function send() {
     var ta = pad.querySelector('textarea');
@@ -740,6 +761,26 @@
     on('.cgp-run', runFlow);
     on('.cgp-read', runRead);
     on('.cgp-pick', function () { picking ? stopPick() : startPick(); });
+    var capBtn = pad.querySelector('.cgp-cap');
+    if (capBtn) {
+      var holdT = null;
+      capBtn.addEventListener('mousedown', function () {
+        holdT = setTimeout(function () {
+          holdT = null;
+          capBtn.textContent = '전체…'; capBtn.disabled = true;
+          capture(true).then(function () {
+            capBtn.textContent = '캡처'; capBtn.disabled = false;
+            msg('전체 페이지를 담았습니다');
+          }).catch(function () {
+            capBtn.textContent = '캡처'; capBtn.disabled = false;
+            msg('전체 캡처 실패', true);
+          });
+        }, 600);
+      });
+      ['mouseup','mouseleave'].forEach(function (ev) {
+        capBtn.addEventListener(ev, function () { if (holdT) { clearTimeout(holdT); } });
+      });
+    }
     on('.cgp-cap', function (e) {
       var b = e.currentTarget; b.textContent = '…'; b.disabled = true;
       capture().then(function () { b.textContent = '캡처'; b.disabled = false; })
@@ -942,7 +983,20 @@
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', start);
   else start();
-  setInterval(function () {
+  function keep() {
     if (!document.querySelector('.cgp') && !document.querySelector('.cgp-fab')) start();
-  }, 1500);
+  }
+  setInterval(keep, 1200);
+  window.addEventListener('pageshow', keep);
+  window.addEventListener('popstate', function () { setTimeout(keep, 150); });
+  window.addEventListener('focus', keep);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') setTimeout(keep, 150);
+  });
+  if (window.MutationObserver) {
+    var mt = null;
+    new MutationObserver(function () {
+      clearTimeout(mt); mt = setTimeout(keep, 300);
+    }).observe(document.documentElement, { childList: true, subtree: false });
+  }
 })();
