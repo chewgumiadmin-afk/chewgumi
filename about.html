@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi About v2 · MedIT -->
+<!-- ChewGumi About v3 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -499,49 +499,7 @@ h2{margin-top:9px;font-size:clamp(22px,3.2vw,34px);font-weight:700;letter-spacin
     </div>
   </section>
 
-  <section>
-    <div class="sec-eyebrow">PRODUCT LINE</div>
-    <h2>필요한 순간에, 필요한 한입</h2>
-    <p class="lead">매일 똑같은 걸 챙기기보다 지금 내게 필요한 것에 맞춰 골라 먹을 수 있도록.
-      츄구미는 일상 속 다양한 순간을 생각해 제품을 만들고 있습니다.</p>
-    <div class="lines">
-      <div class="line">
-        <div class="th"><img src="assets/banner-travel.png" alt="Travel-it" loading="lazy"></div>
-        <div class="b">
-          <span class="tag">TRAVEL-IT</span>
-          <h3>Travel-it</h3>
-          <div class="kr">트래블 잇 · 감귤맛</div>
-          <p>여행 중에도 가볍게 챙기는 영양 한 봉.<br>
-            종합비타민을 비롯해 비타민C, 마그네슘, 타우린 등
-            12가지 영양 성분을 한 봉에 담았습니다.</p>
-          <a href="index.html#all" onclick="try{localStorage.setItem('cg_line','travel')}catch(e){}">제품 보기 →</a>
-        </div>
-      </div>
-      <div class="line">
-        <div class="th"><img src="assets/banner-dew.png" alt="Dew-it" loading="lazy"></div>
-        <div class="b">
-          <span class="tag">DEW-IT</span>
-          <h3>Dew-it</h3>
-          <div class="kr">듀 잇 · 레몬민트 · 그레이프</div>
-          <p>입안이 텁텁한 순간, 한 알로 상쾌하게.<br>
-            핀란드산 자일리톨을 93% 함유한 무설탕 자일리톨 캔디입니다.</p>
-          <a href="index.html#all" onclick="try{localStorage.setItem('cg_line','doit')}catch(e){}">제품 보기 →</a>
-        </div>
-      </div>
-      <div class="line">
-        <div class="th"><img src="assets/banner-triple.png" alt="Triple-it" loading="lazy"></div>
-        <div class="b">
-          <span class="tag">TRIPLE-IT · COMING SOON</span>
-          <h3>Triple-it</h3>
-          <div class="kr">Dream-it · Spark-it · Reset-it</div>
-          <p>여행 전부터 여행 후까지, 상황에 따라 골라 먹는 3가지 젤리.<br>
-            편안한 밤을 위한 Dream-it, 활력이 필요한 순간의 Spark-it,
-            여행 후 가볍게 챙기는 Reset-it.</p>
-          <a href="product.html?no=101">제품 보기 →</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  
 
   <section>
     <div class="sec-eyebrow">NUMBERS</div>
@@ -700,6 +658,17 @@ h2{margin-top:9px;font-size:clamp(22px,3.2vw,34px);font-weight:700;letter-spacin
     word-break:keep-all;text-align:center}
   .story p + p{margin-top:20px}
   @media(max-width:640px){.story p{line-height:1.95;text-align:left}}
+
+/* ══ 이슈 #14 반영 ══ */
+/* ① 이미지 규격 정리 */
+.about img, .ab-img img, section img{
+  max-width:100% !important;height:auto !important;display:block;
+  border-radius:16px;object-fit:cover;
+}
+.ab-hero img, .about-hero img{ aspect-ratio:16/9;object-fit:cover }
+@media(max-width:640px){
+  .about img, .ab-img img{ border-radius:12px }
+}
 </style>
 
 <script src="assets/qa-mode.js" defer></script>
