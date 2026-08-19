@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- ChewGumi Keys · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>연동 키 설정 | CHEWGUMI</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script src="assets/auth.js"></script>
+<style>
+:root{
+  --main:#D82558; --main2:#E95073;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C; --gray:#7a7a82;
+  --ink:#17171c; --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.66);
+  --sp-s:clamp(0.7rem,0.65rem+0.24vw,1rem);
+  --sp-m:clamp(1.2rem,1.1rem+0.5vw,1.8rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(3rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(236,94,134,.13),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select{font-size:14.5px}}
+.wrap{max-width:920px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+.k{padding:14px 0;border-bottom:1px solid rgba(0,0,0,.055)}
+.k:last-child{border-bottom:0}
+.k .h{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.k .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.dot.on{background:var(--ok)} .dot.off{background:rgba(0,0,0,.16)}
+.dot.need{background:var(--bad)}
+.k b{font-size:13.5px;font-weight:700;letter-spacing:-.02em}
+.k .sv{font-size:10.5px;color:var(--gray);padding:2px 8px;border-radius:999px;
+  background:rgba(0,0,0,.05)}
+.k .req{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:rgba(192,57,92,.11);color:var(--bad)}
+.k .st{margin-left:auto;font-size:11.5px;color:var(--gray)}
+.k .st.on{color:var(--ok);font-weight:600}
+.k .use{font-size:12px;color:#555;margin-top:5px}
+.k .get{font-size:11.5px;color:var(--gray);margin-top:4px;line-height:1.7}
+.k .get code{font-family:ui-monospace,Menlo,monospace;font-size:11px;
+  background:rgba(0,0,0,.05);padding:2px 6px;border-radius:5px}
+.k .go{display:inline-block;margin-top:6px;font-size:11.5px;color:var(--main);font-weight:600}
+
+.form{display:grid;gap:10px;margin-top:8px}
+input,select{
+  width:100%;min-height:46px;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--ink);
+}
+input:focus,select:focus{outline:2px solid var(--main);outline-offset:-1px}
+select{
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%237a7a82' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center;
+  background-size:12px 8px;padding-right:40px;cursor:pointer;
+}
+.btn{
+  min-height:47px;padding:0 20px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.88);color:var(--ink);border:1px solid var(--line)}
+.msg{margin-top:11px;font-size:13px;line-height:1.7;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+.info{font-size:12.5px;color:#555;line-height:1.9;
+  padding:14px 16px;border-radius:13px;background:rgba(255,255,255,.55)}
+.info b{color:var(--ink)}
+.info code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;
+  background:rgba(0,0,0,.05);padding:2px 7px;border-radius:5px}
+.info .r{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.info .r:last-child{border-bottom:0}
+.info .r span:first-child{min-width:110px;color:var(--gray);flex:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>연동 키 설정</h1>
+      <div class="s">어떤 키가 필요하고 어디서 받는지 한눈에</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <!-- 기본 정보 -->
+  <div class="panel">
+    <h2>기본 연결 정보</h2>
+    <div class="info">
+      <div class="r"><span>사이트</span><span><code>chewgumiadmin-afk.github.io/chewgumi</code></span></div>
+      <div class="r"><span>저장소</span><span><code>chewgumiadmin-afk/chewgumi</code></span></div>
+      <div class="r"><span>데이터베이스</span><span><code>psynvpuedzjvytsgdhgg.supabase.co</code></span></div>
+      <div class="r"><span>공개 키</span><span><code>sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk</code></span></div>
+      <div class="r"><span>공식몰</span><span><code>chewgumi.com</code> · 카페24</div>
+      <div class="r"><span>사업자번호</span><span>358-04-03258</span></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <a class="btn sub" href="https://supabase.com/dashboard/project/psynvpuedzjvytsgdhgg" target="_blank" rel="noopener" style="flex:1;min-width:150px">Supabase 열기</a>
+      <a class="btn sub" href="https://github.com/chewgumiadmin-afk/chewgumi" target="_blank" rel="noopener" style="flex:1;min-width:150px">깃허브 열기</a>
+    </div>
+  </div>
+
+  <!-- 키 목록 -->
+  <div class="panel">
+    <h2>연동 키 <span class="n" id="cnt">—</span></h2>
+    <div id="list"><p style="font-size:13px;color:var(--gray)">불러오는 중…</p></div>
+  </div>
+
+  <!-- 등록 -->
+  <div class="panel">
+    <h2>키 등록 · 변경</h2>
+    <div class="form">
+      <select id="sel"></select>
+      <input id="val" type="password" placeholder="받으신 키를 붙여넣으세요" autocomplete="new-password">
+      <button class="btn" onclick="save()" id="saveBtn">저장하기</button>
+    </div>
+    <div class="msg" id="m1"></div>
+    <div class="info" style="margin-top:12px">
+      <b>키는 화면에 보이지 않습니다.</b> 서버에만 저장되고, 등록 여부만 표시됩니다.<br>
+      바꾸시려면 새 값을 넣고 저장하시면 됩니다. 기존 값은 덮어씁니다.
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+function say(t,k){ const m=$('m1'); m.className='msg'+(k?' '+k:''); m.textContent=t; }
+function tok(){ try{ return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''; }catch(e){ return ''; } }
+
+let ROWS=[];
+
+function load(){
+  fetch(SB+'/rest/v1/rpc/key_status',{method:'POST',headers:H,body:'{}'})
+  .then(r=>r.ok?r.json():[]).then(rows=>{
+    ROWS=rows||[];
+    const need=ROWS.filter(x=>x.required&&!x.registered).length;
+    $('cnt').textContent = need ? (need+'건 필요') : '모두 준비됨';
+
+    $('list').innerHTML=ROWS.map(k=>{
+      const cls = k.registered ? 'on' : (k.required ? 'need' : 'off');
+      return '<div class="k"><div class="h">'
+        +'<span class="dot '+cls+'"></span>'
+        +'<b>'+esc(k.label)+'</b>'
+        +'<span class="sv">'+esc(k.service)+'</span>'
+        +(k.required&&!k.registered?'<span class="req">필요</span>':'')
+        +'<span class="st'+(k.registered?' on':'')+'">'
+        +(k.registered?'등록됨':'없음')+'</span></div>'
+        +'<div class="use">'+esc(k.used_for)+'</div>'
+        +(k.where_to_get?'<div class="get">받는 곳 · '+esc(k.where_to_get)+'</div>':'')
+        +(k.console_url?'<a class="go" href="'+esc(k.console_url)+'" target="_blank" rel="noopener">열기 →</a>':'')
+        +'</div>';
+    }).join('');
+
+    $('sel').innerHTML=ROWS.map(k=>
+      '<option value="'+esc(k.key)+'">'+esc(k.label)+' · '+esc(k.service)
+      +(k.registered?' (등록됨)':'')+'</option>').join('');
+  })
+  .catch(()=>{ $('list').innerHTML='<p style="font-size:13px;color:var(--bad)">불러오지 못했습니다.</p>'; });
+}
+
+function save(){
+  const k=$('sel').value, v=$('val').value.trim();
+  if(!v){ say('키를 넣어주세요.','bad'); return; }
+  const t=tok();
+  if(!t){ say('로그인이 필요합니다.','bad'); return; }
+  $('saveBtn').disabled=true; say('저장하는 중…');
+
+  fetch(SB+'/rest/v1/app_secrets',{method:'POST',
+    headers:{...H,Authorization:'Bearer '+t,Prefer:'resolution=merge-duplicates'},
+    body:JSON.stringify({key:k,value:v})})
+  .then(r=>{
+    $('saveBtn').disabled=false;
+    if(!r.ok) throw new Error();
+    $('val').value='';
+    say('저장했습니다.','ok');
+    load();
+  })
+  .catch(()=>{
+    $('saveBtn').disabled=false;
+    say('저장하지 못했습니다. 대표님 계정으로 로그인해 주세요.','bad');
+  });
+}
+
+load();
+</script>
+</body>
+</html>
