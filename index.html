@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v124 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v125 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6412,6 +6412,37 @@ header{ margin-bottom:0 !important }
 .d-detail-load{
   padding:26px 0;text-align:center;
   font-size:13px;color:var(--gray,#7a7a82);
+}
+
+/* ══ 로고와 첫 배너 사이 간격 — 실제 원인 ══
+   .hero-sec 은 이미 0 이었고, 헤더 안쪽
+   메뉴 캡슐(.glass-wrap)의 아래 여백이 남아 있었습니다. */
+header .glass-wrap{
+  padding-bottom:4px !important;
+  margin-bottom:0 !important;
+}
+header{ padding-bottom:0 !important;margin-bottom:0 !important }
+header > div:last-child{ margin-bottom:0 !important }
+
+@media (max-width:768px){
+  header .glass-wrap{
+    padding:0 12px 2px !important;
+    margin-top:-6px !important;
+  }
+  header > div:first-child{
+    padding-top:4px !important;
+    padding-bottom:0 !important;
+  }
+  .hero-sec{
+    margin-top:0 !important;
+    padding-top:0 !important;
+  }
+  /* 배너 자체의 위쪽 여백도 확실히 */
+  .hero-sec > .hero{ margin-top:0 !important;padding-top:0 !important }
+}
+@media (max-width:480px){
+  header .glass-wrap{ padding:0 10px 0 !important;margin-top:-8px !important }
+  header > div:first-child{ padding-top:3px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
