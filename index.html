@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v134 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v125 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -862,7 +862,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
       +'background:linear-gradient(135deg,#E95073,#D82558)">인증 메일 다시 받기</a>'
       +'<button style="margin-top:9px;width:100%;padding:12px 0;border-radius:999px;font-family:inherit;'
       +'font-size:13px;font-weight:700;background:rgba(0,0,0,.05);border:0;cursor:pointer">닫기</button></div>';
-    d.querySelector('button').onclick=function(){d.remove();document.body.classList.remove('modal-open');};
+    d.querySelector('button').onclick=function(){d.remove();document.body.style.overflow='';};
     document.body.appendChild(d);
   }catch(e){}
 })();
@@ -1525,11 +1525,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
-        <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
-      </div>
-        
-        
+        <a class="d-cart d-full" id="dFull" href="#" onclick="toggleDetailImgs();return false;">상세 이미지 보기</a>
+        <div class="d-detail hide" id="dDetail">
+          <div class="d-detail-in" id="dDetailIn"></div>
+          <a class="d-detail-more" href="#" onclick="goProductPage();return false;">전체 화면으로 보기 →</a>
+        </div>
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
             <span class="eb">REVIEW</span>
@@ -1538,13 +1538,10 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <div class="d-rev-list" id="dRevList"></div>
           <a class="d-rev-more" href="review.html">후기 전체 보기 →</a>
         </div>
-        <div class="d-detail hide" id="dDetail">
-          <div class="d-detail-in" id="dDetailIn"></div>
-          
-        </div>
       </div>
-      
-      
+      <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
+      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
+      </div>
     </div>
   </div>
 </div>
@@ -1903,7 +1900,6 @@ function openDetail(card){
   try {
     var _rn = card.dataset.no || '';
     if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
-
     var _di = document.getElementById('dImg');
     if (_di) _di.parentElement.scrollTop = 0;
   } catch(e) {}
@@ -1930,9 +1926,9 @@ function openDetail(card){
   document.getElementById('dDesc').textContent = (cgLang === 'en' && card.dataset.descEn) ? card.dataset.descEn : card.dataset.desc;
   dPrice = Number(sale.replace(/[^0-9]/g,'')); dQty = 1; renderQty();
   document.getElementById('detail').classList.remove('hide');
-  document.body.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
 }
-function closeDetail(){ document.getElementById('detail').classList.add('hide'); document.body.classList.remove('modal-open'); }
+function closeDetail(){ document.getElementById('detail').classList.add('hide'); document.body.style.overflow=''; }
 function chgQty(d){ dQty = Math.max(1, dQty + d); renderQty(); }
 function renderQty(){ document.getElementById('dQty').textContent = dQty; document.getElementById('dTotal').textContent = won(dPrice * dQty); }
 
@@ -1949,7 +1945,7 @@ function filterLine(line){
 /* 레이어 팝업 */
 function closePopup(today){
   document.getElementById('popup').classList.add('hide');
-  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
   if (today) { try { localStorage.setItem('cg_popup_until', String(Date.now() + 864e5)); } catch(e){} }
 }
 (function(){
@@ -1987,7 +1983,7 @@ function cgAnyLayerOpen(){
 }
 function cgUnlockIfIdle(){
   if (!cgAnyLayerOpen()) {
-    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
     document.body.style.position = '';
     document.body.style.touchAction = '';
@@ -2025,7 +2021,7 @@ window.addEventListener('pageshow', (e) => {
     });
     const cp=document.getElementById('cartP'), cd=document.getElementById('cartDim');
     if(cp) cp.classList.remove('open'); if(cd) cd.classList.remove('open');
-    document.body.classList.remove('modal-open');
+    document.body.style.overflow='';
   }catch(err){}
   setTimeout(cgUnlockIfIdle, 60);
 });
@@ -2068,7 +2064,7 @@ setTimeout(() => {
 const hd = document.querySelector('header');
 const setHead = () => {
   hd.classList.add('solid');
-  /* shrink 해제 — 높이가 변하면 본문이 밀려 떨립니다 */
+  hd.classList.toggle('shrink', (window.scrollY || 0) > 60);
 };
 window.addEventListener('scroll', setHead, { passive:true });
 /* 대형 게시판 레이어: 게시판 소스 내장 */
@@ -2233,11 +2229,11 @@ function goBoard(ev,key){
 function openBoardLayer(key){
   renderBoard(key);
   document.getElementById('boardLayer').classList.remove('hide');
-  document.body.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
 }
 function closeBoardLayer(){
   document.getElementById('boardLayer').classList.add('hide');
-  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
 }
 
 /* 사용자 사용 영상 목록 — assets/videos/ 에 올린 파일명만 적으면 됩니다.
@@ -2340,8 +2336,8 @@ document.querySelectorAll('.comm-list[data-key]').forEach(ul => {
 let CART = [];
 try { CART = JSON.parse(localStorage.getItem('cg_cart') || '[]'); } catch(e){ CART = []; }
 function saveCart(){ try { localStorage.setItem('cg_cart', JSON.stringify(CART)); } catch(e){} }
-function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.classList.add('modal-open'); }
-function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.classList.remove('modal-open'); }
+function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
 function addToCart(){
   if (!window._curCard) return;
   const card = window._curCard;
@@ -6449,594 +6445,13 @@ header > div:last-child{ margin-bottom:0 !important }
   header > div:first-child{ padding-top:3px !important }
 }
 
-/* ══ 스크롤 떨림 ══
-/* ② 스크롤 떨림 — 헤더 높이를 고정한다 */
-header{
-  contain:layout;
-  transition:box-shadow .25s ease !important;
-}
-header .head-top{
-  min-height:64px !important;
-  transition:none !important;
-}
-header .logo img{
-  transition:none !important;
-}
-header .glass-wrap{
-  transition:none !important;
-}
-/* 작아지는 효과를 아예 끈다 — 높이가 안 변하면 본문도 안 밀린다 */
-header.shrink .head-top{
-  min-height:64px !important;
-  padding:5px 0 !important;
-}
-header.shrink .logo img,
-header .logo img{
-  height:42px !important;
-}
-header.shrink .glass-bar,
-header .glass-bar{
-  padding:6px !important;
-}
-
-@media (max-width:768px){
-  header .head-top,
-  header.shrink .head-top{ min-height:56px !important }
-  header .logo img,
-  header.shrink .logo img{ height:36px !important }
-}
-@media (max-width:480px){
-  header .head-top,
-  header.shrink .head-top{ min-height:50px !important }
-  header .logo img,
-  header.shrink .logo img{ height:32px !important }
-}
-
-/* 본문이 밀리지 않도록 */
-main{ contain:layout style }
-
-/* ══ 모바일 로고-배너 간격 · 최종 ══
-   앞서 여러 번 hero-sec 과 glass-wrap 을 건드렸지만
-   모바일에서는 glass-wrap 이 이미 숨겨져 있어 소용없었습니다.
-
-   진짜 원인은 .head-top 의 min-height 였습니다.
-   로고는 36px 인데 칸이 64px 이라 위아래로 28px 이 남았습니다. */
-@media (max-width:900px){
-  header .head-top,
-  header.shrink .head-top{
-    min-height:0 !important;
-    height:auto !important;
-    padding:6px 0 !important;
-  }
-  header .logo{
-    min-height:0 !important;
-    display:flex !important;
-    align-items:center !important;
-  }
-  header .logo img,
-  header.shrink .logo img{
-    height:34px !important;
-    display:block !important;
-  }
-  header .util a,
-  header .util button{
-    min-height:34px !important;
-  }
-  header{
-    padding:0 !important;
-    margin:0 !important;
-    border-bottom:0 !important;
-  }
-  header::after{ display:none !important }
-
-  .hero-sec{
-    margin-top:0 !important;
-    padding-top:0 !important;
-  }
-  .hero-sec > .hero{
-    margin-top:0 !important;
-  }
-}
-
-@media (max-width:480px){
-  header .head-top,
-  header.shrink .head-top{
-    padding:4px 0 !important;
-  }
-  header .logo img,
-  header.shrink .logo img{ height:30px !important }
-}
-
-/* ══ 모바일 배너 — 원래대로 ══ */
-@media (max-width:900px){
-  .hero{
-    aspect-ratio:16/9 !important;
-    max-height:none !important;
-    border-radius:0 !important;
-  }
-  .hslide{
-    background-size:cover !important;
-    background-position:center center !important;
-  }
-}
-@media (max-width:640px){
-  .hero{ aspect-ratio:4/3 !important }
-}
-
-/* ══ 팝업 스크롤 하나로 · 상세 이미지 바로 보이게 ══
-   팝업(.detail)과 정보칸(.d-info) 둘 다 스크롤이라
-   막대가 두 개 생겼습니다. 팝업 하나만 남깁니다. */
-.detail{
-  max-height:min(88dvh,760px) !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  -webkit-overflow-scrolling:touch;
-  display:grid !important;
-  grid-template-columns:1fr 1fr !important;
-  align-items:start !important;
-}
-.detail .d-info{
-  overflow:visible !important;      /* 안쪽 스크롤 제거 */
-  max-height:none !important;
-  padding:26px 24px 30px !important;
-}
-.detail .d-img{
-  position:sticky !important;        /* 이미지는 자리에 머문다 */
-  top:0 !important;
-  align-self:start !important;
-  max-height:min(88dvh,760px) !important;
-  overflow:hidden !important;
-}
-
-/* 상세 이미지 — 접지 않고 바로 펼친다 */
-#dDetail{
-  display:block !important;
-  margin-top:20px !important;
-  padding-top:18px !important;
-  border-top:1px solid rgba(0,0,0,.07) !important;
-}
-#dDetail.hide{ display:block !important }
-#dDetailIn{
-  display:block !important;
-  font-size:0 !important;
-  line-height:0 !important;
-  border-radius:14px;
-  overflow:hidden;
-}
-#dDetailIn img{
-  width:100% !important;
-  height:auto !important;
-  display:block !important;
-  margin:0 !important;
-  border-radius:0 !important;
-  object-fit:unset !important;
-}
-/* 펼치기 버튼은 감춘다 */
-#dFull{ display:none !important }
-
-@media (max-width:860px){
-  .detail{
-    grid-template-columns:1fr !important;
-    max-height:88dvh !important;
-  }
-  .detail .d-img{
-    position:relative !important;
-    max-height:300px !important;
-  }
-  .detail .d-info{ padding:20px 18px 26px !important }
-}
-
-/* ══ 팝업 안에서 상세 이미지를 전부 보여준다 ══ */
-#dDetail, .d-detail{
-  display:block !important;
-  margin-top:20px !important;
-  padding-top:18px !important;
-  border-top:1px solid rgba(0,0,0,.07) !important;
-  max-height:none !important;
-  overflow:visible !important;
-}
-#dDetail.hide, .d-detail.hide{ display:block !important }
-#dDetailIn, .d-detail-in{
-  display:block !important;
-  font-size:0 !important;
-  line-height:0 !important;
-  border-radius:14px;
-  overflow:hidden;
-  max-height:none !important;
-}
-#dDetailIn img, .d-detail-in img{
-  width:100% !important;
-  height:auto !important;
-  max-height:none !important;
-  display:block !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
-  border-radius:0 !important;
-  object-fit:unset !important;
-  aspect-ratio:auto !important;
-}
-#dFull, .d-full, .d-detail-more{ display:none !important }
-
-/* ════════════════════════════════════════
-   상품 팝업 — 최종 확정
-   앞서 .detail 10개 · .d-img 9개 · .d-info 7개가
-   쌓여 서로 부딪혔습니다. 여기서 하나로 정리합니다.
-   ════════════════════════════════════════ */
-
-.detail-dim{
-  position:fixed !important; inset:0 !important;
-  z-index:3000 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:20px !important;
-  background:rgba(20,12,16,.44) !important;
-  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
-}
-.detail-dim.hide{ display:none !important }
-
-.detail{
-  position:relative !important;
-  width:min(94vw,880px) !important;
-  max-width:880px !important;
-  max-height:min(88dvh,760px) !important;
-  margin:0 !important;
-  display:grid !important;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
-  grid-template-rows:auto !important;
-  align-items:start !important;
-  gap:0 !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  border-radius:22px !important;
-  background:#fff !important;
-  border:1px solid rgba(255,255,255,.9) !important;
-  box-shadow:0 24px 60px rgba(0,0,0,.22) !important;
-  backdrop-filter:none !important;
-  -webkit-backdrop-filter:none !important;
-}
-
-/* 왼쪽 — 상품 이미지 */
-.detail .d-img{
-  position:sticky !important;
-  top:0 !important;
-  align-self:start !important;
-  height:auto !important;
-  max-height:min(88dvh,760px) !important;
-  min-height:0 !important;
-  overflow:hidden !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:0 !important;
-  margin:0 !important;
-  cursor:default !important;
-  background:radial-gradient(120% 92% at 50% 12%,#fff 0%,#FFF7F9 48%,#FFEFF3 100%) !important;
-  border-radius:22px 0 0 22px !important;
-}
-.detail .d-img::after{ content:none !important }
-.detail .d-img img{
-  width:auto !important;
-  height:auto !important;
-  max-width:100% !important;
-  max-height:100% !important;
-  min-height:0 !important;
-  object-fit:contain !important;
-  padding:7% !important;
-  margin:0 !important;
-  display:block !important;
-  border-radius:0 !important;
-}
-
-/* 오른쪽 — 정보 */
-.detail .d-info{
-  overflow:visible !important;
-  max-height:none !important;
-  min-width:0 !important;
-  padding:28px 26px 32px !important;
-  position:relative !important;
-}
-
-/* 닫기 */
-.detail .d-x{
-  position:absolute !important;
-  top:14px !important; right:14px !important;
-  z-index:5 !important;
-}
-
-/* 상세 이미지 — 항상 펼침 */
-#dDetail, #dDetail.hide{
-  display:block !important;
-  margin-top:22px !important;
-  padding-top:18px !important;
-  border-top:1px solid rgba(0,0,0,.07) !important;
-}
-#dDetailIn{
-  display:block !important;
-  font-size:0 !important; line-height:0 !important;
-  border-radius:14px; overflow:hidden;
-}
-#dDetailIn img{
-  width:100% !important; height:auto !important;
-  display:block !important; margin:0 !important;
-  border-radius:0 !important; object-fit:unset !important;
-}
-#dFull{ display:none !important }
-
-/* 모바일 — 위아래로 */
-@media (max-width:860px){
-  .detail-dim{ padding:0 !important; align-items:flex-end !important }
-  .detail{
-    width:100% !important;
-    max-width:100% !important;
-    max-height:92dvh !important;
-    grid-template-columns:1fr !important;
-    border-radius:22px 22px 0 0 !important;
-  }
-  .detail .d-img{
-    position:relative !important;
-    max-height:300px !important;
-    border-radius:22px 22px 0 0 !important;
-  }
-  .detail .d-img img{ padding:5% !important }
-  .detail .d-info{ padding:20px 18px calc(28px + env(safe-area-inset-bottom)) !important }
-  .d-rev-list{ max-height:none !important }
-}
-
-/* ══ 팝업 아래쪽 정리 ══ */
-
-/* 구매 버튼 아래 결제 안내 */
-.d-npay{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  min-height:48px !important;
-  margin-top:8px !important;
-  border-radius:14px !important;
-  font-size:13.5px !important;
-  font-weight:600 !important;
-}
-.d-notice{
-  margin-top:10px !important;
-  margin-bottom:0 !important;
-  font-size:12px !important;
-  line-height:1.85 !important;
-}
-
-/* 리뷰 — 더 넓고 여유 있게 */
-.d-rev{
-  margin-top:24px !important;
-  padding-top:20px !important;
-}
-.d-rev-list{
-  max-height:none !important;      /* 잘리지 않게 */
-  overflow:visible !important;
-  gap:14px !important;
-}
-.d-rv{
-  gap:12px !important;
-  padding-bottom:14px !important;
-}
-.d-rv img{
-  width:66px !important;
-  height:66px !important;
-  border-radius:12px !important;
-}
-.d-rv p{
-  font-size:13px !important;
-  line-height:1.8 !important;
-  -webkit-line-clamp:6 !important;   /* 더 많이 보여준다 */
-}
-.d-rv .st{ font-size:12px !important }
-.d-rv .who{ font-size:11.5px !important;margin-top:6px !important }
-.d-rev-h .sc b{ font-size:19px !important }
-
-/* 상세 이미지 — 리뷰 아래, 팝업 맨 끝 */
-#dDetail, .d-detail{
-  display:block !important;
-  margin-top:26px !important;
-  padding-top:20px !important;
-  border-top:1px solid rgba(0,0,0,.07) !important;
-  max-height:none !important;
-  overflow:visible !important;
-}
-#dDetail.hide, .d-detail.hide{ display:block !important }
-
-@media (max-width:860px){
-  .d-rv img{ width:58px !important;height:58px !important }
-  .d-rv p{ -webkit-line-clamp:8 !important }
-}
-
-/* ══ 팝업 아래쪽 — 리뷰 넓게 · 상세 이미지 그대로 표시 ══ */
-
-/* 리뷰 */
-.d-rev{ margin-top:24px !important;padding-top:20px !important }
-.d-rev-list{
-  max-height:none !important;
-  overflow:visible !important;
-  gap:15px !important;
-}
-.d-rv{ gap:12px !important;padding-bottom:15px !important }
-.d-rv img{
-  width:68px !important;height:68px !important;
-  border-radius:12px !important;
-}
-.d-rv p{
-  font-size:13px !important;
-  line-height:1.85 !important;
-  -webkit-line-clamp:8 !important;
-  margin-top:4px !important;
-}
-.d-rv .st{ font-size:12px !important }
-.d-rv .who{ font-size:11.5px !important;margin-top:6px !important }
-.d-rev-h .sc b{ font-size:19px !important }
-.d-rev-more{ margin-top:14px !important }
-
-/* 상세 이미지 — 팝업 맨 아래, 전부 */
-#dDetail, .d-detail{
-  display:block !important;
-  margin-top:26px !important;
-  padding-top:20px !important;
-  border-top:1px solid rgba(0,0,0,.07) !important;
-  max-height:none !important;
-  overflow:visible !important;
-}
-#dDetail.hide, .d-detail.hide{ display:block !important }
-#dDetailIn, .d-detail-in{
-  display:block !important;
-  font-size:0 !important;line-height:0 !important;
-  border-radius:14px;overflow:hidden;
-  max-height:none !important;
-}
-#dDetailIn img, .d-detail-in img{
-  width:100% !important;height:auto !important;
-  max-height:none !important;
-  display:block !important;margin:0 !important;padding:0 !important;
-  border:0 !important;border-radius:0 !important;
-  object-fit:unset !important;aspect-ratio:auto !important;
-}
-#dFull, .d-full, .d-detail-more{ display:none !important }
-
-/* 결제 안내 — 구매 버튼 바로 아래 */
-.d-npay{
-  display:flex !important;align-items:center !important;justify-content:center !important;
-  min-height:48px !important;margin-top:8px !important;
-  border-radius:14px !important;font-size:13.5px !important;font-weight:600 !important;
-}
-.d-notice{ margin-top:10px !important;font-size:12px !important;line-height:1.85 !important }
-
-@media (max-width:860px){
-  .d-rv img{ width:58px !important;height:58px !important }
-  .d-rv p{ -webkit-line-clamp:10 !important }
-}
-
-/* ══════════════════════════════════════════
-   모바일 최종 정리 — 이 아래가 항상 이깁니다
-   ══════════════════════════════════════════ */
-
-/* ① 스크롤이 막히던 문제
-      메뉴를 닫아도 body 가 잠긴 채 남던 것을 풉니다. */
-html, body{
-  overflow-x:hidden;
-  overflow-y:auto !important;
-  touch-action:auto !important;
-  overscroll-behavior-y:auto;
-  height:auto !important;
-  min-height:100%;
-  position:static !important;
-}
-/* 메뉴·팝업이 열려 있을 때만 잠급니다 */
-body.drawer-on,
-body.modal-open{
-  overflow:hidden !important;
-  touch-action:none !important;
-}
-
-/* ② 배너가 화면에 안 맞던 문제
-      규칙이 15겹 쌓여 서로 싸우던 것을 하나로 확정합니다. */
-.hero-sec{
-  max-width:1160px;
-  margin:0 auto 34px;
-  padding:0 20px;
-}
-.hero{
-  position:relative;
-  width:100%;
-  max-width:100%;
-  aspect-ratio:1568/756;
-  max-height:min(66vh,520px);
-  overflow:hidden;
-  border-radius:24px;
-}
-.hero img, .hero .slide img, .hero-img{
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
-  object-position:center !important;
-  display:block;
-}
-
-@media (max-width:768px){
-  .hero-sec{
-    padding:0 !important;
-    margin:0 0 24px !important;
-    max-width:none !important;
-  }
-  .hero{
-    aspect-ratio:16/10 !important;
-    max-height:none !important;
-    border-radius:0 !important;
-    width:100vw !important;
-    max-width:100vw !important;
-    margin-left:calc(50% - 50vw) !important;
-    margin-right:calc(50% - 50vw) !important;
-  }
-  .hero-txt{ padding:0 20px !important }
-  .hero-txt .en{ font-size:clamp(18px,5.5vw,30px) !important }
-  .hero-txt .kr{ font-size:clamp(12px,3.4vw,16px) !important }
-}
-@media (max-width:430px){
-  .hero{ aspect-ratio:4/3 !important }
-}
-
-/* ③ 상품 카드가 화면 밖으로 나가던 문제 */
-.prod-grid, .card-grid, #best .grid, #all .grid, .p-grid{
-  display:grid !important;
-  grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr)) !important;
-  gap:clamp(12px,2.4vw,22px) !important;
-  width:100% !important;
-  max-width:100% !important;
-  margin-left:auto !important;
-  margin-right:auto !important;
-  padding-left:clamp(14px,4vw,20px) !important;
-  padding-right:clamp(14px,4vw,20px) !important;
-  box-sizing:border-box !important;
-}
-.card, .p-card{
-  width:100% !important;
-  max-width:100% !important;
-  min-width:0 !important;
-  margin:0 !important;
-  box-sizing:border-box !important;
-  overflow:hidden !important;
-}
-.card *, .p-card *{ max-width:100% !important; box-sizing:border-box }
-.card img, .p-card img{
-  width:100% !important;
-  height:auto !important;
-  aspect-ratio:1/1;
-  object-fit:contain !important;
-  display:block;
-}
-.card .name, .p-card .name{
-  overflow:hidden;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  word-break:keep-all;
-}
-
-@media (max-width:768px){
-  .prod-grid, .card-grid, #best .grid, #all .grid, .p-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-    gap:12px !important;
-  }
-}
-@media (max-width:380px){
-  .prod-grid, .card-grid, #best .grid, #all .grid, .p-grid{
-    grid-template-columns:1fr !important;
-  }
-}
-
-/* ④ 어떤 것도 화면 밖으로 못 나가게 */
-@media (max-width:768px){
-  section, .sec, footer, .revsec, .ufilm{
-    max-width:100vw !important;
-    overflow-x:hidden !important;
-  }
+/* AI 수정  · 2026-08-19 */
+@media (max-width:1024px){
+  header .glass-wrap{ margin-top:-14px !important; padding-bottom:0 !important }
+  header > div:first-child{ padding-bottom:0 !important }
+  header > div:last-child{ margin-bottom:0 !important }
+  .hero-sec{ margin-top:0 !important; padding-top:0 !important }
+  .hero-sec > .hero{ margin-top:0 !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
@@ -7091,8 +6506,9 @@ body.modal-open{
   setTimeout(lock, 600);
 })();
 
-/* 헤더 상태 변경 중단 (떨림 방지) — 모든 화면 */
+/* 모바일 — 헤더 상태 변경 중단 (떨림 방지) */
 (function(){
+  if (window.innerWidth > 900) return;
   var hd = document.querySelector('header');
   if (!hd) return;
   /* 이미 붙은 상태 클래스 제거 후 고정 */
@@ -7278,12 +6694,12 @@ body.modal-open{
       } else lk.style.display = 'none';
     }
     view.classList.remove('hide');
-    document.body.classList.add('modal-open');
+    document.body.style.overflow = 'hidden';
   };
 
   window.ufClose = function(){
     view.classList.add('hide');
-    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
     var v = view.querySelector('video');
     if (v) v.pause();
   };
@@ -7605,70 +7021,13 @@ body.modal-open{
   if (typeof _old === 'function') {
     window.openDetail = function(card){
       var box = document.getElementById('dDetail');
-      var inner = document.getElementById('dDetailIn');
-      /* 접지 않고 항상 펼쳐 둔다 */
-      if (box) box.classList.remove('hide');
-      if (inner) inner.innerHTML = '';
+      var btn = document.getElementById('dFull');
+      if (box) box.classList.add('hide');
+      if (btn) btn.textContent = '상세 이미지 보기';
       loadedFor = null;
-      var r = _old.apply(this, arguments);
-      /* 새 상품의 상세 이미지를 바로 불러온다 */
-      setTimeout(function(){
-        if (window.toggleDetailImgs) {
-          try { toggleDetailImgs(); } catch(e) {}
-          if (box) box.classList.remove('hide');
-        }
-      }, 120);
-      return r;
+      return _old.apply(this, arguments);
     };
   }
-})();
-</script>
-
-<script>
-/* 배너 — 화면 크기와 화소 밀도에 맞춰 조정 */
-(function(){
-  function fit(){
-    var hero = document.querySelector('.hero');
-    if (!hero) return;
-    var w = hero.clientWidth;
-    var dpr = window.devicePixelRatio || 1;
-    /* 원본은 1400px — 표시 폭이 그보다 크면 확대되어 흐려진다 */
-    var need = Math.round(w * dpr);
-    hero.setAttribute('data-fit', need > 1400 ? 'up' : 'ok');
-  }
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', fit);
-  else fit();
-
-  var t = null;
-  window.addEventListener('resize', function(){
-    clearTimeout(t); t = setTimeout(fit, 150);
-  });
-  window.addEventListener('orientationchange', function(){
-    setTimeout(fit, 300);
-  });
-})();
-</script>
-
-<script>
-/* 스크롤이 잠긴 채 남지 않도록 */
-(function(){
-  function unlock(){
-    if(!document.querySelector('.drawer.open') &&
-       !document.querySelector('.detail-dim:not(.hide)') &&
-       !document.querySelector('.board-dim:not(.hide)')){
-      document.body.classList.remove('modal-open','drawer-on');
-      document.body.style.overflow='';
-      document.body.style.touchAction='';
-    }
-  }
-  window.addEventListener('pageshow', unlock);
-  window.addEventListener('popstate', function(){ setTimeout(unlock,120); });
-  document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState==='visible') setTimeout(unlock,120);
-  });
-  setInterval(unlock, 2000);
-  unlock();
 })();
 </script>
 </body>
