@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v132 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v133 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6848,6 +6848,69 @@ main{ contain:layout style }
 @media (max-width:860px){
   .d-rv img{ width:58px !important;height:58px !important }
   .d-rv p{ -webkit-line-clamp:8 !important }
+}
+
+/* ══ 팝업 아래쪽 — 리뷰 넓게 · 상세 이미지 그대로 표시 ══ */
+
+/* 리뷰 */
+.d-rev{ margin-top:24px !important;padding-top:20px !important }
+.d-rev-list{
+  max-height:none !important;
+  overflow:visible !important;
+  gap:15px !important;
+}
+.d-rv{ gap:12px !important;padding-bottom:15px !important }
+.d-rv img{
+  width:68px !important;height:68px !important;
+  border-radius:12px !important;
+}
+.d-rv p{
+  font-size:13px !important;
+  line-height:1.85 !important;
+  -webkit-line-clamp:8 !important;
+  margin-top:4px !important;
+}
+.d-rv .st{ font-size:12px !important }
+.d-rv .who{ font-size:11.5px !important;margin-top:6px !important }
+.d-rev-h .sc b{ font-size:19px !important }
+.d-rev-more{ margin-top:14px !important }
+
+/* 상세 이미지 — 팝업 맨 아래, 전부 */
+#dDetail, .d-detail{
+  display:block !important;
+  margin-top:26px !important;
+  padding-top:20px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#dDetail.hide, .d-detail.hide{ display:block !important }
+#dDetailIn, .d-detail-in{
+  display:block !important;
+  font-size:0 !important;line-height:0 !important;
+  border-radius:14px;overflow:hidden;
+  max-height:none !important;
+}
+#dDetailIn img, .d-detail-in img{
+  width:100% !important;height:auto !important;
+  max-height:none !important;
+  display:block !important;margin:0 !important;padding:0 !important;
+  border:0 !important;border-radius:0 !important;
+  object-fit:unset !important;aspect-ratio:auto !important;
+}
+#dFull, .d-full, .d-detail-more{ display:none !important }
+
+/* 결제 안내 — 구매 버튼 바로 아래 */
+.d-npay{
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  min-height:48px !important;margin-top:8px !important;
+  border-radius:14px !important;font-size:13.5px !important;font-weight:600 !important;
+}
+.d-notice{ margin-top:10px !important;font-size:12px !important;line-height:1.85 !important }
+
+@media (max-width:860px){
+  .d-rv img{ width:58px !important;height:58px !important }
+  .d-rv p{ -webkit-line-clamp:10 !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
