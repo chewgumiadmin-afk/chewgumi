@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi About v3 · MedIT -->
+<!-- ChewGumi About v4 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -380,188 +380,7 @@ h2{margin-top:9px;font-size:clamp(22px,3.2vw,34px);font-weight:700;letter-spacin
     text-underline-offset:3px;min-height:36px;display:inline-flex;align-items:center}
   .cs-hr{font-size:11.5px;color:var(--gray,#7a7a82)}
   @media(max-width:640px){.cs-line{gap:6px;flex-direction:column}}
-</style>
-<button class="cgbot-fab" onclick="cgbotToggle()" aria-label="상담 문의">
-  <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z"/></svg>
-  <span class="dot"></span>
-</button>
-<div class="cgbot-win" id="cgbotWin">
-  <div class="cgbot-hd">
-    <div><b>츄구미 상담</b><small>궁금한 점을 물어보세요</small></div>
-    <button onclick="cgbotToggle()" aria-label="닫기">&times;</button>
-  </div>
-  <div class="cgbot-body" id="cgbotBody"></div>
-  <div class="cgbot-note">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>
-  <div class="cgbot-ft">
-    <input id="cgbotIn" placeholder="메시지를 입력하세요"
-      onkeydown="if(event.key==='Enter')cgbotSend()">
-    <button id="cgbotBtn" onclick="cgbotSend()">전송</button>
-  </div>
-</div>
-<script>
-(function(){
-  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-  var kakaoUrl='', started=false, hist=[];
-  var sid=''; try{ sid=localStorage.getItem('cg_chat_sid')||'';
-    if(!sid){ sid=Math.random().toString(36).slice(2)+Date.now().toString(36);
-      localStorage.setItem('cg_chat_sid',sid);} }catch(e){}
 
-  function el(id){return document.getElementById(id);}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function add(role,text){
-    var d=document.createElement('div');
-    d.className='cgbot-msg '+(role==='me'?'me':'bot');
-    d.textContent=text; el('cgbotBody').appendChild(d);
-    el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
-    return d;
-  }
-  function addKakao(){
-    if(!kakaoUrl) return;
-    var a=document.createElement('a');
-    a.className='cgbot-kakao'; a.href=kakaoUrl; a.target='_blank'; a.rel='noopener';
-    a.textContent='카카오톡으로 상담원 연결';
-    el('cgbotBody').appendChild(a);
-    el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
-  }
-  function quick(){
-    var qs=['배송 얼마나 걸리나요','배송비 얼마인가요','무통장 계좌 알려주세요','트래블잇이 뭔가요'];
-    var w=document.createElement('div'); w.className='cgbot-quick';
-    qs.forEach(function(q){
-      var b=document.createElement('button'); b.textContent=q;
-      b.onclick=function(){ el('cgbotIn').value=q; cgbotSend(); w.remove(); };
-      w.appendChild(b);
-    });
-    el('cgbotBody').appendChild(w);
-  }
-  window.cgbotToggle=function(){
-    var w=el('cgbotWin'); w.classList.toggle('on');
-    if(w.classList.contains('on')){
-      if(!started){
-        started=true;
-        add('bot','안녕하세요, 츄구미입니다.\n배송·상품·주문에 대해 물어보세요.');
-        quick();
-        fetch(SB+'/functions/v1/chat',{method:'POST',
-          headers:{'Content-Type':'application/json',apikey:KEY},
-          body:JSON.stringify({action:'config'})})
-        .then(function(r){return r.json();})
-        .then(function(d){ kakaoUrl=d.kakao||''; }).catch(function(){});
-      }
-      setTimeout(function(){el('cgbotIn').focus();},80);
-    }
-  };
-  window.cgbotSend=function(){
-    var v=el('cgbotIn').value.trim(); if(!v) return;
-    el('cgbotIn').value=''; add('me',v);
-    hist.push({role:'me',text:v});
-    var t=add('bot','…'); el('cgbotBtn').disabled=true;
-    fetch(SB+'/functions/v1/chat',{method:'POST',
-      headers:{'Content-Type':'application/json',apikey:KEY},
-      body:JSON.stringify({action:'ask',question:v,sessionId:sid,history:hist.slice(0,-1)})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      el('cgbotBtn').disabled=false;
-      t.textContent=d.answer||'답변을 가져오지 못했습니다.';
-      hist.push({role:'bot',text:t.textContent});
-      if(d.kakao) kakaoUrl=d.kakao;
-      if(d.handoff) addKakao();
-    }).catch(function(){
-      el('cgbotBtn').disabled=false;
-      t.textContent='연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
-      addKakao();
-    });
-  };
-})();
-</script>
-<script src="assets/lite.js" defer></script>
-<script src="assets/pwa.js" defer></script>
-<script src="assets/nav.js" defer></script>
-<script src="assets/schema.js" defer></script>
-<script src="assets/sheet.js" defer></script>
-<script src="assets/float.js" defer></script>
-</body>
-</html><section>
-    <div class="sec-eyebrow">OUR STORY</div>
-    <h2>숙명여자대학교에서<br>시작했습니다</h2>
-    <p class="lead">식품영양을 공부하던 사람들이 모여
-      "왜 영양제는 끝까지 먹기가 어려울까"라는 질문에서 시작했습니다.</p>
-    <div class="story">
-      <p>답은 성분표가 아니라 일상에 있었습니다.
-        아무리 좋은 성분도 먹지 않으면 소용이 없고, 먹으려면 번거롭지 않아야 합니다.
-        그래서 우리는 형태를 바꾸기로 했습니다.
-        삼키는 것에서 씹는 것으로, 챙기는 일에서 즐기는 일로.</p>
-      <p>지금도 같은 기준으로 만듭니다.
-        화려한 문구를 앞세우기보다, 내일도 손이 가는 제품인지를 먼저 봅니다.
-        한입에 건강을 더한다는 말은 거창한 약속이 아니라,
-        그 정도면 충분하다는 태도입니다.</p>
-    </div>
-  </section>
-
-  
-
-  <section>
-    <div class="sec-eyebrow">NUMBERS</div>
-    <h2>숫자로 보는 츄구미</h2>
-    <div class="nums">
-      <div class="num"><div class="v">30</div><div class="l">개국 바이어와<br>연결</div></div>
-      <div class="num"><div class="v">15+</div><div class="l">개국 수출 경험</div></div>
-      <div class="num"><div class="v">100,000+</div><div class="l">누적 제품 생산</div></div>
-      <div class="num"><div class="v">3</div><div class="l">상황별 제품 라인</div></div>
-    </div>
-    <p class="num-note">미국 · 홍콩 · 대만 · 인도네시아 · 라오스 · 뉴질랜드 · 칠레 등</p>
-  </section>
-
-  
-
-  <div class="cta">
-    <h2>오늘부터 한입</h2>
-    <p>회원가입하시면 <b>2,000원 할인쿠폰</b>을 드립니다.<br>
-      구매 금액의 1%는 적립금으로 돌려드려요.</p>
-    <div class="btns">
-      <a href="index.html#all">제품 보러 가기</a>
-      <a class="ghost" href="join.html">회원가입</a>
-    </div>
-  </div>
-
-  <div class="info">
-    <h3>COMPANY</h3>
-    <table>
-      <tr><th>상호명</th><td>ChewGumi</td></tr>
-      <tr><th>대표자</th><td>윤소호</td></tr>
-      <tr><th>사업장 주소</th><td>04309 서울 용산구 청파로47길 46, 205호</td></tr>
-      <tr><th>사업자등록번호</th><td>358-04-03258</td></tr>
-      <tr><th>통신판매업 신고번호</th><td>제2024-서울용산-1327호</td></tr>
-      <tr><th>고객센터</th><td>chewgumi24@gmail.com · chewgumi24@gmail.com<br>
-        <span style="color:var(--gray);font-size:12px">평일 09:00 – 18:00 (주말·공휴일 휴무)</span></td></tr>
-      <tr><th>인스타그램</th><td><a href="https://www.instagram.com/chewgumi_official/" target="_blank"
-        rel="noopener" style="text-decoration:underline">@chewgumi_official</a></td></tr>
-    </table>
-  </div>
-</div>
-
-<div class="foot">
-  
-      <div class="cs-line">
-        <a class="cs-kko" href="https://pf.kakao.com/_lxjxjiX/chat" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"
-            style="vertical-align:-2px;margin-right:5px">
-            <path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7l-1 3.7c-.1.4.3.7.6.5l4.4-2.9
-              c.4 0 .8.1 1.3.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/>
-          </svg>카카오톡 문의</a>
-        <a class="cs-mail" href="mailto:chewgumi24@gmail.com">chewgumi24@gmail.com</a>
-        <span class="cs-hr">평일 10:00 - 17:00 · 점심 12:00 - 13:00</span>
-      </div><a href="about.html">회사소개</a>
-  <a href="terms.html">이용약관</a>
-  <a href="privacy.html">개인정보처리방침</a>
-  <a href="guide.html">이용안내</a>
-  <a href="faq.html">자주묻는질문</a>
-  <a href="tracking.html">배송조회</a>
-  <a href="index.html">← 홈으로</a>
-</div>
-
-<!-- 챗봇 상담 -->
-<style>
 .cgbot-fab{position:fixed;right:18px;bottom:20px;z-index:2000;width:58px;height:58px;border-radius:50%;
   border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#E95073,#D82558);box-shadow:0 10px 26px rgba(216,37,88,.4)}
@@ -668,7 +487,138 @@ h2{margin-top:9px;font-size:clamp(22px,3.2vw,34px);font-weight:700;letter-spacin
 @media(max-width:640px){
   .about img, .ab-img img{ border-radius:12px }
 }
-</style>
 
+
+/* ══ 제품 라인 카드 — 이미지와 글 균형 ══ */
+.lines{ display:grid !important;gap:16px !important }
+.line{
+  display:grid !important;
+  grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr) !important;
+  gap:0 !important;
+  align-items:stretch !important;
+  overflow:hidden !important;
+  border-radius:18px !important;
+  background:rgba(255,255,255,.7) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+}
+.line .th{
+  margin:0 !important;padding:0 !important;
+  display:flex !important;align-items:center !important;justify-content:center !important;
+  background:#FFF6F8 !important;overflow:hidden !important;min-height:0 !important;
+}
+.line .th img{
+  width:100% !important;height:100% !important;min-height:190px;
+  object-fit:cover !important;object-position:center !important;
+  display:block !important;border-radius:0 !important;aspect-ratio:auto !important;
+}
+.line .b{
+  padding:22px 24px !important;
+  display:flex !important;flex-direction:column !important;justify-content:center !important;
+}
+@media (max-width:760px){
+  .line{ grid-template-columns:1fr !important }
+  .line .th img{ min-height:0;aspect-ratio:16/9 !important }
+  .line .b{ padding:18px 18px 22px !important }
+}
+</style>
+<button class="cgbot-fab" onclick="cgbotToggle()" aria-label="상담 문의">
+  <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z"/></svg>
+  <span class="dot"></span>
+</button>
+<div class="cgbot-win" id="cgbotWin">
+  <div class="cgbot-hd">
+    <div><b>츄구미 상담</b><small>궁금한 점을 물어보세요</small></div>
+    <button onclick="cgbotToggle()" aria-label="닫기">&times;</button>
+  </div>
+  <div class="cgbot-body" id="cgbotBody"></div>
+  <div class="cgbot-note">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>
+  <div class="cgbot-ft">
+    <input id="cgbotIn" placeholder="메시지를 입력하세요"
+      onkeydown="if(event.key==='Enter')cgbotSend()">
+    <button id="cgbotBtn" onclick="cgbotSend()">전송</button>
+  </div>
+</div>
+<script>
+(function(){
+  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var kakaoUrl='', started=false, hist=[];
+  var sid=''; try{ sid=localStorage.getItem('cg_chat_sid')||'';
+    if(!sid){ sid=Math.random().toString(36).slice(2)+Date.now().toString(36);
+      localStorage.setItem('cg_chat_sid',sid);} }catch(e){}
+
+  function el(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function add(role,text){
+    var d=document.createElement('div');
+    d.className='cgbot-msg '+(role==='me'?'me':'bot');
+    d.textContent=text; el('cgbotBody').appendChild(d);
+    el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
+    return d;
+  }
+  function addKakao(){
+    if(!kakaoUrl) return;
+    var a=document.createElement('a');
+    a.className='cgbot-kakao'; a.href=kakaoUrl; a.target='_blank'; a.rel='noopener';
+    a.textContent='카카오톡으로 상담원 연결';
+    el('cgbotBody').appendChild(a);
+    el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
+  }
+  function quick(){
+    var qs=['배송 얼마나 걸리나요','배송비 얼마인가요','무통장 계좌 알려주세요','트래블잇이 뭔가요'];
+    var w=document.createElement('div'); w.className='cgbot-quick';
+    qs.forEach(function(q){
+      var b=document.createElement('button'); b.textContent=q;
+      b.onclick=function(){ el('cgbotIn').value=q; cgbotSend(); w.remove(); };
+      w.appendChild(b);
+    });
+    el('cgbotBody').appendChild(w);
+  }
+  window.cgbotToggle=function(){
+    var w=el('cgbotWin'); w.classList.toggle('on');
+    if(w.classList.contains('on')){
+      if(!started){
+        started=true;
+        add('bot','안녕하세요, 츄구미입니다.\n배송·상품·주문에 대해 물어보세요.');
+        quick();
+        fetch(SB+'/functions/v1/chat',{method:'POST',
+          headers:{'Content-Type':'application/json',apikey:KEY},
+          body:JSON.stringify({action:'config'})})
+        .then(function(r){return r.json();})
+        .then(function(d){ kakaoUrl=d.kakao||''; }).catch(function(){});
+      }
+      setTimeout(function(){el('cgbotIn').focus();},80);
+    }
+  };
+  window.cgbotSend=function(){
+    var v=el('cgbotIn').value.trim(); if(!v) return;
+    el('cgbotIn').value=''; add('me',v);
+    hist.push({role:'me',text:v});
+    var t=add('bot','…'); el('cgbotBtn').disabled=true;
+    fetch(SB+'/functions/v1/chat',{method:'POST',
+      headers:{'Content-Type':'application/json',apikey:KEY},
+      body:JSON.stringify({action:'ask',question:v,sessionId:sid,history:hist.slice(0,-1)})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      el('cgbotBtn').disabled=false;
+      t.textContent=d.answer||'답변을 가져오지 못했습니다.';
+      hist.push({role:'bot',text:t.textContent});
+      if(d.kakao) kakaoUrl=d.kakao;
+      if(d.handoff) addKakao();
+    }).catch(function(){
+      el('cgbotBtn').disabled=false;
+      t.textContent='연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+      addKakao();
+    });
+  };
+})();
+</script>
+<script src="assets/lite.js" defer></script>
+<script src="assets/pwa.js" defer></script>
+<script src="assets/nav.js" defer></script>
+<script src="assets/schema.js" defer></script>
+<script src="assets/sheet.js" defer></script>
+<script src="assets/float.js" defer></script>
 </body>
 </html>
