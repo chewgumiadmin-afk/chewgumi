@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v122 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v123 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6119,6 +6119,16 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
   background:rgba(255,255,255,.85);font-size:12.5px;font-weight:600;
 }
 
+@media(max-width:860px){
+  .detail{
+    grid-template-columns:1fr !important;
+    width:calc(100vw - 20px) !important;
+    max-height:94svh !important;
+    overflow-y:auto !important;
+  }
+  .detail .d-img{max-height:46svh;border-radius:24px 24px 0 0}
+  .detail .d-info{max-height:none;padding:22px 20px 28px !important}
+  .d-rev-list{max-height:none}
 }
 
 /* ══ 모바일 메뉴 — 화살표를 글자 왼쪽에 ══
@@ -6312,9 +6322,7 @@ header.shrink > div:first-child{
 .hero-sec{ margin-top:0 !important }
 header{ margin-bottom:0 !important }
 
-/* ══ 상품 팝업 — 원래 크기로 ══
-   제가 1080px 로 키웠던 것을 원래 880px 로 되돌립니다.
-   왼쪽 이미지도 원본 비율 그대로 담기게 합니다. */
+/* ══ 상품 팝업 — 원래 크기로 되돌림 ══ */
 .detail{
   width:100% !important;
   max-width:880px !important;
@@ -6331,7 +6339,6 @@ header{ margin-bottom:0 !important }
   display:flex !important;
   align-items:center !important;
   justify-content:center !important;
-  background:radial-gradient(120% 92% at 50% 12%,#fff 0%,#FFF7F9 46%,#FFEFF3 100%) !important;
   border-radius:22px 0 0 22px !important;
 }
 .detail .d-img::after{ content:none !important }
@@ -6341,7 +6348,7 @@ header{ margin-bottom:0 !important }
   max-width:100% !important;
   max-height:100% !important;
   min-height:0 !important;
-  object-fit:contain !important;   /* 원본 비율 그대로 · 잘리지 않음 */
+  object-fit:contain !important;
   padding:6% !important;
   display:block !important;
 }
@@ -6350,11 +6357,9 @@ header{ margin-bottom:0 !important }
   max-height:min(88dvh,760px) !important;
   padding:26px 24px !important;
 }
-
 @media (max-width:860px){
   .detail{
     grid-template-columns:1fr !important;
-    width:100% !important;
     max-width:100% !important;
     max-height:88dvh !important;
     border-radius:22px 22px 0 0 !important;
