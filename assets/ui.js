@@ -247,6 +247,20 @@ font-size:14px;font-weight:700;font-family:inherit;transition:filter .15s}\
     }
   };
 
+
+  /* 기존 코드를 거의 안 고치고 바꾸는 방법.
+     if(!confirm('...')) return;   →   cgAsk('...', function(){ 이어서 할 일 });  */
+  window.cgAsk = function (msg, ok, opt) {
+    cgUI.confirm(msg, opt || {}).then(function (yes) { if (yes && ok) ok(); });
+  };
+
+  /* 입력받고 이어가기 */
+  window.cgGet = function (msg, val, ok, opt) {
+    cgUI.prompt(msg, val, opt || {}).then(function (v) {
+      if (v !== null && ok) ok(v);
+    });
+  };
+
   /* alert 만 안전하게 바꿉니다.
      confirm·prompt 는 값을 즉시 돌려줘야 해서 바꾸지 않고,
      각 화면에서 cgUI.confirm / cgUI.prompt 를 직접 씁니다. */
