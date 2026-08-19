@@ -6091,46 +6091,6 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
   .head-top .logo{ max-width:calc(100% - 150px) }
 }
 
-/* ══ 상품 팝업 — 크게 · 끌어서 보기 · 리뷰 ══ */
-.detail{
-  width:min(96vw,1080px) !important;
-  max-height:92svh !important;
-  display:grid !important;
-  grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) !important;
-  gap:0 !important;
-  overflow:hidden !important;
-  border-radius:24px !important;
-}
-.detail .d-img{
-  position:relative;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  background:#FFF6F8;
-  max-height:92svh;
-  cursor:grab;
-}
-.detail .d-img:active{cursor:grabbing}
-.detail .d-img img{
-  width:100% !important;height:auto !important;
-  display:block;object-fit:contain;
-  -webkit-user-drag:none;user-select:none;
-}
-.detail .d-img::after{
-  content:"↕ 끌어서 더 보기";
-  position:sticky;bottom:12px;left:0;right:0;
-  display:block;width:fit-content;margin:0 auto;
-  padding:6px 14px;border-radius:999px;
-  background:rgba(0,0,0,.42);color:#fff;
-  font-size:11px;letter-spacing:.5px;
-  pointer-events:none;opacity:.9;
-}
-.detail .d-info{
-  overflow-y:auto;max-height:92svh;
-  padding:28px 26px calc(28px + env(safe-area-inset-bottom)) !important;
-  -webkit-overflow-scrolling:touch;
-}
-
 /* 리뷰 */
 .d-rev{margin-top:22px;padding-top:20px;border-top:1px solid rgba(0,0,0,.07)}
 .d-rev-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -6159,16 +6119,6 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
   background:rgba(255,255,255,.85);font-size:12.5px;font-weight:600;
 }
 
-@media(max-width:860px){
-  .detail{
-    grid-template-columns:1fr !important;
-    width:calc(100vw - 20px) !important;
-    max-height:94svh !important;
-    overflow-y:auto !important;
-  }
-  .detail .d-img{max-height:46svh;border-radius:24px 24px 0 0}
-  .detail .d-info{max-height:none;padding:22px 20px 28px !important}
-  .d-rev-list{max-height:none}
 }
 
 /* ══ 모바일 메뉴 — 화살표를 글자 왼쪽에 ══
@@ -6361,6 +6311,62 @@ header.shrink > div:first-child{
 /* 어느 크기에서도 배너 위는 붙는다 */
 .hero-sec{ margin-top:0 !important }
 header{ margin-bottom:0 !important }
+
+/* ══ 상품 팝업 — 원래 크기로 ══
+   제가 1080px 로 키웠던 것을 원래 880px 로 되돌립니다.
+   왼쪽 이미지도 원본 비율 그대로 담기게 합니다. */
+.detail{
+  width:100% !important;
+  max-width:880px !important;
+  max-height:min(88dvh,760px) !important;
+  overflow-y:auto !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  border-radius:22px !important;
+}
+.detail .d-img{
+  overflow:hidden !important;
+  max-height:none !important;
+  cursor:default !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:radial-gradient(120% 92% at 50% 12%,#fff 0%,#FFF7F9 46%,#FFEFF3 100%) !important;
+  border-radius:22px 0 0 22px !important;
+}
+.detail .d-img::after{ content:none !important }
+.detail .d-img img{
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  min-height:0 !important;
+  object-fit:contain !important;   /* 원본 비율 그대로 · 잘리지 않음 */
+  padding:6% !important;
+  display:block !important;
+}
+.detail .d-info{
+  overflow-y:auto !important;
+  max-height:min(88dvh,760px) !important;
+  padding:26px 24px !important;
+}
+
+@media (max-width:860px){
+  .detail{
+    grid-template-columns:1fr !important;
+    width:100% !important;
+    max-width:100% !important;
+    max-height:88dvh !important;
+    border-radius:22px 22px 0 0 !important;
+  }
+  .detail .d-img{
+    border-radius:22px 22px 0 0 !important;
+    max-height:300px !important;
+  }
+  .detail .d-img img{ padding:5% !important;max-height:300px !important }
+  .detail .d-info{ max-height:none !important;padding:20px 18px 26px !important }
+  .d-rev-list{ max-height:none !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6742,7 +6748,7 @@ header{ margin-bottom:0 !important }
   };
 
   /* 이미지 칸을 끌어서 위아래로 */
-  var img = document.querySelector('.detail .d-img');
+  var img = null; /* 끌어서 보기 해제 */
   if (img) {
     var down=false, sy=0, st=0;
     img.addEventListener('mousedown', function(e){
