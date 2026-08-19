@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v42 · MedIT -->
+<!-- ChewGumi Product Detail v43 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -444,9 +444,9 @@ const ORDER = [15,11,12,13,14,16,17,18,19,20,21];
 const NN = 'assets/detail/';
 const DETAIL_SET = {
     travel:[
-      'assets/detail/20250609/copy-1749449300-2.jpg',
-      'assets/202506/79cae8ac4a3807d0a1f27ad874ac4614.jpg',
-      'assets/202506/dc72d6fa148062eae7417558046e467c.png'
+      'assets/detail/tvd-01.jpg','assets/detail/tvd-02.jpg',
+      'assets/detail/tvd-03.jpg','assets/detail/tvd-04.jpg',
+      'assets/detail/tvd-05.jpg'
     ],
     grape:[
       'assets/detail/dew-grape-01.jpg',
@@ -1345,6 +1345,63 @@ section, main, article{
 #pDetailImgs .pd-img:not([data-narrow]){ width:100% !important }
 /* 좁은 것은 원본 크기 그대로 — 늘려서 뭉개지 않음 */
 #pDetailImgs .pd-img[data-narrow]{ width:auto !important }
+
+/* ══════════════════════════════════════════
+   상세 이미지 — 최종 확정 (이전 규칙 모두 덮어씀)
+   33겹으로 쌓인 규칙이 서로 부딪혀 화면이 깨지던 문제.
+   ══════════════════════════════════════════ */
+#pDetailImgs{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:100% !important;
+  max-width:900px !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  gap:0 !important;
+  background:#fff !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  box-shadow:0 10px 30px rgba(0,0,0,.06) !important;
+  max-height:none !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  transition:none !important;
+}
+#pDetailImgs::after,
+#pDetailImgs::before{ display:none !important; content:none !important }
+
+#pDetailImgs .pd-img{
+  max-width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  display:block !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  object-fit:unset !important;
+  aspect-ratio:auto !important;
+  transform:none !important;
+  float:none !important;
+  position:static !important;
+}
+/* 폭이 넉넉하면 꽉 채우고 */
+#pDetailImgs .pd-img:not([data-narrow]){ width:100% !important }
+/* 좁으면 원본 크기 — 늘려서 뭉개지 않음 */
+#pDetailImgs .pd-img[data-narrow]{ width:auto !important }
+
+@media (max-width:900px){
+  #pDetailImgs{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+}
 </style>
 <script>
 (function(){
