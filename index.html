@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v136 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v137 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6680,6 +6680,125 @@ body.drawer-on, body.modal-open{
   overflow:hidden !important;
   touch-action:none !important;
 }
+
+/* ══════════════════════════════════════════════
+   배너 · 메뉴 화살표 · 장바구니 버튼  (최종)
+   ══════════════════════════════════════════════ */
+
+/* ① 배너 — 안쪽 요소가 높이를 밀어내지 못하게 못 박습니다.
+      흰 공백은 슬라이드가 액자보다 커져서 생긴 것입니다. */
+.hero{
+  position:relative !important;
+  aspect-ratio:1400/675 !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow:hidden !important;
+  display:block !important;
+}
+.hero .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.hero .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  display:block !important;
+}
+.hero .hero-txt{
+  position:absolute !important;
+  left:6% !important;
+  right:6% !important;
+  bottom:9% !important;
+  top:auto !important;
+  margin:0 !important;
+}
+.hero-sec{
+  margin-top:0 !important;
+  padding-top:0 !important;
+}
+/* 헤더 바로 아래가 배너가 되도록 */
+header{ margin-bottom:0 !important; padding-bottom:0 !important }
+
+@media (max-width:900px){
+  .hero-sec{
+    padding:0 !important;
+    margin:0 0 20px !important;
+    max-width:none !important;
+  }
+  .hero{
+    width:100vw !important;
+    max-width:100vw !important;
+    margin-left:calc(50% - 50vw) !important;
+    margin-right:calc(50% - 50vw) !important;
+    border-radius:0 !important;
+  }
+  .hero .hero-txt .en{ font-size:clamp(15px,4.4vw,24px) !important }
+  .hero .hero-txt .kr{ font-size:clamp(10.5px,2.9vw,13px) !important }
+}
+
+/* ② 메뉴 화살표 삭제 */
+.drawer nav a.d-sub::after,
+.drawer nav a.d-sub::before,
+.drawer nav a::after{
+  content:none !important;
+  display:none !important;
+}
+.drawer nav a.d-sub{
+  padding-left:20px !important;
+  margin-left:14px !important;
+}
+
+/* ③ 장바구니 버튼 색 되살리기 */
+.p-acts .btn-cart, .buy-row .cart, button.cart-btn,
+.p-acts button:not(.buy):not(.wish),
+.d-acts .to-cart{
+  min-height:52px !important;
+  padding:0 22px !important;
+  border-radius:999px !important;
+  border:1.5px solid var(--main,#D82558) !important;
+  background:rgba(255,255,255,.96) !important;
+  color:var(--main,#D82558) !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  letter-spacing:.5px !important;
+  cursor:pointer !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 4px 14px rgba(216,37,88,.12) !important;
+}
+.p-acts .btn-cart:active, .buy-row .cart:active{
+  background:rgba(216,37,88,.06) !important;
+}
+
+/* ④ 선택 상자 화살표 하나만 */
+select{
+  -webkit-appearance:none !important;
+  -moz-appearance:none !important;
+  appearance:none !important;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23D82558' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:right 16px center !important;
+  background-size:12px 8px !important;
+  padding-right:42px !important;
+  text-decoration:none !important;
+  cursor:pointer;
+}
+select::-ms-expand{ display:none !important }
+select option{ text-decoration:none !important }
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
