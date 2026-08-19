@@ -368,7 +368,7 @@ function showConsents(){
   }).catch(()=>{box.innerHTML='<div class="msg">불러오지 못했습니다.</div>';});
 }
 function withdraw(){
-  if(!confirm('정말 탈퇴하시겠습니까?\n회원 정보와 적립금이 모두 삭제되며 복구할 수 없습니다.'))return;
+  cgAsk('정말 탈퇴하시겠습니까?\n회원 정보와 적립금이 모두 삭제되며 복구할 수 없습니다.', function(){
   if(!confirm('마지막 확인입니다. 탈퇴를 진행할까요?'))return;
   $('wmsg').textContent='탈퇴 처리 중…';
   fetch(SB+'/functions/v1/account',{method:'POST',
@@ -380,6 +380,7 @@ function withdraw(){
       try{localStorage.removeItem('cg_sb');}catch(e){} location.href='index.html'; }
     else $('wmsg').textContent=d.error||'탈퇴에 실패했습니다.';
   }).catch(()=>$('wmsg').textContent='네트워크 오류가 발생했습니다.');
+  });
 }
 function loadCoupons(){
   fetch(SB+'/functions/v1/coupon',{method:'POST',
