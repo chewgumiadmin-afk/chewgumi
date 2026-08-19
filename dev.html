@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v16 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v17 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -643,27 +643,73 @@ function draft(auto){
 
   $('go').disabled=true; $('go2').disabled=true;
   $('dmsg').className='msg';
-  $('dmsg').textContent = auto
-    ? '수정안을 만들고 바로 반영합니다… 1분쯤 걸립니다.'
-    : '수정안을 만드는 중입니다… 30초에서 1분 정도 걸립니다.';
   $('result').classList.add('hide');
 
-  call({action:'draft', path:$('path').value, request:req, actor:who||'관리자'})
-  .then(({ok,d})=>{
+  var path = $('path').value;
+  var t0 = Date.now();
+  var timer = setInterval(function(){
+    var s = Math.round((Date.now()-t0)/1000);
+    $('dmsg').textContent = '수정안을 만드는 중입니다… ' + s + '초 지났습니다. '
+      + '큰 화면은 2~3분 걸릴 수 있습니다.';
+  }, 1000);
+
+  function finish(){
+    clearInterval(timer);
     $('go').disabled=false; $('go2').disabled=false;
+  }
+
+  /* 응답이 늦어도 결과를 찾아본다 */
+  var found = false;
+  function lookFor(){
+    if(found) return;
+    call({action:'history'}).then(function(res){
+      if(found || !res.ok) return;
+      var it = (res.d.items||[]).find(function(x){
+        return x.path===path && x.status==='draft'
+          && new Date(x.created_at).getTime() > t0 - 5000;
+      });
+      if(it){
+        found = true;
+        finish();
+        curId = it.id;
+        $('summary').textContent = (it.summary||'요약이 없습니다.');
+        $('result').classList.remove('hide');
+        if(auto){
+          $('dmsg').className='msg ok';
+          $('dmsg').textContent='수정안이 준비되었습니다. 바로 반영합니다…';
+          deploy(true);
+        }else{
+          $('dmsg').className='msg ok';
+          $('dmsg').textContent='수정안이 준비되었습니다. 내용을 확인하고 반영해 주세요.';
+          $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
+      }
+    }).catch(function(){});
+  }
+  /* 20초부터 10초마다 확인 */
+  var poll = setInterval(function(){
+    if(found || Date.now()-t0 > 240000){ clearInterval(poll); return; }
+    if(Date.now()-t0 > 20000) lookFor();
+  }, 10000);
+
+  call({action:'draft', path:path, request:req, actor:who||'관리자'})
+  .then(function(res){
+    if(found) return;
+    clearInterval(poll);
+    var ok=res.ok, d=res.d;
+    finish();
     if(!ok){
       $('dmsg').className='msg bad';
-      $('dmsg').innerHTML = esc(d.error || d.msg || '만들지 못했습니다. (서버가 이유를 알려주지 않았습니다)')
-        + (d.help ? '<br>필요 항목: '+esc(d.help) : '')
-        + '<br><span style="font-size:11.5px;opacity:.7">'
-        + esc(JSON.stringify(d).slice(0,300)) + '</span>';
+      $('dmsg').innerHTML = esc(d.error || d.msg || '만들지 못했습니다.')
+        + (d.help ? '<br>필요 항목: '+esc(d.help) : '');
       return;
     }
+    found = true;
     curId=d.id;
     $('summary').textContent=(d.summary||'요약이 없습니다.')
-      +'\n\n(문서 크기 '+d.sizeBefore.toLocaleString()+' → '+d.sizeAfter.toLocaleString()+'자)';
+      + (d.sizeBefore ? '\n\n(문서 크기 '+d.sizeBefore.toLocaleString()
+        +' → '+d.sizeAfter.toLocaleString()+'자)' : '');
     $('result').classList.remove('hide');
-
     if(auto){
       $('dmsg').className='msg ok';
       $('dmsg').textContent='수정안이 준비되었습니다. 바로 반영합니다…';
@@ -674,10 +720,21 @@ function draft(auto){
       $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
     }
   })
-  .catch(()=>{
-    $('go').disabled=false; $('go2').disabled=false;
-    $('dmsg').className='msg bad';
-    $('dmsg').textContent='오류가 발생했습니다.';
+  .catch(function(e){
+    if(found) return;
+    /* 연결이 끊겨도 서버는 만들고 있을 수 있다 */
+    $('dmsg').className='msg';
+    $('dmsg').textContent='연결이 끊겼지만 서버가 계속 만들고 있습니다. 결과를 기다립니다…';
+    setTimeout(function(){
+      lookFor();
+      setTimeout(function(){
+        if(!found){
+          finish(); clearInterval(poll);
+          $('dmsg').className='msg bad';
+          $('dmsg').textContent='시간이 너무 걸려 멈췄습니다. 작은 화면으로 시도해 보세요.';
+        }
+      }, 60000);
+    }, 5000);
   });
 }
 function preview(){
