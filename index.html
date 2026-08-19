@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v130 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v131 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1900,20 +1900,7 @@ function openDetail(card){
   try {
     var _rn = card.dataset.no || '';
     if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
-    /* 상세 이미지를 접지 않고 바로 불러온다 */
-    try {
-      var _dd = document.getElementById('dDetail');
-      if (_dd) _dd.classList.remove('hide');
-      if (window.toggleDetailImgs && !window.__ddLoaded) {
-        window.__ddLoaded = _rn;
-        toggleDetailImgs(true);
-      } else if (window.__ddLoaded !== _rn) {
-        window.__ddLoaded = _rn;
-        var _in = document.getElementById('dDetailIn');
-        if (_in) _in.innerHTML = '';
-        if (window.toggleDetailImgs) toggleDetailImgs(true);
-      }
-    } catch(e) {}
+
     var _di = document.getElementById('dImg');
     if (_di) _di.parentElement.scrollTop = 0;
   } catch(e) {}
@@ -7202,11 +7189,20 @@ main{ contain:layout style }
   if (typeof _old === 'function') {
     window.openDetail = function(card){
       var box = document.getElementById('dDetail');
-      var btn = document.getElementById('dFull');
-      if (box) box.classList.add('hide');
-      if (btn) btn.textContent = '상세 이미지 보기';
+      var inner = document.getElementById('dDetailIn');
+      /* 접지 않고 항상 펼쳐 둔다 */
+      if (box) box.classList.remove('hide');
+      if (inner) inner.innerHTML = '';
       loadedFor = null;
-      return _old.apply(this, arguments);
+      var r = _old.apply(this, arguments);
+      /* 새 상품의 상세 이미지를 바로 불러온다 */
+      setTimeout(function(){
+        if (window.toggleDetailImgs) {
+          try { toggleDetailImgs(); } catch(e) {}
+          if (box) box.classList.remove('hide');
+        }
+      }, 120);
+      return r;
     };
   }
 })();
