@@ -175,6 +175,14 @@ select{
       </div>
     </div>
 
+    <div style="font-size:12px;color:var(--gray);line-height:1.8;margin:12px 0 0;
+      padding:11px 14px;border-radius:11px;background:rgba(255,255,255,.55)">
+      <b style="color:var(--ink)">지금 고르신 화면만</b> 고칩니다.
+      다른 화면을 바꾸시려면 위에서 화면을 먼저 바꿔주세요.<br>
+      화면에 <b style="color:var(--ink)">실제로 보이는 글자</b>를 넣으시면 더 정확합니다.
+      예) BEST ITEMS 글씨를 키워줘
+    </div>
+
     <label>바꿀 내용</label>
     <textarea id="req" placeholder="예) 메뉴 아래 여백을 줄여줘
 예) BEST ITEMS 글씨를 더 크게 해줘
@@ -365,6 +373,17 @@ function discard(){
     say('dmsg','수정안을 버렸습니다.');
     loadLive();
     loadHist();
+
+    /* 반영을 기다리는 수정안이 있으면 알려준다 */
+    call({action:'history'}).then(function(res){
+      if(!res.ok) return;
+      var w=(res.d.items||[]).filter(function(x){ return x.status==='draft'; });
+      if(!w.length) return;
+      $('dmsg').className='msg';
+      $('dmsg').innerHTML='반영을 기다리는 수정안이 '+w.length+'건 있습니다. '
+        +'<a href="#" onclick="pick('+w[0].id+');return false;" '
+        +'style="color:var(--main);font-weight:700">가장 최근 것 열기</a>';
+    });
   });
 }
 
@@ -450,7 +469,12 @@ function boot(){
   });
 }
 
-$('path').addEventListener('change', loadLive);
+$('path').addEventListener('change', function(){
+  curId=null;
+  $('result').classList.add('hide');
+  say('dmsg','');
+  loadLive();
+});
 $('model').addEventListener('change', function(){
   call({action:'setModel',model:this.value}).then(()=>{
     say('dmsg','모델을 바꿨습니다.','ok');
