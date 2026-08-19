@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Admin Console v2 · MedIT -->
+<!-- ChewGumi Admin Console v9 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -385,14 +385,21 @@ function boot(){
     else msg += '처리할 일이 '+t.length+'건 있습니다.\n\n'
       + t.slice(0,3).map((x,i)=>(i+1)+'. '+x.t).join('\n')
       + (t.length>3?'\n\n나머지는 아래 목록에서 확인하세요.':'');
-    /* 지난 대화 먼저 복원 */
+    /* 지난 대화를 복원하고, 인사는 하루 한 번만 */
+    var _day = new Date().toDateString();
+    var _last = '';
+    try{ _last = localStorage.getItem('cg_greet_day') || ''; }catch(e){}
+
     if(d.past && d.past.length){
       d.past.forEach(function(m){ bub(m.role, m.text); });
       hist = d.past.slice(-6);
-      bub('ai', greet+', '+who+'님. 이어서 말씀해 주세요.'
-        + (t.length ? '\n\n처리할 일이 '+t.length+'건 있습니다.' : ''));
+      if(_last !== _day){
+        try{ localStorage.setItem('cg_greet_day', _day); }catch(e){}
+        bub('ai', msg);
+      }
     } else {
-      bub('ai',msg);
+      try{ localStorage.setItem('cg_greet_day', _day); }catch(e){}
+      bub('ai', msg);
     }
 
     $('todos').innerHTML = t.length ? t.map(x=>
