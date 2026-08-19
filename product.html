@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v42 · MedIT -->
+<!-- ChewGumi Product Detail v43 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1542,6 +1542,72 @@ html, body{ overflow-x:hidden !important; max-width:100% !important }
   .float-wrap, .fl-btns, .cgbot-fab, .kko-fab{
     bottom:calc(84px + env(safe-area-inset-bottom)) !important;
   }
+}
+
+/* ══ 장바구니 버튼 · 선택 상자 (최종) ══ */
+
+/* 선택 상자 — 화살표 하나만, 취소선 없이 */
+select{
+  -webkit-appearance:none !important;
+  -moz-appearance:none !important;
+  appearance:none !important;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23D82558' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:right 16px center !important;
+  background-size:12px 8px !important;
+  padding-right:44px !important;
+  text-decoration:none !important;
+  cursor:pointer;
+}
+select::-ms-expand{ display:none !important }
+select, select option{ text-decoration:none !important }
+
+/* 장바구니 — 흰 바탕에 분홍 테두리 */
+.acts .cart, .acts button.cart, #btnCart,
+.buy-row .cart, .p-acts .cart,
+button[onclick*="addCart"], a[onclick*="addCart"]{
+  min-height:54px !important;
+  padding:0 24px !important;
+  border-radius:999px !important;
+  border:1.6px solid var(--main,#D82558) !important;
+  background:#fff !important;
+  color:var(--main,#D82558) !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:.4px !important;
+  cursor:pointer !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 4px 14px rgba(216,37,88,.12) !important;
+  text-decoration:none !important;
+}
+button[onclick*="addCart"]:active, .acts .cart:active{
+  background:rgba(216,37,88,.06) !important;
+  transform:scale(.98);
+}
+
+/* 찜 · 구매와 나란히 */
+.acts, .buy-row, .p-acts{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  flex-wrap:wrap !important;
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+.acts .wish, .p-acts .wish{ flex:none !important }
+.acts .buy, .p-acts .buy, #btnBuy{ flex:1 !important; min-width:140px !important }
+
+@media (max-width:640px){
+  .acts .cart, #btnCart, button[onclick*="addCart"]{
+    flex:1 !important;
+    min-width:120px !important;
+    padding:0 14px !important;
+    font-size:13.5px !important;
+  }
+  .acts .buy, #btnBuy{ min-width:120px !important }
 }
 </style>
 <script>
