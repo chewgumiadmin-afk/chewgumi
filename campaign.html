@@ -95,6 +95,79 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* ══ 관리자 화면 공통 · 글래스 버튼 ══ */
+.btn{
+  min-height:48px !important;
+  padding:0 24px !important;
+  border-radius:14px !important;
+  font-weight:600 !important;
+  letter-spacing:-.01em;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px;
+  color:var(--ink) !important;
+  background:rgba(255,255,255,.58) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:0 6px 18px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.95) !important;
+  transition:background .18s ease, box-shadow .18s ease, transform .12s ease;
+}
+.btn:hover{
+  background:rgba(255,255,255,.76) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+.btn:active{ transform:translateY(1px) }
+.btn.sub, .btn.ghost{
+  background:rgba(255,255,255,.42) !important;
+  color:#555 !important;
+}
+.btn.danger{
+  color:#A32F4E !important;
+  background:linear-gradient(135deg,rgba(208,96,124,.2),rgba(176,48,80,.15)) !important;
+  border-color:rgba(255,255,255,.85) !important;
+}
+.btn:disabled{ opacity:.45 !important;box-shadow:none !important;cursor:default }
+
+.btns{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+}
+.btns > .btn{ flex:1;min-width:150px }
+
+/* 체크박스 */
+input[type=checkbox]{
+  -webkit-appearance:none;appearance:none;
+  width:20px;height:20px;margin:0;flex:none;
+  border-radius:7px;
+  border:1.5px solid rgba(0,0,0,.16);
+  background:rgba(255,255,255,.9);
+  cursor:pointer;position:relative;
+  transition:background .18s ease,border-color .18s ease;
+}
+input[type=checkbox]:checked{
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  border-color:transparent;
+}
+input[type=checkbox]:checked::after{
+  content:"";position:absolute;left:6.5px;top:2.5px;
+  width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;
+  transform:rotate(43deg);
+}
+label:has(> input[type=checkbox]){
+  display:inline-flex;align-items:center;gap:9px;
+  min-height:44px;cursor:pointer;user-select:none;
+}
+
+@media (max-width:640px){
+  .btn{ min-height:50px !important }
+  .btns > .btn{ min-width:0 }
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
