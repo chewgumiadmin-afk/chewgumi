@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v16 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -552,7 +552,19 @@ function doLogin(){
 function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 function call(p){
   return fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
-    .then(r=>r.json().then(d=>({ok:r.ok,d})));
+    .then(function(r){
+      return r.text().then(function(t){
+        var d;
+        try { d = JSON.parse(t); }
+        catch(e){ d = { error: '서버 응답을 읽지 못했습니다: ' + t.slice(0,200) }; }
+        /* 서버가 보낸 ok 가 있으면 그것을 따른다 */
+        var ok = (d && typeof d.ok === 'boolean') ? d.ok : r.ok;
+        return { ok: ok, d: d || {} };
+      });
+    })
+    .catch(function(e){
+      return { ok:false, d:{ error: '연결하지 못했습니다: ' + String(e).slice(0,120) } };
+    });
 }
 function setEx(t){ $('req').value=t; $('req').focus(); }
 
@@ -604,38 +616,23 @@ function init(){
   loadHist();
 }
 function loadModels(cur){
-  /* 코드 수정에 쓸 수 있는 모델만 고른다 */
   var PICK = [
-    { id:'claude-haiku-4-5-20251001', name:'빠름 · 저렴  (간단한 수정)',   ok:true },
-    { id:'claude-sonnet-4-6',          name:'권장  (대부분의 수정)',        ok:true },
-    { id:'claude-opus-4-1-20250805',   name:'꼼꼼함 · 비쌈  (복잡한 수정)', ok:true }
+    { id:'claude-haiku-4-5-20251001',  n:'claude-haiku-4-5',  d:'빠름 · 저렴' },
+    { id:'claude-sonnet-4-6',          n:'claude-sonnet-4-6', d:'권장' },
+    { id:'claude-opus-4-1-20250805',   n:'claude-opus-4-1',   d:'꼼꼼함 · 비쌈' }
   ];
+  var sel = $('model');
+  var now = cur || 'claude-sonnet-4-6';
+  sel.innerHTML = PICK.map(function(m){
+    return '<option value="'+esc(m.id)+'"'
+      + (m.id===now ? ' selected' : '') + '>'
+      + esc(m.n) + '  —  ' + esc(m.d) + '</option>';
+  }).join('');
 
   call({action:'models'}).then(function(res){
-    var sel=$('model');
-    var live = (res.ok && res.d && res.d.models) ? res.d.models : [];
-    var have = {};
-    live.forEach(function(m){ have[m.id] = true; });
-
-    /* 서버가 목록을 주면 그중 실제로 있는 것만, 못 주면 그냥 셋 다 */
-    var use = live.length
-      ? PICK.filter(function(m){ return have[m.id]; })
-      : PICK;
-    if(!use.length) use = PICK;
-
-    var now = (res.d && res.d.current) || cur || 'claude-sonnet-4-6';
-    sel.innerHTML = use.map(function(m){
-      return '<option value="'+esc(m.id)+'"'
-        + (m.id===now ? ' selected' : '') + '>' + esc(m.name) + '</option>';
-    }).join('');
-  }).catch(function(){
-    var sel=$('model');
-    sel.innerHTML = PICK.map(function(m){
-      return '<option value="'+esc(m.id)+'"'
-        + (m.id===(cur||'claude-sonnet-4-6') ? ' selected' : '') + '>'
-        + esc(m.name) + '</option>';
-    }).join('');
-  });
+    if(!res.ok || !res.d || !res.d.current) return;
+    sel.value = res.d.current;
+  }).catch(function(){});
 }
 
 function setModel(){ call({action:'setModel',model:$('model').value}).catch(()=>{}); }
@@ -656,8 +653,10 @@ function draft(auto){
     $('go').disabled=false; $('go2').disabled=false;
     if(!ok){
       $('dmsg').className='msg bad';
-      $('dmsg').innerHTML=esc(d.error||'만들지 못했습니다.')
-        +(d.help?'<br>필요 항목: '+esc(d.help):'');
+      $('dmsg').innerHTML = esc(d.error || d.msg || '만들지 못했습니다. (서버가 이유를 알려주지 않았습니다)')
+        + (d.help ? '<br>필요 항목: '+esc(d.help) : '')
+        + '<br><span style="font-size:11.5px;opacity:.7">'
+        + esc(JSON.stringify(d).slice(0,300)) + '</span>';
       return;
     }
     curId=d.id;
