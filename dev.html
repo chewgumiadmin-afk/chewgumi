@@ -969,14 +969,50 @@ function delDraft(id, status){
 }
 
 function revert(id){
-  if(!confirm('이 수정을 되돌릴까요?\n수정 직전 상태로 사이트가 복구됩니다.')) return;
-  $('hmsg').className='msg'; $('hmsg').textContent='되돌리는 중…';
-  call({action:'revert',id}).then(({ok,d})=>{
-    if(!ok){ $('hmsg').className='msg bad'; $('hmsg').textContent=d.error||'되돌리기에 실패했습니다.'; return; }
-    $('hmsg').className='msg ok'; $('hmsg').textContent='되돌렸습니다. 1~2분 후 사이트에 반영됩니다.';
-    loadHist();
-  }).catch(()=>{$('hmsg').className='msg bad';$('hmsg').textContent='네트워크 오류가 발생했습니다.';});
+  /* 그 뒤에 다른 수정이 있었는지 먼저 확인한다 */
+  $('hmsg').className='msg';
+  $('hmsg').textContent='확인하는 중…';
+
+  call({action:'history'}).then(function(res){
+    var items = (res.d && res.d.items) || [];
+    var me = items.find(function(x){ return x.id===id; });
+    if(!me){ $('hmsg').textContent='찾지 못했습니다.'; return; }
+
+    var mine = new Date(me.deployed_at || me.created_at).getTime();
+    var later = items.filter(function(x){
+      return x.path===me.path && x.status==='deployed' && x.id!==id
+        && new Date(x.deployed_at || x.created_at).getTime() > mine;
+    });
+
+    var warn = '이 수정을 되돌릴까요?\n\n'
+      + me.path + ' 이 ' + new Date(mine).toLocaleString('ko-KR') + ' 상태로 돌아갑니다.';
+
+    if(later.length){
+      warn = '⚠ 주의\n\n이 수정 뒤에 ' + me.path + ' 이 '
+        + later.length + '번 더 바뀌었습니다.\n'
+        + '되돌리면 그 뒤 수정이 모두 사라집니다.\n\n'
+        + '그래도 되돌릴까요?';
+    } else {
+      warn += '\n\n제가 직접 고친 것도 함께 사라질 수 있습니다.';
+    }
+
+    if(!confirm(warn)) { $('hmsg').textContent=''; return; }
+
+    $('hmsg').textContent='되돌리는 중…';
+    call({action:'revert',id:id}).then(function(r2){
+      if(!r2.ok){
+        $('hmsg').className='msg bad';
+        $('hmsg').textContent=(r2.d && r2.d.error)||'되돌리지 못했습니다.';
+        return;
+      }
+      $('hmsg').className='msg ok';
+      $('hmsg').textContent='되돌렸습니다. 사이트에 반영되는 중입니다.';
+      loadHist();
+      if(window.watchBuild) watchBuild('');
+    });
+  });
 }
+
 sync();
 </script>
 <script src="assets/lite.js" defer></script>
