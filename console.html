@@ -259,7 +259,7 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
       <h2>휴대폰 알림</h2>
       <div class="msg" id="pshMsg" style="margin-top:0">확인 중…</div>
       <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-        <button class="btn" id="pshBtn" onclick="pshToggle()">이 기기에서 알림 받기</button>
+        <button class="btn" id="pshBtn" onclick="pshToggle()">내 아이디로 알림 받기</button>
         <button class="btn ghost" onclick="pshTest()">테스트 알림</button>
       </div>
       <div class="msg" id="pshRes"></div>
@@ -448,7 +448,7 @@ function pshUI(){
     m.innerHTML='<b style="color:var(--ok)">이 기기로 알림을 받고 있습니다.</b><br>'
       +'주문이 들어오면 휴대폰 화면에 바로 뜹니다. 비용은 들지 않습니다.';
   } else {
-    b.disabled=false; b.textContent='이 기기에서 알림 받기';
+    b.disabled=false; b.textContent='내 아이디로 알림 받기';
     b.className='btn';
     m.innerHTML='주문 알림을 휴대폰으로 받으실 수 있습니다. <b>무료</b>입니다.<br>'
       +'<span style="font-size:11.5px">아이폰은 홈 화면에 추가한 뒤 열어야 작동합니다.</span>';
