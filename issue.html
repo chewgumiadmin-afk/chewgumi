@@ -87,6 +87,36 @@ textarea{resize:vertical;min-height:110px;line-height:1.7}
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* 고르기 창 */
+.ask{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;
+  justify-content:center;padding:18px;background:rgba(20,12,16,.45);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ask.hide{display:none}
+.ask-in{width:min(100%,400px);background:#fff;border-radius:20px;
+  padding:24px 22px calc(22px + env(safe-area-inset-bottom))}
+.ask-in>b{display:block;font-size:16px;font-weight:800;letter-spacing:-.03em;
+  margin-bottom:16px}
+.ask-opt{display:flex;flex-direction:column;gap:8px}
+.ask-opt button{display:flex;align-items:center;gap:10px;width:100%;
+  min-height:52px;padding:0 16px;border-radius:13px;cursor:pointer;
+  border:1.5px solid rgba(0,0,0,.08);background:#fff;
+  font-size:14px;font-weight:600;font-family:inherit;text-align:left;
+  transition:border-color .15s,background .15s}
+.ask-opt button:hover{border-color:var(--main,#D82558);background:rgba(216,37,88,.04)}
+.ask-opt button.on{border-color:var(--main,#D82558);background:rgba(216,37,88,.07)}
+.ask-opt .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.ask-opt .sub{margin-left:auto;font-size:11.5px;color:#8a8a92;font-weight:500}
+.ask textarea,.ask input{width:100%;padding:12px 14px;border-radius:12px;
+  border:1px solid rgba(0,0,0,.1);font-size:16px;font-family:inherit;
+  box-sizing:border-box;margin-bottom:10px}
+.ask textarea{min-height:96px;line-height:1.7;resize:vertical}
+.ask-btns{display:flex;gap:8px;margin-top:16px}
+.ask-btns button{flex:1;min-height:48px;border:0;border-radius:999px;cursor:pointer;
+  font-size:14px;font-weight:700;font-family:inherit}
+.ask-btns .no{background:rgba(0,0,0,.05);color:#555}
+.ask-btns .yes{background:linear-gradient(135deg,#E95073,#D82558);color:#fff}
+@media(min-width:1024px){.ask textarea,.ask input{font-size:14.5px}}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -256,24 +286,28 @@ function render(){
   }).join('');
 }
 function addComment(id){
-  const b=prompt('댓글을 입력하세요');
-  if(!b) return;
-  let who=''; try{who=localStorage.getItem('cg_reporter')||'';}catch(e){}
-  if(!who){ who=prompt('작성자 이름')||'익명'; try{localStorage.setItem('cg_reporter',who);}catch(e){} }
-  fetch(SB+'/rest/v1/issue_comments',{method:'POST',
-    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({issue_id:id,author:who,body:b})})
-  .then(()=>load()).catch(()=>alert('등록에 실패했습니다.'));
+  var who='';
+  try{ who=localStorage.getItem('cg_reporter')||''; }catch(e){}
+  askComment(who, function(b, name){
+    if(!b) return;
+    if(name){ try{ localStorage.setItem('cg_reporter', name); }catch(e){} }
+    fetch(SB+'/rest/v1/issue_comments',{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,
+        'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({issue_id:id,author:name||'익명',body:b})})
+    .then(()=>load()).catch(()=>alert('등록에 실패했습니다.'));
+  });
 }
 function setStatus(id){
-  const s=prompt('상태를 입력하세요 (open / doing / done / hold)','doing');
-  if(!s||!['open','doing','done','hold'].includes(s)) return;
   if(!token) return alert('상태 변경은 운영자 로그인 후 가능합니다.');
-  fetch(SB+'/rest/v1/issues?id=eq.'+id,{method:'PATCH',
-    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify({status:s,updated_at:new Date().toISOString()})})
-  .then(r=>{if(r.ok)load();else alert('운영자만 변경할 수 있습니다.');})
-  .catch(()=>alert('네트워크 오류'));
+  askStatus(function(s){
+    if(!s) return;
+    fetch(SB+'/rest/v1/issues?id=eq.'+id,{method:'PATCH',
+      headers:{apikey:KEY,Authorization:'Bearer '+token,
+        'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({status:s})})
+    .then(()=>load()).catch(()=>alert('변경에 실패했습니다.'));
+  });
 }
 </script>
 <script src="assets/lite.js" defer></script>
@@ -340,6 +374,84 @@ function setStatus(id){
     document.addEventListener('DOMContentLoaded', addBtn);
   else addBtn();
 })();
+</script>
+
+<div class="ask hide" id="askBox" onclick="if(event.target===this)closeAsk()">
+  <div class="ask-in">
+    <b id="askTitle">상태 바꾸기</b>
+    <div id="askBody"></div>
+    <div class="ask-btns" id="askBtns"></div>
+  </div>
+</div>
+
+<script>
+/* ── 고르기 창 ── */
+var _askDone = null;
+
+function closeAsk(){
+  document.getElementById('askBox').classList.add('hide');
+  document.body.style.overflow='';
+  _askDone = null;
+}
+
+function askStatus(done){
+  var STATES = [
+    { v:'open',  n:'대기',  c:'#E9A23B', d:'아직 손대지 않음' },
+    { v:'doing', n:'진행',  c:'#1B7FA8', d:'고치는 중' },
+    { v:'done',  n:'완료',  c:'#2AA060', d:'처리 끝남' },
+    { v:'hold',  n:'보류',  c:'#8a8a92', d:'나중에' }
+  ];
+  document.getElementById('askTitle').textContent='상태를 골라주세요';
+  document.getElementById('askBody').innerHTML=
+    '<div class="ask-opt">' + STATES.map(function(s){
+      return '<button type="button" onclick="pickStatus(\''+s.v+'\')">'
+        + '<span class="dot" style="background:'+s.c+'"></span>'
+        + s.n + '<span class="sub">' + s.d + '</span></button>';
+    }).join('') + '</div>';
+  document.getElementById('askBtns').innerHTML=
+    '<button type="button" class="no" onclick="closeAsk()">취소</button>';
+  _askDone = done;
+  document.getElementById('askBox').classList.remove('hide');
+  document.body.style.overflow='hidden';
+}
+
+function pickStatus(v){
+  var f=_askDone;
+  closeAsk();
+  if(f) f(v);
+}
+
+function askComment(who, done){
+  document.getElementById('askTitle').textContent='댓글 달기';
+  document.getElementById('askBody').innerHTML=
+    '<input id="askWho" placeholder="작성자 이름" value="'
+      + String(who||'').replace(/"/g,'&quot;') + '" autocomplete="off">'
+    + '<textarea id="askTxt" placeholder="내용을 적어주세요"></textarea>';
+  document.getElementById('askBtns').innerHTML=
+    '<button type="button" class="no" onclick="closeAsk()">취소</button>'
+    + '<button type="button" class="yes" onclick="sendComment()">등록</button>';
+  _askDone = done;
+  document.getElementById('askBox').classList.remove('hide');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){
+    var t=document.getElementById(who?'askTxt':'askWho');
+    if(t) t.focus();
+  }, 100);
+}
+
+function sendComment(){
+  var t=document.getElementById('askTxt').value.trim();
+  var w=document.getElementById('askWho').value.trim();
+  if(!t) return;
+  var f=_askDone;
+  closeAsk();
+  if(f) f(t, w||'익명');
+}
+
+document.addEventListener('keydown', function(e){
+  var b=document.getElementById('askBox');
+  if(e.key==='Escape' && b && !b.classList.contains('hide')) closeAsk();
+});
 </script>
 </body>
 </html>
