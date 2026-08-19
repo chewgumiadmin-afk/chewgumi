@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v121 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v122 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1500,7 +1500,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v121 · 2026-08-19</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v122 · 2026-08-19</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -6219,6 +6219,31 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
 .film-sound:hover{ background:rgba(0,0,0,.6) }
 @media(max-width:640px){
   .film-sound{ width:38px;height:38px;right:12px;bottom:12px;font-size:15px }
+}
+
+/* ══ 모바일 넘침 잡기 ══ */
+html, body{ max-width:100% !important; overflow-x:hidden !important }
+.wrap, section, main, header, footer{ max-width:100%; box-sizing:border-box }
+
+@media (max-width:768px){
+  .wrap{
+    width:100% !important; max-width:100% !important;
+    padding-left:16px !important; padding-right:16px !important;
+    margin-left:0 !important; margin-right:0 !important;
+  }
+  /* 화면 끝까지 늘리는 것들 — 스크롤바 없이 안전하게 */
+  #ufGrid, .rev-row, .film{
+    width:auto !important; max-width:none !important;
+    margin-left:-16px !important; margin-right:-16px !important;
+  }
+  .rev-row{ padding-left:16px !important; padding-right:16px !important }
+  button, .btn, select, input, textarea, img{ max-width:100% !important }
+  .grid, .rel-grid{ max-width:100% !important }
+}
+@media (max-width:400px){
+  .wrap{ padding-left:13px !important; padding-right:13px !important }
+  #ufGrid, .rev-row, .film{ margin-left:-13px !important; margin-right:-13px !important }
+  .rev-row{ padding-left:13px !important; padding-right:13px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
