@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v123 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v121 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v122 · 2026-08-19</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v121 · 2026-08-19</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -6245,6 +6245,45 @@ html, body{ max-width:100% !important; overflow-x:hidden !important }
   .wrap{ padding-left:13px !important; padding-right:13px !important }
   #ufGrid, .rev-row, .film{ margin-left:-13px !important; margin-right:-13px !important }
   .rev-row{ padding-left:13px !important; padding-right:13px !important }
+}
+
+/* ══ 로고와 첫 배너 사이 간격 없애기 ══
+   헤더 아래 여백(12~14px)과 배너 영역 여백이 겹쳐
+   모바일에서 빈 공간이 크게 보이던 문제. */
+.hero-sec{
+  margin-top:0 !important;
+  padding-top:0 !important;
+}
+main > .hero-sec:first-child,
+main > section.hero-sec:first-of-type{
+  margin-top:0 !important;
+}
+header + .hero-sec,
+header + main,
+header + section{
+  margin-top:0 !important;
+  padding-top:0 !important;
+}
+
+@media (max-width:768px){
+  /* 헤더 아래쪽 여백을 줄인다 */
+  header > div:first-child{
+    padding-bottom:8px !important;
+  }
+  .hero-sec{
+    margin-top:0 !important;
+    padding-top:0 !important;
+    margin-bottom:18px !important;
+  }
+  .hero-sec .hero{
+    margin-top:0 !important;
+    border-radius:0 0 18px 18px !important;
+  }
+  /* 배너를 화면 폭 끝까지 */
+  .hero-sec{
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
 }
 </style>
 <script src="assets/nav.js" defer></script>
