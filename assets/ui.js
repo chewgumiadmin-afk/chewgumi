@@ -147,6 +147,59 @@ font-size:14px;font-weight:700;font-family:inherit;transition:filter .15s}\
         long: opt.long, cancel: true, yes: opt.yes || '등록'
       });
     },
+
+    form: function (title, fields) {
+      /* fields: [{k, n, v, long, hint}] — 여러 칸을 한 창에 */
+      return new Promise(function (done) {
+        if (open) { try { open.remove(); } catch (e) {} }
+        var d = document.createElement('div');
+        d.className = 'cgui';
+        d.innerHTML =
+          '<div class="cgui-in" style="max-height:86svh;overflow-y:auto">' +
+          '<p class="cgui-t">' + esc(title) + '</p>' +
+          fields.map(function (f) {
+            return '<label style="display:block;font-size:12px;font-weight:600;' +
+              'color:#666;margin:12px 0 0">' + esc(f.n) + '</label>' +
+              (f.long
+                ? '<textarea data-k="' + esc(f.k) + '" placeholder="' + esc(f.hint || '') +
+                  '" style="min-height:70px">' + esc(f.v || '') + '</textarea>'
+                : '<input data-k="' + esc(f.k) + '" value="' + esc(f.v || '') +
+                  '" placeholder="' + esc(f.hint || '') + '" autocomplete="off">');
+          }).join('') +
+          '<div class="cgui-b"><button type="button" class="no" data-r="0">취소</button>' +
+          '<button type="button" class="yes" data-r="1">저장</button></div></div>';
+
+        document.body.appendChild(d);
+        open = d;
+        var prevOF = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        function close(v) {
+          try { d.remove(); } catch (e) {}
+          document.body.style.overflow = prevOF;
+          open = null;
+          done(v);
+        }
+        d.addEventListener('click', function (e) {
+          if (e.target === d) return close(null);
+          var b = e.target.closest('button[data-r]');
+          if (!b) return;
+          if (b.dataset.r === '0') return close(null);
+          var out = {};
+          d.querySelectorAll('[data-k]').forEach(function (el) {
+            out[el.dataset.k] = el.value;
+          });
+          close(out);
+        });
+        document.addEventListener('keydown', function k(e) {
+          if (e.key === 'Escape') { document.removeEventListener('keydown', k); close(null); }
+        });
+        setTimeout(function () {
+          var f = d.querySelector('input,textarea');
+          if (f) f.focus();
+        }, 80);
+      });
+    },
     pick: function (title, items) {
       /* items: [{v, n, d, c}] */
       return new Promise(function (done) {
