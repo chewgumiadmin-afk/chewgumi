@@ -136,4 +136,54 @@
     user: function () { var s = read(); return s ? { name: s.u, email: s.e } : null; },
     isIn: function () { var s = read(); return !!(s && s.t); }
   };
+
+  /* ── 로그인 유지 ──
+     뒤로가기·새로고침·탭 복귀 때 토큰이 만료됐으면 조용히 연장합니다. */
+  function keepAlive() {
+    var st = read();
+    if (!st || !st.t) return Promise.resolve(null);
+
+    /* 아직 넉넉하면 그대로 */
+    if (st.e && Date.now() < st.e - 120000) return Promise.resolve(st.t);
+    if (!st.r) return Promise.resolve(st.t);
+
+    if (refreshing) return refreshing;
+    refreshing = fetch(SB + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: st.r })
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        refreshing = null;
+        if (!d || !d.access_token) return st.t;
+        st.t = d.access_token;
+        if (d.refresh_token) st.r = d.refresh_token;
+        st.e = Date.now() + ((d.expires_in || 3600) * 1000);
+        write(st);
+        return st.t;
+      })
+      .catch(function () { refreshing = null; return st.t; });
+    return refreshing;
+  }
+
+  /* 화면이 돌아올 때마다 확인 */
+  window.addEventListener('pageshow', function () { keepAlive(); });
+  window.addEventListener('focus', function () { keepAlive(); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') keepAlive();
+  });
+  /* 20분마다 미리 연장 */
+  setInterval(keepAlive, 20 * 60 * 1000);
+
+  window.cgKeepAlive = keepAlive;
+  window.cgRole = function () {
+    var st = read();
+    return (st && st.role) || 'guest';
+  };
+  window.cgEmail = function () {
+    var st = read();
+    return (st && st.em) || '';
+  };
+
 })();
