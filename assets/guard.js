@@ -20,7 +20,7 @@
     catch (e) { return ''; }
   }
 
-  function block(msg, sub){
+  function block(msg, sub, to){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;' +
       'align-items:center;justify-content:center;padding:24px;' +
@@ -37,7 +37,7 @@
           msg + '</div>' +
         '<div style="font-size:13px;color:#7a7a82;line-height:1.8;margin-bottom:22px">' +
           sub + '</div>' +
-        '<a href="login.html" style="display:inline-flex;align-items:center;min-height:46px;' +
+        '<a href="' + (to || 'login.html') + '" style="display:inline-flex;align-items:center;min-height:46px;' +
           'padding:0 24px;border-radius:999px;text-decoration:none;font-size:14px;' +
           'font-weight:700;color:#fff;background:linear-gradient(135deg,#E95073,#D82558)">' +
           '로그인하기</a>' +
@@ -49,8 +49,27 @@
   }
 
   function check(){
+    /* 토큰이 오래됐으면 먼저 연장 */
+    var pre = (window.cgKeepAlive ? window.cgKeepAlive() : Promise.resolve(token()));
+    pre.then(function(){ doCheck(); });
+  }
+
+  function doCheck(){
     var t = token();
-    if (!t) { block('로그인이 필요합니다', '이 화면은 운영자만 보실 수 있습니다.'); return; }
+    if (!t) {
+      /* 돌아올 화면을 기억해 두고 로그인으로 */
+      var back = (location.pathname.split('/').pop() || '') + location.search;
+      block('로그인이 필요합니다', '이 화면은 운영자만 보실 수 있습니다.',
+        'login.html?next=' + encodeURIComponent(page));
+      return;
+    }
+
+    /* 저장된 권한이 있으면 먼저 쓴다 — 화면이 덜 깜빡임 */
+    var cached = (window.cgRole ? window.cgRole() : '');
+    if (cached && cached !== 'guest') {
+      document.documentElement.setAttribute('data-role', cached);
+      window.CG_ROLE = cached;
+    }
 
     /* 내 권한과 화면 권한을 함께 조회 */
     Promise.all([
