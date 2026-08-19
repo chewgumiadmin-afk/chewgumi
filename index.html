@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v127 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v128 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6566,6 +6566,58 @@ main{ contain:layout style }
 /* 가로로 눕힌 휴대폰 — 높이가 짧으니 낮게 */
 @media (max-height:520px) and (orientation:landscape){
   .hero{ aspect-ratio:1400/560 !important }
+}
+
+/* ══ 모바일 로고-배너 간격 · 최종 ══
+   앞서 여러 번 hero-sec 과 glass-wrap 을 건드렸지만
+   모바일에서는 glass-wrap 이 이미 숨겨져 있어 소용없었습니다.
+
+   진짜 원인은 .head-top 의 min-height 였습니다.
+   로고는 36px 인데 칸이 64px 이라 위아래로 28px 이 남았습니다. */
+@media (max-width:900px){
+  header .head-top,
+  header.shrink .head-top{
+    min-height:0 !important;
+    height:auto !important;
+    padding:6px 0 !important;
+  }
+  header .logo{
+    min-height:0 !important;
+    display:flex !important;
+    align-items:center !important;
+  }
+  header .logo img,
+  header.shrink .logo img{
+    height:34px !important;
+    display:block !important;
+  }
+  header .util a,
+  header .util button{
+    min-height:34px !important;
+  }
+  header{
+    padding:0 !important;
+    margin:0 !important;
+    border-bottom:0 !important;
+  }
+  header::after{ display:none !important }
+
+  .hero-sec{
+    margin-top:0 !important;
+    padding-top:0 !important;
+  }
+  .hero-sec > .hero{
+    margin-top:0 !important;
+  }
+}
+
+@media (max-width:480px){
+  header .head-top,
+  header.shrink .head-top{
+    padding:4px 0 !important;
+  }
+  header .logo img,
+  header.shrink .logo img{ height:30px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
