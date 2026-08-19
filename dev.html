@@ -483,6 +483,8 @@ function onPathChange(){
   var m = document.getElementById('dmsg');
   if (m) { m.className = 'msg'; m.textContent = ''; }
   loadPrev();
+  if(window.loadHist) loadHist();
+  if(window.loadCommits) loadCommits();
 }
 
 function loadPrev(){
