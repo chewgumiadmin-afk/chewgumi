@@ -336,12 +336,13 @@ function setSt(id,st){
   }).catch(()=>{$('smsg').textContent='네트워크 오류가 발생했습니다.';});
 }
 function ship(id){
-  if(!confirm('발송 처리할까요?\n다음 배송일이 한 달 뒤로 자동 설정되고 고객에게 안내가 발송됩니다.')) return;
+  cgAsk('발송 처리할까요?\n다음 배송일이 한 달 뒤로 자동 설정되고 고객에게 안내가 발송됩니다.', function(){
   $('smsg').textContent='발송 처리 중…';
   call({action:'ship',id}).then(({ok,d})=>{
     $('smsg').textContent=ok?('발송 처리되었습니다. 다음 배송일 '+d.next):(d.error||'실패했습니다.');
     if(ok) load();
   }).catch(()=>{$('smsg').textContent='네트워크 오류가 발생했습니다.';});
+  });
 }
 
 function loadPlans(){
@@ -400,11 +401,12 @@ function planToggle(id,v){
   }).catch(()=>{});
 }
 function planDel(id,code){
-  if(!confirm('이 구독 상품을 삭제할까요?\n삭제해도 [복원]으로 되돌릴 수 있습니다.')) return;
+  cgAsk('이 구독 상품을 삭제할까요?\n삭제해도 [복원]으로 되돌릴 수 있습니다.', function(){
   call({action:'planDelete',id,code}).then(({ok,d})=>{
     $('pmsg').textContent=ok?('삭제되었습니다.'+(d.warn?' '+d.warn:'')):(d.error||'삭제 실패');
     if(ok){loadPlans();loadAudit();}
   }).catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+  });
 }
 function planRestore(id){
   call({action:'planRestore',id}).then(({ok,d})=>{
