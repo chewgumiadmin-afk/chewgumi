@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v125 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v126 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -2064,7 +2064,7 @@ setTimeout(() => {
 const hd = document.querySelector('header');
 const setHead = () => {
   hd.classList.add('solid');
-  hd.classList.toggle('shrink', (window.scrollY || 0) > 60);
+  /* shrink 해제 — 높이가 변하면 본문이 밀려 떨립니다 */
 };
 window.addEventListener('scroll', setHead, { passive:true });
 /* 대형 게시판 레이어: 게시판 소스 내장 */
@@ -6444,6 +6444,78 @@ header > div:last-child{ margin-bottom:0 !important }
   header .glass-wrap{ padding:0 10px 0 !important;margin-top:-8px !important }
   header > div:first-child{ padding-top:3px !important }
 }
+
+/* ══ 배너 잘림 · 스크롤 떨림 ══
+
+   ① 배너 — 원본은 1400×675(2.074) 인데 화면 비율이 여럿 섞여 있어
+      맥북처럼 넓은 화면에서 위아래가 잘렸습니다.
+   ② 떨림 — 스크롤할 때 헤더가 커졌다 작아지며 본문을 밀었습니다. */
+
+/* ① 배너 비율을 원본에 맞춘다 */
+.hero{
+  aspect-ratio:1400/675 !important;
+  max-height:none !important;
+  height:auto !important;
+}
+.hslide{
+  background-size:contain !important;   /* 잘리지 않게 */
+  background-position:center center !important;
+  background-color:#FFF6F8;
+}
+
+/* 좁은 화면에서는 꽉 채우되 가운데를 살린다 */
+@media (max-width:640px){
+  .hero{ aspect-ratio:1400/760 !important }
+  .hslide{
+    background-size:cover !important;
+    background-position:center 45% !important;
+  }
+}
+
+/* ② 스크롤 떨림 — 헤더 높이를 고정한다 */
+header{
+  contain:layout;
+  transition:box-shadow .25s ease !important;
+}
+header .head-top{
+  min-height:64px !important;
+  transition:none !important;
+}
+header .logo img{
+  transition:none !important;
+}
+header .glass-wrap{
+  transition:none !important;
+}
+/* 작아지는 효과를 아예 끈다 — 높이가 안 변하면 본문도 안 밀린다 */
+header.shrink .head-top{
+  min-height:64px !important;
+  padding:5px 0 !important;
+}
+header.shrink .logo img,
+header .logo img{
+  height:42px !important;
+}
+header.shrink .glass-bar,
+header .glass-bar{
+  padding:6px !important;
+}
+
+@media (max-width:768px){
+  header .head-top,
+  header.shrink .head-top{ min-height:56px !important }
+  header .logo img,
+  header.shrink .logo img{ height:36px !important }
+}
+@media (max-width:480px){
+  header .head-top,
+  header.shrink .head-top{ min-height:50px !important }
+  header .logo img,
+  header.shrink .logo img{ height:32px !important }
+}
+
+/* 본문이 밀리지 않도록 */
+main{ contain:layout style }
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6497,9 +6569,8 @@ header > div:last-child{ margin-bottom:0 !important }
   setTimeout(lock, 600);
 })();
 
-/* 모바일 — 헤더 상태 변경 중단 (떨림 방지) */
+/* 헤더 상태 변경 중단 (떨림 방지) — 모든 화면 */
 (function(){
-  if (window.innerWidth > 900) return;
   var hd = document.querySelector('header');
   if (!hd) return;
   /* 이미 붙은 상태 클래스 제거 후 고정 */
