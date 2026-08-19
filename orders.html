@@ -741,21 +741,27 @@ function doCancel(no){
   }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
 }
 function editAddr(no){
-  const o=(ORD||[]).find(x=>x.order_no===no); if(!o) return;
-  const name=prompt('받는 분 이름', o.buyer_name||''); if(name===null)return;
-  const phone=prompt('연락처', o.buyer_phone||''); if(phone===null)return;
-  const zip=prompt('우편번호', o.zipcode||''); if(zip===null)return;
-  const a1=prompt('주소', o.addr1||''); if(a1===null)return;
-  const a2=prompt('상세주소', o.addr2||''); if(a2===null)return;
-  const memo=prompt('배송 메모', o.memo||''); if(memo===null)return;
-  omsg('변경 중…');
-  callEdit({action:'editAddress',orderId:no,buyer_name:name,buyer_phone:phone,
-    zipcode:zip,addr1:a1,addr2:a2,memo:memo}).then(({ok,d})=>{
-    if(ok&&d.ok){ omsg('배송지가 변경되었습니다.'); load(); }
-    else omsg(d.error||'변경에 실패했습니다.');
-  }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
-}
-function showLogs(no){
+    const o=(ORD||[]).find(x=>x.order_no===no);
+    if(!o) return;
+    cgUI.form('배송지 수정', [
+      { k:'buyer_name',  n:'받는 분',   v:o.buyer_name||'' },
+      { k:'buyer_phone', n:'연락처',    v:o.buyer_phone||'' },
+      { k:'zipcode',     n:'우편번호',  v:o.zipcode||'' },
+      { k:'addr1',       n:'주소',      v:o.addr1||'' },
+      { k:'addr2',       n:'상세주소',  v:o.addr2||'' },
+      { k:'memo',        n:'배송 메모', v:o.memo||'', long:true }
+    ]).then(function(v){
+      if(!v) return;
+      omsg('변경 중…');
+      callEdit(Object.assign({action:'editAddress',orderId:no}, v))
+      .then(({ok,d})=>{
+        if(ok&&d.ok){ omsg('배송지가 변경되었습니다.'); load(); }
+        else omsg(d.error||'변경에 실패했습니다.');
+      }).catch(()=>omsg('네트워크 오류가 발생했습니다.'));
+    });
+  }
+
+  function showLogs(no){
   callEdit({action:'logs',orderId:no}).then(({ok,d})=>{
     if(!ok||!d.ok) return omsg(d.error||'이력을 불러오지 못했습니다.');
     if(!d.logs.length) return alert('수정 이력이 없습니다.');
