@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v126 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v127 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6516,6 +6516,57 @@ header .glass-bar{
 
 /* 본문이 밀리지 않도록 */
 main{ contain:layout style }
+
+/* ══ 화면 크기에 맞춰 알아서 ══
+   원본 1400×675 를 기준으로, 화면이 넓으면 그대로 채우고
+   좁으면 비율을 조금 세워 여백 없이 담습니다. */
+.hero{
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  /* 화면 폭에 따라 비율이 부드럽게 변한다 */
+  aspect-ratio:1400/675 !important;
+  background:#FFF6F8;
+}
+.hslide{
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  image-rendering:auto;
+}
+
+/* 아주 넓은 화면 — 원본보다 커지면 위아래를 조금 더 보여준다 */
+@media (min-width:1400px){
+  .hero{ aspect-ratio:1400/640 !important }
+}
+
+/* 노트북 · 태블릿 가로 */
+@media (max-width:1200px){
+  .hero{ aspect-ratio:1400/700 !important }
+}
+
+/* 태블릿 세로 */
+@media (max-width:900px){
+  .hero{ aspect-ratio:1400/780 !important }
+  .hslide{ background-position:center 45% !important }
+}
+
+/* 휴대폰 가로가 긴 경우 */
+@media (max-width:640px){
+  .hero{ aspect-ratio:1400/900 !important }
+  .hslide{ background-position:center 42% !important }
+}
+
+/* 작은 휴대폰 */
+@media (max-width:420px){
+  .hero{ aspect-ratio:1400/1000 !important }
+  .hslide{ background-position:center 40% !important }
+}
+
+/* 가로로 눕힌 휴대폰 — 높이가 짧으니 낮게 */
+@media (max-height:520px) and (orientation:landscape){
+  .hero{ aspect-ratio:1400/560 !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -7090,6 +7141,32 @@ main{ contain:layout style }
       return _old.apply(this, arguments);
     };
   }
+})();
+</script>
+
+<script>
+/* 배너 — 화면 크기와 화소 밀도에 맞춰 조정 */
+(function(){
+  function fit(){
+    var hero = document.querySelector('.hero');
+    if (!hero) return;
+    var w = hero.clientWidth;
+    var dpr = window.devicePixelRatio || 1;
+    /* 원본은 1400px — 표시 폭이 그보다 크면 확대되어 흐려진다 */
+    var need = Math.round(w * dpr);
+    hero.setAttribute('data-fit', need > 1400 ? 'up' : 'ok');
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', fit);
+  else fit();
+
+  var t = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(t); t = setTimeout(fit, 150);
+  });
+  window.addEventListener('orientationchange', function(){
+    setTimeout(fit, 300);
+  });
 })();
 </script>
 </body>
