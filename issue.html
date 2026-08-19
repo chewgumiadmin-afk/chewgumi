@@ -279,5 +279,67 @@ function setStatus(id){
 <script src="assets/lite.js" defer></script>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
+
+<script>
+/* ── 이슈 목록 자동 갱신 ──
+   등록·삭제·상태 변경이 다른 곳에서 일어나도 화면에 반영됩니다. */
+(function(){
+  var timer = null;
+  var busy = false;
+
+  function tick(){
+    if (busy) return;
+    if (document.hidden) return;          /* 안 보고 있으면 쉰다 */
+    if (document.querySelector('.layer:not(.hide), .modal:not(.hide)')) return;
+    busy = true;
+    try { load(); } catch(e) {}
+    setTimeout(function(){ busy = false; }, 1500);
+  }
+
+  /* 20초마다 */
+  timer = setInterval(tick, 20000);
+
+  /* 화면으로 돌아올 때 바로 */
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') tick();
+  });
+  window.addEventListener('focus', tick);
+  window.addEventListener('pageshow', tick);
+
+  /* 새로고침 단추 */
+  function addBtn(){
+    var head = document.querySelector('.top, header, h1');
+    if (!head || document.getElementById('reBtn')) return;
+    var b = document.createElement('button');
+    b.id = 'reBtn';
+    b.type = 'button';
+    b.textContent = '새로고침';
+    b.title = '20초마다 저절로 갱신됩니다';
+    b.style.cssText =
+      'margin-left:auto;min-height:34px;padding:0 14px;border-radius:999px;' +
+      'border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.85);' +
+      'font-size:12px;font-weight:600;cursor:pointer;font-family:inherit';
+    b.onclick = function(){
+      b.disabled = true;
+      b.textContent = '불러오는 중…';
+      try { load(); } catch(e) {}
+      setTimeout(function(){
+        b.disabled = false;
+        b.textContent = '새로고침';
+      }, 900);
+    };
+    if (getComputedStyle(head).display.indexOf('flex') < 0) {
+      head.style.display = 'flex';
+      head.style.alignItems = 'center';
+      head.style.gap = '10px';
+    }
+    head.appendChild(b);
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', addBtn);
+  else addBtn();
+})();
+</script>
 </body>
 </html>
