@@ -220,7 +220,7 @@ select::-ms-expand{ display:none !important }
           <select id="path" onchange="loadPrev()"></select>
         </div>
         <div>
-          <label>사용할 AI 모델</label>
+          <label>사용할 AI 모델 <span style="font-weight:500;color:#8a8a92;font-size:11px">· 잘 모르시면 「권장」 그대로 두세요</span></label>
           <select id="model" onchange="setModel()"></select>
         </div>
       </div>
@@ -405,16 +405,40 @@ function init(){
   loadHist();
 }
 function loadModels(cur){
-  call({action:'models'}).then(({ok,d})=>{
-    const sel=$('model');
-    if(!ok||!d.models||!d.models.length){
-      sel.innerHTML='<option value="'+esc(cur||'')+'">'+esc(cur||'기본 모델')+'</option>';
-      return;
-    }
-    sel.innerHTML=d.models.map(m=>'<option value="'+esc(m.id)+'"'
-      +(m.id===(d.current||cur)?' selected':'')+'>'+esc(m.name)+'</option>').join('');
-  }).catch(()=>{});
+  /* 코드 수정에 쓸 수 있는 모델만 고른다 */
+  var PICK = [
+    { id:'claude-haiku-4-5-20251001', name:'빠름 · 저렴  (간단한 수정)',   ok:true },
+    { id:'claude-sonnet-4-6',          name:'권장  (대부분의 수정)',        ok:true },
+    { id:'claude-opus-4-1-20250805',   name:'꼼꼼함 · 비쌈  (복잡한 수정)', ok:true }
+  ];
+
+  call({action:'models'}).then(function(res){
+    var sel=$('model');
+    var live = (res.ok && res.d && res.d.models) ? res.d.models : [];
+    var have = {};
+    live.forEach(function(m){ have[m.id] = true; });
+
+    /* 서버가 목록을 주면 그중 실제로 있는 것만, 못 주면 그냥 셋 다 */
+    var use = live.length
+      ? PICK.filter(function(m){ return have[m.id]; })
+      : PICK;
+    if(!use.length) use = PICK;
+
+    var now = (res.d && res.d.current) || cur || 'claude-sonnet-4-6';
+    sel.innerHTML = use.map(function(m){
+      return '<option value="'+esc(m.id)+'"'
+        + (m.id===now ? ' selected' : '') + '>' + esc(m.name) + '</option>';
+    }).join('');
+  }).catch(function(){
+    var sel=$('model');
+    sel.innerHTML = PICK.map(function(m){
+      return '<option value="'+esc(m.id)+'"'
+        + (m.id===(cur||'claude-sonnet-4-6') ? ' selected' : '') + '>'
+        + esc(m.name) + '</option>';
+    }).join('');
+  });
 }
+
 function setModel(){ call({action:'setModel',model:$('model').value}).catch(()=>{}); }
 
 function draft(){
