@@ -385,7 +385,7 @@ select::-ms-expand{ display:none !important }
           <span class="pv-size" id="pvSize"></span><button class="pv-open" id="pvOpen" onclick="openPrev()">새 창</button>
         </div>
         <div class="pv-stage" id="pvStage">
-          <iframe id="pvFrame" title="화면 미리보기" loading="lazy"></iframe>
+          <iframe id="pvFrame" title="화면 미리보기"></iframe>
         </div>
         <div class="pv-hint">보이는 화면을 그대로 고칩니다. 관리자 화면은 로그인 상태에서만 내용이 보입니다.</div>
       </div>
@@ -785,17 +785,38 @@ function draft(auto){
 }
 function preview(){
   if(!curId) return;
-  $('rmsg').className='msg'; $('rmsg').textContent='수정안을 미리보기에 표시하는 중…';
+  $('rmsg').className='msg';
+  $('rmsg').textContent='수정안을 미리보기에 띄우는 중…';
+
   call({action:'preview',id:curId}).then(({ok,d})=>{
-    if(!ok){ $('rmsg').className='msg bad'; $('rmsg').textContent=d.error||'미리보기를 열 수 없습니다.'; return; }
-    const f=$('pvFrame');
-    f.removeAttribute('src');
-    f.srcdoc = d.html.replace('<head>', '<head><base href="'+siteBase()+'">');
-    $('pvUrl').textContent = d.path + ' (수정안 미리보기)';
+    if(!ok){
+      $('rmsg').className='msg bad';
+      $('rmsg').textContent=d.error||'미리보기를 열 수 없습니다.';
+      return;
+    }
+    var f=$('pvFrame');
+    /* 틀을 새로 만들어 확실히 다시 그린다 */
+    var fresh=document.createElement('iframe');
+    fresh.id='pvFrame';
+    fresh.title='화면 미리보기';
+    fresh.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups');
+    f.parentNode.replaceChild(fresh,f);
+
+    var html=d.html;
+    if(html.indexOf('<base') < 0){
+      html = html.replace(/<head([^>]*)>/i, '<head$1><base href="'+siteBase()+'">');
+    }
+    fresh.srcdoc = html;
+
+    $('pvUrl').textContent = d.path + ' · 수정안 (아직 사이트에 없음)';
     $('rmsg').className='msg ok';
-    $('rmsg').textContent='위 미리보기가 수정안입니다. 원래 화면으로 돌아가려면 화면을 다시 선택해 주세요.';
-    document.querySelector('.pv').scrollIntoView({behavior:'smooth',block:'center'});
-  }).catch(()=>{$('rmsg').className='msg bad';$('rmsg').textContent='네트워크 오류가 발생했습니다.';});
+    $('rmsg').textContent='이 화면이 수정안입니다. 괜찮으면 [사이트에 반영]을 눌러주세요.';
+    var pv=document.querySelector('.pv');
+    if(pv) pv.scrollIntoView({behavior:'smooth',block:'center'});
+  }).catch(()=>{
+    $('rmsg').className='msg bad';
+    $('rmsg').textContent='미리보기를 불러오지 못했습니다.';
+  });
 }
 function deploy(skipAsk){
   if(!curId) return;
@@ -865,7 +886,7 @@ function watchBuild(siteUrl){
     }
   }, 8000);
   $('rmsg').className='msg';
-  $('rmsg').textContent='사이트에 반영하는 중입니다…';
+  $('rmsg').textContent='사이트에 반영하는 중입니다… (보통 1~2분 걸립니다)';
 }
 
 function discard(){ curId=null; $('result').classList.add('hide'); $('dmsg').textContent=''; }
