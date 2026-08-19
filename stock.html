@@ -265,13 +265,15 @@ function fillSold(){
   const qty=Math.max(1,+$('fillQty').value||100);
   const zero=ROWS.filter(p=>p.active&&p.stock<=0);
   if(!zero.length) return $('bmsg').textContent='품절 상품이 없습니다.';
-  if(!confirm('품절 상품 '+zero.length+'개의 재고를 각각 '+qty+'개로 채울까요?')) return;
+  
+  cgAsk('품절 상품 '+zero.length+'개의 재고를 각각 '+qty+'개로 채울까요?', function(){
   $('bmsg').textContent='처리 중…';
   Promise.all(zero.map(p=>fetch(SB+'/rest/v1/products?id=eq.'+p.id,{method:'PATCH',
     headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({stock:qty})})))
   .then(()=>{$('bmsg').textContent=zero.length+'개 상품의 재고를 채웠습니다.';load();})
   .catch(()=>$('bmsg').textContent='일부 처리에 실패했습니다.');
+  });
 }
 function exportCsv(){
   if(!ROWS.length) return alert('내려받을 자료가 없습니다.');
