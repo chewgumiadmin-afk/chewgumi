@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v11 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v12 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -690,7 +690,7 @@ function draft(auto){
           deploy(true);
         }else{
           $('dmsg').className='msg ok';
-          $('dmsg').textContent='수정안이 준비되었습니다. 아래 [미리보기]로 확인하신 뒤 [사이트에 반영]을 눌러주세요.';
+          $('dmsg').textContent='수정안을 미리보기에 띄웠습니다. 확인하시고 [사이트에 반영]을 눌러주세요.';
           $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
         }
       }
@@ -735,6 +735,7 @@ function draft(auto){
     }
     found = true;
     curId=d.id;
+    setTimeout(function(){ if(!auto) preview(); }, 300);
     $('summary').textContent=(d.summary||'요약이 없습니다.')
       + (d.sizeBefore ? '\n\n(문서 크기 '+d.sizeBefore.toLocaleString()
         +' → '+d.sizeAfter.toLocaleString()+'자)' : '');
@@ -745,7 +746,7 @@ function draft(auto){
       deploy(true);
     }else{
       $('dmsg').className='msg ok';
-      $('dmsg').textContent='수정안이 준비되었습니다. 아래 [미리보기]로 확인하신 뒤 [사이트에 반영]을 눌러주세요.';
+      $('dmsg').textContent='수정안을 미리보기에 띄웠습니다. 확인하시고 [사이트에 반영]을 눌러주세요.';
       $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
     }
   })
@@ -801,13 +802,56 @@ function deploy(skipAsk){
     $('req').value='';
     loadHist();
     if(window.loadCommits) loadCommits();
-    setTimeout(loadPrev, 90000);
+    watchBuild(d.site || '');
   })
   .catch(()=>{
     $('rmsg').className='msg bad';
     $('rmsg').textContent='오류가 발생했습니다.';
   });
 }
+/* 배포가 끝날 때까지 지켜보다가 미리보기를 새로 불러온다 */
+function watchBuild(siteUrl){
+  var t0 = Date.now();
+  var n = 0;
+  var iv = setInterval(function(){
+    n++;
+    var s = Math.round((Date.now() - t0) / 1000);
+    call({action:'buildStatus'}).then(function(res){
+      var d = res.d || {};
+      if(res.ok && d.done){
+        clearInterval(iv);
+        $('rmsg').className='msg ok';
+        $('rmsg').innerHTML='사이트에 반영되었습니다. 미리보기를 새로 불러옵니다…';
+        var f=$('pvFrame');
+        if(f){
+          f.removeAttribute('srcdoc');
+          f.src = (siteUrl || siteBase()) + '?t=' + Date.now();
+          if($('pvUrl')) $('pvUrl').textContent = '반영된 실제 화면';
+        }
+        setTimeout(function(){
+          $('rmsg').innerHTML='반영이 끝났습니다. 위 미리보기가 실제 사이트입니다.';
+        }, 1500);
+        return;
+      }
+      if(res.ok && d.failed){
+        clearInterval(iv);
+        $('rmsg').className='msg bad';
+        $('rmsg').textContent='배포에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+        return;
+      }
+      $('rmsg').className='msg';
+      $('rmsg').textContent='사이트에 반영하는 중입니다… ' + s + '초 지났습니다.';
+    }).catch(function(){});
+    if(Date.now() - t0 > 300000){
+      clearInterval(iv);
+      $('rmsg').className='msg';
+      $('rmsg').textContent='반영이 오래 걸립니다. 잠시 후 새로고침해 주세요.';
+    }
+  }, 8000);
+  $('rmsg').className='msg';
+  $('rmsg').textContent='사이트에 반영하는 중입니다…';
+}
+
 function discard(){ curId=null; $('result').classList.add('hide'); $('dmsg').textContent=''; }
 
 function loadHist(){
