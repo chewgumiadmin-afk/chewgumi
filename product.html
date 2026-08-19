@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v41 · MedIT -->
+<!-- ChewGumi Product Detail v42 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -563,7 +563,7 @@ function render(){
     wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
       '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
-      'onerror="cgImgFail(this)">').join('');
+      'onerror="cgImgFail(this)" onload="if(this.naturalWidth&lt;600)this.setAttribute(\'data-narrow\',1)">').join('');
   } else {
     wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML =
@@ -1322,6 +1322,28 @@ section, main, article{
     margin-right:-13px !important;
   }
 }
+
+/* ══ 상세 이미지 — 폭이 달라도 가지런하게 ══
+   원본이 168~868px 로 제각각이라 억지로 늘리면 뭉개집니다.
+   원본보다 크게 늘리지 않고 가운데 둡니다. */
+#pDetailImgs{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  background:#fff !important;
+  gap:0 !important;
+  overflow:hidden !important;
+}
+#pDetailImgs .pd-img{
+  max-width:100% !important;
+  height:auto !important;
+  display:block !important;
+  margin:0 auto !important;
+}
+/* 폭이 넉넉한 것은 꽉 채우고 */
+#pDetailImgs .pd-img:not([data-narrow]){ width:100% !important }
+/* 좁은 것은 원본 크기 그대로 — 늘려서 뭉개지 않음 */
+#pDetailImgs .pd-img[data-narrow]{ width:auto !important }
 </style>
 <script>
 (function(){
