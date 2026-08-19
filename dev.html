@@ -184,6 +184,36 @@ select::-ms-expand{ display:none !important }
   .cm-box{max-height:92svh;border-radius:16px}
   .cm-patch{font-size:10px}
 }
+
+/* ══ 미리보기 — 실제 기기 크기로 ══ */
+.pv-stage{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  padding:14px !important;
+  max-height:none !important;
+  overflow:hidden !important;
+  transition:height .28s cubic-bezier(.2,.7,.3,1);
+}
+.pv-stage iframe{
+  border:0 !important;
+  border-radius:12px !important;
+  background:#fff !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.12) !important;
+  flex:none !important;
+  transition:width .28s cubic-bezier(.2,.7,.3,1),
+             height .28s cubic-bezier(.2,.7,.3,1),
+             transform .28s cubic-bezier(.2,.7,.3,1);
+}
+/* 좁은 화면에서도 기기 크기를 지킨다 — 줄여서 보여줌 */
+@media (max-width:768px){
+  .pv-stage{ padding:10px !important }
+  .pv-stage iframe{ width:390px !important }
+}
+.pv-size{
+  font-size:11px;color:var(--gray);margin-left:8px;
+  font-family:ui-monospace,Menlo,monospace;
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -286,7 +316,7 @@ select::-ms-expand{ display:none !important }
             <button data-w="768" onclick="setW(this,768)">태블릿</button>
             <button data-w="1200" onclick="setW(this,1200)">PC</button>
           </div>
-          <button class="pv-open" id="pvOpen" onclick="openPrev()">새 창</button>
+          <span class="pv-size" id="pvSize"></span><button class="pv-open" id="pvOpen" onclick="openPrev()">새 창</button>
         </div>
         <div class="pv-stage" id="pvStage">
           <iframe id="pvFrame" title="화면 미리보기" loading="lazy"></iframe>
@@ -377,14 +407,38 @@ function loadPrev(){
   $('pvUrl').textContent = p;
   f.removeAttribute('srcdoc');
   f.src = prevUrl();
+  /* 지금 고른 크기를 다시 맞춘다 */
+  var on = document.querySelector('.pv-dev button.on');
+  setTimeout(function(){ setW(on, on ? +on.dataset.w : 390); }, 50);
   var w = document.getElementById('admWarn');
   if(w) w.style.display = (ADMIN_PATHS.indexOf(p) > -1) ? 'block' : 'none';
 }
 function setW(btn, w){
-  document.querySelectorAll('.pv-dev button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  $('pvFrame').style.width = w + 'px';
+  document.querySelectorAll('.pv-dev button').forEach(function(b){ b.classList.remove('on'); });
+  if(btn) btn.classList.add('on');
+
+  var f = $('pvFrame'), stage = $('pvStage');
+  if(!f || !stage) return;
+
+  /* 기기별 크기 */
+  var H = { 390:780, 768:1024, 1200:800 }[w] || 800;
+
+  f.style.width  = w + 'px';
+  f.style.height = H + 'px';
+
+  /* 화면보다 크면 줄여서 통째로 보여준다 */
+  var room = stage.clientWidth - 28;
+  var scale = Math.min(1, room / w);
+  f.style.transform = 'scale(' + scale + ')';
+  f.style.transformOrigin = 'top center';
+
+  /* 줄인 만큼 자리도 줄인다 */
+  stage.style.height = Math.round(H * scale) + 28 + 'px';
+
+  var lb = $('pvSize');
+  if(lb) lb.textContent = w + ' × ' + H + (scale < 1 ? '  (' + Math.round(scale*100) + '%)' : '');
 }
+
 function openPrev(){
   window.open(prevUrl(), '_blank', 'noopener');
 }
@@ -777,6 +831,18 @@ document.addEventListener('keydown', function(e){
   var v=document.getElementById('cmView');
   if(e.key==='Escape' && v && !v.classList.contains('hide')) closeCm();
 });
+</script>
+<script>
+window.addEventListener('resize', function(){
+  var on = document.querySelector('.pv-dev button.on');
+  if(on && window.setW) setW(on, +on.dataset.w);
+});
+if(document.readyState!=='loading'){
+  setTimeout(function(){
+    var on=document.querySelector('.pv-dev button.on');
+    if(on && window.setW) setW(on, +on.dataset.w);
+  }, 300);
+}
 </script>
 </body>
 </html>
