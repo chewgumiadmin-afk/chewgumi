@@ -1525,10 +1525,10 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-cart d-full" id="dFull" href="#" onclick="toggleDetailImgs();return false;">상세 이미지 보기</a>
+        
         <div class="d-detail hide" id="dDetail">
           <div class="d-detail-in" id="dDetailIn"></div>
-          <a class="d-detail-more" href="#" onclick="goProductPage();return false;">전체 화면으로 보기 →</a>
+          
         </div>
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
@@ -6622,6 +6622,38 @@ main{ contain:layout style }
   }
   .detail .d-info{ padding:20px 18px 26px !important }
 }
+
+/* ══ 팝업 안에서 상세 이미지를 전부 보여준다 ══ */
+#dDetail, .d-detail{
+  display:block !important;
+  margin-top:20px !important;
+  padding-top:18px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#dDetail.hide, .d-detail.hide{ display:block !important }
+#dDetailIn, .d-detail-in{
+  display:block !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  border-radius:14px;
+  overflow:hidden;
+  max-height:none !important;
+}
+#dDetailIn img, .d-detail-in img{
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  object-fit:unset !important;
+  aspect-ratio:auto !important;
+}
+#dFull, .d-full, .d-detail-more{ display:none !important }
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
