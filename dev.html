@@ -887,6 +887,8 @@ function loadHist(){
         ?'<button class="mini" onclick="pickDraft('+it.id+')">이어서 하기</button>':'')
         +(it.status==='deployed'
         ?'<button class="mini d" onclick="revert('+it.id+')">되돌리기</button>':'')
+        +'<button class="mini" style="color:#999" onclick="delDraft('+it.id+',\''
+        +esc(it.status)+'\')" title="목록에서 지우기">삭제</button>'
         +(it.error?'<span style="font-size:11px;color:var(--bad)">'+esc(it.error.slice(0,40))+'</span>':'')
       +'</div></div>').join('');
   }).catch(()=>{$('hist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
@@ -905,6 +907,44 @@ function pickDraft(id){
     $('dmsg').textContent='대기 중인 수정안을 불러왔습니다. 확인하고 반영해 주세요.';
     $('result').scrollIntoView({behavior:'smooth', block:'center'});
   }).catch(function(){});
+}
+
+/* 이력에서 지우기 — 반영된 것은 기록만 지우고 사이트는 그대로 */
+function delDraft(id, status){
+  var msg = (status === 'deployed')
+    ? '이 기록을 목록에서 지울까요?\n\n사이트는 그대로 유지됩니다.\n지우면 되돌리기를 쓸 수 없게 됩니다.'
+    : '이 수정안을 지울까요?\n\n되돌릴 수 없습니다.';
+  if(!confirm(msg)) return;
+
+  $('hmsg').className='msg';
+  $('hmsg').textContent='지우는 중…';
+
+  fetch('https://psynvpuedzjvytsgdhgg.supabase.co/rest/v1/rpc/delete_draft',{
+    method:'POST',
+    headers:{apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
+      Authorization:'Bearer sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
+      'Content-Type':'application/json'},
+    body:JSON.stringify({p_id:id})
+  }).then(function(r){ return r.json(); })
+  .then(function(d){
+    var x = Array.isArray(d) ? d[0] : d;
+    if(!x || !x['지움']){
+      $('hmsg').className='msg bad';
+      $('hmsg').textContent=(x && x['안내']) || '지우지 못했습니다.';
+      return;
+    }
+    if(curId === id){
+      curId = null;
+      if($('result')) $('result').classList.add('hide');
+    }
+    $('hmsg').className='msg ok';
+    $('hmsg').textContent=x['안내'];
+    loadHist();
+  })
+  .catch(function(){
+    $('hmsg').className='msg bad';
+    $('hmsg').textContent='지우지 못했습니다.';
+  });
 }
 
 function revert(id){
