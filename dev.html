@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v14 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v15 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -565,7 +565,7 @@ select::-ms-expand{ display:none !important }
                  border:1px solid rgba(0,0,0,.1);background:#fff">
           <option value="">전체 화면</option>
         </select>
-        <button onclick="loadCommits()"
+        <button onclick="loadCommits()" title="지금 다시 불러오기"
           style="height:34px;padding:0 12px;font-size:12px;border-radius:9px;
                  border:1px solid rgba(0,0,0,.1);background:#fff;cursor:pointer">
           새로고침</button>
@@ -1337,6 +1337,25 @@ document.addEventListener('keydown', function(e){
   var v=document.getElementById('cmView');
   if(e.key==='Escape' && v && !v.classList.contains('hide')) closeCm();
 });
+
+/* 화면이 열리면 바로 불러오고, 30초마다 새로 확인한다 */
+(function(){
+  function start(){
+    if (!document.getElementById('commits')) return;
+    loadCommits();
+    /* 다른 탭에 갔다 오면 새로 */
+    document.addEventListener('visibilitychange', function(){
+      if (document.visibilityState === 'visible') loadCommits();
+    });
+    /* 30초마다 자동 갱신 */
+    setInterval(function(){
+      if (document.visibilityState === 'visible') loadCommits();
+    }, 30000);
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
 </script>
 <script>
 window.addEventListener('resize', function(){
