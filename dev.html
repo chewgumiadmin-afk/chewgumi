@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v17 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v10 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -409,8 +409,8 @@ select::-ms-expand{ display:none !important }
       <div id="result" class="hide" style="margin-top:16px">
         <div class="sum" id="summary"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-          <button class="btn go" onclick="deploy(false)">사이트에 반영</button>
-          <button class="btn ghost" onclick="preview()">미리보기</button>
+          <button class="btn go" onclick="deploy(false)">사이트에 반영 (확정)</button>
+          <button class="btn ghost" onclick="preview()">미리보기 (확인)</button>
           <button class="btn ghost" onclick="discard()">취소</button>
         </div>
         <div class="msg" id="rmsg"></div>
@@ -680,7 +680,7 @@ function draft(auto){
           deploy(true);
         }else{
           $('dmsg').className='msg ok';
-          $('dmsg').textContent='수정안이 준비되었습니다. 내용을 확인하고 반영해 주세요.';
+          $('dmsg').textContent='수정안이 준비되었습니다. 아래 [미리보기]로 확인하신 뒤 [사이트에 반영]을 눌러주세요.';
           $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
         }
       }
@@ -699,9 +699,28 @@ function draft(auto){
     var ok=res.ok, d=res.d;
     finish();
     if(!ok){
-      $('dmsg').className='msg bad';
-      $('dmsg').innerHTML = esc(d.error || d.msg || '만들지 못했습니다.')
-        + (d.help ? '<br>필요 항목: '+esc(d.help) : '');
+      /* 오류가 떠도 실제로는 만들어졌을 수 있어 한 번 더 확인 */
+      call({action:'history'}).then(function(res2){
+        var it2 = res2.ok && (res2.d.items||[]).find(function(x){
+          return x.path===path && x.status==='draft'
+            && new Date(x.created_at).getTime() > t0 - 5000;
+        });
+        if(it2){
+          curId = it2.id;
+          $('summary').textContent = it2.summary || '요약이 없습니다.';
+          $('result').classList.remove('hide');
+          $('dmsg').className='msg ok';
+          $('dmsg').textContent='수정안이 준비되었습니다. 아래에서 확인하고 반영해 주세요.';
+          $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
+        }else{
+          $('dmsg').className='msg bad';
+          $('dmsg').innerHTML = esc(d.error || d.msg || '만들지 못했습니다.')
+            + (d.help ? '<br>필요 항목: '+esc(d.help) : '');
+        }
+      }).catch(function(){
+        $('dmsg').className='msg bad';
+        $('dmsg').innerHTML = esc(d.error || d.msg || '만들지 못했습니다.');
+      });
       return;
     }
     found = true;
@@ -716,7 +735,7 @@ function draft(auto){
       deploy(true);
     }else{
       $('dmsg').className='msg ok';
-      $('dmsg').textContent='수정안이 준비되었습니다. 내용을 확인하고 반영해 주세요.';
+      $('dmsg').textContent='수정안이 준비되었습니다. 아래 [미리보기]로 확인하신 뒤 [사이트에 반영]을 눌러주세요.';
       $('result').scrollIntoView({behavior:'smooth', block:'nearest'});
     }
   })
