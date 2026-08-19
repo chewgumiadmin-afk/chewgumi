@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v120 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v121 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1254,7 +1254,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
           </button>
         </div>
-    <p class="video-note">▶ 버튼을 누르면 재생됩니다.</p>
+    
   </div>
 </section>
 
@@ -1500,7 +1500,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v120 · 2026-08-19</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v121 · 2026-08-19</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -6198,6 +6198,28 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
   border-radius:0 !important;
 }
 .drawer nav a.d-sub:hover::after{ opacity:1 !important }
+
+/* ══ 영상 — 화면에 들어오면 저절로 재생 ══ */
+.film video{
+  width:100% !important; height:100% !important;
+  object-fit:cover !important; display:block !important;
+}
+.film.playing .film-poster{ display:none !important }
+.film.playing .film-play{ display:none !important }
+
+/* 소리 켜기 단추 */
+.film-sound{
+  position:absolute; right:16px; bottom:16px; z-index:4;
+  width:42px; height:42px; border:0; border-radius:50%; cursor:pointer;
+  background:rgba(0,0,0,.42); color:#fff; font-size:17px;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  transition:background .2s;
+}
+.film-sound:hover{ background:rgba(0,0,0,.6) }
+@media(max-width:640px){
+  .film-sound{ width:38px;height:38px;right:12px;bottom:12px;font-size:15px }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6591,6 +6613,66 @@ body.drawer-on{ overflow:hidden !important; touch-action:none }
     });
     window.addEventListener('mouseup', function(){ down=false; });
   }
+})();
+</script>
+
+<script>
+/* 영상 — 화면에 들어오면 저절로 재생, 나가면 멈춤 */
+(function(){
+  var films = document.querySelectorAll('.film');
+  if (!films.length) return;
+
+  films.forEach(function (film) {
+    var v = film.querySelector('video');
+    if (!v) return;
+
+    /* 소리 없이 자동 재생 — 브라우저가 막지 않는 유일한 방법 */
+    v.muted = true;
+    v.loop = true;
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.setAttribute('muted', '');
+    v.preload = 'auto';
+
+    /* 소리 켜기 단추 */
+    if (!film.querySelector('.film-sound')) {
+      var b = document.createElement('button');
+      b.className = 'film-sound';
+      b.type = 'button';
+      b.setAttribute('aria-label', '소리 켜기');
+      b.textContent = '🔇';
+      b.onclick = function (e) {
+        e.stopPropagation();
+        v.muted = !v.muted;
+        b.textContent = v.muted ? '🔇' : '🔊';
+        b.setAttribute('aria-label', v.muted ? '소리 켜기' : '소리 끄기');
+        if (!v.muted) v.play().catch(function(){});
+      };
+      film.appendChild(b);
+    }
+
+    function start(){
+      film.classList.add('playing');
+      var p = v.play();
+      if (p && p.catch) p.catch(function(){ film.classList.remove('playing'); });
+    }
+    function stop(){ try { v.pause(); } catch(e){} }
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (ents) {
+        ents.forEach(function (e) {
+          if (e.isIntersecting) start(); else stop();
+        });
+      }, { threshold: 0.35 }).observe(film);
+    } else {
+      start();
+    }
+
+    /* 탭을 떠나면 멈춤 */
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop();
+    });
+  });
 })();
 </script>
 </body>
