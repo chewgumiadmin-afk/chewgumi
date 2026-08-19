@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v10 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v11 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -614,6 +614,16 @@ function init(){
     loadModels(d.model);
   }).catch(()=>{});
   loadHist();
+  call({action:'history'}).then(function(res){
+    if(!res.ok) return;
+    var w=(res.d.items||[]).filter(function(x){ return x.status==='draft'; });
+    if(w.length && $('dmsg')){
+      $('dmsg').className='msg';
+      $('dmsg').innerHTML='반영을 기다리는 수정안이 '+w.length+'건 있습니다. '
+        +'<a href="#" onclick="pickDraft('+w[0].id+');return false;" '
+        +'style="color:var(--main);font-weight:700">가장 최근 것 열기</a>';
+    }
+  }).catch(function(){});
 }
 function loadModels(cur){
   var PICK = [
@@ -812,12 +822,31 @@ function loadHist(){
       +'<div style="font-size:11.5px;color:var(--gray)">'
         +new Date(it.created_at).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})
         +'<br>'+esc(it.actor||'')+'</div>'
-      +'<div>'+(it.status==='deployed'
+      +'<div style="display:flex;gap:5px;flex-wrap:wrap">'
+        +(it.status==='draft'
+        ?'<button class="mini" onclick="pickDraft('+it.id+')">이어서 하기</button>':'')
+        +(it.status==='deployed'
         ?'<button class="mini d" onclick="revert('+it.id+')">되돌리기</button>':'')
         +(it.error?'<span style="font-size:11px;color:var(--bad)">'+esc(it.error.slice(0,40))+'</span>':'')
       +'</div></div>').join('');
   }).catch(()=>{$('hist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
 }
+/* 대기 중인 수정안을 불러와 반영·미리보기를 쓸 수 있게 한다 */
+function pickDraft(id){
+  call({action:'history'}).then(function(res){
+    if(!res.ok) return;
+    var it=(res.d.items||[]).find(function(x){ return x.id===id; });
+    if(!it) return;
+    curId=id;
+    if($('path')) $('path').value=it.path;
+    $('summary').textContent = it.summary || '요약이 없습니다.';
+    $('result').classList.remove('hide');
+    $('dmsg').className='msg ok';
+    $('dmsg').textContent='대기 중인 수정안을 불러왔습니다. 확인하고 반영해 주세요.';
+    $('result').scrollIntoView({behavior:'smooth', block:'center'});
+  }).catch(function(){});
+}
+
 function revert(id){
   if(!confirm('이 수정을 되돌릴까요?\n수정 직전 상태로 사이트가 복구됩니다.')) return;
   $('hmsg').className='msg'; $('hmsg').textContent='되돌리는 중…';
