@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v13 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v14 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -478,6 +478,40 @@ select::-ms-expand{ display:none !important }
 @media(max-width:640px){
   .care{width:100%;justify-content:center}
 }
+
+/* 화면 사진 올리기 */
+.shotbox{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 14px;border-radius:14px;
+  border:1px dashed rgba(216,37,88,.32);
+  background:rgba(255,247,250,.7);
+  margin:12px 0;
+}
+.shotbtn{
+  min-height:42px;padding:0 18px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  white-space:nowrap;
+}
+.shothint{font-size:12px;color:#7a7a82;flex:1;min-width:150px;line-height:1.6}
+.shotprev{position:relative;flex:none}
+.shotprev img{
+  width:76px;height:76px;object-fit:cover;border-radius:10px;
+  border:1px solid rgba(0,0,0,.08);display:block;
+}
+.shotx{
+  position:absolute;top:-7px;right:-7px;
+  width:24px;height:24px;border:0;border-radius:50%;cursor:pointer;
+  background:#17171c;color:#fff;font-size:12px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.shotprev.hide{display:none}
+@media(max-width:640px){
+  .shotbox{flex-direction:column;align-items:stretch}
+  .shotbtn{width:100%}
+  .shothint{text-align:center}
+  .shotprev{align-self:center}
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -605,7 +639,18 @@ select::-ms-expand{ display:none !important }
       </div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
-        <label class="care" title="더 뛰어난 모델이 먼저 검토합니다. 느리고 비싸지만 안전합니다">
+        <div class="shotbox" id="shotbox">
+      <input type="file" id="shotFile" accept="image/*" hidden onchange="pickShot(this)">
+      <button type="button" class="shotbtn" onclick="document.getElementById('shotFile').click()">
+        화면 사진 올리기
+      </button>
+      <span class="shothint" id="shothint">이상한 화면을 찍어 올리면 그걸 보고 고칩니다</span>
+      <div class="shotprev hide" id="shotprev">
+        <img id="shotimg" alt="올린 사진">
+        <button type="button" class="shotx" onclick="clearShot()">✕</button>
+      </div>
+    </div>
+    <label class="care" title="더 뛰어난 모델이 먼저 검토합니다. 느리고 비싸지만 안전합니다">
       <input type="checkbox" id="careful"> 꼼꼼히 검토
     </label>
     <button class="btn go" id="go" onclick="draft(false)">수정안 만들기</button>
@@ -892,6 +937,45 @@ function syncCare(){
   }
 }
 
+/* 화면 사진 — 크기를 줄여 보냅니다 */
+window.__shot = '';
+function pickShot(input){
+  var f = input.files && input.files[0];
+  if(!f) return;
+  if(!/^image\//.test(f.type)){ alert('사진 파일만 올릴 수 있습니다.'); return; }
+  var rd = new FileReader();
+  rd.onload = function(e){
+    var im = new Image();
+    im.onload = function(){
+      /* 긴 쪽 1400px 로 줄입니다 */
+      var max = 1400;
+      var w = im.width, hgt = im.height;
+      if(w > max || hgt > max){
+        var r = Math.min(max/w, max/hgt);
+        w = Math.round(w*r); hgt = Math.round(hgt*r);
+      }
+      var cv = document.createElement('canvas');
+      cv.width = w; cv.height = hgt;
+      cv.getContext('2d').drawImage(im, 0, 0, w, hgt);
+      window.__shot = cv.toDataURL('image/jpeg', 0.82);
+      $('shotimg').src = window.__shot;
+      $('shotprev').classList.remove('hide');
+      $('shothint').textContent = '사진을 올렸습니다 · ' + w + '×' + hgt;
+      /* 사진이 있으면 꼼꼼히 보기를 켭니다 */
+      var c = $('careful'); if(c) c.checked = true;
+    };
+    im.src = e.target.result;
+  };
+  rd.readAsDataURL(f);
+}
+function clearShot(){
+  window.__shot = '';
+  $('shotprev').classList.add('hide');
+  $('shotimg').src = '';
+  $('shotFile').value = '';
+  $('shothint').textContent = '이상한 화면을 찍어 올리면 그걸 보고 고칩니다';
+}
+
 function draft(auto){
   const req=$('req').value.trim();
   if(!req) return $('dmsg').textContent='무엇을 바꾸고 싶으신지 적어주세요.';
@@ -948,7 +1032,8 @@ function draft(auto){
   }, 10000);
 
   call({action:'draft', path:path, request:req, actor:who||'관리자',
-    careful: !!($('careful') && $('careful').checked)})
+    careful: !!($('careful') && $('careful').checked),
+    shot: window.__shot || ''})
   .then(function(res){
     if(found) return;
     clearInterval(poll);
