@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v12 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v13 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -459,6 +459,25 @@ select::-ms-expand{ display:none !important }
   background:rgba(255,255,255,.9);
   color:#17171c;
 }
+
+/* 꼼꼼히 검토 선택 */
+.care{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:0 14px;min-height:46px;border-radius:999px;
+  border:1px solid var(--line,rgba(0,0,0,.12));
+  background:rgba(255,255,255,.85);
+  font-size:13px;font-weight:600;color:#555;cursor:pointer;
+  user-select:none;white-space:nowrap;
+}
+.care input{width:17px;height:17px;accent-color:var(--main,#D82558);cursor:pointer;margin:0}
+.care:has(input:checked){
+  border-color:var(--main,#D82558);
+  background:rgba(216,37,88,.07);
+  color:var(--main,#D82558);
+}
+@media(max-width:640px){
+  .care{width:100%;justify-content:center}
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -586,7 +605,10 @@ select::-ms-expand{ display:none !important }
       </div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
-        <button class="btn go" id="go" onclick="draft(false)">수정안 만들기</button>
+        <label class="care" title="더 뛰어난 모델이 먼저 검토합니다. 느리고 비싸지만 안전합니다">
+      <input type="checkbox" id="careful"> 꼼꼼히 검토
+    </label>
+    <button class="btn go" id="go" onclick="draft(false)">수정안 만들기</button>
         <button class="btn go2" id="go2" onclick="draft(true)"
           title="확인 없이 바로 사이트에 올립니다">만들고 바로 반영</button>
       </div>
@@ -856,6 +878,20 @@ function loadModels(cur){
 
 function setModel(){ call({action:'setModel',model:$('model').value}).catch(()=>{}); }
 
+/* 결제·주문 같은 화면은 자동으로 꼼꼼히 봅니다 */
+var RISKY=['checkout.html','cart.html','join.html','login.html','mypage.html',
+  'reset.html','subscribe.html','orders.html','stock.html','members.html'];
+function syncCare(){
+  var c=$('careful'), p=$('path');
+  if(!c||!p) return;
+  var risky=RISKY.indexOf(p.value)>=0;
+  if(risky && !c.checked){
+    c.checked=true;
+    var m=$('dmsg');
+    if(m){ m.className='msg'; m.textContent='중요한 화면이라 꼼꼼히 검토하도록 맞췄습니다.'; }
+  }
+}
+
 function draft(auto){
   const req=$('req').value.trim();
   if(!req) return $('dmsg').textContent='무엇을 바꾸고 싶으신지 적어주세요.';
@@ -911,7 +947,8 @@ function draft(auto){
     if(Date.now()-t0 > 20000) lookFor();
   }, 10000);
 
-  call({action:'draft', path:path, request:req, actor:who||'관리자'})
+  call({action:'draft', path:path, request:req, actor:who||'관리자',
+    careful: !!($('careful') && $('careful').checked)})
   .then(function(res){
     if(found) return;
     clearInterval(poll);
