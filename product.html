@@ -1402,6 +1402,67 @@ section, main, article{
     box-shadow:none !important;
   }
 }
+
+/* ══ 상세 화면 — 화면 밖으로 나가지 않게 ══ */
+html, body{
+  overflow-x:hidden !important;
+  max-width:100% !important;
+}
+.wrap, .pwrap, main, section{
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+img{ max-width:100%; height:auto }
+
+/* 함께 보는 상품 카드 */
+.rel-grid, .also-grid, .more-grid, .p-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr)) !important;
+  gap:12px !important;
+  width:100% !important;
+  max-width:100% !important;
+  padding:0 clamp(14px,4vw,20px) !important;
+  box-sizing:border-box !important;
+}
+.rel-card, .also-card, .card, .p-card{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+.rel-card *, .also-card *, .card *, .p-card *{
+  max-width:100% !important;
+  box-sizing:border-box;
+}
+
+@media (max-width:768px){
+  .rel-grid, .also-grid, .more-grid, .p-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  /* 구매 영역이 밀려나지 않게 */
+  .buy, .buy-box, .pbuy{
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    padding-left:clamp(14px,4vw,20px) !important;
+    padding-right:clamp(14px,4vw,20px) !important;
+  }
+  .buy select, .buy input, .buy button{
+    max-width:100% !important;
+    box-sizing:border-box !important;
+  }
+  /* 하단 고정 바 — 홈 버튼 피하기 */
+  .sticky-buy, .buy-bar{
+    padding-bottom:calc(12px + env(safe-area-inset-bottom)) !important;
+  }
+}
+@media (max-width:380px){
+  .rel-grid, .also-grid, .more-grid, .p-grid{
+    grid-template-columns:1fr !important;
+  }
+}
 </style>
 <script>
 (function(){
