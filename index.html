@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v133 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v134 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -862,7 +862,7 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
       +'background:linear-gradient(135deg,#E95073,#D82558)">인증 메일 다시 받기</a>'
       +'<button style="margin-top:9px;width:100%;padding:12px 0;border-radius:999px;font-family:inherit;'
       +'font-size:13px;font-weight:700;background:rgba(0,0,0,.05);border:0;cursor:pointer">닫기</button></div>';
-    d.querySelector('button').onclick=function(){d.remove();document.body.style.overflow='';};
+    d.querySelector('button').onclick=function(){d.remove();document.body.classList.remove('modal-open');};
     document.body.appendChild(d);
   }catch(e){}
 })();
@@ -1930,9 +1930,9 @@ function openDetail(card){
   document.getElementById('dDesc').textContent = (cgLang === 'en' && card.dataset.descEn) ? card.dataset.descEn : card.dataset.desc;
   dPrice = Number(sale.replace(/[^0-9]/g,'')); dQty = 1; renderQty();
   document.getElementById('detail').classList.remove('hide');
-  document.body.style.overflow = 'hidden';
+  document.body.classList.add('modal-open');
 }
-function closeDetail(){ document.getElementById('detail').classList.add('hide'); document.body.style.overflow=''; }
+function closeDetail(){ document.getElementById('detail').classList.add('hide'); document.body.classList.remove('modal-open'); }
 function chgQty(d){ dQty = Math.max(1, dQty + d); renderQty(); }
 function renderQty(){ document.getElementById('dQty').textContent = dQty; document.getElementById('dTotal').textContent = won(dPrice * dQty); }
 
@@ -1949,7 +1949,7 @@ function filterLine(line){
 /* 레이어 팝업 */
 function closePopup(today){
   document.getElementById('popup').classList.add('hide');
-  document.body.style.overflow = '';
+  document.body.classList.remove('modal-open');
   if (today) { try { localStorage.setItem('cg_popup_until', String(Date.now() + 864e5)); } catch(e){} }
 }
 (function(){
@@ -1987,7 +1987,7 @@ function cgAnyLayerOpen(){
 }
 function cgUnlockIfIdle(){
   if (!cgAnyLayerOpen()) {
-    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
     document.documentElement.style.overflow = '';
     document.body.style.position = '';
     document.body.style.touchAction = '';
@@ -2025,7 +2025,7 @@ window.addEventListener('pageshow', (e) => {
     });
     const cp=document.getElementById('cartP'), cd=document.getElementById('cartDim');
     if(cp) cp.classList.remove('open'); if(cd) cd.classList.remove('open');
-    document.body.style.overflow='';
+    document.body.classList.remove('modal-open');
   }catch(err){}
   setTimeout(cgUnlockIfIdle, 60);
 });
@@ -2233,11 +2233,11 @@ function goBoard(ev,key){
 function openBoardLayer(key){
   renderBoard(key);
   document.getElementById('boardLayer').classList.remove('hide');
-  document.body.style.overflow = 'hidden';
+  document.body.classList.add('modal-open');
 }
 function closeBoardLayer(){
   document.getElementById('boardLayer').classList.add('hide');
-  document.body.style.overflow = '';
+  document.body.classList.remove('modal-open');
 }
 
 /* 사용자 사용 영상 목록 — assets/videos/ 에 올린 파일명만 적으면 됩니다.
@@ -2340,8 +2340,8 @@ document.querySelectorAll('.comm-list[data-key]').forEach(ul => {
 let CART = [];
 try { CART = JSON.parse(localStorage.getItem('cg_cart') || '[]'); } catch(e){ CART = []; }
 function saveCart(){ try { localStorage.setItem('cg_cart', JSON.stringify(CART)); } catch(e){} }
-function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
+function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.classList.add('modal-open'); }
+function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.classList.remove('modal-open'); }
 function addToCart(){
   if (!window._curCard) return;
   const card = window._curCard;
@@ -6912,6 +6912,132 @@ main{ contain:layout style }
   .d-rv img{ width:58px !important;height:58px !important }
   .d-rv p{ -webkit-line-clamp:10 !important }
 }
+
+/* ══════════════════════════════════════════
+   모바일 최종 정리 — 이 아래가 항상 이깁니다
+   ══════════════════════════════════════════ */
+
+/* ① 스크롤이 막히던 문제
+      메뉴를 닫아도 body 가 잠긴 채 남던 것을 풉니다. */
+html, body{
+  overflow-x:hidden;
+  overflow-y:auto !important;
+  touch-action:auto !important;
+  overscroll-behavior-y:auto;
+  height:auto !important;
+  min-height:100%;
+  position:static !important;
+}
+/* 메뉴·팝업이 열려 있을 때만 잠급니다 */
+body.drawer-on,
+body.modal-open{
+  overflow:hidden !important;
+  touch-action:none !important;
+}
+
+/* ② 배너가 화면에 안 맞던 문제
+      규칙이 15겹 쌓여 서로 싸우던 것을 하나로 확정합니다. */
+.hero-sec{
+  max-width:1160px;
+  margin:0 auto 34px;
+  padding:0 20px;
+}
+.hero{
+  position:relative;
+  width:100%;
+  max-width:100%;
+  aspect-ratio:1568/756;
+  max-height:min(66vh,520px);
+  overflow:hidden;
+  border-radius:24px;
+}
+.hero img, .hero .slide img, .hero-img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  display:block;
+}
+
+@media (max-width:768px){
+  .hero-sec{
+    padding:0 !important;
+    margin:0 0 24px !important;
+    max-width:none !important;
+  }
+  .hero{
+    aspect-ratio:16/10 !important;
+    max-height:none !important;
+    border-radius:0 !important;
+    width:100vw !important;
+    max-width:100vw !important;
+    margin-left:calc(50% - 50vw) !important;
+    margin-right:calc(50% - 50vw) !important;
+  }
+  .hero-txt{ padding:0 20px !important }
+  .hero-txt .en{ font-size:clamp(18px,5.5vw,30px) !important }
+  .hero-txt .kr{ font-size:clamp(12px,3.4vw,16px) !important }
+}
+@media (max-width:430px){
+  .hero{ aspect-ratio:4/3 !important }
+}
+
+/* ③ 상품 카드가 화면 밖으로 나가던 문제 */
+.prod-grid, .card-grid, #best .grid, #all .grid, .p-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr)) !important;
+  gap:clamp(12px,2.4vw,22px) !important;
+  width:100% !important;
+  max-width:100% !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  padding-left:clamp(14px,4vw,20px) !important;
+  padding-right:clamp(14px,4vw,20px) !important;
+  box-sizing:border-box !important;
+}
+.card, .p-card{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+.card *, .p-card *{ max-width:100% !important; box-sizing:border-box }
+.card img, .p-card img{
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:1/1;
+  object-fit:contain !important;
+  display:block;
+}
+.card .name, .p-card .name{
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  word-break:keep-all;
+}
+
+@media (max-width:768px){
+  .prod-grid, .card-grid, #best .grid, #all .grid, .p-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+}
+@media (max-width:380px){
+  .prod-grid, .card-grid, #best .grid, #all .grid, .p-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* ④ 어떤 것도 화면 밖으로 못 나가게 */
+@media (max-width:768px){
+  section, .sec, footer, .revsec, .ufilm{
+    max-width:100vw !important;
+    overflow-x:hidden !important;
+  }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -7152,12 +7278,12 @@ main{ contain:layout style }
       } else lk.style.display = 'none';
     }
     view.classList.remove('hide');
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
   };
 
   window.ufClose = function(){
     view.classList.add('hide');
-    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
     var v = view.querySelector('video');
     if (v) v.pause();
   };
@@ -7521,6 +7647,28 @@ main{ contain:layout style }
   window.addEventListener('orientationchange', function(){
     setTimeout(fit, 300);
   });
+})();
+</script>
+
+<script>
+/* 스크롤이 잠긴 채 남지 않도록 */
+(function(){
+  function unlock(){
+    if(!document.querySelector('.drawer.open') &&
+       !document.querySelector('.detail-dim:not(.hide)') &&
+       !document.querySelector('.board-dim:not(.hide)')){
+      document.body.classList.remove('modal-open','drawer-on');
+      document.body.style.overflow='';
+      document.body.style.touchAction='';
+    }
+  }
+  window.addEventListener('pageshow', unlock);
+  window.addEventListener('popstate', function(){ setTimeout(unlock,120); });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible') setTimeout(unlock,120);
+  });
+  setInterval(unlock, 2000);
+  unlock();
 })();
 </script>
 </body>
