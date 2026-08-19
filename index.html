@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v135 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v136 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6553,6 +6553,132 @@ body.drawer-on, body.modal-open{
     grid-template-columns:1fr !important;
   }
   .hero{ aspect-ratio:4/3 !important }
+}
+
+/* ══════════════════════════════════════════════
+   실제 화면을 보고 고침 — 이 아래가 마지막입니다
+   ══════════════════════════════════════════════ */
+
+/* ① 로고와 배너 사이 흰 공백 제거
+      숨긴 메뉴 바 자리가 그대로 남아 있었습니다. */
+@media (max-width:900px){
+  .glass-wrap{
+    display:none !important;
+    height:0 !important;
+    min-height:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+    overflow:hidden !important;
+  }
+  header{
+    padding-bottom:0 !important;
+    margin-bottom:0 !important;
+    min-height:0 !important;
+    height:auto !important;
+  }
+  header > div:first-child{
+    padding-top:8px !important;
+    padding-bottom:8px !important;
+    min-height:0 !important;
+    height:auto !important;
+  }
+  header .head-top{
+    height:auto !important;
+    min-height:0 !important;
+  }
+  header + section, header + .hero-sec{
+    margin-top:0 !important;
+    padding-top:0 !important;
+  }
+  .hero-sec{
+    margin-top:0 !important;
+    padding-top:0 !important;
+  }
+}
+
+/* ② 배너가 양옆으로 잘리던 문제
+      원본이 1400×675 (2.07:1) 인데 16:10 으로 잘라내고 있었습니다.
+      원본 비율 그대로 두어 전체가 보이게 합니다. */
+.hero{
+  aspect-ratio:1400/675 !important;
+  max-height:none !important;
+  overflow:hidden !important;
+}
+.hslide{
+  background-size:cover !important;
+  background-position:center center !important;
+}
+
+@media (max-width:900px){
+  .hero-sec{
+    padding:0 !important;
+    margin:0 0 20px !important;
+    max-width:none !important;
+  }
+  .hero{
+    width:100vw !important;
+    max-width:100vw !important;
+    margin-left:calc(50% - 50vw) !important;
+    margin-right:calc(50% - 50vw) !important;
+    aspect-ratio:1400/675 !important;
+    border-radius:0 !important;
+  }
+  /* 배너 글씨가 잘리지 않게 */
+  .hero-txt{
+    padding:0 18px !important;
+    max-width:100% !important;
+  }
+  .hero-txt .en{ font-size:clamp(16px,4.8vw,26px) !important }
+  .hero-txt .kr{ font-size:clamp(11px,3.1vw,14px) !important }
+}
+
+/* ③ 상품 카드 2열 */
+@media (max-width:900px){
+  .prod-grid, .card-grid, .p-grid,
+  #best .grid, #all .grid, .grid.cards{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:11px !important;
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 14px !important;
+    margin:0 !important;
+    box-sizing:border-box !important;
+  }
+  .card, .p-card{
+    width:100% !important; max-width:100% !important; min-width:0 !important;
+    margin:0 !important; box-sizing:border-box !important; overflow:hidden !important;
+  }
+  .card *, .p-card *{ max-width:100% !important; box-sizing:border-box }
+  .card img, .p-card img{
+    width:100% !important; height:auto !important;
+    aspect-ratio:1/1; object-fit:contain !important;
+  }
+  .card .name, .p-card .name{
+    font-size:12.5px !important; line-height:1.45 !important;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden; word-break:keep-all;
+  }
+  section, footer, .revsec, .ufilm{
+    max-width:100vw !important; overflow-x:hidden !important;
+  }
+}
+@media (max-width:380px){
+  .prod-grid, .card-grid, .p-grid,
+  #best .grid, #all .grid, .grid.cards{ grid-template-columns:1fr !important }
+}
+
+/* ④ 스크롤 잠김 방지 */
+html, body{
+  overflow-x:hidden;
+  overflow-y:auto !important;
+  touch-action:auto !important;
+  height:auto !important;
+  position:static !important;
+}
+body.drawer-on, body.modal-open{
+  overflow:hidden !important;
+  touch-action:none !important;
 }
 </style>
 <script src="assets/nav.js" defer></script>
