@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v131 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v132 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -6654,6 +6654,134 @@ main{ contain:layout style }
   aspect-ratio:auto !important;
 }
 #dFull, .d-full, .d-detail-more{ display:none !important }
+
+/* ════════════════════════════════════════
+   상품 팝업 — 최종 확정
+   앞서 .detail 10개 · .d-img 9개 · .d-info 7개가
+   쌓여 서로 부딪혔습니다. 여기서 하나로 정리합니다.
+   ════════════════════════════════════════ */
+
+.detail-dim{
+  position:fixed !important; inset:0 !important;
+  z-index:3000 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:20px !important;
+  background:rgba(20,12,16,.44) !important;
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.detail-dim.hide{ display:none !important }
+
+.detail{
+  position:relative !important;
+  width:min(94vw,880px) !important;
+  max-width:880px !important;
+  max-height:min(88dvh,760px) !important;
+  margin:0 !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  grid-template-rows:auto !important;
+  align-items:start !important;
+  gap:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  border-radius:22px !important;
+  background:#fff !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.22) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+/* 왼쪽 — 상품 이미지 */
+.detail .d-img{
+  position:sticky !important;
+  top:0 !important;
+  align-self:start !important;
+  height:auto !important;
+  max-height:min(88dvh,760px) !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  cursor:default !important;
+  background:radial-gradient(120% 92% at 50% 12%,#fff 0%,#FFF7F9 48%,#FFEFF3 100%) !important;
+  border-radius:22px 0 0 22px !important;
+}
+.detail .d-img::after{ content:none !important }
+.detail .d-img img{
+  width:auto !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  min-height:0 !important;
+  object-fit:contain !important;
+  padding:7% !important;
+  margin:0 !important;
+  display:block !important;
+  border-radius:0 !important;
+}
+
+/* 오른쪽 — 정보 */
+.detail .d-info{
+  overflow:visible !important;
+  max-height:none !important;
+  min-width:0 !important;
+  padding:28px 26px 32px !important;
+  position:relative !important;
+}
+
+/* 닫기 */
+.detail .d-x{
+  position:absolute !important;
+  top:14px !important; right:14px !important;
+  z-index:5 !important;
+}
+
+/* 상세 이미지 — 항상 펼침 */
+#dDetail, #dDetail.hide{
+  display:block !important;
+  margin-top:22px !important;
+  padding-top:18px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+}
+#dDetailIn{
+  display:block !important;
+  font-size:0 !important; line-height:0 !important;
+  border-radius:14px; overflow:hidden;
+}
+#dDetailIn img{
+  width:100% !important; height:auto !important;
+  display:block !important; margin:0 !important;
+  border-radius:0 !important; object-fit:unset !important;
+}
+#dFull{ display:none !important }
+
+/* 모바일 — 위아래로 */
+@media (max-width:860px){
+  .detail-dim{ padding:0 !important; align-items:flex-end !important }
+  .detail{
+    width:100% !important;
+    max-width:100% !important;
+    max-height:92dvh !important;
+    grid-template-columns:1fr !important;
+    border-radius:22px 22px 0 0 !important;
+  }
+  .detail .d-img{
+    position:relative !important;
+    max-height:300px !important;
+    border-radius:22px 22px 0 0 !important;
+  }
+  .detail .d-img img{ padding:5% !important }
+  .detail .d-info{ padding:20px 18px calc(28px + env(safe-area-inset-bottom)) !important }
+  .d-rev-list{ max-height:none !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
