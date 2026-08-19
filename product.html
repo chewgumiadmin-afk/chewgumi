@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v40 · MedIT -->
+<!-- ChewGumi Product Detail v41 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1236,6 +1236,91 @@ input, textarea, select{ font-size:16px !important }
   #pImg{ border-radius:12px !important }
   .pdetail{ padding-left:0 !important;padding-right:0 !important }
   .pdetail h2, .pdetail .pd-note{ padding-left:20px;padding-right:20px }
+}
+
+/* ══ 모바일 넘침 잡기 ══
+   100vw 가 스크롤바 폭까지 세어 오른쪽으로 삐져나오던 문제.
+   화면 폭을 넘는 요소를 전부 안으로 들입니다. */
+html, body{
+  max-width:100% !important;
+  overflow-x:hidden !important;
+}
+.wrap, .head, .crumb, .foot,
+.pshare, .rv-sec, .pdetail,
+section, main, article{
+  max-width:100% !important;
+  box-sizing:border-box;
+}
+
+@media (max-width:768px){
+  /* 가운데 정렬된 묶음 — 좌우 여백만 두고 폭은 화면에 맞춤 */
+  .wrap, .head, .crumb, .foot{
+    width:100% !important;
+    max-width:100% !important;
+    padding-left:16px !important;
+    padding-right:16px !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  /* 상품 정보 · 옵션 · 구매 순서 카드 */
+  .buy, .buy-box, .opt-box, .step-box, .info-box,
+  .pinfo, .porder, .pguide, .pbuy{
+    width:100% !important;
+    max-width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    box-sizing:border-box;
+  }
+
+  /* 두 칸 배치를 한 칸으로 */
+  .ptop, .pmain, .pgrid{
+    display:block !important;
+    grid-template-columns:1fr !important;
+  }
+
+  /* 상세 이미지만 화면 끝까지 — 스크롤바 없이 안전하게 */
+  #pDetailImgs{
+    width:auto !important;
+    max-width:none !important;
+    margin-left:-16px !important;
+    margin-right:-16px !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+
+  /* 긴 글자·주소가 칸을 밀어내지 않게 */
+  .wrap *, .pdetail *{
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+
+  /* 표·가로 목록은 안에서 스크롤 */
+  table, .tbl, .row-scroll{
+    display:block;
+    max-width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* 버튼이 칸을 넘지 않게 */
+  button, .btn, select, input, textarea{
+    max-width:100% !important;
+  }
+
+  /* 장바구니 서랍 */
+  .cart-p{ width:min(88vw,400px) !important }
+}
+
+@media (max-width:400px){
+  .wrap, .head, .crumb, .foot{
+    padding-left:13px !important;
+    padding-right:13px !important;
+  }
+  #pDetailImgs{
+    margin-left:-13px !important;
+    margin-right:-13px !important;
+  }
 }
 </style>
 <script>
