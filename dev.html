@@ -251,6 +251,34 @@ select::-ms-expand{ display:none !important }
   .pv-stage{ padding:10px !important }
   .pv-stage iframe{ width:390px !important; height:780px !important }
 }
+
+/* ══ 미리보기 — 최종 확정 ══ */
+.pv-stage{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  padding:14px !important;
+  max-height:none !important;
+  min-height:200px !important;
+  overflow:hidden !important;
+  transition:height .28s cubic-bezier(.2,.7,.3,1);
+}
+.pv-stage iframe,
+#pvFrame{
+  border:0 !important;
+  border-radius:12px !important;
+  background:#fff !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.12) !important;
+  flex:none !important;
+  display:block !important;
+  transition:width .28s cubic-bezier(.2,.7,.3,1),
+             height .28s cubic-bezier(.2,.7,.3,1),
+             transform .28s cubic-bezier(.2,.7,.3,1);
+}
+@media (max-width:768px){
+  .pv-stage{ padding:10px !important }
+  .pv-stage iframe, #pvFrame{ width:390px !important }
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -456,25 +484,32 @@ function setW(btn, w){
   document.querySelectorAll('.pv-dev button').forEach(function(b){ b.classList.remove('on'); });
   if(btn) btn.classList.add('on');
 
-  var f = $('pvFrame'), stage = $('pvStage');
+  var f = document.getElementById('pvFrame');
+  var stage = document.getElementById('pvStage');
   if(!f || !stage) return;
 
-  /* 기기별 크기 */
-  var H = { 390:780, 768:1024, 1200:800 }[w] || 800;
+  w = +w || 390;
+  var H = ({ 390:780, 768:1024, 1200:800 })[w] || 800;
+
+  /* 자리 폭을 못 재면 잠시 뒤 다시 */
+  var room = stage.clientWidth - 28;
+  if(room <= 40){
+    setTimeout(function(){ setW(btn, w); }, 120);
+    return;
+  }
+
+  var scale = room / w;
+  if(scale > 1) scale = 1;
+  if(scale < 0.2) scale = 0.2;
 
   f.style.width  = w + 'px';
   f.style.height = H + 'px';
-
-  /* 화면보다 크면 줄여서 통째로 보여준다 */
-  var room = stage.clientWidth - 28;
-  var scale = Math.min(1, room / w);
-  f.style.transform = 'scale(' + scale + ')';
+  f.style.transform = (scale < 1) ? ('scale(' + scale + ')') : 'none';
   f.style.transformOrigin = 'top center';
 
-  /* 줄인 만큼 자리도 줄인다 */
-  stage.style.height = Math.round(H * scale) + 28 + 'px';
+  stage.style.height = Math.round(H * scale + 28) + 'px';
 
-  var lb = $('pvSize');
+  var lb = document.getElementById('pvSize');
   if(lb) lb.textContent = w + ' × ' + H + (scale < 1 ? '  (' + Math.round(scale*100) + '%)' : '');
 }
 
@@ -913,6 +948,24 @@ window.addEventListener('resize', function(){
   var on = document.querySelector('.pv-dev button.on');
   if(on && window.setW) setW(on, +on.dataset.w);
 });
+
+/* 처음 열릴 때 — 화면이 그려진 뒤 불러온다 */
+function pvBoot(){
+  var f = document.getElementById('pvFrame');
+  if(!f) return;
+  if(!f.getAttribute('src')){
+    var p = (document.getElementById('path') || {}).value || 'index.html';
+    var lb = document.getElementById('pvUrl');
+    if(lb) lb.textContent = p;
+    f.src = location.href.split('#')[0].split('?')[0].replace(/[^/]*$/, '')
+      + p + '?preview=1&t=' + Date.now();
+  }
+  var on = document.querySelector('.pv-dev button.on')
+    || document.querySelector('.pv-dev button');
+  if(on){ on.classList.add('on'); setW(on, +on.dataset.w || 390); }
+}
+window.addEventListener('load', function(){ setTimeout(pvBoot, 200); });
+setTimeout(pvBoot, 900);
 if(document.readyState!=='loading'){
   setTimeout(function(){
     var on=document.querySelector('.pv-dev button.on');
