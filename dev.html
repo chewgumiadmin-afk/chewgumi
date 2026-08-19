@@ -152,6 +152,15 @@ select::-ms-expand{ display:none !important }
 </head>
 <body>
 <div class="wrap">
+  <div id="devStat" style="display:flex;align-items:center;gap:10px;padding:12px 15px;
+    border-radius:14px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);
+    margin-bottom:16px;font-size:13px">
+    <span id="devDot" style="width:8px;height:8px;border-radius:50%;background:#7a7a82;flex:none"></span>
+    <span id="devTxt" style="flex:1;min-width:0">연결을 확인하는 중…</span>
+    <button onclick="devCheck()" style="height:32px;padding:0 13px;border:1px solid rgba(0,0,0,.1);
+      border-radius:9px;background:rgba(255,255,255,.9);font-size:12px;cursor:pointer;flex:none">
+      다시 확인</button>
+  </div>
   <div class="top">
     <div><h1>Dev Agent</h1><div class="s">AI 개발 도우미</div></div>
     <div><a href="console.html">관리자 홈</a> · <a href="index.html" target="_blank" rel="noopener">사이트 보기</a></div>
@@ -576,5 +585,36 @@ function isFix(id,page,text){
 </script>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
+
+<script>
+/* 연결 상태 확인 — AI 키 · GitHub 토큰 · 저장소 · 응답 */
+function devCheck(){
+  var d=document.getElementById('devDot'), t=document.getElementById('devTxt');
+  if(!t) return;
+  t.textContent='확인하는 중…';
+  d.style.background='#7a7a82';
+  fetch('https://psynvpuedzjvytsgdhgg.supabase.co/functions/v1/dev-check',{
+    method:'POST',
+    headers:{apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
+      'Content-Type':'application/json'},body:'{}'})
+  .then(function(r){ return r.json(); })
+  .then(function(o){
+    d.style.background = o.ok ? '#2AA060' : '#C0395C';
+    if(o.ok){
+      t.textContent = '연결 정상 · ' + (o.owner||'') + '/' + (o.repo||'')
+        + (o.model ? ' · ' + o.model : '');
+    }else{
+      t.textContent = o.msg || '연결에 문제가 있습니다';
+    }
+  })
+  .catch(function(){
+    d.style.background='#C0395C';
+    t.textContent='확인하지 못했습니다';
+  });
+}
+if(document.readyState==='loading')
+  document.addEventListener('DOMContentLoaded', devCheck);
+else devCheck();
+</script>
 </body>
 </html>
