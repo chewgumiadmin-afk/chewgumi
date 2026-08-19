@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v123 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v124 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1525,7 +1525,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-cart d-full" id="dFull" href="product.html">자세히 보기</a>
+        <a class="d-cart d-full" id="dFull" href="#" onclick="toggleDetailImgs();return false;">상세 이미지 보기</a>
+        <div class="d-detail hide" id="dDetail">
+          <div class="d-detail-in" id="dDetailIn"></div>
+          <a class="d-detail-more" href="#" onclick="goProductPage();return false;">전체 화면으로 보기 →</a>
+        </div>
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
             <span class="eb">REVIEW</span>
@@ -6372,6 +6376,43 @@ header{ margin-bottom:0 !important }
   .detail .d-info{ max-height:none !important;padding:20px 18px 26px !important }
   .d-rev-list{ max-height:none !important }
 }
+
+/* ══ 팝업 안에서 상세 이미지 펼쳐 보기 ══ */
+.d-detail{
+  margin-top:16px;
+  border-top:1px solid rgba(0,0,0,.07);
+  padding-top:16px;
+}
+.d-detail.hide{ display:none }
+.d-detail-in{
+  display:block;
+  font-size:0;
+  line-height:0;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+}
+.d-detail-in img{
+  width:100% !important;
+  height:auto !important;
+  max-width:100% !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  object-fit:unset !important;
+  aspect-ratio:auto !important;
+}
+.d-detail-more{
+  display:inline-flex;align-items:center;
+  min-height:42px;margin-top:12px;padding:0 18px;
+  border-radius:999px;border:1px solid var(--line,rgba(255,255,255,.85));
+  background:rgba(255,255,255,.85);
+  font-size:12.5px;font-weight:600;
+}
+.d-detail-load{
+  padding:26px 0;text-align:center;
+  font-size:13px;color:var(--gray,#7a7a82);
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -6825,6 +6866,128 @@ header{ margin-bottom:0 !important }
       if (document.hidden) stop();
     });
   });
+})();
+</script>
+
+<script>
+/* 팝업 안에서 상세 이미지를 펼쳐 본다 */
+(function(){
+  var SBd='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var Kd='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var loadedFor = null;
+
+  function setOf(no){
+    var n = +no;
+    if (n >= 11 && n <= 15) return 'travel';
+    if (n === 16) return 'dew-lemon';
+    if (n === 17) return 'dew-grape';
+    return 'dew';
+  }
+
+  /* 파일이 있는지 하나씩 두드려 본다 */
+  function probe(base, i){
+    var exts = ['jpg','gif','webp','png'];
+    var num = ('0' + i).slice(-2);
+    return new Promise(function(done){
+      var k = 0;
+      function next(){
+        if (k >= exts.length) { done(null); return; }
+        var url = 'assets/detail/' + base + '-' + num + '.' + exts[k++];
+        var im = new Image();
+        im.onload = function(){ done(url); };
+        im.onerror = next;
+        im.src = url;
+      }
+      next();
+    });
+  }
+
+  function collect(base){
+    var out = [], miss = 0;
+    function step(i){
+      if (i > 24 || miss >= 2) return Promise.resolve(out);
+      return probe(base, i).then(function(u){
+        if (u) { out.push(u); miss = 0; } else { miss++; }
+        return step(i + 1);
+      });
+    }
+    return step(1);
+  }
+
+  window.toggleDetailImgs = function(){
+    var box = document.getElementById('dDetail');
+    var inner = document.getElementById('dDetailIn');
+    var btn = document.getElementById('dFull');
+    if (!box || !inner) return;
+
+    if (!box.classList.contains('hide')) {
+      box.classList.add('hide');
+      if (btn) btn.textContent = '상세 이미지 보기';
+      return;
+    }
+
+    box.classList.remove('hide');
+    if (btn) btn.textContent = '상세 이미지 접기';
+
+    var card = window._curCard;
+    var no = (card && card.dataset.no) || '';
+    if (!no) return;
+
+    if (loadedFor === no) {
+      box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      return;
+    }
+
+    inner.innerHTML = '<div class="d-detail-load">상세 이미지를 불러오는 중…</div>';
+
+    collect(setOf(no)).then(function(imgs){
+      if (imgs && imgs.length) { show(imgs, no); return null; }
+      return fetch(SBd + '/rest/v1/products?select=detail_images&id=eq.' + no,
+        { headers:{ apikey:Kd, Authorization:'Bearer '+Kd } })
+        .then(function(r){ return r.ok ? r.json() : []; })
+        .then(function(rows){
+          var p = (rows||[])[0];
+          var d = (p && p.detail_images) || [];
+          if (d.length) show(d, no);
+          else inner.innerHTML = '<div class="d-detail-load">상세 이미지가 없습니다.</div>';
+        });
+    }).catch(function(){
+      inner.innerHTML = '<div class="d-detail-load">불러오지 못했습니다.</div>';
+    });
+
+    function show(list, key){
+      loadedFor = key;
+      inner.innerHTML = list.map(function(u, i){
+        return '<img src="' + u + '" alt="상세 이미지 ' + (i+1) + '"'
+          + ' loading="' + (i < 2 ? 'eager' : 'lazy') + '"'
+          + ' decoding="async" referrerpolicy="no-referrer"'
+          + ' onerror="this.style.display=\'none\'">';
+      }).join('');
+      setTimeout(function(){
+        box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }, 120);
+    }
+  };
+
+  window.goProductPage = function(){
+    var card = window._curCard;
+    var no = (card && card.dataset.no) || '';
+    var q = /[?&]qa=1/.test(location.search) ? '&qa=1' : '';
+    location.href = 'product.html' + (no ? '?no=' + no + q : '');
+  };
+
+  /* 다른 상품을 열면 접어둔다 */
+  var _old = window.openDetail;
+  if (typeof _old === 'function') {
+    window.openDetail = function(card){
+      var box = document.getElementById('dDetail');
+      var btn = document.getElementById('dFull');
+      if (box) box.classList.add('hide');
+      if (btn) btn.textContent = '상세 이미지 보기';
+      loadedFor = null;
+      return _old.apply(this, arguments);
+    };
+  }
 })();
 </script>
 </body>
