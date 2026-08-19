@@ -354,7 +354,7 @@ select::-ms-expand{ display:none !important }
       <div class="fg">
         <div>
           <label>어느 화면을 고칠까요?</label>
-          <select id="path" onchange="loadPrev()"></select>
+          <select id="path" onchange="onPathChange()"></select>
         </div>
         <div>
           <label>사용할 AI 모델 <span style="font-weight:500;color:#8a8a92;font-size:11px">· 잘 모르시면 「권장」 그대로 두세요</span></label>
@@ -475,6 +475,16 @@ function prevUrl(){
   var p = $('path').value || 'index.html';
   return siteBase() + p + '?preview=1&t=' + Date.now();
 }
+/* 화면을 바꾸면 만들어 둔 수정안을 정리한다 */
+function onPathChange(){
+  curId = null;
+  var r = document.getElementById('result');
+  if (r) r.classList.add('hide');
+  var m = document.getElementById('dmsg');
+  if (m) { m.className = 'msg'; m.textContent = ''; }
+  loadPrev();
+}
+
 function loadPrev(){
   var f = $('pvFrame'); if(!f) return;
   var p = $('path').value || 'index.html';
