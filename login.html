@@ -347,8 +347,7 @@ function goLogin(){
     body:JSON.stringify({email,password:pw})})
   .then(r=>r.json()).then(d=>{
     if(d.access_token){
-      try{localStorage.setItem('cg_sb',JSON.stringify({t:d.access_token,u:email.split('@')[0]}));}catch(e){}
-      location.href='mypage.html';
+      cgAfterLogin(d, email, m);
     } else if(m) m.textContent='로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.';
   }).catch(()=>{if(m)m.textContent='네트워크 오류가 발생했습니다.';});
 }
@@ -361,6 +360,47 @@ document.addEventListener('click', e => {
 </script>
 <script src="assets/lite.js" defer></script>
 <script>
+/* 로그인 성공 뒤 — 토큰을 저장하고 권한에 맞는 화면으로 */
+function cgAfterLogin(d, em, m){
+  try{
+    localStorage.setItem('cg_sb', JSON.stringify({
+      t: d.access_token,
+      r: d.refresh_token || '',
+      e: Date.now() + ((d.expires_in || 3600) * 1000),
+      u: String(em||'').split('@')[0],
+      em: em || ''
+    }));
+  }catch(e){}
+  if(m){ m.style.color='#2AA060'; m.textContent='로그인되었습니다. 이동합니다…'; }
+
+  var base=(typeof SB_URL!=='undefined')?SB_URL:SB;
+  var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
+
+  fetch(base+'/rest/v1/rpc/my_role',{method:'POST',
+    headers:{apikey:key,Authorization:'Bearer '+d.access_token,
+      'Content-Type':'application/json'},body:'{}'})
+  .then(function(r){ return r.ok ? r.json() : 'guest'; })
+  .then(function(role){
+    try{
+      var st=JSON.parse(localStorage.getItem('cg_sb')||'{}');
+      st.role = role || 'guest';
+      localStorage.setItem('cg_sb', JSON.stringify(st));
+    }catch(e){}
+
+    /* 원래 가려던 화면이 있으면 그리로 */
+    var next=new URLSearchParams(location.search).get('next');
+    if(next && /^[\w.-]+\.html$/.test(next)){ location.href=next; return; }
+
+    if(role && role!=='guest'){
+      if(m) m.textContent='운영자로 확인되었습니다. 관리자 화면으로 이동합니다…';
+      location.href=(role==='ceo'||role==='owner') ? 'console.html' : 'hub.html';
+    }else{
+      location.href='mypage.html';
+    }
+  })
+  .catch(function(){ location.href='mypage.html'; });
+}
+
 function doLogin(){
   var em=document.getElementById('liEmail').value.trim();
   var pw=document.getElementById('liPw').value;
@@ -375,15 +415,8 @@ function doLogin(){
   .then(function(r){return r.json();})
   .then(function(d){
     if(d.access_token){
-      try{localStorage.setItem('cg_sb',JSON.stringify({t:d.access_token,u:em.split('@')[0]}));}catch(e){}
-      m.style.color='#2AA060'; m.textContent='로그인되었습니다. 이동합니다…';
-      /* 운영자면 관리자 홈, 아니면 마이페이지 */
-      fetch(base+'/rest/v1/admins?select=email',
-        {headers:{apikey:key,Authorization:'Bearer '+d.access_token}})
-      .then(function(r){return r.ok?r.json():[];})
-      .then(function(a){
-        location.href=(Array.isArray(a)&&a.length)?'console.html':'mypage.html';
-      }).catch(function(){ location.href='mypage.html'; });
+      cgAfterLogin(d, em, m);
+    
     } else {
       m.style.color='#D82558';
       m.textContent = (d.error_description||'').indexOf('confirm')>-1
