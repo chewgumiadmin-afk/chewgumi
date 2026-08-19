@@ -1525,11 +1525,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
+        <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
+        <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
+      </div>
         
-        <div class="d-detail hide" id="dDetail">
-          <div class="d-detail-in" id="dDetailIn"></div>
-          
-        </div>
+        
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
             <span class="eb">REVIEW</span>
@@ -1538,10 +1538,13 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <div class="d-rev-list" id="dRevList"></div>
           <a class="d-rev-more" href="review.html">후기 전체 보기 →</a>
         </div>
+        <div class="d-detail hide" id="dDetail">
+          <div class="d-detail-in" id="dDetailIn"></div>
+          
+        </div>
       </div>
-      <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
-      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
-      </div>
+      
+      
     </div>
   </div>
 </div>
@@ -6781,6 +6784,70 @@ main{ contain:layout style }
   .detail .d-img img{ padding:5% !important }
   .detail .d-info{ padding:20px 18px calc(28px + env(safe-area-inset-bottom)) !important }
   .d-rev-list{ max-height:none !important }
+}
+
+/* ══ 팝업 아래쪽 정리 ══ */
+
+/* 구매 버튼 아래 결제 안내 */
+.d-npay{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:48px !important;
+  margin-top:8px !important;
+  border-radius:14px !important;
+  font-size:13.5px !important;
+  font-weight:600 !important;
+}
+.d-notice{
+  margin-top:10px !important;
+  margin-bottom:0 !important;
+  font-size:12px !important;
+  line-height:1.85 !important;
+}
+
+/* 리뷰 — 더 넓고 여유 있게 */
+.d-rev{
+  margin-top:24px !important;
+  padding-top:20px !important;
+}
+.d-rev-list{
+  max-height:none !important;      /* 잘리지 않게 */
+  overflow:visible !important;
+  gap:14px !important;
+}
+.d-rv{
+  gap:12px !important;
+  padding-bottom:14px !important;
+}
+.d-rv img{
+  width:66px !important;
+  height:66px !important;
+  border-radius:12px !important;
+}
+.d-rv p{
+  font-size:13px !important;
+  line-height:1.8 !important;
+  -webkit-line-clamp:6 !important;   /* 더 많이 보여준다 */
+}
+.d-rv .st{ font-size:12px !important }
+.d-rv .who{ font-size:11.5px !important;margin-top:6px !important }
+.d-rev-h .sc b{ font-size:19px !important }
+
+/* 상세 이미지 — 리뷰 아래, 팝업 맨 끝 */
+#dDetail, .d-detail{
+  display:block !important;
+  margin-top:26px !important;
+  padding-top:20px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#dDetail.hide, .d-detail.hide{ display:block !important }
+
+@media (max-width:860px){
+  .d-rv img{ width:58px !important;height:58px !important }
+  .d-rv p{ -webkit-line-clamp:8 !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
