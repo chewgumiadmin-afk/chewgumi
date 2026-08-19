@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v12 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v14 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -278,6 +278,137 @@ select::-ms-expand{ display:none !important }
 @media (max-width:768px){
   .pv-stage{ padding:10px !important }
   .pv-stage iframe, #pvFrame{ width:390px !important }
+}
+
+/* ══ 체크박스 · 글래스 버튼 ══ */
+
+/* 메일 · GitHub 체크박스 — 크기를 키우고 손가락에 맞춤 */
+.sw{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+  cursor:pointer;
+  user-select:none;
+  min-height:44px;
+  padding:0 4px;
+}
+.sw input[type=checkbox]{
+  -webkit-appearance:none;
+  appearance:none;
+  width:20px !important;
+  height:20px !important;
+  margin:0 !important;
+  flex:none;
+  border-radius:7px;
+  border:1.5px solid rgba(0,0,0,.16);
+  background:rgba(255,255,255,.9);
+  cursor:pointer;
+  position:relative;
+  transition:background .18s ease, border-color .18s ease;
+}
+.sw input[type=checkbox]:checked{
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  border-color:transparent;
+}
+.sw input[type=checkbox]:checked::after{
+  content:"";
+  position:absolute;
+  left:6.5px; top:2.5px;
+  width:5px; height:10px;
+  border:solid #fff;
+  border-width:0 2px 2px 0;
+  transform:rotate(43deg);
+}
+.sw input[type=checkbox]:focus-visible{
+  outline:2px solid var(--main);
+  outline-offset:2px;
+}
+
+/* 버튼 — 젤리에서 글래스로 */
+.btn{
+  min-height:48px !important;
+  padding:0 24px !important;
+  border-radius:14px !important;
+  font-weight:600 !important;
+  letter-spacing:-.01em;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;   /* 가운데 배치 */
+  gap:7px;
+  color:var(--ink) !important;
+  background:rgba(255,255,255,.58) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:
+    0 6px 18px rgba(0,0,0,.07),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+  transition:background .18s ease, box-shadow .18s ease, transform .12s ease;
+}
+.btn:hover{
+  background:rgba(255,255,255,.76) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+.btn:active{ transform:translateY(1px) }
+
+/* 주된 버튼 — 색을 옅게 머금은 글래스 */
+.btn.go{
+  color:#1B6B3F !important;
+  background:linear-gradient(135deg,rgba(63,191,127,.22),rgba(42,160,96,.16)) !important;
+  border-color:rgba(255,255,255,.85) !important;
+  box-shadow:0 6px 18px rgba(42,160,96,.16),inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+.btn.go:hover{
+  background:linear-gradient(135deg,rgba(63,191,127,.3),rgba(42,160,96,.22)) !important;
+}
+.btn.go2{
+  color:var(--main) !important;
+  background:linear-gradient(135deg,rgba(233,80,115,.16),rgba(216,37,88,.12)) !important;
+  border-color:rgba(255,255,255,.85) !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.14),inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+.btn.go2:hover{
+  background:linear-gradient(135deg,rgba(233,80,115,.24),rgba(216,37,88,.18)) !important;
+}
+.btn.ghost{
+  background:rgba(255,255,255,.42) !important;
+  color:#555 !important;
+}
+.btn:disabled{
+  opacity:.45 !important;
+  box-shadow:none !important;
+  cursor:default;
+}
+
+/* 작은 버튼도 같은 결로 */
+.mini{
+  min-height:34px !important;
+  border-radius:10px !important;
+  background:rgba(255,255,255,.6) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  backdrop-filter:blur(14px) saturate(130%);
+  -webkit-backdrop-filter:blur(14px) saturate(130%);
+  box-shadow:0 3px 10px rgba(0,0,0,.05),inset 0 1px 0 rgba(255,255,255,.9);
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:background .18s ease;
+}
+.mini:hover{ background:rgba(255,255,255,.82) !important }
+
+/* 버튼 줄 — 가운데 정렬 */
+.btns, .row-btns{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+}
+.btns > .btn{ flex:1;min-width:150px }
+
+@media (max-width:640px){
+  .btn{ min-height:50px !important;width:100% }
+  .btns > .btn{ min-width:0 }
 }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
