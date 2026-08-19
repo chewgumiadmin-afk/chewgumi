@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v121 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v122 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1501,7 +1501,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     </div>
     <div class="ft-copy">
       <span>Copyright © ChewGumi. All rights reserved.</span>
-      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v121 · 2026-08-19</span>
+      <span style="opacity:.45;font-size:10px;letter-spacing:1px;">v122 · 2026-08-19</span>
       <a href="console.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ADMIN</a> <a href="orders.html" style="color:var(--gray); text-decoration:underline; text-underline-offset:3px;">ORDERS</a>
     </div>
   </div>
@@ -6319,6 +6319,48 @@ header.shrink > div:first-child{
     padding-bottom:2px !important;
   }
 }
+
+/* ══ 로고와 첫 배너 간격 — 모든 화면 크기 ══
+   앞서 768px 이하만 고쳤는데, 태블릿(769~1024px)이 빠져 있었습니다. */
+
+/* 태블릿 */
+@media (min-width:769px) and (max-width:1024px){
+  header > div:first-child{
+    padding-top:10px !important;
+    padding-bottom:5px !important;
+  }
+  .hero-sec{
+    margin-top:0 !important;
+    padding:0 14px !important;
+    margin-bottom:20px !important;
+  }
+}
+
+/* 큰 태블릿 · 작은 노트북 */
+@media (min-width:1025px) and (max-width:1280px){
+  header > div:first-child{
+    padding-top:12px !important;
+    padding-bottom:6px !important;
+  }
+  .hero-sec{
+    margin-top:0 !important;
+    margin-bottom:24px !important;
+  }
+}
+
+/* 가로로 눕힌 태블릿·휴대폰 */
+@media (max-height:520px) and (orientation:landscape){
+  header > div:first-child{
+    padding-top:5px !important;
+    padding-bottom:3px !important;
+  }
+  .hero-sec{ margin-top:0 !important;margin-bottom:14px !important }
+  header .logo img{ height:30px !important }
+}
+
+/* 어느 크기에서도 배너 위는 붙는다 */
+.hero-sec{ margin-top:0 !important }
+header{ margin-bottom:0 !important }
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
