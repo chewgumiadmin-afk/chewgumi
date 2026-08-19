@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v15 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v16 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -549,6 +549,17 @@ select::-ms-expand{ display:none !important }
           <button class="btn go" onclick="deploy(false)">사이트에 반영 (확정)</button>
           <button class="btn ghost" onclick="preview()">미리보기 (확인)</button>
           <button class="btn ghost" onclick="discard()">취소</button>
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:6px">
+          결과가 마음에 안 드시면 — 무엇이 아쉬운지 적어주세요</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="fb" placeholder="예) 여백이 그대로예요 · 너무 많이 줄었어요"
+            style="flex:1;min-width:200px;min-height:46px;padding:12px 14px;border-radius:12px;
+            border:1px solid var(--line);background:rgba(255,255,255,.85)">
+          <button class="btn go2" onclick="refine()" id="fbBtn"
+            style="flex:none;min-width:130px">다시 고쳐줘</button>
+        </div>
         </div>
         <div class="msg" id="rmsg"></div>
       </div>
@@ -1020,6 +1031,51 @@ function watchBuild(siteUrl){
   }, 8000);
   $('rmsg').className='msg';
   $('rmsg').textContent='사이트에 반영하는 중입니다… (보통 1~2분 걸립니다)';
+}
+
+/* 앞선 수정안을 바탕으로 다시 고친다 */
+function refine(){
+  if(!curId){ return; }
+  var fb = document.getElementById('fb');
+  var t = fb ? fb.value.trim() : '';
+  if(!t){
+    $('rmsg').className='msg bad';
+    $('rmsg').textContent='어떤 점이 아쉬운지 적어주세요.';
+    return;
+  }
+  document.getElementById('fbBtn').disabled = true;
+
+  var t0 = Date.now();
+  var timer = setInterval(function(){
+    var s = Math.round((Date.now()-t0)/1000);
+    $('rmsg').className='msg';
+    $('rmsg').textContent='다시 고치는 중입니다… ' + s + '초';
+  }, 1000);
+
+  call({action:'refine', base_id:curId, request:t, actor:who||'관리자'})
+  .then(function(res){
+    clearInterval(timer);
+    document.getElementById('fbBtn').disabled = false;
+    if(!res.ok){
+      $('rmsg').className='msg bad';
+      $('rmsg').textContent = (res.d && res.d.error) || '다시 고치지 못했습니다.';
+      return;
+    }
+    if(fb) fb.value='';
+    curId = res.d.id;
+    $('summary').textContent = (res.d.summary||'') 
+      + '\n\n(' + (res.d.round||2) + '번째 시도)';
+    $('rmsg').className='msg ok';
+    $('rmsg').textContent = '다시 만들었습니다. 미리보기를 확인해 주세요.';
+    preview();
+    loadHist();
+  })
+  .catch(function(){
+    clearInterval(timer);
+    document.getElementById('fbBtn').disabled = false;
+    $('rmsg').className='msg bad';
+    $('rmsg').textContent='연결하지 못했습니다.';
+  });
 }
 
 function discard(){ curId=null; $('result').classList.add('hide'); $('dmsg').textContent=''; }
