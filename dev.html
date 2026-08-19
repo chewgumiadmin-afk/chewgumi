@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v16 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v12 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -409,6 +409,55 @@ select::-ms-expand{ display:none !important }
 @media (max-width:640px){
   .btn{ min-height:50px !important;width:100% }
   .btns > .btn{ min-width:0 }
+}
+
+/* ══ 변경 이력 — 모바일에서 버튼이 잘리던 문제 ══
+   칸이 2개인데 내용이 4개라 버튼이 밀려났습니다. */
+@media(max-width:820px){
+  .hrow{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:8px !important;
+    padding:14px 4px !important;
+  }
+  .hrow > div{ width:100% }
+  .hrow .t{ order:1 }
+  .hrow > div:nth-child(2){ order:2 }
+  .hrow > div:nth-child(3){ order:3;font-size:11px !important }
+  .hrow > div:last-child{
+    order:4;
+    display:flex !important;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .hrow .mini{
+    flex:1;
+    min-width:110px;
+    min-height:40px !important;
+    font-size:13px !important;
+    justify-content:center;
+  }
+}
+/* 버튼을 눈에 띄게 */
+.hrow .mini{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 14px;
+  min-height:32px;
+  border-radius:9px;
+  border:1px solid var(--line,rgba(0,0,0,.12));
+  background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;
+  font-weight:700;
+  font-size:12px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.hrow .mini.d{
+  background:rgba(255,255,255,.9);
+  color:#17171c;
 }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
