@@ -78,8 +78,17 @@
         });
       });
     }).then(function (sub) {
+      var em = '';
+      try { em = (JSON.parse(localStorage.getItem('cg_sb') || '{}')).em || ''; }
+      catch (e) {}
+      var u = navigator.userAgent;
+      var label = /iPhone/.test(u) ? '아이폰'
+        : /iPad/.test(u) ? '아이패드'
+        : /Android/.test(u) ? '안드로이드'
+        : /Mac/.test(u) ? '맥'
+        : /Windows/.test(u) ? '윈도우' : '기타';
       return call({ action: 'subscribe', sub: sub.toJSON(),
-        ua: navigator.userAgent.slice(0, 160) });
+        ua: u.slice(0, 160), email: em, label: label });
     }).then(function (d) {
       if (d.error) throw new Error(d.error);
       window._cgPushOn = true;
