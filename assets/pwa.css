@@ -47,3 +47,7 @@ body:has(.cg-pwa.on) .fl-btns{
   body:has(.cg-pwa.on) .cgbot-fab,
   body:has(.cg-pwa.on) .kko-fab{ bottom:auto !important }
 }
+
+/* 배너가 상담 버튼에 가려 닫기(✕)가 안 눌리던 문제 */
+.cg-pwa{ z-index:2100 }
+.cg-pwa .cl{ width:38px; height:38px; font-size:22px }
