@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v143 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v144 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7200,6 +7200,141 @@ body.is-admin .admin-only{ display:inline !important }
     background:rgba(255,255,255,.94) !important;
     box-shadow:0 3px 12px rgba(0,0,0,.16) !important;
   }
+}
+
+/* ══════════════════════════════════════════════
+   팝업 — 스크롤은 팝업 안에서만 · 리뷰는 좌우로
+   ══════════════════════════════════════════════ */
+
+/* 바깥은 스크롤하지 않습니다 */
+.detail-dim{
+  position:fixed !important;
+  inset:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:24px 18px !important;
+}
+.detail-dim.hide{ display:none !important }
+
+/* 팝업이 자기 안에서 스크롤합니다 */
+.detail{
+  max-height:calc(100vh - 48px) !important;
+  max-height:calc(100svh - 48px) !important;
+  height:auto !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain !important;
+  margin:0 !important;
+}
+.detail .d-img,
+.detail .d-info{
+  max-height:none !important;
+  overflow:visible !important;
+}
+
+/* PC — 좌우 2단, 왼쪽 사진 고정 */
+@media (min-width:1025px){
+  .detail{
+    display:grid !important;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) !important;
+    width:min(94vw,1120px) !important;
+    padding-top:0 !important;
+  }
+  .detail .d-img{
+    position:sticky !important;
+    top:0 !important;
+    align-self:start !important;
+  }
+  .detail .d-info{ padding:44px 28px 32px !important }
+}
+
+/* 태블릿 */
+@media (min-width:861px) and (max-width:1024px){
+  .detail{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    width:calc(100vw - 36px) !important;
+  }
+  .detail .d-info{ padding:40px 22px 28px !important }
+}
+
+/* 모바일 — 위아래 1단, 화면 꽉 */
+@media (max-width:860px){
+  .detail-dim{ padding:0 !important }
+  .detail{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    height:100svh !important;
+    max-height:100svh !important;
+    border-radius:0 !important;
+    transform:none !important;
+  }
+  .detail .d-img{ position:static !important }
+  .detail .d-info{
+    padding:14px 18px calc(30px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ── 리뷰 — 좌우로 넘겨 봅니다 ── */
+.d-rev-list{
+  display:flex !important;
+  flex-direction:row !important;
+  gap:12px !important;
+  max-height:none !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  padding:2px 2px 10px !important;
+  scrollbar-width:thin;
+}
+.d-rev-list::-webkit-scrollbar{ height:5px }
+.d-rev-list::-webkit-scrollbar-thumb{
+  background:rgba(216,37,88,.28); border-radius:99px;
+}
+.d-rv{
+  flex:0 0 min(84%,300px) !important;
+  scroll-snap-align:start;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:9px !important;
+  padding:14px 15px !important;
+  border:1px solid rgba(0,0,0,.07) !important;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.72) !important;
+  box-sizing:border-box !important;
+}
+.d-rv img{
+  width:100% !important;
+  height:132px !important;
+  border-radius:10px !important;
+  object-fit:cover !important;
+  flex:none !important;
+}
+.d-rv .t{ display:block !important }
+.d-rv p{
+  font-size:13px !important;
+  line-height:1.7 !important;
+  -webkit-line-clamp:4 !important;
+  margin-top:4px !important;
+}
+
+/* 좌우로 넘기라는 안내 */
+.d-rev-h::after{
+  content:"좌우로 넘겨보세요";
+  font-size:11px;
+  color:var(--gray,#7a7a82);
+  margin-left:10px;
+}
+@media (max-width:640px){
+  .d-rv{ flex:0 0 82% !important }
+  .d-rv img{ height:118px !important }
+  .d-rev-h::after{ display:none }
 }
 </style>
 <script src="assets/nav.js" defer></script>
