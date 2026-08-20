@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v153 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v154 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -914,7 +914,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
 <div class="popup-dim" id="popup">
   <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
-    <div class="p-top"><img class="p-illust" src="assets/popup-coupon.png" alt="" aria-hidden="true"></div>
+    <div class="p-top"><img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true"></div>
     <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
     <div class="p-desc" data-en="Join now and get a &lt;b&gt;₩2,000&lt;/b&gt; coupon you can use right away!">지금 가입하시면 즉시 사용 가능한 <b>2000원</b> 할인쿠폰을 드려요!</div>
     <div class="p-acts">
@@ -980,14 +980,14 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <section class="hero-sec">
       <div class="hero" id="heroSlider" role="region" aria-label="브랜드 배너">
         <div class="h-track" id="hTrack">
-          <a class="hslide" href="#all" onclick="filterLine('all')"
-             style="background-image:url('assets/hero-triple.jpg')" aria-label="트리플잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('doit')"
+             style="background-image:url('assets/hero-1.jpg')" aria-label="듀잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('doit')"
+             style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 보기"></a>
           <a class="hslide" href="#all" onclick="filterLine('travel')"
-             style="background-image:url('assets/hero-travel.jpg')" aria-label="트래블잇 보기"></a>
-          <a class="hslide" href="#all" onclick="filterLine('doit')"
-             style="background-image:url('assets/hero-dew-lemon.jpg')" aria-label="듀잇 보기"></a>
-          <a class="hslide" href="#all" onclick="filterLine('doit')"
-             style="background-image:url('assets/hero-dew-grape.jpg')" aria-label="듀잇 보기"></a>
+             style="background-image:url('assets/hero-3.jpg')" aria-label="트래블잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('all')"
+             style="background-image:url('assets/hero-4.jpg')" aria-label="트리플잇 보기"></a>
         </div>
       </div>
       <div class="hero-bar">
@@ -1203,7 +1203,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <a class="card" href="#all" data-line="doit" data-desc="핀란드산 자일리톨 93% 함유 무설탕 캔디. 입 마름과 구취가 신경 쓰이는 순간, 당 걱정 없이 개운하게." data-desc-en="Sugar-free candy with 93% Finnish xylitol. Freshens dry mouth and breath — without the sugar." onclick="openDetail(this);return false;" data-no="18">
         <div class="thumb">
           <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/big/202512/2c58793be7f900d4997e26451366b9cb.png" alt="듀잇 4개입 — 무설탕 자일리톨 캔디" onerror="this.onerror=null;this.src='assets/prod/dew-purple.jpg'">
-          <img referrerpolicy="no-referrer" class="hover" src="assets/hero-dew-lemon.jpg" alt="" loading="lazy">
+          <img referrerpolicy="no-referrer" class="hover" src="assets/hero-1.jpg" alt="" loading="lazy">
         </div>
         <div class="name kr" data-en="Dew-it 4 Pack">듀잇 4개입 — 무설탕 자일리톨 캔디</div>
         <div class="price-row"><span class="p-origin">₩39,000</span><span class="p-sale">₩19,900</span></div>
@@ -1211,7 +1211,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <a class="card" href="#all" data-line="doit" data-desc="핀란드산 자일리톨 93% 함유 무설탕 캔디. 입 마름과 구취가 신경 쓰이는 순간, 당 걱정 없이 개운하게." data-desc-en="Sugar-free candy with 93% Finnish xylitol. Freshens dry mouth and breath — without the sugar." onclick="openDetail(this);return false;" data-no="19">
         <div class="thumb">
           <img referrerpolicy="no-referrer" src="https://chewgumi.com/web/product/big/202512/4f3394ac34364fc0e1f88744141a8c99.png" alt="듀잇 6개입 — 무설탕 자일리톨 캔디" onerror="this.onerror=null;this.src='assets/prod/dew-purple.jpg'">
-          <img referrerpolicy="no-referrer" class="hover" src="assets/hero-dew-grape.jpg" alt="" loading="lazy">
+          <img referrerpolicy="no-referrer" class="hover" src="assets/hero-2.jpg" alt="" loading="lazy">
         </div>
         <div class="name kr" data-en="Dew-it 6 Pack">듀잇 6개입 — 무설탕 자일리톨 캔디</div>
         <div class="price-row"><span class="p-origin">₩54,800</span><span class="p-sale">₩27,900</span></div>
@@ -1246,7 +1246,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <div class="wrap">
     <div class="sec-head"><h2 class="sec-title">Travel-it Film</h2></div>
     <div class="film" id="filmBox" data-drive="1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv">
-          <img class="film-poster" src="assets/hero-dew-grape.jpg" alt="" aria-hidden="true">
+          <img class="film-poster" src="assets/hero-2.jpg" alt="" aria-hidden="true">
           <div class="film-cap">
             <div class="en">TRAVEL-IT</div>
             <div class="kr">여행의 모든 순간을 가볍게</div>
@@ -1318,7 +1318,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </div>
 
         <div class="uf-grid" id="ufGrid">
-          <div class="uf-card" data-cap="여행 가방에 챙겨 담는 순간" data-line="travel" data-kind="video" data-drive="1AtkkqucQrLbTAnuqxvwEnkavVWtIgTSd" onclick="ufOpen(0)"><img src="assets/detail/tvd-01.jpg" alt="제주 3박4일 내내 가방에 넣고 다녔어요" loading="lazy"><span class="pin"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span><span class="lk">♥ 42</span><span class="ov"><b>민트 사탕의 서늘한 초록</b><span>제주 3박4일 내내 가방에 넣고 다녔어요</span></span></div>
+          <div class="uf-card" data-cap="여행 가방에 챙겨 담는 순간" data-line="travel" data-kind="video" data-drive="1AtkkqucQrLbTAnuqxvwEnkavVWtIgTSd" onclick="ufOpen(0)"><img src="assets/prod/travel-1.jpg" alt="제주 3박4일 내내 가방에 넣고 다녔어요" loading="lazy"><span class="pin"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span><span class="lk">♥ 42</span><span class="ov"><b>민트 사탕의 서늘한 초록</b><span>제주 3박4일 내내 가방에 넣고 다녔어요</span></span></div>
           <div class="uf-card" data-cap="회의 전에 하나씩. 입안이 개운해서 좋아요" data-line="doit" data-kind="image" onclick="ufOpen(1)"><img src="assets/detail/dew-lemon-01.jpg" alt="회의 전에 하나씩. 입안이 개운해서 좋아요" loading="lazy"><span class="lk">♥ 31</span><span class="ov"><b>한여름 바다의 푸른색</b><span>회의 전에 하나씩. 입안이 개운해서 좋아요</span></span></div>
           <div class="uf-card" data-cap="물 없이 씹는 한 알의 순간" data-line="travel" data-kind="video" data-drive="1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv" onclick="ufOpen(2)"><img src="assets/detail/tvd-02.jpg" alt="아이도 잘 먹어요. 젤리라 거부감이 없네요" loading="lazy"><span class="lk">♥ 28</span><span class="ov"><b>오후 네 시 창가의 금색</b><span>아이도 잘 먹어요. 젤리라 거부감이 없네요</span></span></div>
           <div class="uf-card" data-cap="포도맛이 진짜 포도 같아요. 무설탕인데 달아요" data-line="doit" data-kind="image" onclick="ufOpen(3)"><img src="assets/detail/dew-grape-03.jpg" alt="포도맛이 진짜 포도 같아요. 무설탕인데 달아요" loading="lazy"><span class="lk">♥ 24</span><span class="ov"><b>늦여름 포도의 보랏빛</b><span>포도맛이 진짜 포도 같아요. 무설탕인데 달아요</span></span></div>
@@ -2253,9 +2253,9 @@ function closeBoardLayer(){
    파일이 없으면 아래 drive 주소로 자동 전환됩니다. */
 const USER_VIDEOS = [
   { file:'assets/videos/user-1.mp4', drive:'1AtkkqucQrLbTAnuqxvwEnkavVWtIgTSd',
-    title:'츄구미 사용 영상 1', poster:'assets/hero-travel.jpg' },
+    title:'츄구미 사용 영상 1', poster:'assets/hero-3.jpg' },
   { file:'assets/videos/user-2.mp4', drive:'1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv',
-    title:'츄구미 사용 영상 2', poster:'assets/hero-dew-grape.jpg' }
+    title:'츄구미 사용 영상 2', poster:'assets/hero-2.jpg' }
 ];
 (function(){
   const g = document.getElementById('ufilmGrid');
@@ -3183,7 +3183,7 @@ section{padding:44px 0}
   
 }
 </style>
-<link rel="preload" as="image" href="assets/hero-travel.jpg">
+<link rel="preload" as="image" href="assets/hero-3.jpg">
 
 <style>
 /* 상품 카드 리뷰 배지 */
