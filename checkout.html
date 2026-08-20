@@ -919,8 +919,18 @@ function checkRequired(){
     var btn = document.getElementById('payBtn');
     if (btn) { btn.disabled = true; btn.textContent = '결제창을 여는 중…'; }
 
-    var mobile = window.matchMedia('(max-width:768px)').matches
-      || 'ontouchstart' in window;
+    /* 기기 판별 — 휴대폰 / 태블릿 / PC 를 각각 구분합니다.
+       이지페이는 pc·mobile 두 값만 받으므로 태블릿은 mobile 로 보냅니다.
+       (PC 결제창은 다른 기기로 QR 을 찍어야 해서 태블릿에서 쓸 수 없습니다) */
+    var ua = navigator.userAgent || '';
+    var isPhone   = /Android.*Mobile|iPhone|iPod|Windows Phone|BlackBerry/i.test(ua);
+    var isIpad    = /iPad/.test(ua)
+                    || (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
+    var isAndroidTab = /Android/.test(ua) && !/Mobile/.test(ua);
+    var isTablet  = isIpad || isAndroidTab;
+    var device    = isPhone ? 'phone' : (isTablet ? 'tablet' : 'pc');
+    var mobile    = device !== 'pc';
+    try { sessionStorage.setItem('cg_pay_device', device); } catch(e){}
 
     try { sessionStorage.setItem('cg_pay_amount', String(opt.amount || 0)); } catch(e){}
 
