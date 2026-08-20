@@ -151,6 +151,7 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
         <button class="btn" id="go" onclick="generate()">문서 생성</button>
         <button class="btn ghost" onclick="copyOut()">복사</button>
         <button class="btn ghost" onclick="downloadOut()">파일로 저장</button>
+        <button class="btn ghost" onclick="clearOut()">결과 지우기</button>
       </div>
       <div class="msg" id="gmsg"></div>
       <div id="outBox" style="margin-top:14px"></div>
@@ -357,5 +358,12 @@ sync();
 <script src="assets/lite.js" defer></script>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
+<script>
+function clearOut(){
+  if(!confirm('지금 결과를 지울까요?')) return;
+  var b=document.getElementById('outBox'); if(b) b.innerHTML='';
+  var m=document.getElementById('gmsg'); if(m) m.textContent='결과를 지웠습니다.';
+}
+</script>
 </body>
 </html>
