@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<!-- AI Dev v14 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
+<!-- AI Dev v15 --><title>AI 개발 도우미 | CHEWGUMI ADMIN</title>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -512,6 +512,19 @@ select::-ms-expand{ display:none !important }
   .shothint{text-align:center}
   .shotprev{align-self:center}
 }
+
+/* 모델 목록 갱신 */
+.mdrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.mdbtn{
+  min-height:34px;padding:0 14px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(0,0,0,.12);background:rgba(255,255,255,.85);
+  font-size:12.5px;font-weight:600;color:#555;
+}
+.mdbtn:hover{background:#FFE4E6;color:#D82558;border-color:#FFBDCC}
+.mdbtn:disabled{opacity:.5;cursor:default}
+.mdhint{font-size:11.5px;color:#797979;line-height:1.6;flex:1;min-width:140px}
+.mdhint.ok{color:#2AA060}
+.mdhint.bad{color:#C0395C}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -592,6 +605,10 @@ select::-ms-expand{ display:none !important }
         <div>
           <label>사용할 AI 모델 <span style="font-weight:500;color:#8a8a92;font-size:11px">· 잘 모르시면 「권장」 그대로 두세요</span></label>
           <select id="model" onchange="setModel()"></select>
+        <div class="mdrow">
+          <button type="button" class="mdbtn" onclick="refreshModels()" id="mdBtn">최신 목록 받기</button>
+          <span class="mdhint" id="mdHint">하루에 한 번 저절로 확인합니다</span>
+        </div>
         </div>
       </div>
 
@@ -1634,6 +1651,80 @@ setTimeout(function(){
   if(f && !f.src && window.loadPrev) loadPrev();
   pvApply();
 }, 1200);
+</script>
+
+<script>
+/* 모델 목록 — 저절로 최신으로 */
+(function(){
+  var F = 'https://psynvpuedzjvytsgdhgg.supabase.co/functions/v1/ai-models';
+  var K = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function call(p){
+    return fetch(F, { method:'POST',
+      headers:{ apikey:K, 'Content-Type':'application/json' },
+      body: JSON.stringify(p) }).then(function(r){ return r.json(); });
+  }
+
+  function paint(d){
+    var sel = document.getElementById('model');
+    if (!sel || !d.models || !d.models.length) return;
+    sel.innerHTML = d.models.map(function(m){
+      return '<option value="' + m.id + '"' + (m.id === d.model ? ' selected' : '') + '>'
+        + (m.name || m.id) + (m.note ? ' \u2014 ' + m.note : '')
+        + (m.is_new ? '  (\uc0c8\ub85c \ub098\uc634)' : '') + '</option>';
+    }).join('') + '<option value="">\u2014 \uc54c\uc544\uc11c \uace0\ub974\uae30 \u2014</option>';
+
+    var hint = document.getElementById('mdHint');
+    if (!hint) return;
+    if (d.newCount) {
+      hint.className = 'mdhint ok';
+      hint.textContent = '\uc0c8 \ubaa8\ub378 ' + d.newCount + '\uac1c\uac00 \ubaa9\ub85d\uc5d0 \ub4e4\uc5b4\uc654\uc2b5\ub2c8\ub2e4';
+    } else if (d.checked) {
+      var t = new Date(d.checked);
+      hint.className = 'mdhint';
+      hint.textContent = '\ub9c8\uc9c0\ub9c9 \ud655\uc778 ' + (t.getMonth()+1) + '/' + t.getDate()
+        + ' \u00b7 ' + (d.pinned ? '\uace0\uc815\ub428' : '\uc54c\uc544\uc11c \uace0\ub974\ub294 \uc911');
+    }
+  }
+
+  window.refreshModels = function(){
+    var b = document.getElementById('mdBtn');
+    var hint = document.getElementById('mdHint');
+    if (b) b.disabled = true;
+    if (hint) { hint.className = 'mdhint'; hint.textContent = '\ud655\uc778\ud558\ub294 \uc911\u2026'; }
+    call({ action:'refresh' }).then(function(d){
+      if (b) b.disabled = false;
+      if (!d.ok) {
+        if (hint) { hint.className = 'mdhint bad'; hint.textContent = d.error || '\ubc1b\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4'; }
+        return;
+      }
+      paint(d);
+      if (hint) { hint.className = 'mdhint ok'; hint.textContent = d.msg || '\uac31\uc2e0\ud588\uc2b5\ub2c8\ub2e4'; }
+    }).catch(function(){
+      if (b) b.disabled = false;
+      if (hint) { hint.className = 'mdhint bad'; hint.textContent = '\uc5f0\uacb0\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4'; }
+    });
+  };
+
+  /* 모델을 고르면 그것으로 고정 */
+  var _old = window.setModel;
+  window.setModel = function(){
+    var sel = document.getElementById('model');
+    if (sel) {
+      call({ action:'pin', model: sel.value }).then(function(d){
+        var hint = document.getElementById('mdHint');
+        if (hint && d.ok) { hint.className = 'mdhint ok'; hint.textContent = d.msg; }
+      }).catch(function(){});
+    }
+    if (typeof _old === 'function') { try { _old(); } catch(e){} }
+  };
+
+  function boot(){ call({ action:'list' }).then(paint).catch(function(){}); }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  setTimeout(boot, 1200);
+})();
 </script>
 </body>
 </html>
