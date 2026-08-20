@@ -9620,15 +9620,15 @@ body, input, select, textarea, button,
 
     inner.innerHTML = '<div class="d-detail-load">상세 이미지를 불러오는 중…</div>';
 
-    collect(setOf(no)).then(function(imgs){
-      if (imgs && imgs.length) { show(imgs, no); return null; }
-      return fetch(SBd + '/rest/v1/products?select=detail_images&id=eq.' + no,
-        { headers:{ apikey:Kd, Authorization:'Bearer '+Kd } })
-        .then(function(r){ return r.ok ? r.json() : []; })
-        .then(function(rows){
-          var p = (rows||[])[0];
-          var d = (p && p.detail_images) || [];
-          if (d.length) show(d, no);
+    fetch(SBd + '/rest/v1/products?select=detail_images&id=eq.' + no,
+      { headers:{ apikey:Kd, Authorization:'Bearer '+Kd } })
+      .then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(rows){
+        var p = (rows||[])[0];
+        var d = (p && p.detail_images) || [];
+        if (d.length) { show(d, no); return null; }
+        return collect(setOf(no)).then(function(imgs){
+          if (imgs && imgs.length) show(imgs, no);
           else inner.innerHTML = '<div class="d-detail-load">상세 이미지가 없습니다.</div>';
         });
     }).catch(function(){
