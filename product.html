@@ -1917,5 +1917,29 @@ select::-ms-expand{ display:none !important }
 @media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
 </style>
 <script src="assets/drag-fab.js" defer></script>
+<style>
+/* ══ 구매 버튼 — 크기·모양 통일 ══ */
+.acts{
+  display:flex !important; flex-wrap:wrap !important;
+  gap:10px !important; align-items:stretch !important;
+}
+.acts .wish, .acts .heart, .acts > .like{ flex:0 0 auto !important; align-self:center !important }
+.acts .cart, .acts .buy{
+  flex:1 1 calc(50% - 5px) !important;
+  min-width:140px !important;
+  min-height:54px !important;
+  border-radius:999px !important;
+  font-size:15px !important; font-weight:800 !important;
+  letter-spacing:.2px !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  box-shadow:none !important;
+}
+.acts .buy{ box-shadow:0 8px 20px rgba(216,37,88,.26) !important }
+@media(max-width:420px){
+  .acts .cart, .acts .buy{ flex:1 1 100% !important }
+}
+/* 스마트스토어 버튼은 자체 결제로 대체 (되돌리려면 이 두 줄을 지우세요) */
+.npay-btn, .pay-hint{ display:none !important }
+</style>
 </body>
 </html>
