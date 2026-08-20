@@ -23,3 +23,27 @@
 .cg-pwa .cl{flex:none;width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;
   font-size:19px;line-height:1;color:#888;background:rgba(0,0,0,.05)}
 @media(min-width:900px){ .cg-pwa.on{bottom:calc(20px + env(safe-area-inset-bottom))} }
+
+
+/* ── 홈 화면 추가 배너가 떠 있을 때 상담 버튼을 위로 올린다 ──
+   배너는 left/right 12px 로 화면을 가로지르고, 상담·카톡 버튼은
+   right 18px / bottom 84px 에 있어 서로 겹쳤습니다. */
+body:has(.cg-pwa.on) .cgbot-fab{
+  bottom:calc(166px + env(safe-area-inset-bottom)) !important;
+}
+body:has(.cg-pwa.on) .kko-fab{
+  bottom:calc(228px + env(safe-area-inset-bottom)) !important;
+}
+body:has(.cg-pwa.on) .float-wrap,
+body:has(.cg-pwa.on) .fl-btns{
+  bottom:calc(166px + env(safe-area-inset-bottom)) !important;
+}
+/* :has() 를 모르는 브라우저 대비 — 배너가 버튼 자리를 비웁니다 */
+@media(max-width:900px){
+  .cg-pwa{ right:86px }
+  .cg-pwa .t span{ display:none }
+}
+@media(min-width:900px){
+  body:has(.cg-pwa.on) .cgbot-fab,
+  body:has(.cg-pwa.on) .kko-fab{ bottom:auto !important }
+}
