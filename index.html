@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v146 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v147 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7433,6 +7433,109 @@ body.is-admin .admin-only{ display:inline !important }
   color:var(--gray,#7a7a82) !important;
   text-align:center !important;
 }
+
+/* ══════════════════════════════════════════════
+   리뷰 — 저절로 흐르고, 손대면 멈춥니다
+   ══════════════════════════════════════════════ */
+.d-rev{
+  margin-top:20px !important;
+  padding-top:18px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+  position:relative !important;
+}
+.d-rev-h{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin-bottom:12px !important;
+}
+.d-rev-h::after{ content:none !important }
+
+/* 흐르는 띠 */
+.d-rev-list{
+  display:flex !important;
+  flex-direction:row !important;
+  gap:11px !important;
+  max-height:none !important;
+  overflow:hidden !important;      /* 스크롤바 없이 */
+  padding:2px 0 4px !important;
+  mask-image:linear-gradient(90deg,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);
+  cursor:grab;
+}
+.d-rev-list:active{ cursor:grabbing }
+.d-rev-list.free{
+  overflow-x:auto !important;      /* 손으로 밀 때만 스크롤 */
+  scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.d-rev-list.free::-webkit-scrollbar{ display:none }
+
+/* 안쪽 흐름 */
+.d-rev-track{
+  display:flex !important;
+  gap:11px !important;
+  animation:revFlow 42s linear infinite;
+  will-change:transform;
+}
+.d-rev-list:hover .d-rev-track,
+.d-rev-list.stop .d-rev-track{ animation-play-state:paused }
+@keyframes revFlow{
+  from{ transform:translateX(0) }
+  to  { transform:translateX(-50%) }
+}
+@media (prefers-reduced-motion:reduce){
+  .d-rev-track{ animation:none }
+  .d-rev-list{ overflow-x:auto !important }
+}
+
+/* 리뷰 한 장 */
+.d-rv{
+  flex:0 0 264px !important;
+  scroll-snap-align:start;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+  padding:14px 15px !important;
+  border:1px solid rgba(0,0,0,.07) !important;
+  border-radius:15px !important;
+  background:rgba(255,255,255,.8) !important;
+  box-sizing:border-box !important;
+  user-select:none;
+}
+.d-rv img{
+  width:100% !important;
+  height:124px !important;
+  border-radius:11px !important;
+  object-fit:cover !important;
+  flex:none !important;
+  pointer-events:none;
+}
+.d-rv .t{ display:block !important; min-width:0 }
+.d-rv .st{ font-size:11.5px !important; letter-spacing:1px !important }
+.d-rv p{
+  font-size:13px !important;
+  line-height:1.7 !important;
+  margin-top:3px !important;
+  -webkit-line-clamp:3 !important;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  word-break:keep-all;
+}
+.d-rv .who{ font-size:11.5px !important; margin-top:5px !important }
+
+.d-rev-more{
+  width:100% !important;
+  justify-content:center !important;
+  margin-top:12px !important;
+}
+
+@media (max-width:640px){
+  .d-rv{ flex:0 0 240px !important }
+  .d-rv img{ height:112px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -8235,6 +8338,89 @@ body.is-admin .admin-only{ display:inline !important }
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') close();
   });
+})();
+</script>
+
+<script>
+/* 리뷰 띠 — 저절로 흐르고, 손대면 멈춥니다 */
+(function(){
+  function setup(){
+    var list = document.getElementById('dRevList');
+    if (!list) return;
+    var cards = list.querySelectorAll(':scope > .d-rv');
+    if (!cards.length) return;
+
+    /* 이미 만들어졌으면 다시 하지 않습니다 */
+    if (list.querySelector('.d-rev-track')) return;
+
+    var track = document.createElement('div');
+    track.className = 'd-rev-track';
+    while (list.firstChild) track.appendChild(list.firstChild);
+
+    /* 끊기지 않게 한 벌 더 붙입니다 */
+    var n = track.children.length;
+    if (n >= 2) {
+      for (var i = 0; i < n; i++) {
+        track.appendChild(track.children[i].cloneNode(true));
+      }
+      /* 장수에 맞춰 속도를 정합니다 */
+      track.style.animationDuration = Math.max(24, n * 7) + 's';
+    } else {
+      track.style.animation = 'none';
+    }
+    list.appendChild(track);
+
+    /* 손으로 밀면 흐름을 멈추고 자유롭게 */
+    var down = false, sx = 0, sl = 0, moved = false;
+    function grab(x){
+      down = true; moved = false;
+      sx = x; sl = list.scrollLeft;
+      list.classList.add('stop', 'free');
+    }
+    function drag(x){
+      if (!down) return;
+      var d = sx - x;
+      if (Math.abs(d) > 3) moved = true;
+      list.scrollLeft = sl + d;
+    }
+    function release(){
+      down = false;
+      /* 3초 뒤 다시 흐릅니다 */
+      clearTimeout(list._t);
+      list._t = setTimeout(function(){
+        if (list.scrollLeft < 4) {
+          list.classList.remove('stop', 'free');
+        }
+      }, 3000);
+    }
+
+    list.addEventListener('mousedown', function(e){ grab(e.clientX); e.preventDefault(); });
+    window.addEventListener('mousemove', function(e){ drag(e.clientX); });
+    window.addEventListener('mouseup', release);
+
+    list.addEventListener('touchstart', function(e){
+      list.classList.add('stop', 'free');
+      clearTimeout(list._t);
+    }, { passive:true });
+    list.addEventListener('touchend', release);
+
+    /* 흐르는 중에 눌러도 링크가 열리지 않게 */
+    list.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+  }
+
+  /* 리뷰가 새로 채워질 때마다 다시 준비 */
+  if (window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t);
+      t = setTimeout(setup, 120);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', setup);
+  else setup();
 })();
 </script>
 </body>
