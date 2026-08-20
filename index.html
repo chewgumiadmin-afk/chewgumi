@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v157 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v158 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8385,6 +8385,78 @@ body, input, select, textarea, button,
   .prod-grid, .card-grid{ gap:12px !important }
   .bb-page{ width:76px !important; height:32px !important; font-size:12px !important }
 }
+
+/* ══════════════════════════════════════════════
+   메인 리뷰 — 저절로 흐르고, 손대면 멈춥니다
+   ══════════════════════════════════════════════ */
+.rev-row{
+  display:flex !important;
+  flex-direction:row !important;
+  gap:16px !important;
+  overflow:hidden !important;
+  padding:6px 0 14px !important;
+  margin:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);
+  cursor:grab;
+}
+.rev-row:active{ cursor:grabbing }
+.rev-row.free{
+  overflow-x:auto !important;
+  scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+  mask-image:none !important;
+  -webkit-mask-image:none !important;
+}
+.rev-row.free::-webkit-scrollbar{ display:none }
+
+.rev-track{
+  display:flex !important;
+  gap:16px !important;
+  animation:revRowFlow 56s linear infinite;
+  will-change:transform;
+}
+.rev-row:hover .rev-track,
+.rev-row.stop .rev-track{ animation-play-state:paused }
+@keyframes revRowFlow{
+  from{ transform:translateX(0) }
+  to  { transform:translateX(-50%) }
+}
+@media (prefers-reduced-motion:reduce){
+  .rev-track{ animation:none }
+  .rev-row{ overflow-x:auto !important; mask-image:none !important; -webkit-mask-image:none !important }
+}
+
+/* 리뷰 한 장 — 글래스 */
+.rev-row .rv-card,
+.rev-row > .card,
+.rev-track > *{
+  flex:0 0 320px !important;
+  min-width:320px !important;
+  max-width:320px !important;
+  scroll-snap-align:start;
+  box-sizing:border-box !important;
+  user-select:none;
+}
+
+@media (max-width:768px){
+  .rev-row{
+    gap:12px !important;
+    mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);
+  }
+  .rev-track{ gap:12px !important }
+  .rev-row .rv-card,
+  .rev-track > *{
+    flex:0 0 min(80vw,290px) !important;
+    min-width:min(80vw,290px) !important;
+    max-width:min(80vw,290px) !important;
+  }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -9387,6 +9459,72 @@ body, input, select, textarea, button,
   else run();
   setTimeout(run, 500);
   setTimeout(run, 1500);
+})();
+</script>
+
+<script>
+/* 메인 리뷰 띠 — 저절로 흐르고, 손대면 멈춥니다 */
+(function(){
+  function setup(){
+    var row = document.getElementById('rvRow');
+    if (!row) return;
+    var cards = row.querySelectorAll(':scope > *:not(.rev-track)');
+    if (!cards.length) return;
+    if (row.querySelector('.rev-track')) return;
+
+    var track = document.createElement('div');
+    track.className = 'rev-track';
+    while (row.firstChild) track.appendChild(row.firstChild);
+
+    var n = track.children.length;
+    if (n >= 3) {
+      for (var i = 0; i < n; i++) track.appendChild(track.children[i].cloneNode(true));
+      track.style.animationDuration = Math.max(36, n * 8) + 's';
+    } else {
+      track.style.animation = 'none';
+    }
+    row.appendChild(track);
+
+    var down = false, sx = 0, sl = 0, moved = false;
+    function grab(x){ down = true; moved = false; sx = x; sl = row.scrollLeft; row.classList.add('stop','free'); }
+    function drag(x){
+      if (!down) return;
+      var d = sx - x;
+      if (Math.abs(d) > 3) moved = true;
+      row.scrollLeft = sl + d;
+    }
+    function release(){
+      down = false;
+      clearTimeout(row._t);
+      row._t = setTimeout(function(){
+        if (row.scrollLeft < 4) row.classList.remove('stop','free');
+      }, 3000);
+    }
+    row.addEventListener('mousedown', function(e){ grab(e.clientX); e.preventDefault(); });
+    window.addEventListener('mousemove', function(e){ drag(e.clientX); });
+    window.addEventListener('mouseup', release);
+    row.addEventListener('touchstart', function(){
+      row.classList.add('stop','free'); clearTimeout(row._t);
+    }, { passive:true });
+    row.addEventListener('touchend', release);
+    row.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+  }
+
+  /* 리뷰가 새로 채워질 때마다 */
+  if (window.MutationObserver) {
+    var t = null;
+    var row = document.getElementById('rvRow');
+    if (row) {
+      new MutationObserver(function(){
+        clearTimeout(t); t = setTimeout(setup, 150);
+      }).observe(row, { childList:true });
+    }
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(setup, 300); });
+  else setTimeout(setup, 300);
 })();
 </script>
 </body>
