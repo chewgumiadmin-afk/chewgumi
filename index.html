@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v161 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v162 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8633,6 +8633,54 @@ body, input, select, textarea, button,
 @media (max-width:640px){
   .d-tabs{ margin-top:18px !important; padding:4px !important; gap:3px !important }
   .d-tabs .dt{ padding:0 12px !important; min-height:38px !important; font-size:12.5px !important }
+}
+
+/* ══════════════════════════════════════════════
+   이지페이 연결 전 — BUY NOW 감춤
+   결제는 스마트스토어에서 (되돌리려면 이 묶음만 지우면 됩니다)
+   ══════════════════════════════════════════════ */
+.detail .d-acts .d-buy,
+.detail #dBuy{ display:none !important }
+
+/* 장바구니 버튼이 자리를 채웁니다 */
+.detail .d-acts{
+  display:flex !important;
+  gap:10px !important;
+}
+.detail .d-acts .d-cart{
+  flex:1 !important;
+  width:100% !important;
+  min-height:54px !important;
+  border-radius:999px !important;
+  border:1.6px solid var(--main,#D82558) !important;
+  background:#fff !important;
+  color:var(--main,#D82558) !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:.4px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 4px 14px rgba(216,37,88,.12) !important;
+}
+
+/* 스마트스토어 버튼을 가장 눈에 띄게 */
+.detail .d-npay.show{
+  min-height:56px !important;
+  margin:10px 0 0 !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  box-shadow:0 6px 18px rgba(3,199,90,.28) !important;
+}
+
+/* 안내 문구 */
+.d-payhint{
+  display:block;
+  margin-top:9px;
+  font-size:11.5px;
+  line-height:1.7;
+  color:var(--gray,#797979);
+  text-align:center;
 }
 </style>
 <script src="assets/nav.js" defer></script>
