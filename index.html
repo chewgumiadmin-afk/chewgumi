@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v141 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v142 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7007,6 +7007,70 @@ select option{ text-decoration:none !important }
 /* 관리자만 보이는 메뉴 */
 .admin-only{ display:none !important }
 body.is-admin .admin-only{ display:inline !important }
+
+/* ══════════════════════════════════════════════
+   상품 팝업 — 스크롤 하나로 · 끌어서 옮기기
+   ══════════════════════════════════════════════ */
+
+/* 바깥 어둠이 스크롤을 맡습니다 */
+.detail-dim{
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  padding:24px 16px !important;
+  align-items:flex-start !important;
+  display:flex !important;
+  justify-content:center !important;
+}
+.detail-dim.hide{ display:none !important }
+
+/* 카드는 통째로 늘어나고, 안쪽에 스크롤을 두지 않습니다 */
+.detail{
+  width:min(96vw,1120px) !important;
+  max-height:none !important;
+  height:auto !important;
+  overflow:visible !important;
+  margin:auto !important;
+  align-items:start !important;
+}
+.detail .d-img,
+.detail .d-info{
+  max-height:none !important;
+  overflow:visible !important;
+}
+.detail .d-img{ position:sticky !important; top:0 !important; align-self:start !important }
+
+/* 손잡이 — 여기를 잡고 옮깁니다 */
+.d-grip{
+  position:absolute;
+  top:0; left:0; right:0;
+  height:44px;
+  cursor:grab;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.d-grip:active{ cursor:grabbing }
+.d-grip::before{
+  content:"";
+  width:46px; height:5px;
+  border-radius:99px;
+  background:rgba(0,0,0,.16);
+}
+.detail.dragging{ transition:none !important; user-select:none }
+
+/* 닫기 버튼이 손잡이 위에 */
+.detail .d-x{ z-index:6 !important }
+
+@media (max-width:860px){
+  .detail-dim{ padding:10px 8px !important }
+  .detail{
+    grid-template-columns:1fr !important;
+    width:calc(100vw - 16px) !important;
+  }
+  .detail .d-img{ position:static !important }
+  .d-grip{ height:34px }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -7665,6 +7729,78 @@ body.is-admin .admin-only{ display:inline !important }
     document.addEventListener('DOMContentLoaded', check);
   else check();
   window.addEventListener('pageshow', check);
+})();
+</script>
+
+<script>
+/* 상품 팝업 — 손잡이를 잡고 옮길 수 있게 */
+(function(){
+  function setup(){
+    var card = document.querySelector('.detail');
+    if (!card || card.dataset.grip) return;
+    card.dataset.grip = '1';
+
+    var grip = document.createElement('div');
+    grip.className = 'd-grip';
+    grip.setAttribute('aria-label', '잡고 옮기기');
+    card.insertBefore(grip, card.firstChild);
+
+    var ox = 0, oy = 0, sx = 0, sy = 0, on = false;
+
+    function begin(x, y){
+      on = true; sx = x; sy = y;
+      card.classList.add('dragging');
+    }
+    function move(x, y){
+      if (!on) return;
+      var nx = ox + (x - sx), ny = oy + (y - sy);
+      /* 화면 밖으로 완전히 나가지 않게 */
+      var lim = 260;
+      nx = Math.max(-lim, Math.min(lim, nx));
+      ny = Math.max(-lim, Math.min(lim, ny));
+      card.style.transform = 'translate(' + nx + 'px,' + ny + 'px)';
+      card._nx = nx; card._ny = ny;
+    }
+    function end(){
+      if (!on) return;
+      on = false;
+      ox = card._nx || 0; oy = card._ny || 0;
+      card.classList.remove('dragging');
+    }
+
+    grip.addEventListener('mousedown', function(e){ begin(e.clientX, e.clientY); e.preventDefault(); });
+    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', end);
+
+    grip.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; begin(t.clientX, t.clientY);
+    }, { passive:true });
+    grip.addEventListener('touchmove', function(e){
+      var t = e.touches[0]; move(t.clientX, t.clientY);
+      e.preventDefault();
+    }, { passive:false });
+    grip.addEventListener('touchend', end);
+
+    /* 두 번 누르면 제자리로 */
+    grip.addEventListener('dblclick', function(){
+      ox = oy = 0; card.style.transform = ''; card._nx = card._ny = 0;
+    });
+
+    /* 팝업을 닫으면 자리 초기화 */
+    var dim = document.getElementById('detail');
+    if (dim && window.MutationObserver) {
+      new MutationObserver(function(){
+        if (dim.classList.contains('hide')) {
+          ox = oy = 0; card.style.transform = ''; card._nx = card._ny = 0;
+          dim.scrollTop = 0;
+        }
+      }).observe(dim, { attributes:true, attributeFilter:['class'] });
+    }
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', setup);
+  else setup();
 })();
 </script>
 </body>
