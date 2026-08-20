@@ -912,7 +912,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <h1 class="sr-only">ChewGumi 츄구미 — 한입에 건강을 더하다</h1>
 
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
-<div class="popup-dim" id="popup">
+<div class="popup-dim" id="popup" onclick="if(event.target===this)closePopup(true)">
   <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
     <div class="p-top"><img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true"></div>
     <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
