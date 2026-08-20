@@ -7725,6 +7725,88 @@ body.is-admin .admin-only{ display:inline !important }
   .nl-grid, #best .grid, #all .grid,
   .prod-grid, .card-grid{ gap:12px !important }
 }
+
+/* ══════════════════════════════════════════════
+   대표님 요청 반영
+   ══════════════════════════════════════════════ */
+
+/* ② 배너 아래 캡션 — 브랜드 분홍으로 */
+.hero-bar{
+  background:linear-gradient(140deg,#FF4775 0%,#F0356A 55%,#D82558 100%) !important;
+}
+.lite .hero-bar{ background:#FF4775 !important }
+.hero-bar .eb, .hero-bar .kr, .hero-bar b, .hero-bar span{
+  color:#fff !important;
+}
+.hero-bar .eb{ color:#FFE9A8 !important }
+.hero-bar .dots i.on, .hero-bar .dot.on{
+  background:#fff !important;
+}
+
+/* ② USER FILMS 제목 겹침 — 한 줄로 */
+.uf-head, .rev-head{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:6px !important;
+  text-align:center !important;
+}
+.uf-head > *, .rev-head > *{
+  position:static !important;
+  transform:none !important;
+  white-space:normal !important;
+  max-width:100% !important;
+}
+.uf-head h2, .rev-head h2{
+  font-size:clamp(19px,5vw,30px) !important;
+  line-height:1.3 !important;
+  margin:0 !important;
+  word-break:keep-all !important;
+}
+.uf-head .eb, .rev-head .eb{
+  font-size:11px !important;
+  letter-spacing:2.4px !important;
+  margin:0 !important;
+}
+.uf-head p, .rev-head p{
+  font-size:13px !important;
+  line-height:1.7 !important;
+  margin:0 !important;
+  color:var(--gray,#7a7a82) !important;
+  word-break:keep-all !important;
+}
+
+/* ④ 관심상품 말풍선 */
+.wish-bubble{
+  display:inline-block;
+  position:relative;
+  margin:0 auto 18px;
+  padding:11px 20px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#FF4775,#D82558);
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.4px;
+  box-shadow:0 6px 18px rgba(255,71,117,.28);
+  animation:bubbleBob 2.6s ease-in-out infinite;
+}
+.wish-bubble::after{
+  content:"";
+  position:absolute;
+  left:50%; bottom:-7px;
+  width:14px; height:14px;
+  transform:translateX(-50%) rotate(45deg);
+  background:#D82558;
+  border-radius:2px;
+}
+@keyframes bubbleBob{
+  0%,100%{ transform:translateY(0) }
+  50%    { transform:translateY(-5px) }
+}
+@media (prefers-reduced-motion:reduce){
+  .wish-bubble{ animation:none }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
