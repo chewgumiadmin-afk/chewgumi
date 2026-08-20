@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v43 · MedIT -->
+<!-- ChewGumi Product Detail v44 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1609,6 +1609,39 @@ button[onclick*="addCart"]:active, .acts .cart:active{
   }
   .acts .buy, #btnBuy{ min-width:120px !important }
 }
+
+/* 이지페이 연결 전 — 바로구매 감춤, 스마트스토어로 */
+.buy, #btnBuy, .acts .buy, a[href*="checkout"]:not(.cart){
+  display:none !important;
+}
+.acts .cart, #btnCart, button[onclick*="addCart"]{
+  flex:1 !important;
+  min-height:54px !important;
+}
+.npay-btn{
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:56px;
+  margin-top:10px;
+  border-radius:999px;
+  background:#03C75A;
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.3px;
+  box-shadow:0 6px 18px rgba(3,199,90,.28);
+  text-decoration:none;
+}
+.pay-hint{
+  display:block;
+  margin-top:9px;
+  font-size:11.5px;
+  line-height:1.7;
+  color:var(--gray,#797979);
+  text-align:center;
+}
 </style>
 <script>
 (function(){
@@ -1818,5 +1851,40 @@ window.cgImgFail = function(el){
 
 </script>
 <script src="assets/drag.js" defer></script>
+
+<script>
+/* 이지페이 전까지 — 스마트스토어에서 결제 */
+(function(){
+  var STORE = {
+    doit:   'https://smartstore.naver.com/chewgumi/products/13393122244',
+    travel: 'https://smartstore.naver.com/chewgumi'
+  };
+  function add(){
+    var acts = document.querySelector('.acts, .buy-row, .p-acts');
+    if (!acts || document.querySelector('.npay-btn')) return;
+    var nm = document.getElementById('pName');
+    var t = nm ? nm.textContent : '';
+    var url = (/트래블|travel/i.test(t)) ? STORE.travel : STORE.doit;
+
+    var a = document.createElement('a');
+    a.className = 'npay-btn';
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = 'N Pay 스마트스토어에서 구매';
+    acts.insertAdjacentElement('afterend', a);
+
+    var s = document.createElement('span');
+    s.className = 'pay-hint';
+    s.textContent = '현재 결제는 네이버 스마트스토어에서 진행됩니다';
+    a.insertAdjacentElement('afterend', s);
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', add);
+  else add();
+  setTimeout(add, 700);
+  setTimeout(add, 1800);
+})();
+</script>
 </body>
 </html>
