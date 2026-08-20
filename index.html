@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v154 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v155 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8024,6 +8024,70 @@ body.is-admin .admin-only{ display:inline !important }
   .d-tabs .dt{ font-size:13px !important; min-height:46px !important }
   .d-info[data-tab="review"] .d-rv img{ width:72px !important; height:72px !important }
 }
+
+/* ══════════════════════════════════════════════
+   메인 배너 — 점을 안쪽으로 · 안내 제거 · 모서리
+   ══════════════════════════════════════════════ */
+
+/* 배너 아래 캡션 띠를 없애고, 점만 배너 안으로 */
+.hero-bar{ display:none !important }
+
+.hero{
+  position:relative !important;
+  border-radius:14px !important;
+  overflow:hidden !important;
+}
+
+/* 점 — 배너 안쪽 아래 */
+.hero .h-dots,
+.hero-sec .h-dots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:16px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  gap:7px !important;
+  z-index:4 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+}
+.hero .h-dots i,
+.hero .h-dots button,
+.hero .h-dots .dot{
+  width:8px !important;
+  height:8px !important;
+  border-radius:50% !important;
+  border:0 !important;
+  padding:0 !important;
+  background:rgba(255,255,255,.55) !important;
+  cursor:pointer !important;
+  transition:background .2s, width .2s !important;
+}
+.hero .h-dots i.on,
+.hero .h-dots button.on,
+.hero .h-dots .dot.on{
+  background:var(--main,#D82558) !important;
+  width:8px !important;
+}
+
+@media (max-width:900px){
+  .hero-sec{
+    padding:0 !important;
+    margin:0 0 18px !important;
+  }
+  .hero{
+    width:100vw !important;
+    max-width:100vw !important;
+    margin-left:calc(50% - 50vw) !important;
+    margin-right:calc(50% - 50vw) !important;
+    border-radius:0 !important;
+  }
+  .hero .h-dots{ bottom:12px !important }
+  .hero .h-dots i,
+  .hero .h-dots button,
+  .hero .h-dots .dot{ width:7px !important; height:7px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -8954,6 +9018,24 @@ body.is-admin .admin-only{ display:inline !important }
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', setup);
   else setup();
+})();
+</script>
+
+<script>
+/* 배너 점을 배너 안쪽으로 옮깁니다 */
+(function(){
+  function move(){
+    var dots = document.getElementById('hDots');
+    var hero = document.querySelector('.hero');
+    if (!dots || !hero) return;
+    if (dots.parentElement === hero) return;
+    hero.appendChild(dots);
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', move);
+  else move();
+  setTimeout(move, 400);
+  setTimeout(move, 1200);
 })();
 </script>
 </body>
