@@ -139,7 +139,7 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
 <body>
 <div class="topbar">마이페이지</div>
 <div class="head">
-  <a class="logo" href="index.html">CHEW GUMI</a>
+  <a class="logo" href="index.html"><img src="assets/logo-rainbow.png" alt="ChewGumi" width="200" height="105" decoding="sync" onerror="this.outerHTML='CHEW GUMI'"></a>
   <nav><a href="index.html#all">전체상품</a><a href="cart.html">장바구니</a><a href="index.html">홈</a></nav>
 </div>
 
@@ -478,5 +478,12 @@ sync();
   setTimeout(show,900);
 })();
 </script>
+<style>
+/* 헤더 로고 — 메인과 같은 이미지 로고 */
+.head .logo, .logo{ line-height:0 }
+.head .logo img, a.logo img{ height:34px; width:auto; display:block }
+@media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
+</style>
+<script src="assets/drag-fab.js" defer></script>
 </body>
 </html>
