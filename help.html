@@ -149,7 +149,9 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
     </div>
 
     <div class="panel">
-      <h2>무엇을 도와드릴까요</h2>
+      <h2>무엇을 도와드릴까요
+        <button type="button" class="clr-btn" onclick="clearChat()">대화 지우기</button>
+      </h2>
       <div class="chat">
         <div class="log" id="log"></div>
         <div class="sug">
@@ -254,6 +256,19 @@ function doLogin(){
       $('lmsg').textContent='로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.';}
   }).catch(()=>{$('lmsg').className='msg bad';$('lmsg').textContent='네트워크 오류가 발생했습니다.';});
 }
+function clearChat(){
+  if(!confirm('지금까지의 대화를 지울까요?')) return;
+  hist=[];
+  var l=document.getElementById('log');
+  if(l){
+    l.innerHTML='';
+    var d=document.createElement('div');
+    d.className='b ai';
+    d.textContent='대화를 지웠습니다. 무엇을 도와드릴까요?';
+    l.appendChild(d);
+  }
+  try{ localStorage.removeItem('cg_help_hist'); sessionStorage.removeItem('cg_help_sid'); }catch(e){}
+}
 function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}name='';hist=[];
   try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
@@ -343,5 +358,12 @@ function render(list){
 sync();
 </script>
 <script src="assets/sheet.js" defer></script>
+<style>
+.clr-btn{ float:right; min-height:32px; padding:0 12px; border-radius:999px;
+  border:1px solid rgba(216,37,88,.2); background:#fff; cursor:pointer;
+  font-family:inherit; font-size:11.5px; font-weight:700; color:var(--main,#D82558);
+  letter-spacing:0 }
+.clr-btn:active{ transform:scale(.96) }
+</style>
 </body>
 </html>
