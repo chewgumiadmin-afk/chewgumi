@@ -7,7 +7,7 @@
   'use strict';
   var KEY = 'cg_fab_pos';
   var SEL = ['.cgbot-fab', '.kko-fab', '.cg-pwa'];
-  var MOVE_LIMIT = 6;      /* 이만큼 움직이면 '끌기'로 봅니다 */
+  var MOVE_LIMIT = 3;      /* 이만큼 움직이면 '끌기'로 봅니다 */
 
   function load() {
     try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; }
@@ -95,6 +95,23 @@
         }, 350);
       }
     }
+
+    /* 길게 누르면(0.7초) 원래 자리로 되돌립니다 */
+    var holdTimer = null;
+    el.addEventListener('pointerdown', function (e) {
+      holdTimer = setTimeout(function () {
+        if (moved) return;
+        delete POS[keyOf(el)]; save(POS);
+        ['left','top','right','bottom','position'].forEach(function (k) {
+          el.style.removeProperty(k);
+        });
+        el.classList.remove('cg-dragging');
+        if (navigator.vibrate) { try { navigator.vibrate(30); } catch (er) {} }
+      }, 700);
+    });
+    ['pointerup','pointercancel','pointermove'].forEach(function (ev) {
+      el.addEventListener(ev, function () { clearTimeout(holdTimer); });
+    });
 
     el.addEventListener('pointerdown', down);
     el.addEventListener('pointermove', move);
