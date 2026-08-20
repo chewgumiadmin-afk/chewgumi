@@ -209,7 +209,7 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
 <div class="topbar">회원 가입 하고 <b>&nbsp;2000원 할인 쿠폰&nbsp;</b> 받기!</div>
 
 <div class="head">
-  <a class="logo" href="index.html"><img src="assets/logo-rainbow.png" alt="ChewGumi" width="200" height="105" decoding="sync" onerror="this.outerHTML='CHEW GUMI'"></a>
+  <a class="logo" href="index.html"><img src="logo.png" alt="ChewGumi" width="200" height="149" decoding="sync" onerror="this.onerror=null;this.src='assets/logo-rainbow.png'" onerror="this.outerHTML='CHEW GUMI'"></a>
   <nav>
     <a href="index.html#all">전체상품</a>
     <a href="index.html#community">고객센터</a>
@@ -1913,7 +1913,7 @@ select::-ms-expand{ display:none !important }
 <style>
 /* 헤더 로고 — 메인과 같은 이미지 로고 */
 .head .logo, .logo{ line-height:0 }
-.head .logo img, a.logo img{ height:34px; width:auto; display:block }
+.head .logo img, a.logo img{ height:38px; width:auto; display:block; background:transparent }
 @media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
 </style>
 <script src="assets/drag-fab.js" defer></script>
@@ -1940,26 +1940,6 @@ select::-ms-expand{ display:none !important }
 }
 /* 스마트스토어 버튼은 자체 결제로 대체 (되돌리려면 이 두 줄을 지우세요) */
 .npay-btn, .pay-hint{ display:none !important }
-</style>
-<style>
-/* 결제수단 칩 숨김 — 주문서에서 고르므로 상세에는 불필요 */
-.pays{ display:none !important }
-
-/* BUY NOW 양옆 분홍 잔상 제거
-   — 숨긴 스마트스토어 버튼의 초록 발광과 .buy 의 넓은 그림자가
-     버튼 밖으로 번져 배경처럼 보이던 것입니다. */
-.acts .buy, .acts .cart{
-  background-clip:padding-box !important;
-  filter:none !important;
-}
-.acts .buy{
-  box-shadow:0 6px 16px rgba(216,37,88,.22) !important;
-}
-.acts .buy::before, .acts .buy::after,
-.acts .cart::before, .acts .cart::after{
-  content:none !important;
-}
-.acts{ background:transparent !important; box-shadow:none !important }
 </style>
 </body>
 </html>
