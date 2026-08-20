@@ -175,7 +175,7 @@ textarea{resize:vertical;min-height:70px}
           </div>
           <div id="cardPane" style="display:none">
             <div class="cardbox">
-              <b>공식몰에서 안전하게 결제합니다</b>
+              <b>이지페이로 안전하게 결제합니다</b>
               <p>신용카드 · 계좌이체 · 가상계좌 · 네이버페이로 결제하실 수 있습니다.<br>
                 아래 버튼을 누르시면 공식몰(chewgumi.com) 주문서로 이동하며,<br>
                 담으신 상품이 그대로 옮겨집니다.</p>
@@ -268,7 +268,8 @@ async function init(){
   $('items').innerHTML=CART.map((it,ix)=>{
       const id=matchId(it.name), p=PRODS[id]; if(!p)return '';
       goods+=p.price_sale*it.qty;
-      return '<div class="item"><div class="th"><img src="'+CDN+p.image+'" alt=""></div>'
+      return '<div class="item"><div class="th"><img src="'+esc(p.image||'')+'" alt="" '
+        +'referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'"></div>'
         +'<div class="c"><div class="n">'+esc(p.name)+'</div>'
         +'<div class="p">'+won(p.price_sale)+'원'
         +(p.stock<it.qty?' <b style="color:#c0395c">· 재고부족</b>':'')+'</div>'
@@ -290,15 +291,11 @@ async function init(){
   await loadCoupons();
   await quote();
 
-  const toss=TossPayments(TOSS_CLIENT_KEY);
-  widgets=toss.widgets({customerKey:TossPayments.ANONYMOUS});
-  await widgets.setAmount({currency:'KRW',value:amount});
-  await Promise.all([
-    widgets.renderPaymentMethods({selector:'#payment-method',variantKey:'DEFAULT'}),
-    widgets.renderAgreement({selector:'#agreement',variantKey:'AGREEMENT'})
-  ]);
-  $('envBadge').textContent=TOSS_CLIENT_KEY.startsWith('test_')?'TEST':'LIVE';
-  $('payBtn').disabled=false;
+  /* 결제는 이지페이로 처리합니다. 예전 토스 위젯 초기화가 실패하면
+     그 아래 줄이 통째로 실행되지 않아 결제 버튼이 잠긴 채 남았습니다. */
+  var eb=$('envBadge');
+  if(eb) eb.textContent = 'EASYPAY';
+  $('payBtn').disabled = !(CART && CART.length);
 }
 
 /* 상품명 → 공식몰 상품번호 */
@@ -1010,6 +1007,21 @@ function checkRequired(){
 /* 홈 화면 추가 배너를 상담 버튼보다 위에 — 닫기(✕)가 가려져 안 눌리던 문제 */
 .cg-pwa{ z-index:2100 !important }
 .cg-pwa .cl{ width:38px !important; height:38px !important; font-size:22px !important }
+</style>
+<style>
+/* 선택 상자 — 화살표 하나, 취소선 없음 */
+select, select:focus, select:active, select:hover{
+  -webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23D82558' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:right 16px center !important;
+  background-size:12px 8px !important;
+  padding-right:44px !important;
+  text-decoration:none !important; text-decoration-line:none !important;
+}
+select option{ text-decoration:none !important }
+select::-ms-expand{ display:none !important }
+.item .th img{ width:100%; height:100%; object-fit:cover; border-radius:10px }
 </style>
 </body>
 </html>
