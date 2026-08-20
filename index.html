@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v160 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v161 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1526,6 +1526,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
         
+        </div>
         <div class="d-tabs" id="dTabs" role="tablist">
           <button class="dt on" data-t="detail" role="tab">상세정보</button>
           <button class="dt" data-t="review" role="tab">리뷰 <em id="dtRevN">0</em></button>
@@ -1534,7 +1535,8 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <div class="d-detail" id="dDetail">
           <div class="d-detail-in" id="dDetailIn"></div>
           
-        </div>
+        
+        
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
             <span class="eb">REVIEW</span>
@@ -1720,7 +1722,7 @@ if (!(navigator.language || 'ko').toLowerCase().startsWith('ko')) setLang('en');
 /* 상품명 → 스마트스토어(네이버페이) 매핑 — 트래블잇 주소 확보 시 추가 */
 const SMARTSTORE = {
   dewit: 'https://smartstore.naver.com/chewgumi/products/13393122244'
-  /* , travel: '트래블잇 스마트스토어 URL' */
+  , travel: 'https://smartstore.naver.com/chewgumi'
 };
 function smartstoreUrl(name){
   const n = (name || '');
@@ -1829,6 +1831,8 @@ function buyNowDirect(ev){
       localStorage.setItem('cg_cart', JSON.stringify(c));
     } catch(e){}
   }
+  var su = (typeof smartstoreUrl === 'function') ? smartstoreUrl(name) : '';
+  if (su) { window.open(su, '_blank', 'noopener'); return false; }
   location.href = 'checkout.html';
   return false;
 }
@@ -8599,6 +8603,36 @@ body, input, select, textarea, button,
   .bb-card{ border-radius:12px !important }
   .bb-img{ aspect-ratio:1630/300 !important }
   .bb-grid{ gap:12px !important }
+}
+
+/* 팝업 탭 — 구매 버튼 아래 가운데 */
+.detail .d-info > .d-acts   { order:8 }
+.detail .d-info > .d-npay   { order:9 }
+.detail .d-info > .d-tabs   { order:10 }
+.detail .d-info > .d-detail { order:11 }
+.detail .d-info > .d-rev    { order:12 }
+.detail .d-info > .d-notice { order:13 }
+
+.d-tabs{
+  display:inline-flex !important;
+  align-self:center !important;
+  width:auto !important;
+  max-width:100% !important;
+  gap:4px !important;
+  margin:24px auto 0 !important;
+  padding:5px !important;
+}
+.d-tabs .dt{
+  flex:0 0 auto !important;
+  min-height:40px !important;
+  padding:0 18px !important;
+  white-space:nowrap !important;
+}
+.detail .d-npay.show{ margin:10px 0 0 !important }
+
+@media (max-width:640px){
+  .d-tabs{ margin-top:18px !important; padding:4px !important; gap:3px !important }
+  .d-tabs .dt{ padding:0 12px !important; min-height:38px !important; font-size:12.5px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
