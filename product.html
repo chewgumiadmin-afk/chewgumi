@@ -1885,5 +1885,26 @@ window.cgImgFail = function(el){
   setTimeout(add, 1800);
 })();
 </script>
+<style>
+/* ══ 선택 상자 — 화살표 하나, 취소선 없음 (최종 고정) ══
+   ui.css 와 페이지 안 규칙이 각각 화살표를 그려 겹쳐 보이던 문제.
+   focus 상태에서도 같은 화살표를 쓰도록 못 박습니다. */
+select, select:focus, select:active, select:hover, #pOpt{
+  -webkit-appearance:none !important; -moz-appearance:none !important;
+  appearance:none !important;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23D82558' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:right 16px center !important;
+  background-size:12px 8px !important;
+  padding-right:44px !important;
+  text-decoration:none !important;
+  text-decoration-line:none !important;
+}
+select option{ text-decoration:none !important }
+select::-ms-expand{ display:none !important }
+/* 값 영역에 취소선이 번지지 않게 */
+.buy, .buy *, .opt, .opt *{ text-decoration:none }
+.price .origin{ text-decoration:line-through }
+</style>
 </body>
 </html>
