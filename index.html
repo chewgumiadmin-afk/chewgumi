@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v149 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v150 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -981,9 +981,9 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="hero" id="heroSlider" role="region" aria-label="브랜드 배너">
         <div class="h-track" id="hTrack">
           <a class="hslide" href="#all" onclick="filterLine('all')"
-             style="background-image:url('assets/hero-travel.jpg')" aria-label="트리플잇 보기"></a>
+             style="background-image:url('assets/hero-triple.jpg')" aria-label="트리플잇 보기"></a>
           <a class="hslide" href="#all" onclick="filterLine('travel')"
-             style="background-image:url('assets/hero-3.jpg')" aria-label="트래블잇 보기"></a>
+             style="background-image:url('assets/hero-travel.jpg')" aria-label="트래블잇 보기"></a>
           <a class="hslide" href="#all" onclick="filterLine('doit')"
              style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 보기"></a>
           <a class="hslide" href="#all" onclick="filterLine('doit')"
@@ -1017,7 +1017,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <div class="nl-grid">
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/new-dream.png" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
+          <img src="assets/new-dream.jpg" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Dream-it, <span class="kr">드림 잇</span></div>
@@ -1025,7 +1025,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/new-spark.png" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
+          <img src="assets/new-spark.jpg" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Spark-it, <span class="kr">스파크 잇</span></div>
@@ -1033,7 +1033,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/new-reset.png" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
+          <img src="assets/new-reset.jpg" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Reset-it, <span class="kr">리셋 잇</span></div>
@@ -1394,7 +1394,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <article class="tri-card" data-i="0" style="--c1:#F6A8C0;--c2:#8E5BD8">
             <div class="tri-glow"></div>
             <div class="tri-tag">BOARDING</div>
-            <div class="tri-img"><img src="assets/new-dream.png" alt="DREAM-IT" loading="lazy"></div>
+            <div class="tri-img"><img src="assets/new-dream.jpg" alt="DREAM-IT" loading="lazy"></div>
             <div class="tri-body">
               <div class="tri-en">DREAM-IT</div>
               <div class="tri-kr">드림 잇 · 복숭아맛</div>
@@ -1404,7 +1404,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <article class="tri-card" data-i="1" style="--c1:#5AB6E8;--c2:#F2A93B">
             <div class="tri-glow"></div>
             <div class="tri-tag">IN FLIGHT</div>
-            <div class="tri-img"><img src="assets/new-spark.png" alt="SPARK-IT" loading="lazy"></div>
+            <div class="tri-img"><img src="assets/new-spark.jpg" alt="SPARK-IT" loading="lazy"></div>
             <div class="tri-body">
               <div class="tri-en">SPARK-IT</div>
               <div class="tri-kr">스파크 잇 · 블루베리맛</div>
@@ -1414,7 +1414,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <article class="tri-card" data-i="2" style="--c1:#B6D94C;--c2:#E8E33C">
             <div class="tri-glow"></div>
             <div class="tri-tag">LANDING</div>
-            <div class="tri-img"><img src="assets/new-reset.png" alt="RESET-IT" loading="lazy"></div>
+            <div class="tri-img"><img src="assets/new-reset.jpg" alt="RESET-IT" loading="lazy"></div>
             <div class="tri-body">
               <div class="tri-en">RESET-IT</div>
               <div class="tri-kr">리셋 잇 · 청포도맛</div>
@@ -7600,6 +7600,130 @@ body.is-admin .admin-only{ display:inline !important }
 }
 @media (max-width:430px){
   .hero{ aspect-ratio:3/2 !important }
+}
+
+/* ══════════════════════════════════════════════
+   대표님 요청 반영 — 여백·간격·정렬
+   ══════════════════════════════════════════════ */
+
+/* 배너 — 1630×760 원본 비율 */
+.hero{ aspect-ratio:1630/760 !important }
+@media (max-width:430px){ .hero{ aspect-ratio:1630/760 !important } }
+
+/* ── 양쪽 여백 145px · 사이 간격 31px ── */
+#newline .wrap, #best .wrap, #all .wrap,
+.nl-head, .sec-head{
+  max-width:1630px !important;
+  padding-left:145px !important;
+  padding-right:145px !important;
+  box-sizing:border-box !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+.nl-grid,
+#best .grid, #all .grid,
+.prod-grid, .card-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:31px !important;
+  max-width:1630px !important;
+  margin:0 auto !important;
+  padding-left:145px !important;
+  padding-right:145px !important;
+  box-sizing:border-box !important;
+  justify-items:stretch !important;
+}
+
+/* 카드 — 왼쪽 정렬 (NEW 와 같은 형식) */
+.nl-card, .card, .p-card{
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 !important;
+  text-align:left !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}
+.card .name, .p-card .name,
+.nl-name{
+  text-align:left !important;
+  font-size:17px !important;
+  font-weight:700 !important;
+  letter-spacing:-.02em !important;
+  margin-top:14px !important;
+}
+.card .price, .p-card .price,
+.nl-more{
+  text-align:left !important;
+  justify-content:flex-start !important;
+  font-size:13.5px !important;
+  margin-top:5px !important;
+}
+.card .thumb, .p-card .thumb, .nl-thumb{
+  position:relative !important;
+  width:100% !important;
+  aspect-ratio:1/1 !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+}
+.card .thumb img, .p-card .thumb img,
+.nl-thumb img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+  padding:0 !important;
+}
+
+/* COMING SOON — 사진 안쪽으로 */
+.nl-badge{
+  position:absolute !important;
+  top:14px !important;
+  left:14px !important;
+  z-index:2 !important;
+  padding:6px 12px !important;
+  border-radius:999px !important;
+  background:rgba(23,23,28,.78) !important;
+  color:#fff !important;
+  font-size:10.5px !important;
+  font-weight:700 !important;
+  letter-spacing:1.2px !important;
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+}
+
+/* 화면이 좁아지면 여백을 줄입니다 */
+@media (max-width:1400px){
+  #newline .wrap, #best .wrap, #all .wrap,
+  .nl-head, .sec-head,
+  .nl-grid, #best .grid, #all .grid,
+  .prod-grid, .card-grid{
+    padding-left:clamp(20px,8vw,145px) !important;
+    padding-right:clamp(20px,8vw,145px) !important;
+  }
+}
+@media (max-width:900px){
+  .nl-grid, #best .grid, #all .grid,
+  .prod-grid, .card-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:16px !important;
+    padding-left:20px !important;
+    padding-right:20px !important;
+  }
+  #newline .wrap, #best .wrap, #all .wrap,
+  .nl-head, .sec-head{
+    padding-left:20px !important;
+    padding-right:20px !important;
+  }
+  .card .name, .p-card .name, .nl-name{ font-size:14px !important }
+  .nl-badge{ top:10px !important;left:10px !important;font-size:9.5px !important;padding:5px 9px !important }
+}
+@media (max-width:430px){
+  .nl-grid, #best .grid, #all .grid,
+  .prod-grid, .card-grid{ gap:12px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
