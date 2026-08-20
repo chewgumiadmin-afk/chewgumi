@@ -8457,6 +8457,111 @@ body, input, select, textarea, button,
     max-width:min(80vw,290px) !important;
   }
 }
+
+/* ══════════════════════════════════════════════
+   메인 배너 — 자동 전환 · 좌우 화살표 (최종)
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  isolation:isolate;
+}
+.hero::before, .hero::after{ content:none !important }
+
+.hero .h-track{
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  transition:transform .55s cubic-bezier(.4,0,.2,1) !important;
+  will-change:transform;
+}
+.hero .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  display:block !important;
+}
+
+/* 좌우 화살표 — 양쪽에 하나씩 */
+.hero-arw{
+  position:absolute !important;
+  top:50% !important;
+  margin-top:-22px !important;
+  transform:none !important;
+  width:44px !important;
+  height:44px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.88) !important;
+  cursor:pointer !important;
+  z-index:5 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.18) !important;
+  transition:background .18s !important;
+}
+.hero-arw:hover{ background:#fff !important }
+.hero-arw:active{ transform:scale(.94) !important }
+.hero-arw svg{
+  width:19px !important; height:19px !important;
+  fill:none; stroke:#17171c; stroke-width:2.3;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.hero-arw.prev{ left:16px !important; right:auto !important }
+.hero-arw.next{ right:16px !important; left:auto !important }
+
+/* 점 — 배너 안쪽 아래 */
+.hero .h-dots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:16px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  gap:7px !important;
+  z-index:5 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+}
+.hero .h-dots button{
+  width:8px !important; height:8px !important;
+  border-radius:50% !important;
+  border:0 !important; padding:0 !important;
+  background:rgba(255,255,255,.55) !important;
+  cursor:pointer !important;
+  transition:background .2s, width .2s !important;
+}
+.hero .h-dots button.on{
+  background:#D82558 !important;
+  width:20px !important;
+  border-radius:99px !important;
+}
+
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+  .hero-arw{
+    width:34px !important; height:34px !important;
+    margin-top:-17px !important;
+    background:rgba(255,255,255,.82) !important;
+  }
+  .hero-arw svg{ width:15px !important; height:15px !important }
+  .hero-arw.prev{ left:8px !important }
+  .hero-arw.next{ right:8px !important }
+  .hero .h-dots{ bottom:12px !important; gap:6px !important }
+  .hero .h-dots button{ width:7px !important; height:7px !important }
+  .hero .h-dots button.on{ width:17px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -9525,6 +9630,109 @@ body, input, select, textarea, button,
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', function(){ setTimeout(setup, 300); });
   else setTimeout(setup, 300);
+})();
+</script>
+
+<script>
+/* 메인 배너 — 1·2·3·4 순서로 자동 전환, 화살표·점·손가락 */
+(function(){
+  function init(){
+    var hero  = document.getElementById('heroSlider');
+    var track = document.getElementById('hTrack');
+    var dots  = document.getElementById('hDots');
+    if (!hero || !track || hero.dataset.slider) return;
+    hero.dataset.slider = '1';
+
+    var slides = track.querySelectorAll('.hslide');
+    var n = slides.length;
+    if (n < 2) return;
+
+    var cur = 0, timer = null;
+    var GAP = 4500;
+
+    /* 옛 화살표·점이 있으면 치웁니다 */
+    hero.querySelectorAll('.hero-arw').forEach(function(x){ x.remove(); });
+    if (dots) dots.innerHTML = '';
+
+    /* 점 만들기 */
+    if (dots) {
+      if (dots.parentElement !== hero) hero.appendChild(dots);
+      for (var i = 0; i < n; i++) {
+        (function(k){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('aria-label', (k + 1) + '번 배너');
+          if (k === 0) b.classList.add('on');
+          b.addEventListener('click', function(e){
+            e.preventDefault(); e.stopPropagation();
+            go(k); restart();
+          });
+          dots.appendChild(b);
+        })(i);
+      }
+    }
+
+    /* 화살표 만들기 */
+    function arw(dir, d){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hero-arw ' + dir;
+      b.setAttribute('aria-label', dir === 'prev' ? '이전 배너' : '다음 배너');
+      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + d + '"/></svg>';
+      b.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        go(cur + (dir === 'prev' ? -1 : 1)); restart();
+      });
+      hero.appendChild(b);
+    }
+    arw('prev', 'M15 6l-6 6 6 6');
+    arw('next', 'M9 6l6 6-6 6');
+
+    function go(k){
+      cur = ((k % n) + n) % n;
+      track.style.transform = 'translateX(' + (-cur * 100) + '%)';
+      if (dots) {
+        var bs = dots.querySelectorAll('button');
+        for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', i === cur);
+      }
+    }
+
+    function restart(){
+      clearInterval(timer);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      timer = setInterval(function(){ go(cur + 1); }, GAP);
+    }
+
+    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    hero.addEventListener('mouseleave', restart);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) clearInterval(timer); else restart();
+    });
+
+    /* 손가락으로 넘기기 */
+    var sx = 0, sy = 0, on = false;
+    hero.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; on = true;
+      clearInterval(timer);
+    }, { passive:true });
+    hero.addEventListener('touchend', function(e){
+      if (!on) return; on = false;
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        go(cur + (dx < 0 ? 1 : -1));
+      }
+      restart();
+    }, { passive:true });
+
+    go(0);
+    restart();
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init);
+  else init();
+  setTimeout(init, 600);
 })();
 </script>
 </body>
