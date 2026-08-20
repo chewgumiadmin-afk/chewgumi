@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v145 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v146 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7374,6 +7374,64 @@ body.is-admin .admin-only{ display:inline !important }
 @media(max-width:640px){
   .uf-dim{ padding:12px }
   .uf-box{ width:calc(100vw - 24px) }
+}
+
+/* ══════════════════════════════════════════════
+   팝업 안 순서 — N Pay 를 구매 버튼 바로 아래로
+   ══════════════════════════════════════════════ */
+.detail .d-info{
+  display:flex !important;
+  flex-direction:column !important;
+}
+.detail .d-info > .d-x     { order:0 }
+.detail .d-info > .d-line  { order:1 }
+.detail .d-info > .d-name  { order:2 }
+.detail .d-info > .d-price { order:3 }
+.detail .d-info > .d-desc  { order:4 }
+.detail .d-info > .d-opt   { order:5 }
+.detail .d-info > select   { order:5 }
+.detail .d-info > .d-qty   { order:6 }
+.detail .d-info > .d-total { order:7 }
+.detail .d-info > .d-acts  { order:8 }
+.detail .d-info > .d-npay  { order:9 }
+.detail .d-info > .d-notice{ order:10 }
+.detail .d-info > .d-rev   { order:11 }
+.detail .d-info > .d-detail{ order:12 }
+
+/* N Pay — 구매 버튼 바로 아래, 초록 버튼 */
+.detail .d-npay{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:52px !important;
+  margin:10px 0 0 !important;
+  padding:0 20px !important;
+  border:0 !important;
+  border-top:0 !important;
+  border-radius:999px !important;
+  background:#03C75A !important;
+  color:#fff !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  letter-spacing:.3px !important;
+  text-decoration:none !important;
+  box-sizing:border-box !important;
+  box-shadow:0 4px 14px rgba(3,199,90,.22) !important;
+}
+.detail .d-npay:active{ transform:scale(.99) }
+.detail .d-npay[href="#"], .detail .d-npay:not([href]){ display:none !important }
+
+/* 결제 수단 안내 */
+.detail .d-notice{
+  margin-top:10px !important;
+  padding:11px 14px !important;
+  border-radius:12px !important;
+  background:rgba(0,0,0,.035) !important;
+  font-size:11.5px !important;
+  line-height:1.7 !important;
+  color:var(--gray,#7a7a82) !important;
+  text-align:center !important;
 }
 </style>
 <script src="assets/nav.js" defer></script>
