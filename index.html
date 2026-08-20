@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v156 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v157 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8213,6 +8213,178 @@ body.is-admin .admin-only{ display:inline !important }
   .d-info .d-rev,
   .d-info .d-notice{ margin-top:18px !important }
 }
+
+/* ══════════════════════════════════════════════
+   디자인 가이드 반영
+   색  main #D82558 · sub #E95073 · 연분홍 #FFBDCC
+       아주연한 #FFE4E6 · 회색 #797979 · 노랑 #FFE923
+   글꼴 국문 SUIT · 영문 Poppins
+   ══════════════════════════════════════════════ */
+
+/* 글꼴 — 모두 SUIT 로 */
+body, input, select, textarea, button,
+.foot, footer, .ft, .ft *{
+  font-family:'SUIT','SUIT Variable',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif !important;
+}
+.eb, .en, .nl-title, .bb-eb, .sec-title .eb,
+.hero-txt .en, .d-tabs .dt[data-t]{
+  font-family:'Poppins','SUIT',sans-serif !important;
+}
+
+/* 상단 알림 — 1920×45 */
+.topbar{
+  height:45px !important;
+  min-height:45px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:linear-gradient(90deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  font-size:14px !important;
+  font-weight:500 !important;
+  letter-spacing:-.02em !important;
+}
+.topbar b, .topbar strong{ font-weight:800 !important; color:#FFE923 !important }
+
+/* 메인 배너 — 1630×760 · 라운드 59 · 좌우 어둡게 */
+.hero{
+  border-radius:22px !important;
+  overflow:visible !important;
+  position:relative !important;
+}
+.hero .h-track{ border-radius:22px !important; overflow:hidden !important }
+.hero::before, .hero::after{
+  content:"";
+  position:absolute;
+  top:0; bottom:0;
+  width:clamp(30px,7vw,110px);
+  z-index:3;
+  pointer-events:none;
+  border-radius:22px;
+}
+.hero::before{
+  left:calc(-1 * clamp(30px,7vw,110px));
+  background:linear-gradient(90deg,rgba(23,23,28,.5),rgba(23,23,28,.18));
+}
+.hero::after{
+  right:calc(-1 * clamp(30px,7vw,110px));
+  background:linear-gradient(270deg,rgba(23,23,28,.5),rgba(23,23,28,.18));
+}
+
+/* 좌우 화살표 */
+.hero-arw{
+  position:absolute !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:44px !important;
+  height:44px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.9) !important;
+  cursor:pointer !important;
+  z-index:5 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.16) !important;
+  transition:background .18s, transform .18s !important;
+}
+.hero-arw:hover{ background:#fff !important; transform:translateY(-50%) scale(1.06) !important }
+.hero-arw svg{ width:20px; height:20px; fill:none; stroke:#17171c; stroke-width:2.2;
+  stroke-linecap:round; stroke-linejoin:round }
+.hero-arw.prev{ left:14px !important }
+.hero-arw.next{ right:14px !important }
+
+/* NEW 영역 — 제목 48 bold · 설명 23 regular · 간격 31 */
+.nl-head{ margin-bottom:31px !important }
+.nl-title{
+  font-size:clamp(30px,4.4vw,48px) !important;
+  font-weight:800 !important;
+  letter-spacing:-.03em !important;
+}
+.nl-sub{
+  font-size:clamp(15px,1.9vw,23px) !important;
+  font-weight:400 !important;
+  color:#797979 !important;
+}
+.nl-grid{ gap:31px !important }
+.nl-name{
+  font-size:clamp(19px,2.4vw,32px) !important;
+  font-weight:700 !important;
+  margin-top:16px !important;
+}
+.nl-more{
+  font-size:clamp(14px,1.9vw,24px) !important;
+  font-weight:500 !important;
+  color:#797979 !important;
+  margin-top:4px !important;
+}
+
+/* BEST — VIEW ALL 23 regular */
+.sec-head .view-all, .view-all, .bb-view{
+  font-size:clamp(13px,1.7vw,23px) !important;
+  font-weight:400 !important;
+  color:#797979 !important;
+  letter-spacing:.4px !important;
+}
+.prod-grid, .card-grid{ gap:30px !important }
+
+/* 사용자 후기 — 55 black · 32 regular */
+.revsec h2, .rev-head h2{
+  font-size:clamp(24px,4.6vw,55px) !important;
+  font-weight:900 !important;
+  color:#D82558 !important;
+  letter-spacing:-.02em !important;
+}
+.revsec .sub, .rev-head p{
+  font-size:clamp(15px,2.6vw,32px) !important;
+  font-weight:400 !important;
+  color:#555 !important;
+}
+.rev-card, .revsec .card{
+  border-radius:20px !important;
+  background:#fff !important;
+  box-shadow:0 10px 26px rgba(216,37,88,.10) !important;
+  border:0 !important;
+}
+
+/* 하단 띠 배너 — 1630×230 · 1/2 표시 */
+.bb-card, .btm-banner .bb-img{
+  border-radius:16px !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+.bb-page{
+  position:absolute !important;
+  right:14px !important;
+  bottom:14px !important;
+  width:95px !important;
+  height:39px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.6) !important;
+  color:#17171c !important;
+  font-size:clamp(13px,1.6vw,23px) !important;
+  font-weight:400 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  z-index:3 !important;
+  pointer-events:none !important;
+}
+
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+  .hero .h-track{ border-radius:0 !important }
+  .hero::before, .hero::after{ display:none !important }
+  .hero-arw{ width:36px !important; height:36px !important }
+  .hero-arw.prev{ left:8px !important }
+  .hero-arw.next{ right:8px !important }
+  .nl-head{ margin-bottom:20px !important }
+  .nl-grid{ gap:12px !important }
+  .prod-grid, .card-grid{ gap:12px !important }
+  .bb-page{ width:76px !important; height:32px !important; font-size:12px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -9161,6 +9333,60 @@ body.is-admin .admin-only{ display:inline !important }
   else move();
   setTimeout(move, 400);
   setTimeout(move, 1200);
+})();
+</script>
+
+<script>
+/* 배너 좌우 화살표 · 띠 배너 쪽수 */
+(function(){
+  function arrows(){
+    var hero = document.querySelector('.hero');
+    if (!hero || hero.dataset.arw) return;
+    hero.dataset.arw = '1';
+
+    function mk(dir, d){
+      var b = document.createElement('button');
+      b.className = 'hero-arw ' + dir;
+      b.setAttribute('aria-label', dir === 'prev' ? '이전 배너' : '다음 배너');
+      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + d + '"/></svg>';
+      b.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        step(dir === 'prev' ? -1 : 1);
+      });
+      hero.appendChild(b);
+    }
+    mk('prev', 'M15 6l-6 6 6 6');
+    mk('next', 'M9 6l6 6-6 6');
+
+    function step(d){
+      var dots = document.querySelectorAll('#hDots i, #hDots button, #hDots .dot');
+      if (!dots.length) return;
+      var now = 0;
+      dots.forEach(function(x, i){ if (x.classList.contains('on')) now = i; });
+      var next = (now + d + dots.length) % dots.length;
+      dots[next].click();
+    }
+  }
+
+  /* 띠 배너에 1/2 */
+  function pages(){
+    var cards = document.querySelectorAll('.bb-grid .bb-card');
+    if (!cards.length) return;
+    cards.forEach(function(c, i){
+      if (c.querySelector('.bb-page')) return;
+      var s = document.createElement('span');
+      s.className = 'bb-page';
+      s.textContent = (i + 1) + ' / ' + cards.length;
+      c.appendChild(s);
+    });
+  }
+
+  function run(){ arrows(); pages(); }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', run);
+  else run();
+  setTimeout(run, 500);
+  setTimeout(run, 1500);
 })();
 </script>
 </body>
