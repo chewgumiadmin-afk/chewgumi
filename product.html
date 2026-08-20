@@ -1611,9 +1611,13 @@ button[onclick*="addCart"]:active, .acts .cart:active{
 }
 
 /* 이지페이 연결 전 — 바로구매 감춤, 스마트스토어로 */
+/* 자체 결제가 열렸으므로 BUY NOW 를 다시 보여줍니다 */
 .buy, #btnBuy, .acts .buy, a[href*="checkout"]:not(.cart){
-  display:none !important;
+  display:flex !important;
+  align-items:center; justify-content:center;
 }
+/* 스마트스토어 버튼은 숨깁니다 (되돌리려면 이 블록을 지우세요) */
+.npay-btn, .pay-hint{ display:none !important }
 .acts .cart, #btnCart, button[onclick*="addCart"]{
   flex:1 !important;
   min-height:54px !important;
