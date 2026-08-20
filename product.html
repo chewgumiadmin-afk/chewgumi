@@ -209,7 +209,7 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
 <div class="topbar">회원 가입 하고 <b>&nbsp;2000원 할인 쿠폰&nbsp;</b> 받기!</div>
 
 <div class="head">
-  <a class="logo" href="index.html">CHEW GUMI</a>
+  <a class="logo" href="index.html"><img src="assets/logo-rainbow.png" alt="ChewGumi" width="200" height="105" decoding="sync" onerror="this.outerHTML='CHEW GUMI'"></a>
   <nav>
     <a href="index.html#all">전체상품</a>
     <a href="index.html#community">고객센터</a>
@@ -1906,5 +1906,12 @@ select::-ms-expand{ display:none !important }
 .buy, .buy *, .opt, .opt *{ text-decoration:none }
 .price .origin{ text-decoration:line-through }
 </style>
+<style>
+/* 헤더 로고 — 메인과 같은 이미지 로고 */
+.head .logo, .logo{ line-height:0 }
+.head .logo img, a.logo img{ height:34px; width:auto; display:block }
+@media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
+</style>
+<script src="assets/drag-fab.js" defer></script>
 </body>
 </html>
