@@ -189,7 +189,7 @@ textarea{resize:vertical;min-height:70px}
           </div>
           <button class="pay" id="payBtn" disabled>결제하기</button>
           <div class="msg" id="msg"></div>
-          <div class="note">결제 정보는 토스페이먼츠를 통해 안전하게 처리되며, 주문 내역은 츄구미 서버에 저장됩니다.
+          <div class="note">결제 정보는 이지페이(KICC)를 통해 안전하게 처리되며, 주문 내역은 츄구미 서버에 저장됩니다.
             결제 금액은 서버에서 재계산되어 위·변조가 차단됩니다.</div>
         </div>
       </div>
@@ -360,7 +360,7 @@ function setPay(t){
   $('ptCard').classList.toggle('on',t==='card');
   $('bankPane').style.display = t==='bank' ? 'block':'none';
   $('cardPane').style.display = t==='card' ? 'block':'none';
-  $('payBtn').textContent = t==='bank' ? '주문하기 (무통장입금)' : '공식몰에서 결제하기';
+  $('payBtn').textContent = t==='bank' ? '주문하기 (무통장입금)' : '카드·계좌이체·가상계좌로 결제하기';
 }
 let BANK={};
 /* 주요 은행·페이 앱 (Android intent / iOS scheme) */
@@ -906,6 +906,59 @@ function checkRequired(){
   box.textContent='';
   return true;
 }
+</script>
+
+<script>
+/* 이지페이 결제창 열기 */
+(function(){
+  var SBP='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KP='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  window.openEasypay = function(opt){
+    opt = opt || {};
+    var btn = document.getElementById('payBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '결제창을 여는 중…'; }
+
+    var mobile = window.matchMedia('(max-width:768px)').matches
+      || 'ontouchstart' in window;
+
+    try { sessionStorage.setItem('cg_pay_amount', String(opt.amount || 0)); } catch(e){}
+
+    return fetch(SBP + '/functions/v1/pay', {
+      method:'POST',
+      headers:{ apikey:KP, Authorization:'Bearer '+KP, 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        action:'register',
+        amount: opt.amount || 0,
+        goodsName: opt.goodsName || '츄구미 상품',
+        orderNo: opt.orderNo || '',
+        buyer: opt.buyer || '',
+        email: opt.email || '',
+        phone: opt.phone || '',
+        method: opt.method || '00',
+        mobile: mobile
+      })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (btn) { btn.disabled = false; btn.textContent = '카드·계좌이체·가상계좌로 결제하기'; }
+      if (!d.ok || !d.authPageUrl) {
+        var m = document.getElementById('msg');
+        if (m) { m.className = 'msg bad'; m.textContent = d.error || '결제창을 열지 못했습니다.'; }
+        return false;
+      }
+      /* 결제창으로 이동 */
+      location.href = d.authPageUrl;
+      return true;
+    })
+    .catch(function(){
+      if (btn) { btn.disabled = false; btn.textContent = '카드·계좌이체·가상계좌로 결제하기'; }
+      var m = document.getElementById('msg');
+      if (m) { m.className = 'msg bad'; m.textContent = '연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'; }
+      return false;
+    });
+  };
+})();
 </script>
 </body>
 </html>
