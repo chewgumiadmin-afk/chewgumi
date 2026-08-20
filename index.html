@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v150 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v151 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1017,7 +1017,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <div class="nl-grid">
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/new-dream.jpg" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
+          <img src="assets/prod/new-dream.jpg" alt="DREAM-IT 드림 잇 복숭아맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Dream-it, <span class="kr">드림 잇</span></div>
@@ -1025,7 +1025,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/new-spark.jpg" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
+          <img src="assets/prod/new-spark.jpg" alt="SPARK-IT 스파크 잇 블루베리맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Spark-it, <span class="kr">스파크 잇</span></div>
@@ -1033,7 +1033,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="nl-card">
         <div class="nl-thumb">
-          <img src="assets/new-reset.jpg" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
+          <img src="assets/prod/new-reset.jpg" alt="RESET-IT 리셋 잇 청포도맛 젤리" loading="lazy">
           <span class="nl-badge">COMING SOON</span>
         </div>
         <div class="nl-name">Reset-it, <span class="kr">리셋 잇</span></div>
@@ -1394,7 +1394,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <article class="tri-card" data-i="0" style="--c1:#F6A8C0;--c2:#8E5BD8">
             <div class="tri-glow"></div>
             <div class="tri-tag">BOARDING</div>
-            <div class="tri-img"><img src="assets/new-dream.jpg" alt="DREAM-IT" loading="lazy"></div>
+            <div class="tri-img"><img src="assets/prod/new-dream.jpg" alt="DREAM-IT" loading="lazy"></div>
             <div class="tri-body">
               <div class="tri-en">DREAM-IT</div>
               <div class="tri-kr">드림 잇 · 복숭아맛</div>
@@ -1404,7 +1404,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <article class="tri-card" data-i="1" style="--c1:#5AB6E8;--c2:#F2A93B">
             <div class="tri-glow"></div>
             <div class="tri-tag">IN FLIGHT</div>
-            <div class="tri-img"><img src="assets/new-spark.jpg" alt="SPARK-IT" loading="lazy"></div>
+            <div class="tri-img"><img src="assets/prod/new-spark.jpg" alt="SPARK-IT" loading="lazy"></div>
             <div class="tri-body">
               <div class="tri-en">SPARK-IT</div>
               <div class="tri-kr">스파크 잇 · 블루베리맛</div>
@@ -1414,7 +1414,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <article class="tri-card" data-i="2" style="--c1:#B6D94C;--c2:#E8E33C">
             <div class="tri-glow"></div>
             <div class="tri-tag">LANDING</div>
-            <div class="tri-img"><img src="assets/new-reset.jpg" alt="RESET-IT" loading="lazy"></div>
+            <div class="tri-img"><img src="assets/prod/new-reset.jpg" alt="RESET-IT" loading="lazy"></div>
             <div class="tri-body">
               <div class="tri-en">RESET-IT</div>
               <div class="tri-kr">리셋 잇 · 청포도맛</div>
@@ -7806,6 +7806,55 @@ body.is-admin .admin-only{ display:inline !important }
 }
 @media (prefers-reduced-motion:reduce){
   .wish-bubble{ animation:none }
+}
+
+/* 트리플잇 카드 — 고화질 정사각 */
+.nl-thumb{
+  aspect-ratio:1/1 !important;
+  overflow:hidden !important;
+  border-radius:16px !important;
+  background:#fff !important;
+  position:relative !important;
+}
+.nl-thumb img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+  image-rendering:auto;
+}
+.nl-badge{
+  position:absolute !important;
+  left:12px !important;
+  top:12px !important;
+  padding:5px 12px !important;
+  border-radius:999px !important;
+  background:rgba(23,23,28,.82) !important;
+  color:#fff !important;
+  font-size:10.5px !important;
+  font-weight:700 !important;
+  letter-spacing:1.4px !important;
+}
+.nl-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)) !important;
+  gap:clamp(12px,2.4vw,20px) !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+.nl-card{ min-width:0 !important }
+.nl-name{ font-size:15px !important; font-weight:800 !important; margin-top:12px !important }
+.nl-more{ font-size:13px !important; color:var(--gray,#7a7a82) !important; margin-top:3px !important }
+
+@media (max-width:768px){
+  .nl-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:9px !important;
+    padding:0 14px !important;
+  }
+  .nl-name{ font-size:12.5px !important; margin-top:8px !important }
+  .nl-more{ font-size:11px !important }
+  .nl-badge{ font-size:9px !important; padding:4px 8px !important; left:8px !important; top:8px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
