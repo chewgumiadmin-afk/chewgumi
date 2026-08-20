@@ -43,9 +43,13 @@ body:has(.cg-pwa.on) .fl-btns{
   .cg-pwa{ right:86px }
   .cg-pwa .t span{ display:none }
 }
+/* PC — 배너가 뜨면 상담 버튼을 그 위로 올립니다.
+   (bottom:auto 로 두면 버튼이 화면 위로 튀어 올라갑니다) */
 @media(min-width:900px){
-  body:has(.cg-pwa.on) .cgbot-fab,
-  body:has(.cg-pwa.on) .kko-fab{ bottom:auto !important }
+  body:has(.cg-pwa.on) .cgbot-fab{ bottom:calc(102px + env(safe-area-inset-bottom)) !important }
+  body:has(.cg-pwa.on) .kko-fab{ bottom:calc(170px + env(safe-area-inset-bottom)) !important }
+  body:has(.cg-pwa.on) .float-wrap,
+  body:has(.cg-pwa.on) .fl-btns{ bottom:calc(102px + env(safe-area-inset-bottom)) !important }
 }
 
 /* 배너가 상담 버튼에 가려 닫기(✕)가 안 눌리던 문제 */
