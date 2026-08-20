@@ -10515,5 +10515,45 @@ body, input, select, textarea, button,
 }
 .cgbot-hd .cgbot-clr:active{ transform:scale(.94) }
 </style>
+<script>
+/* ══ 스크롤이 막히지 않게 하는 안전장치 ══
+   쿠폰 팝업(.popup-dim)은 화면 전체를 덮는 고정 레이어라,
+   열려 있는 동안 마우스 휠이 팝업에 먹혀 본문이 스크롤되지 않습니다.
+   손님이 스크롤을 시도하면 = 팝업을 그만 보겠다는 뜻이므로 닫아 줍니다. */
+(function(){
+  function pop(){ var p=document.getElementById('popup');
+    return (p && !p.classList.contains('hide')) ? p : null; }
+
+  function bye(){
+    var p=pop(); if(!p) return;
+    if(typeof closePopup==='function'){ try{ closePopup(true); }catch(e){} }
+    p.classList.add('hide');
+    document.body.style.overflow='';
+    document.body.classList.remove('modal-open','drawer-on');
+  }
+
+  ['wheel','touchmove','keydown'].forEach(function(ev){
+    window.addEventListener(ev, function(e){
+      if(!pop()) return;
+      if(ev==='keydown' && ['PageDown','PageUp','ArrowDown','ArrowUp',' ','End','Home']
+          .indexOf(e.key)<0) return;
+      bye();
+    }, {passive:true, capture:true});
+  });
+
+  /* 어떤 이유로든 잠금이 남으면 3초마다 풀어 줍니다 */
+  setInterval(function(){
+    var open = pop()
+      || document.querySelector('.drawer.open')
+      || document.querySelector('.detail-dim:not(.hide)')
+      || document.querySelector('.bl-dim:not(.hide)')
+      || document.querySelector('.cartp.open, #cartP.open');
+    if(open) return;
+    if(document.body.style.overflow==='hidden') document.body.style.overflow='';
+    document.body.classList.remove('modal-open','drawer-on');
+    document.documentElement.style.overflowY='auto';
+  }, 3000);
+})();
+</script>
 </body>
 </html>
