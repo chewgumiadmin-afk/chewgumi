@@ -580,7 +580,20 @@ $('payBtn').addEventListener('click',async()=>{
 
   $('msg').textContent='';
   if(payType==='card'){
-    /* 공식몰 주문서로 이동 — 담은 상품을 장바구니에 옮긴다 */
+    /* 이지페이 결제창 — 장바구니는 결제가 끝난 뒤에 비웁니다 */
+    if(window.CG_PAY_MALL !== true){
+      const nm = CART.length
+        ? (CART[0].name + (CART.length>1 ? (' 외 '+(CART.length-1)+'건') : ''))
+        : '츄구미 상품';
+      try{ sessionStorage.setItem('cg_pay_order', od.orderNo); }catch(e){}
+      const done = await openEasypay({
+        amount: od.amount, goodsName: nm, orderNo: od.orderNo,
+        buyer: buyer.name, email: buyer.email, phone: buyer.phone, method:'00'
+      });
+      if(!done){ $('payBtn').disabled=false; }
+      return;
+    }
+    /* 되돌림용 — CG_PAY_MALL=true 로 두면 공식몰로 보냅니다 */
     const form=document.createElement('form');
     form.method='POST'; form.target='_blank';
     form.action='https://chewgumi.com/order/basket.html';
@@ -993,5 +1006,10 @@ function checkRequired(){
 @media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
 </style>
 <script src="assets/drag-fab.js" defer></script>
+<style>
+/* 홈 화면 추가 배너를 상담 버튼보다 위에 — 닫기(✕)가 가려져 안 눌리던 문제 */
+.cg-pwa{ z-index:2100 !important }
+.cg-pwa .cl{ width:38px !important; height:38px !important; font-size:22px !important }
+</style>
 </body>
 </html>
