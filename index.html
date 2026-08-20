@@ -2481,6 +2481,7 @@ setHead();
 <div class="cgbot-win" id="cgbotWin">
   <div class="cgbot-hd">
     <div><b>츄구미 상담</b><small>상담 · 주문 · 음성으로 이용하세요</small></div>
+    <button class="cgbot-clr" onclick="cgbotClear()" aria-label="대화 지우기" title="대화 지우기">지우기</button>
     <button onclick="cgbotToggle()" aria-label="닫기">&times;</button>
   </div>
   <div class="cgbot-body" id="cgbotBody"></div>
@@ -2618,6 +2619,24 @@ setHead();
     });
     el('cgbotBody').appendChild(w);
   }
+  window.cgbotClear=function(){
+    if(!confirm('지금까지의 대화를 지울까요?')) return;
+    hist = [];
+    started = false;
+    var b=document.getElementById('cgbotBody');
+    if(b) b.innerHTML='';
+    try{
+      sessionStorage.removeItem('cgbot_sid');
+      localStorage.removeItem('cgbot_hist');
+    }catch(e){}
+    if(b){
+      var d=document.createElement('div');
+      d.className='cgbot-msg bot';
+      d.textContent='대화를 지웠습니다. 무엇을 도와드릴까요?';
+      b.appendChild(d);
+    }
+  };
+
   window.cgbotToggle=function(){
     var w=el('cgbotWin'); w.classList.toggle('on');
     if(w.classList.contains('on')){
@@ -10485,6 +10504,16 @@ body, input, select, textarea, button,
   .rev-score b{ font-size:30px !important }
   .rev-score .rev-stars{ font-size:13px }
 }
+</style>
+<style>
+.cgbot-hd .cgbot-clr{
+  margin-left:auto; margin-right:6px;
+  min-height:32px; padding:0 12px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.5); background:rgba(255,255,255,.16);
+  color:#fff; font-family:inherit; font-size:11.5px; font-weight:700;
+  cursor:pointer; line-height:1; white-space:nowrap;
+}
+.cgbot-hd .cgbot-clr:active{ transform:scale(.94) }
 </style>
 </body>
 </html>
