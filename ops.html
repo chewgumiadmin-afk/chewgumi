@@ -259,6 +259,21 @@ label:has(> input[type=checkbox]){
   .btn{ min-height:50px !important }
   .btns > .btn{ min-width:0 }
 }
+
+/* AI 사용료 */
+.aigrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(130px,100%),1fr))}
+.aicard{background:rgba(255,255,255,.72);border:1px solid var(--line);
+  border-radius:14px;padding:13px 15px}
+.aicard .lb{font-size:11.5px;color:var(--gray)}
+.aicard .vl{font-size:21px;font-weight:800;letter-spacing:-.03em;margin-top:4px}
+.aicard .vl span{font-size:12px;font-weight:500;color:var(--gray);margin-left:3px}
+.airow{display:flex;gap:10px;align-items:center;padding:9px 2px;
+  border-bottom:1px solid rgba(0,0,0,.05);font-size:12.5px}
+.airow:last-child{border-bottom:0}
+.airow b{flex:1;min-width:0;font-weight:600;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.airow .c{flex:none;color:var(--gray);font-size:11.5px}
+.airow .w{flex:none;font-weight:700;min-width:64px;text-align:right}
 </style>
 </head>
 <body>
@@ -269,6 +284,16 @@ label:has(> input[type=checkbox]){
   </div>
 
   <!-- 사용량 -->
+  <div class="panel">
+    <h2>AI 사용료 <span class="n" id="aiSum">—</span></h2>
+    <div class="aigrid" id="aiCards"></div>
+    <div id="aiBy" style="margin-top:14px"></div>
+    <div class="hint">
+      실제 쓴 만큼 기록됩니다. <b>이달 예상</b>은 최근 7일 평균으로 계산합니다.<br>
+      Anthropic 콘솔에 들어가지 않아도 여기서 확인하실 수 있습니다.
+    </div>
+  </div>
+
   <div class="panel">
     <h2>사용량 · 한계 <span class="n" id="useN">—</span></h2>
     <div id="usage"></div>
@@ -488,6 +513,57 @@ function loadUsage(){
 }
 
 loadUsage();
+</script>
+
+<script>
+/* AI 사용료 */
+(function(){
+  var F='https://psynvpuedzjvytsgdhgg.supabase.co/functions/v1/ai-usage';
+  var K='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  function won(n){ return Number(n||0).toLocaleString('ko-KR'); }
+  function esc(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function load(){
+    var box = document.getElementById('aiCards');
+    if (!box) return;
+    Promise.all([
+      fetch(F,{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},
+        body:JSON.stringify({action:'summary',days:30})}).then(function(r){return r.json();}),
+      fetch(F,{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},
+        body:JSON.stringify({action:'forecast'})}).then(function(r){return r.json();})
+    ]).then(function(res){
+      var s = res[0], f = res[1];
+      if (!s.ok) return;
+      var t = s.total;
+      document.getElementById('aiSum').textContent = '30일 ' + won(t.krw) + '원';
+      box.innerHTML =
+        '<div class="aicard"><div class="lb">30일 사용료</div>'
+        +'<div class="vl">' + won(t.krw) + '<span>원</span></div></div>'
+        +'<div class="aicard"><div class="lb">이번 주</div>'
+        +'<div class="vl">' + won(f.week_krw) + '<span>원</span></div></div>'
+        +'<div class="aicard"><div class="lb">이달 예상</div>'
+        +'<div class="vl">' + won(f.month_est) + '<span>원</span></div></div>'
+        +'<div class="aicard"><div class="lb">부른 횟수</div>'
+        +'<div class="vl">' + won(t.calls) + '<span>번</span></div></div>';
+
+      var by = document.getElementById('aiBy');
+      if (!s.byFeature.length) {
+        by.innerHTML = '<p style="font-size:13px;color:var(--gray)">아직 쓴 내역이 없습니다.</p>';
+        return;
+      }
+      by.innerHTML = s.byFeature.map(function(x){
+        return '<div class="airow"><b>' + esc(x.feature) + '</b>'
+          + '<span class="c">' + won(x.calls) + '번</span>'
+          + '<span class="w">' + won(x.krw) + '원</span></div>';
+      }).join('');
+    }).catch(function(){});
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', load);
+  else load();
+})();
 </script>
 </body>
 </html>
