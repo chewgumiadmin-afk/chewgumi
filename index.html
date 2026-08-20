@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v155 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v156 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8087,6 +8087,131 @@ body.is-admin .admin-only{ display:inline !important }
   .hero .h-dots i,
   .hero .h-dots button,
   .hero .h-dots .dot{ width:7px !important; height:7px !important }
+}
+
+/* ══════════════════════════════════════════════
+   상품 팝업 탭 — 글래스 · 간격 정리
+   가이드 색: #D82558 메인 · #E95073 보조 · #FFBDCC 연분홍
+   ══════════════════════════════════════════════ */
+
+/* 탭 — 알약형 글래스 */
+.d-tabs{
+  display:flex !important;
+  gap:6px !important;
+  margin:26px 0 0 !important;
+  padding:5px !important;
+  border:1px solid rgba(255,255,255,.75) !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.55) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(130%);
+  backdrop-filter:blur(18px) saturate(130%);
+  box-shadow:0 4px 16px rgba(216,37,88,.08),
+             inset 0 1px 0 rgba(255,255,255,.9) !important;
+  position:sticky !important;
+  top:8px !important;
+  z-index:6 !important;
+}
+.d-tabs .dt{
+  flex:1 !important;
+  min-height:42px !important;
+  padding:0 10px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:transparent !important;
+  cursor:pointer !important;
+  font-size:13.5px !important;
+  font-weight:600 !important;
+  color:#797979 !important;
+  letter-spacing:-.02em !important;
+  white-space:nowrap !important;
+  transition:background .18s, color .18s !important;
+}
+.d-tabs .dt::after{ content:none !important }
+.d-tabs .dt em{
+  font-style:normal;
+  font-size:11.5px;
+  margin-left:4px;
+  padding:1px 6px;
+  border-radius:999px;
+  background:rgba(0,0,0,.06);
+  color:#797979;
+  font-weight:700;
+}
+.d-tabs .dt:hover{ background:rgba(255,189,204,.28) !important }
+.d-tabs .dt.on{
+  background:linear-gradient(135deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  font-weight:800 !important;
+  box-shadow:0 3px 12px rgba(216,37,88,.24) !important;
+}
+.d-tabs .dt.on em{
+  background:rgba(255,255,255,.26);
+  color:#fff;
+}
+
+/* 탭 아래 내용 — 숨쉬는 간격 */
+.d-info .d-detail,
+.d-info .d-rev,
+.d-info .d-notice{
+  margin-top:22px !important;
+  padding-top:0 !important;
+  border-top:0 !important;
+}
+
+/* 구매 버튼과 탭 사이 */
+.d-info .d-acts{ margin-bottom:4px !important }
+.d-info .d-npay{ margin-top:10px !important }
+
+/* 상세 이미지 — 글래스 액자 */
+#dDetailIn{
+  border-radius:16px !important;
+  overflow:hidden !important;
+  border:1px solid rgba(255,255,255,.7) !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.06) !important;
+}
+
+/* 리뷰 카드 — 글래스 */
+.d-info[data-tab="review"] .d-rv{
+  padding:16px 17px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.62) !important;
+  border:1px solid rgba(255,255,255,.78) !important;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+  box-shadow:0 4px 14px rgba(0,0,0,.05) !important;
+}
+.d-info[data-tab="review"] .d-rev-list{ gap:14px !important }
+
+/* 배송·교환 — 글래스 상자 */
+.d-info .d-notice{
+  padding:18px 20px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.6) !important;
+  border:1px solid rgba(255,255,255,.78) !important;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+  box-shadow:0 4px 14px rgba(0,0,0,.05) !important;
+  font-size:13px !important;
+  line-height:1.9 !important;
+  color:#555 !important;
+  text-align:left !important;
+}
+
+@media (max-width:640px){
+  .d-tabs{
+    margin-top:20px !important;
+    padding:4px !important;
+    gap:4px !important;
+  }
+  .d-tabs .dt{
+    font-size:12.5px !important;
+    min-height:40px !important;
+    padding:0 6px !important;
+  }
+  .d-tabs .dt em{ font-size:11px; padding:1px 5px; margin-left:3px }
+  .d-info .d-detail,
+  .d-info .d-rev,
+  .d-info .d-notice{ margin-top:18px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
