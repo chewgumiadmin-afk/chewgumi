@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!-- ChewGumi Pay Return v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>결제 확인 | CHEWGUMI</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073;
+  --pink-lt:#FFE4E6; --gray:#797979; --ink:#17171c;
+  --ok:#2AA060; --bad:#C0395C;
+  --line:rgba(255,255,255,.85);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:16px;line-height:1.7;
+  min-height:100svh;display:flex;align-items:center;justify-content:center;
+  padding:24px 18px calc(24px + env(safe-area-inset-bottom));
+  background:radial-gradient(800px 500px at 50% -10%,rgba(255,71,117,.14),transparent 62%),
+    linear-gradient(180deg,#FFF9FB,#FFF5F7);
+  -webkit-font-smoothing:antialiased;
+}
+.box{
+  width:min(94vw,460px);
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:36px 28px 30px;
+  text-align:center;
+  box-shadow:0 16px 40px rgba(216,37,88,.12);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+}
+.mark{
+  width:68px;height:68px;border-radius:50%;
+  margin:0 auto 18px;display:flex;align-items:center;justify-content:center;
+  font-size:30px;
+}
+.mark.ok{background:rgba(42,160,96,.12);color:var(--ok)}
+.mark.bad{background:rgba(192,57,92,.1);color:var(--bad)}
+.mark.wait{background:var(--pink-lt);color:var(--main)}
+h1{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.sub{font-size:14px;color:var(--gray);margin-top:8px;word-break:keep-all}
+.rows{
+  margin-top:22px;padding-top:18px;
+  border-top:1px solid rgba(0,0,0,.07);
+  text-align:left;
+}
+.row{display:flex;gap:12px;padding:8px 0;font-size:14px}
+.row span{flex:none;width:88px;color:var(--gray)}
+.row b{flex:1;font-weight:600;word-break:break-all}
+.vb{
+  margin-top:16px;padding:16px 18px;border-radius:14px;
+  background:var(--pink-lt);text-align:left;
+}
+.vb h2{font-size:13px;font-weight:800;color:var(--main);margin-bottom:8px}
+.vb .row span{width:70px}
+.btns{display:flex;gap:9px;margin-top:24px}
+.btn{
+  flex:1;min-height:50px;border:0;border-radius:999px;cursor:pointer;
+  font-family:inherit;font-size:14.5px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  text-decoration:none;
+  background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;
+}
+.btn.sub2{background:#fff;color:var(--ink);border:1px solid rgba(0,0,0,.1)}
+.spin{
+  width:34px;height:34px;border-radius:50%;
+  border:3px solid var(--pink-lt);border-top-color:var(--main);
+  animation:sp .8s linear infinite;margin:0 auto;
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="box">
+  <div id="loading">
+    <div class="spin"></div>
+    <h1 style="margin-top:18px">결제를 확인하고 있습니다</h1>
+    <p class="sub">창을 닫지 마시고 잠시만 기다려 주세요.</p>
+  </div>
+
+  <div id="result" class="hide">
+    <div class="mark" id="mark">✓</div>
+    <h1 id="title">—</h1>
+    <p class="sub" id="msg"></p>
+    <div class="rows hide" id="rows"></div>
+    <div class="vb hide" id="vb"></div>
+    <div class="btns">
+      <a class="btn sub2" href="mypage.html">주문 내역</a>
+      <a class="btn" href="index.html">쇼핑 계속하기</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+
+function param(k){
+  const u=new URLSearchParams(location.search);
+  if(u.get(k)) return u.get(k);
+  const h=new URLSearchParams(location.hash.replace(/^#/,''));
+  return h.get(k)||'';
+}
+
+function show(kind, title, msg){
+  $('loading').classList.add('hide');
+  $('result').classList.remove('hide');
+  $('mark').className='mark '+kind;
+  $('mark').textContent = kind==='ok' ? '✓' : (kind==='wait' ? '…' : '!');
+  $('title').textContent=title;
+  $('msg').textContent=msg||'';
+}
+
+function rows(list){
+  $('rows').classList.remove('hide');
+  $('rows').innerHTML=list.map(r=>
+    '<div class="row"><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>').join('');
+}
+
+(function(){
+  /* 결제창이 돌려준 값 */
+  const authId  = param('authorizationId') || param('authorization_id');
+  const orderNo = param('shopOrderNo') || param('shop_order_no') || param('orderNo');
+  const resCd   = param('resCd') || param('res_cd');
+  const resMsg  = param('resMsg') || param('res_msg');
+
+  /* 고객이 취소했거나 인증 실패 */
+  if(resCd && resCd!=='0000'){
+    show('bad','결제가 완료되지 않았습니다', resMsg || '다시 시도해 주세요.');
+    return;
+  }
+  if(!authId || !orderNo){
+    show('bad','결제 정보를 확인할 수 없습니다','주문 내역에서 상태를 확인해 주세요.');
+    return;
+  }
+
+  /* 담아둔 금액 */
+  let want = 0;
+  try{ want = Number(sessionStorage.getItem('cg_pay_amount')||0); }catch(e){}
+
+  fetch(SB+'/functions/v1/pay',{
+    method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({action:'approve',
+      authorizationId:authId, shopOrderNo:orderNo, amount:want})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.ok){
+      show('bad','결제에 실패했습니다', d.error||d.msg||'다시 시도해 주세요.');
+      rows([['주문번호',orderNo]]);
+      return;
+    }
+
+    /* 가상계좌는 입금 대기 */
+    if(d.vbank){
+      show('wait','입금을 기다리고 있습니다','아래 계좌로 입금해 주시면 배송이 시작됩니다.');
+      rows([['주문번호',orderNo],['결제금액',won(d.amount)+'원']]);
+      $('vb').classList.remove('hide');
+      $('vb').innerHTML='<h2>입금 계좌</h2>'
+        +'<div class="row"><span>은행</span><b>'+esc(d.vbank.bank)+'</b></div>'
+        +'<div class="row"><span>계좌번호</span><b>'+esc(d.vbank.no)+'</b></div>'
+        +'<div class="row"><span>예금주</span><b>'+esc(d.vbank.holder)+'</b></div>'
+        +(d.vbank.expiry?'<div class="row"><span>입금기한</span><b>'
+          +esc(d.vbank.expiry.slice(0,4)+'-'+d.vbank.expiry.slice(4,6)+'-'+d.vbank.expiry.slice(6,8))
+          +'</b></div>':'');
+      try{ localStorage.removeItem('cg_cart'); }catch(e){}
+      return;
+    }
+
+    show('ok','결제가 완료되었습니다','주문해 주셔서 감사합니다. 곧 준비해 보내드리겠습니다.');
+    const list=[['주문번호',orderNo],['결제금액',won(d.amount)+'원']];
+    if(d.card) list.push(['결제수단',d.card]);
+    if(d.tid) list.push(['거래번호',d.tid]);
+    rows(list);
+    try{ localStorage.removeItem('cg_cart'); sessionStorage.removeItem('cg_pay_amount'); }catch(e){}
+  })
+  .catch(()=>{
+    show('bad','확인하지 못했습니다','잠시 후 주문 내역에서 다시 확인해 주세요.');
+    rows([['주문번호',orderNo]]);
+  });
+})();
+</script>
+</body>
+</html>
