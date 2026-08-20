@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<!-- ChewGumi Product Admin v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>상품 관리 | CHEWGUMI</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script src="assets/auth.js"></script>
+<script src="assets/site.js"></script>
+<style>
+:root{
+  --main:#D82558; --main2:#FF4775;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C;
+  --gray:#7a7a82; --ink:#17171c;
+  --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.68);
+  --sp-s:clamp(0.7rem,0.65rem+0.24vw,1rem);
+  --sp-m:clamp(1.2rem,1.1rem+0.5vw,1.8rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.12),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;height:auto;display:block}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select,textarea{font-size:14.5px}}
+.wrap{max-width:1080px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+label{display:block;font-size:12px;font-weight:600;color:#555;margin:10px 0 5px}
+input,select,textarea{
+  width:100%;min-height:44px;padding:10px 13px;border-radius:11px;
+  border:1px solid var(--line);background:rgba(255,255,255,.88);color:var(--ink);
+}
+textarea{min-height:74px;line-height:1.65;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--main);outline-offset:-1px}
+select{
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23D82558' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  background-size:12px 8px;padding-right:38px;cursor:pointer;
+}
+
+.btn{
+  min-height:46px;padding:0 20px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btns>.btn{flex:1;min-width:130px}
+
+.msg{margin-top:11px;font-size:13px;line-height:1.7;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+/* 상품 목록 */
+.plist{display:flex;flex-direction:column;gap:2px}
+.prow{
+  display:flex;gap:12px;align-items:center;padding:12px 4px;
+  border-bottom:1px solid rgba(0,0,0,.055);cursor:pointer;
+}
+.prow:last-child{border-bottom:0}
+.prow:hover{background:rgba(255,255,255,.45);border-radius:10px}
+.prow.on{background:rgba(216,37,88,.06);border-radius:10px}
+.prow img{
+  width:52px;height:52px;border-radius:11px;object-fit:contain;flex:none;
+  background:#fff;border:1px solid rgba(0,0,0,.05);
+}
+.prow .ph{
+  width:52px;height:52px;border-radius:11px;flex:none;background:#FFF1F4;
+  display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:19px;
+}
+.prow .t{flex:1;min-width:0}
+.prow b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .m{font-size:11.5px;color:var(--gray);margin-top:2px}
+.prow .pr{flex:none;text-align:right}
+.prow .pr b{font-size:14px;color:var(--main)}
+.prow .pr span{display:block;font-size:11px;color:var(--gray);
+  text-decoration:line-through;margin-top:1px}
+.tag{
+  flex:none;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;
+}
+.tag.on{background:rgba(42,160,96,.13);color:#1B6B3F}
+.tag.off{background:rgba(0,0,0,.05);color:#666}
+
+/* 편집 */
+.grid2{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr))}
+.drop{
+  border:1.5px dashed rgba(216,37,88,.32);border-radius:14px;
+  background:rgba(255,247,250,.65);padding:16px;text-align:center;cursor:pointer;
+  transition:background .15s;
+}
+.drop:hover,.drop.over{background:rgba(255,71,117,.09)}
+.drop p{font-size:12.5px;color:var(--gray);line-height:1.7}
+.drop b{display:block;font-size:13.5px;color:var(--main);margin-bottom:3px}
+.thumbs{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));margin-top:12px}
+.thumbs .th{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;
+  background:#fff;border:1px solid rgba(0,0,0,.06)}
+.thumbs .th img{width:100%;height:100%;object-fit:contain}
+.thumbs .th button{
+  position:absolute;top:4px;right:4px;width:22px;height:22px;border:0;border-radius:50%;
+  background:rgba(23,23,28,.72);color:#fff;font-size:11px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* AI */
+.chat{display:flex;gap:8px;flex-wrap:wrap}
+.chat textarea{flex:1;min-width:220px;min-height:56px}
+.plan{margin-top:12px}
+.plan .item{
+  display:flex;gap:10px;align-items:flex-start;padding:10px 12px;
+  border-radius:11px;background:rgba(255,255,255,.7);
+  border:1px solid rgba(0,0,0,.055);margin-bottom:7px;font-size:12.5px;
+}
+.plan .item b{flex:none;font-size:12.5px}
+.plan .item .ar{color:var(--main);font-weight:700}
+.hide{display:none}
+.hint{font-size:12px;color:var(--gray);line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
+.hint b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>상품 관리</h1>
+      <div class="s">가격 · 이미지 · 재고를 직접 고칩니다</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <!-- AI 로 고치기 -->
+  <div class="panel">
+    <h2>말로 고치기</h2>
+    <div class="chat">
+      <textarea id="q" placeholder="예) 듀잇 4개입 판매가를 19,900원으로 바꿔줘&#10;예) 트리플잇 3종을 판매 시작해줘&#10;예) 트래블잇 전체 재고를 200개로"></textarea>
+      <button class="btn" onclick="ask(false)" id="askBtn">확인해보기</button>
+    </div>
+    <div class="msg" id="m1"></div>
+    <div class="plan hide" id="plan"></div>
+    <div class="btns hide" id="planBtns">
+      <button class="btn" onclick="ask(true)">이대로 반영</button>
+      <button class="btn sub" onclick="clearPlan()">취소</button>
+    </div>
+    <div class="hint">
+      바꿀 내용을 <b>먼저 보여드립니다.</b> 확인하시고 [이대로 반영]을 누르셔야 실제로 바뀝니다.
+    </div>
+  </div>
+
+  <!-- 상품 목록 -->
+  <div class="panel">
+    <h2>상품 목록 <span class="n" id="cnt">—</span></h2>
+    <div class="plist" id="list"></div>
+    <div class="btns">
+      <button class="btn sub" onclick="load()">새로고침</button>
+      <button class="btn sub" onclick="newProduct()">새 상품 추가</button>
+    </div>
+  </div>
+
+  <!-- 편집 -->
+  <div class="panel hide" id="editor">
+    <h2>상품 고치기 <span class="n" id="edId">—</span></h2>
+
+    <label>이름</label>
+    <input id="fName" placeholder="예) 듀잇 4개입">
+
+    <div class="grid2">
+      <div>
+        <label>상품군</label>
+        <select id="fLine">
+          <option value="doit">듀잇</option>
+          <option value="travel">트래블잇</option>
+          <option value="triple">트리플잇</option>
+        </select>
+      </div>
+      <div>
+        <label>판매 여부</label>
+        <select id="fActive">
+          <option value="true">판매 중</option>
+          <option value="false">숨김</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <label>정가 (원)</label>
+        <input id="fOrigin" type="number" inputmode="numeric" placeholder="39000">
+      </div>
+      <div>
+        <label>판매가 (원)</label>
+        <input id="fSale" type="number" inputmode="numeric" placeholder="19900">
+      </div>
+      <div>
+        <label>재고 (개)</label>
+        <input id="fStock" type="number" inputmode="numeric" placeholder="100">
+      </div>
+    </div>
+
+    <label>설명</label>
+    <textarea id="fDesc" placeholder="상품 소개를 한두 줄로"></textarea>
+
+    <label>대표 이미지</label>
+    <div class="drop" id="dropMain" onclick="document.getElementById('fileMain').click()">
+      <b>사진을 끌어다 놓거나 눌러서 고르세요</b>
+      <p>1200px 정사각으로 자동 정리됩니다</p>
+      <input type="file" id="fileMain" accept="image/*" hidden onchange="upMain(this)">
+    </div>
+    <div class="thumbs" id="mainThumb"></div>
+
+    <label>상세 이미지</label>
+    <div class="drop" id="dropDet" onclick="document.getElementById('fileDet').click()">
+      <b>여러 장을 한 번에 올리실 수 있습니다</b>
+      <p>올린 순서대로 상세 화면에 나옵니다</p>
+      <input type="file" id="fileDet" accept="image/*" multiple hidden onchange="upDetail(this)">
+    </div>
+    <div class="thumbs" id="detThumbs"></div>
+
+    <div class="btns">
+      <button class="btn" onclick="save()" id="saveBtn">저장하기</button>
+      <button class="btn sub" onclick="closeEdit()">닫기</button>
+    </div>
+    <div class="msg" id="m2"></div>
+  </div>
+
+  <!-- 이력 -->
+  <div class="panel">
+    <h2>바꾼 이력</h2>
+    <div id="logs"></div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const FN=SB+'/functions/v1/product-admin';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+function tok(){ try{ return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''; }catch(e){ return ''; } }
+function say(id,t,k){ const m=$(id); m.className='msg'+(k?' '+k:''); m.textContent=t; }
+
+let ITEMS=[], CUR=null, DETAILS=[];
+
+function call(p){
+  return fetch(FN,{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+(tok()||KEY),'Content-Type':'application/json'},
+    body:JSON.stringify(p)}).then(r=>r.json());
+}
+
+/* 목록 */
+function load(){
+  call({action:'list'}).then(d=>{
+    if(!d.ok){ $('list').innerHTML='<p style="font-size:13px;color:var(--bad)">'+esc(d.error||'불러오지 못했습니다')+'</p>'; return; }
+    ITEMS=d.items||[];
+    $('cnt').textContent=ITEMS.length+'개';
+    const LN={doit:'듀잇',travel:'트래블잇',triple:'트리플잇'};
+    $('list').innerHTML=ITEMS.map(p=>{
+      const th=p.image
+        ? '<img src="'+esc(p.image)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=\'<span class=&quot;ph&quot;>—</span>\'">'
+        : '<span class="ph">—</span>';
+      const off=p.price_origin>p.price_sale
+        ? '<span>'+won(p.price_origin)+'</span>' : '';
+      return '<div class="prow" onclick="edit('+p.id+')" id="row'+p.id+'">'+th
+        +'<span class="t"><b>'+esc(p.name)+'</b>'
+        +'<span class="m">'+esc(LN[p.line]||p.line)+' · 재고 '+won(p.stock)+'개</span></span>'
+        +'<span class="pr"><b>'+won(p.price_sale)+'원</b>'+off+'</span>'
+        +'<span class="tag '+(p.active?'on':'off')+'">'+(p.active?'판매':'숨김')+'</span></div>';
+    }).join('');
+  }).catch(()=>{ $('list').innerHTML='<p style="font-size:13px;color:var(--bad)">연결하지 못했습니다.</p>'; });
+}
+
+/* 편집 */
+function edit(id){
+  const p=ITEMS.find(x=>x.id===id); if(!p) return;
+  CUR=p;
+  document.querySelectorAll('.prow').forEach(r=>r.classList.remove('on'));
+  const row=$('row'+id); if(row) row.classList.add('on');
+  $('edId').textContent='#'+p.id;
+  $('fName').value=p.name||'';
+  $('fLine').value=p.line||'doit';
+  $('fActive').value=p.active?'true':'false';
+  $('fOrigin').value=p.price_origin||0;
+  $('fSale').value=p.price_sale||0;
+  $('fStock').value=p.stock||0;
+  $('fDesc').value=p.descr||'';
+  DETAILS=Array.isArray(p.detail_images)?p.detail_images.slice():[];
+  drawMain(p.image||''); drawDetails();
+  $('editor').classList.remove('hide');
+  say('m2','');
+  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeEdit(){
+  $('editor').classList.add('hide'); CUR=null;
+  document.querySelectorAll('.prow').forEach(r=>r.classList.remove('on'));
+}
+function newProduct(){
+  call({action:'create',name:'새 상품',line:'doit'}).then(d=>{
+    if(!d.ok){ say('m1',d.error||'만들지 못했습니다','bad'); return; }
+    load(); setTimeout(()=>edit(d.id),600);
+  });
+}
+
+function drawMain(url){
+  $('mainThumb').innerHTML = url
+    ? '<span class="th"><img src="'+esc(url)+'" alt="" referrerpolicy="no-referrer">'
+      +'<button onclick="clearMain()" aria-label="지우기">✕</button></span>' : '';
+}
+function clearMain(){ if(CUR) CUR.image=''; drawMain(''); }
+
+function drawDetails(){
+  $('detThumbs').innerHTML = DETAILS.map((u,i)=>
+    '<span class="th"><img src="'+esc(u)+'" alt="" referrerpolicy="no-referrer">'
+    +'<button onclick="delDetail('+i+')" aria-label="지우기">✕</button></span>').join('');
+}
+function delDetail(i){ DETAILS.splice(i,1); drawDetails(); }
+
+/* 사진 올리기 — 1200px 정사각으로 */
+function shrink(file, side){
+  return new Promise(function(ok,no){
+    const rd=new FileReader();
+    rd.onload=function(e){
+      const im=new Image();
+      im.onload=function(){
+        const cv=document.createElement('canvas');
+        cv.width=side; cv.height=side;
+        const cx=cv.getContext('2d');
+        cx.fillStyle='#fff'; cx.fillRect(0,0,side,side);
+        const r=Math.min(side/im.width, side/im.height);
+        const w=im.width*r, h=im.height*r;
+        cx.drawImage(im,(side-w)/2,(side-h)/2,w,h);
+        cv.toBlob(function(b){ b?ok(b):no(); },'image/jpeg',0.9);
+      };
+      im.onerror=no; im.src=e.target.result;
+    };
+    rd.onerror=no; rd.readAsDataURL(file);
+  });
+}
+
+function upload(blob, name){
+  const t=tok();
+  if(!t) return Promise.reject(new Error('로그인이 필요합니다'));
+  const path='p'+Date.now()+'-'+name;
+  return fetch(SB+'/storage/v1/object/products/'+path,{
+    method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'image/jpeg'},
+    body:blob
+  }).then(r=>{
+    if(!r.ok) throw new Error('올리지 못했습니다 ('+r.status+')');
+    return SB+'/storage/v1/object/public/products/'+path;
+  });
+}
+
+function upMain(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  say('m2','사진을 올리는 중…');
+  shrink(f,1200)
+    .then(b=>upload(b,'main.jpg'))
+    .then(url=>{ if(CUR) CUR.image=url; drawMain(url); say('m2','올렸습니다. [저장하기]를 눌러주세요.','ok'); })
+    .catch(e=>say('m2',e.message||'올리지 못했습니다','bad'));
+  input.value='';
+}
+
+function upDetail(input){
+  const fs=Array.from(input.files||[]); if(!fs.length) return;
+  say('m2',fs.length+'장을 올리는 중…');
+  let done=0;
+  fs.reduce((chain,f,i)=>chain.then(()=>
+    shrink(f,1400).then(b=>upload(b,'d'+i+'.jpg')).then(url=>{
+      DETAILS.push(url); done++; drawDetails();
+      say('m2',done+'/'+fs.length+'장 올리는 중…');
+    })
+  ), Promise.resolve())
+  .then(()=>say('m2',done+'장 올렸습니다. [저장하기]를 눌러주세요.','ok'))
+  .catch(e=>say('m2',e.message||'올리지 못했습니다','bad'));
+  input.value='';
+}
+
+function save(){
+  if(!CUR) return;
+  $('saveBtn').disabled=true; say('m2','저장하는 중…');
+  call({action:'save',id:CUR.id,
+    name:$('fName').value.trim(),
+    line:$('fLine').value,
+    active:$('fActive').value==='true',
+    price_origin:Number($('fOrigin').value||0),
+    price_sale:Number($('fSale').value||0),
+    stock:Number($('fStock').value||0),
+    descr:$('fDesc').value.trim(),
+    image:CUR.image||'',
+    detail_images:DETAILS,
+    actor:'관리자'})
+  .then(d=>{
+    $('saveBtn').disabled=false;
+    if(!d.ok){ say('m2',d.error||'저장하지 못했습니다','bad'); return; }
+    say('m2','저장했습니다. 사이트에 바로 반영됩니다.','ok');
+    load(); loadLogs();
+  })
+  .catch(()=>{ $('saveBtn').disabled=false; say('m2','연결하지 못했습니다','bad'); });
+}
+
+/* 말로 고치기 */
+function ask(apply){
+  const q=$('q').value.trim();
+  if(!q){ say('m1','무엇을 바꿀지 적어주세요.','bad'); return; }
+  $('askBtn').disabled=true;
+  say('m1', apply?'반영하는 중…':'확인하는 중…');
+  call({action:'ask',q:q,apply:!!apply,actor:'관리자'}).then(d=>{
+    $('askBtn').disabled=false;
+    if(!d.ok){ say('m1',d.error||'처리하지 못했습니다','bad'); return; }
+    if(apply){
+      say('m1',(d.msg||'반영했습니다')+(d.note?' · '+d.note:''),'ok');
+      clearPlan(); $('q').value=''; load(); loadLogs();
+      return;
+    }
+    const ch=d.changes||[];
+    if(!ch.length){ say('m1',d.note||'바꿀 것이 없습니다.'); clearPlan(); return; }
+    $('plan').innerHTML=ch.map(c=>
+      '<div class="item"><b>'+esc(c.product)+'</b>'
+      +'<span>'+esc(c.label)+' : '+esc(String(c.before))
+      +' <span class="ar">→</span> '+esc(String(c.value))+'</span>'
+      +(c.why?'<span style="color:var(--gray);margin-left:auto">'+esc(c.why)+'</span>':'')
+      +'</div>').join('');
+    $('plan').classList.remove('hide');
+    $('planBtns').classList.remove('hide');
+    say('m1',(d.note||'')+' 확인하시고 반영해 주세요.');
+  }).catch(()=>{ $('askBtn').disabled=false; say('m1','연결하지 못했습니다','bad'); });
+}
+function clearPlan(){
+  $('plan').classList.add('hide'); $('plan').innerHTML='';
+  $('planBtns').classList.add('hide');
+}
+
+/* 이력 */
+function loadLogs(){
+  call({action:'logs'}).then(d=>{
+    const rows=d.items||[];
+    if(!rows.length){ $('logs').innerHTML='<p style="font-size:13px;color:var(--gray)">아직 없습니다.</p>'; return; }
+    $('logs').innerHTML=rows.map(l=>{
+      const t=new Date(l.created_at);
+      return '<div style="display:flex;gap:10px;padding:9px 2px;font-size:12.5px;'
+        +'border-bottom:1px solid rgba(0,0,0,.05)">'
+        +'<span style="flex:none;color:var(--gray)">#'+l.product_id+'</span>'
+        +'<span style="flex:1;min-width:0">'+esc(l.field)+' : '
+        +esc(l.before_val)+' <span style="color:var(--main)">→</span> '+esc(l.after_val)+'</span>'
+        +'<span style="flex:none;color:var(--gray);font-size:11px">'
+        +(t.getMonth()+1)+'/'+t.getDate()+' '+esc(l.actor)+'</span></div>';
+    }).join('');
+  }).catch(()=>{});
+}
+
+/* 끌어다 놓기 */
+['dropMain','dropDet'].forEach(function(id){
+  const el=$(id); if(!el) return;
+  ['dragenter','dragover'].forEach(e=>el.addEventListener(e,ev=>{
+    ev.preventDefault(); el.classList.add('over');
+  }));
+  ['dragleave','drop'].forEach(e=>el.addEventListener(e,ev=>{
+    ev.preventDefault(); el.classList.remove('over');
+  }));
+  el.addEventListener('drop',function(ev){
+    const fs=ev.dataTransfer&&ev.dataTransfer.files;
+    if(!fs||!fs.length) return;
+    const input=$(id==='dropMain'?'fileMain':'fileDet');
+    const dt=new DataTransfer();
+    for(let i=0;i<fs.length;i++) dt.items.add(fs[i]);
+    input.files=dt.files;
+    (id==='dropMain'?upMain:upDetail)(input);
+  });
+});
+
+load(); loadLogs();
+</script>
+</body>
+</html>
