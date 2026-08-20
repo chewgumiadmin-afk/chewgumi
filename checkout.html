@@ -863,6 +863,13 @@ input:not([type=checkbox]):not([type=radio]), textarea, select{
 function saveCart(){
   try{ localStorage.setItem('cg_cart', JSON.stringify(CART)); }catch(e){}
 }
+/* 목록·금액을 다시 그립니다.
+   기존 코드가 없는 render() 를 부르고 있어 삭제가 화면에 반영되지 않았습니다.
+   실제 목록을 그리는 함수는 init() 입니다. */
+function redrawCart(){
+  if (typeof init === 'function') { init(); return; }
+  location.reload();
+}
 window.rmItem=function(ix){
   if(ix<0||ix>=CART.length) return;
   var nm=CART[ix].name||'이 상품';
@@ -870,7 +877,7 @@ window.rmItem=function(ix){
   CART.splice(ix,1);
   saveCart();
   if(typeof cgToast==='function') cgToast('상품을 뺐습니다.');
-  render();
+  redrawCart();
 };
 window.chgQty=function(ix,d){
   if(ix<0||ix>=CART.length) return;
@@ -879,7 +886,7 @@ window.chgQty=function(ix,d){
   if(q>99) q=99;
   CART[ix].qty=q;
   saveCart();
-  render();
+  redrawCart();
 };
 </script>
 <script>
