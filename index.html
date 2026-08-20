@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v159 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v160 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8561,6 +8561,44 @@ body, input, select, textarea, button,
   .hero .h-dots{ bottom:12px !important; gap:6px !important }
   .hero .h-dots button{ width:7px !important; height:7px !important }
   .hero .h-dots button.on{ width:17px !important }
+}
+
+/* ══════════════════════════════════════════════
+   하단 띠 배너 — 원본 1630×230 비율 그대로, 양옆 여백 없이
+   ══════════════════════════════════════════════ */
+.bb-card{
+  border:0 !important;
+  background:none !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.07) !important;
+}
+.bb-img{
+  aspect-ratio:1630/230 !important;
+  background:none !important;
+  border-radius:0 !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.bb-img img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  display:block !important;
+  background:none !important;
+}
+.bb-grid{
+  display:grid !important;
+  gap:16px !important;
+  background:none !important;
+}
+
+@media (max-width:768px){
+  .bb-card{ border-radius:12px !important }
+  .bb-img{ aspect-ratio:1630/300 !important }
+  .bb-grid{ gap:12px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
