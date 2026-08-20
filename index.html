@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v162 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v163 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8682,6 +8682,114 @@ body, input, select, textarea, button,
   color:var(--gray,#797979);
   text-align:center;
 }
+
+/* ══════════════════════════════════════════════
+   메인 배너 — 최종 확정 (이 아래가 항상 이깁니다)
+   1 → 2 → 3 → 4 자동 · 화살표 · 점 · 손가락
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+  z-index:0 !important;
+}
+.hero .h-track{
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  position:relative !important;
+  z-index:1 !important;
+  transition:transform .55s cubic-bezier(.4,0,.2,1) !important;
+}
+.hero .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  position:relative !important;
+  z-index:1 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  display:block !important;
+}
+
+/* 화살표 — 슬라이드보다 반드시 위에 */
+.hero > .hero-arw{
+  position:absolute !important;
+  top:50% !important;
+  margin-top:-22px !important;
+  transform:none !important;
+  width:44px !important;
+  height:44px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.9) !important;
+  cursor:pointer !important;
+  z-index:20 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  pointer-events:auto !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.2) !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.hero > .hero-arw:hover{ background:#fff !important }
+.hero > .hero-arw:active{ background:#FFE4E6 !important }
+.hero > .hero-arw svg{
+  width:19px !important; height:19px !important;
+  fill:none !important; stroke:#17171c !important; stroke-width:2.3 !important;
+  stroke-linecap:round !important; stroke-linejoin:round !important;
+  pointer-events:none !important;
+}
+.hero > .hero-arw.prev{ left:16px !important; right:auto !important }
+.hero > .hero-arw.next{ right:16px !important; left:auto !important }
+
+/* 점 */
+.hero > .h-dots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:16px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  gap:7px !important;
+  z-index:20 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+  pointer-events:auto !important;
+}
+.hero > .h-dots button{
+  width:8px !important; height:8px !important;
+  border-radius:50% !important;
+  border:0 !important; padding:0 !important;
+  background:rgba(255,255,255,.55) !important;
+  cursor:pointer !important;
+  transition:background .2s, width .2s !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.hero > .h-dots button.on{
+  background:#D82558 !important;
+  width:20px !important;
+  border-radius:99px !important;
+}
+
+@media (max-width:900px){
+  .hero > .hero-arw{
+    width:36px !important; height:36px !important;
+    margin-top:-18px !important;
+  }
+  .hero > .hero-arw svg{ width:15px !important; height:15px !important }
+  .hero > .hero-arw.prev{ left:8px !important }
+  .hero > .hero-arw.next{ right:8px !important }
+  .hero > .h-dots{ bottom:12px !important; gap:6px !important }
+  .hero > .h-dots button{ width:7px !important; height:7px !important }
+  .hero > .h-dots button.on{ width:17px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -9853,6 +9961,120 @@ body, input, select, textarea, button,
     document.addEventListener('DOMContentLoaded', init);
   else init();
   setTimeout(init, 600);
+})();
+</script>
+
+<script>
+/* 메인 배너 — 최종 (앞의 것을 모두 지우고 새로 답니다) */
+(function(){
+  function build(){
+    var hero  = document.getElementById('heroSlider');
+    var track = document.getElementById('hTrack');
+    if (!hero || !track) return;
+
+    var slides = track.querySelectorAll('.hslide');
+    var n = slides.length;
+    if (n < 2) return;
+
+    /* 앞서 붙은 것들 정리 */
+    var olds = hero.querySelectorAll('.hero-arw');
+    for (var i = 0; i < olds.length; i++) olds[i].remove();
+
+    var dots = document.getElementById('hDots');
+    if (dots) {
+      if (dots.parentElement !== hero) hero.appendChild(dots);
+      dots.innerHTML = '';
+    }
+
+    if (hero._cgTimer) clearInterval(hero._cgTimer);
+
+    var cur = 0;
+
+    function go(k){
+      cur = ((k % n) + n) % n;
+      track.style.transform = 'translateX(' + (-cur * 100) + '%)';
+      if (dots) {
+        var bs = dots.querySelectorAll('button');
+        for (var j = 0; j < bs.length; j++) bs[j].classList.toggle('on', j === cur);
+      }
+    }
+    function play(){
+      clearInterval(hero._cgTimer);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      hero._cgTimer = setInterval(function(){ go(cur + 1); }, 4500);
+    }
+
+    /* 점 */
+    if (dots) {
+      for (var d = 0; d < n; d++) {
+        (function(k){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('aria-label', (k + 1) + '번 배너');
+          if (k === 0) b.classList.add('on');
+          b.onclick = function(e){
+            e.preventDefault(); e.stopPropagation();
+            go(k); play();
+            return false;
+          };
+          dots.appendChild(b);
+        })(d);
+      }
+    }
+
+    /* 화살표 */
+    function arw(cls, path, step){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hero-arw ' + cls;
+      b.setAttribute('aria-label', step < 0 ? '이전 배너' : '다음 배너');
+      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + path + '"/></svg>';
+      b.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        go(cur + step); play();
+        return false;
+      };
+      hero.appendChild(b);
+    }
+    arw('prev', 'M15 6l-6 6 6 6', -1);
+    arw('next', 'M9 6l6 6-6 6', 1);
+
+    /* 슬라이드를 눌러도 링크가 안 열리게 — 넘길 때만 */
+    var sx = 0, sy = 0, moved = false;
+    hero.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
+      clearInterval(hero._cgTimer);
+    }, { passive:true });
+    hero.addEventListener('touchmove', function(e){
+      var t = e.touches[0];
+      if (Math.abs(t.clientX - sx) > 10) moved = true;
+    }, { passive:true });
+    hero.addEventListener('touchend', function(e){
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        go(cur + (dx < 0 ? 1 : -1));
+      }
+      play();
+    }, { passive:true });
+    track.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    hero.addEventListener('mouseenter', function(){ clearInterval(hero._cgTimer); });
+    hero.addEventListener('mouseleave', play);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) clearInterval(hero._cgTimer); else play();
+    });
+
+    go(0);
+    play();
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', build);
+  else build();
+  setTimeout(build, 900);
 })();
 </script>
 </body>
