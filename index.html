@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v138 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v139 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1525,10 +1525,10 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div class="d-acts">
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
-        <a class="d-cart d-full" id="dFull" href="#" onclick="toggleDetailImgs();return false;">상세 이미지 보기</a>
-        <div class="d-detail hide" id="dDetail">
+        
+        <div class="d-detail" id="dDetail">
           <div class="d-detail-in" id="dDetailIn"></div>
-          <a class="d-detail-more" href="#" onclick="goProductPage();return false;">전체 화면으로 보기 →</a>
+          
         </div>
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
@@ -6912,6 +6912,96 @@ select option{ text-decoration:none !important }
   .detail .d-info{ max-height:none !important; padding:20px 16px 26px !important }
   .d-rv img{ width:64px !important; height:64px !important }
   .d-rv p{ font-size:13px !important }
+}
+
+/* ══════════════════════════════════════════════
+   팝업 — 상세 이미지를 카드 안에서 스크롤로 봅니다
+   ══════════════════════════════════════════════ */
+
+/* 접기·전체화면 버튼 없음 */
+#dFull, .d-full, .d-detail-more{ display:none !important }
+
+/* 상세 이미지 — 항상 펼침 */
+#dDetail, .d-detail{
+  display:block !important;
+  max-height:none !important;
+  overflow:visible !important;
+  margin-top:22px !important;
+  padding-top:20px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+}
+#dDetail.hide{ display:block !important }
+#dDetailIn{
+  display:block !important;
+  max-height:none !important;
+  overflow:visible !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  border-radius:14px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+}
+#dDetailIn img{
+  width:100% !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:none !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  object-fit:unset !important;
+  aspect-ratio:auto !important;
+}
+
+/* 대표 사진 — 원래 상품 사진 그대로 */
+.detail .d-img{
+  max-height:none !important;
+  overflow:hidden !important;
+  background:#FFF6F8 !important;
+  cursor:default !important;
+}
+.detail .d-img::after{ content:none !important }
+.detail .d-img img{
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  aspect-ratio:1/1 !important;
+  object-fit:contain !important;
+  padding:6% !important;
+  display:block !important;
+  box-sizing:border-box !important;
+}
+
+/* 오른쪽 칸이 통째로 스크롤 */
+.detail{
+  width:min(96vw,1120px) !important;
+  max-height:94svh !important;
+  align-items:start !important;
+}
+.detail .d-info{
+  max-height:94svh !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:28px 26px calc(30px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width:860px){
+  .detail{
+    grid-template-columns:1fr !important;
+    width:calc(100vw - 16px) !important;
+    max-height:95svh !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .detail .d-img{ max-height:none !important }
+  .detail .d-img img{ padding:5% !important }
+  .detail .d-info{
+    max-height:none !important;
+    overflow:visible !important;
+    padding:20px 16px 26px !important;
+  }
 }
 </style>
 <script src="assets/nav.js" defer></script>
