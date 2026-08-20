@@ -374,7 +374,7 @@ const BANK_APPS=[
   {n:'토스', s:'supertoss://', a:'viva.republica.toss', pay:1},
   {n:'카카오페이',s:'kakaotalk://', a:'com.kakao.talk', pay:1},
   {n:'국민', s:'kbbank://', a:'com.kbstar.kbbank'},
-  {n:'신한', s:'shinhan-sr-ansimclick://', a:'com.shinhan.sbanking'},
+  {n:'신한', s:'shinhan-sr-ansimclick://', a:'com.shinhan.smartcaremgr'},
   {n:'우리', s:'NewSmartPib://', a:'com.wooribank.smart.npib'},
   {n:'하나', s:'hanapush://', a:'com.hanabank.ebk.channel.android.hananbank'},
   {n:'농협', s:'nhallonepay://', a:'nh.smart.banking'},
@@ -499,8 +499,24 @@ function openBankPick(){
         return;
       }
       if(/Android/i.test(ua)){
-        location.href='intent://#Intent;scheme='+b.s.replace('://','')
-          +';package='+b.a+';end';
+        /* intent:// 뒤에 주소가 비어 있으면 안드로이드가 요청을 버리고
+           앱이 깔려 있어도 스토어로 보냅니다. host 를 반드시 채웁니다.
+           그래도 못 열면 스토어 대신 안내를 띄웁니다. */
+        var scheme = b.s.replace('://','');
+        var t0 = Date.now();
+        location.href = 'intent://open#Intent;scheme=' + scheme
+          + ';package=' + b.a + ';S.browser_fallback_url='
+          + encodeURIComponent('about:blank') + ';end';
+        setTimeout(function(){
+          if(document.hidden || Date.now()-t0 > 2600) return;
+          /* 스킴 직접 호출로 한 번 더 시도 */
+          location.href = b.s;
+          setTimeout(function(){
+            if(document.hidden) return;
+            alert(b.n + ' 앱을 열지 못했습니다.\n'
+              + '계좌번호는 복사되어 있으니 앱을 직접 열어 붙여넣어 주세요.');
+          }, 1400);
+        }, 1200);
       } else {
         const t=Date.now();
         location.href=b.s;
