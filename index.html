@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v167 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v168 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1057,7 +1057,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- BEST ITEMS -->
 <section id="best">
   <div class="wrap">
-    <div class="sec-head"><h2 class="sec-title">BEST ITEMS</h2><a class="sec-more" href="shop.html" data-en="VIEW ALL">VIEW ALL ▶</a></div>
+    <div class="sec-head"><h2 class="sec-title">BEST ITEMS</h2><a class="sec-more" href="#all" onclick="filterLine('all');return false;" data-en="VIEW ALL">VIEW ALL ▶</a></div>
         <div class="best-tabs" id="bestTabs">
           <button class="on" data-b="">전체</button>
           <button data-b="travel">트래블잇</button>
@@ -9005,6 +9005,90 @@ body, input, select, textarea, button,
     margin-right:calc(50% - 50vw) !important;
   }
 }
+
+/* ══════════════════════════════════════════════
+   디자인 가이드 규격 반영
+   색 · main #D82558 / sub #E95073 / 연분홍 #FFBDCC
+        아주연한 #FFE4E6 / 회색 #797979 / 노랑 #FFE923
+   글꼴 · 국문 SUIT · 영문 Poppins
+   ══════════════════════════════════════════════ */
+
+/* 상단 알림 — 1920×45 */
+.topbar{
+  height:45px !important;
+  min-height:45px !important;
+  font-size:14px !important;
+  font-weight:500 !important;
+}
+.topbar b{ font-weight:800 !important; color:#FFE923 !important }
+
+/* NEW — 제목 48 bold · 설명 23 regular · 사이 31 */
+.nl-head{ margin-bottom:31px !important }
+.nl-title{ font-size:clamp(30px,4.4vw,48px) !important; font-weight:800 !important }
+.nl-sub{ font-size:clamp(15px,1.9vw,23px) !important; font-weight:400 !important; color:#797979 !important }
+.nl-grid{ gap:31px !important }
+.nl-name{ font-size:clamp(19px,2.4vw,32px) !important; font-weight:700 !important; margin-top:16px !important }
+.nl-more{ font-size:clamp(14px,1.9vw,24px) !important; font-weight:500 !important; color:#797979 !important }
+
+/* BEST — 카드 385 · 사이 30 · VIEW ALL 23 regular */
+#best .sec-more{
+  font-size:clamp(13px,1.6vw,23px) !important;
+  font-weight:400 !important;
+  color:#797979 !important;
+}
+
+/* 사용자 후기 — 55 black · 32 regular */
+.revsec h2, .rev-head h2, #reviews h2{
+  font-size:clamp(24px,4.6vw,55px) !important;
+  font-weight:900 !important;
+  color:#D82558 !important;
+}
+.revsec .sub, .rev-head p, #reviews .sub{
+  font-size:clamp(15px,2.6vw,32px) !important;
+  font-weight:400 !important;
+}
+
+/* 팝업 — 페이지 번호 표시 */
+.d-pageno{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:95px !important;
+  height:39px !important;
+  margin:14px auto 0 !important;
+  border-radius:999px !important;
+  background:rgba(0,0,0,.05) !important;
+  color:#17171c !important;
+  font-size:clamp(13px,1.6vw,23px) !important;
+  font-weight:400 !important;
+  letter-spacing:.5px !important;
+}
+
+/* 상세 이미지 사이 번호 */
+#dDetailIn{ position:relative !important }
+.d-imgno{
+  position:absolute !important;
+  right:12px !important;
+  bottom:12px !important;
+  width:95px !important;
+  height:39px !important;
+  border-radius:999px !important;
+  background:rgba(255,255,255,.6) !important;
+  color:#17171c !important;
+  font-size:15px !important;
+  font-weight:400 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  z-index:3 !important;
+  pointer-events:none !important;
+}
+
+@media (max-width:768px){
+  .nl-head{ margin-bottom:20px !important }
+  .nl-grid{ gap:12px !important }
+  .d-pageno, .d-imgno{ width:76px !important; height:32px !important; font-size:12.5px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -10309,6 +10393,51 @@ body, input, select, textarea, button,
     document.addEventListener('DOMContentLoaded', fix);
   else fix();
   setTimeout(fix, 800);
+})();
+</script>
+
+<script>
+/* 상세정보에 몇 장 중 몇 장인지 표시 */
+(function(){
+  function mark(){
+    var box = document.getElementById('dDetailImgs') || document.getElementById('dDetailIn');
+    if (!box) return;
+    var imgs = box.querySelectorAll('img');
+    if (!imgs.length) return;
+
+    var old = box.querySelector('.d-imgno');
+    if (old) old.remove();
+    var tag = document.createElement('span');
+    tag.className = 'd-imgno';
+    tag.textContent = '1 / ' + imgs.length;
+    box.appendChild(tag);
+
+    /* 스크롤에 따라 번호가 바뀝니다 */
+    var wrap = box.closest('.d-info') || box.parentElement;
+    function upd(){
+      var mid = window.innerHeight / 2;
+      var now = 1;
+      for (var i = 0; i < imgs.length; i++) {
+        var r = imgs[i].getBoundingClientRect();
+        if (r.top <= mid && r.bottom >= 0) { now = i + 1; break; }
+      }
+      tag.textContent = now + ' / ' + imgs.length;
+    }
+    if (wrap) wrap.addEventListener('scroll', upd, { passive:true });
+    window.addEventListener('scroll', upd, { passive:true });
+    upd();
+  }
+
+  if (window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t);
+      t = setTimeout(mark, 300);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', mark);
+  else mark();
 })();
 </script>
 </body>
