@@ -1816,18 +1816,18 @@ window.cgImgFail = function(el){
 
   /* 1순위 · 저장소 파일(원래 이미지) → 2순위 · DB 목록 → 3순위 · 드라이브 */
   var line = (+pno >= 11 && +pno <= 15) ? 'travel' : 'doit';
-  collect(setOf(pno)).then(function (imgs) {
-    if (imgs && imgs.length) { show(imgs); return null; }
-    return fetch(SB2 + '/rest/v1/products?select=detail_images&id=eq.' + pno,
+  fetch(SB2 + '/rest/v1/products?select=detail_images&id=eq.' + pno,
       { headers: { apikey: K2, Authorization: 'Bearer ' + K2 } })
-      .then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (rows2) {
-        var p = (rows2 || [])[0];
-        var d = (p && p.detail_images) || [];
-        if (d.length) { show(d); return null; }
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (rows2) {
+      var p = (rows2 || [])[0];
+      var d = (p && p.detail_images) || [];
+      if (d.length) { show(d); return null; }
+      return collect(setOf(pno)).then(function (imgs) {
+        if (imgs && imgs.length) { show(imgs); return null; }
         return 'need-drive';
       });
-  })
+    })
   .then(function (next) {
     if (next !== 'need-drive') return;
     /* 저장소에도 DB에도 없을 때만 드라이브를 본다 */
