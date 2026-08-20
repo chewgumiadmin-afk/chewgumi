@@ -1941,5 +1941,25 @@ select::-ms-expand{ display:none !important }
 /* 스마트스토어 버튼은 자체 결제로 대체 (되돌리려면 이 두 줄을 지우세요) */
 .npay-btn, .pay-hint{ display:none !important }
 </style>
+<style>
+/* 결제수단 칩 숨김 — 주문서에서 고르므로 상세에는 불필요 */
+.pays{ display:none !important }
+
+/* BUY NOW 양옆 분홍 잔상 제거
+   — 숨긴 스마트스토어 버튼의 초록 발광과 .buy 의 넓은 그림자가
+     버튼 밖으로 번져 배경처럼 보이던 것입니다. */
+.acts .buy, .acts .cart{
+  background-clip:padding-box !important;
+  filter:none !important;
+}
+.acts .buy{
+  box-shadow:0 6px 16px rgba(216,37,88,.22) !important;
+}
+.acts .buy::before, .acts .buy::after,
+.acts .cart::before, .acts .cart::after{
+  content:none !important;
+}
+.acts{ background:transparent !important; box-shadow:none !important }
+</style>
 </body>
 </html>
