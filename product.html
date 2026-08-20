@@ -403,7 +403,7 @@ const P = {
 /* 데이터베이스에서 상품 정보를 가져와 채운다 */
 /* 이미지 주소 — 이미 전체 주소면 그대로, 아니면 CDN 을 붙인다 */
 function imgUrl(src){
-  if(!src) return 'assets/prod/travel.jpg';
+  if(!src) return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   if(/^(https?:|assets\/|\.\/)/.test(src)) return src;
   return CDN + src;
 }
@@ -1736,12 +1736,11 @@ button[onclick*="addCart"]:active, .acts .cart:active{
 
   /* 서버가 안 되면 쓸 기본 목록 */
   var P_ = 'assets/prod/';
-  var DEW = ['dew-lemon.jpg','travel-1.jpg','dew-purple.jpg','travel-3.jpg',
-             'dew-grape.jpg','dew-6.jpg','dew-10.jpg','travel-5.jpg',
-             'travel-10.jpg','dew-green.jpg','travel-20.jpg','dew-4.jpg',
-             'dew-20.jpg'].map(function(x){return P_+x;});
-  var TRV = ['travel.jpg','travel-20.jpg','dew-4.jpg','dew-20.jpg']
+  var DEW = ['dew-grape.jpg','dew-lemon.jpg','dew-4.jpg','dew-6.jpg',
+             'dew-10.jpg','dew-20.jpg','dew-purple.jpg','dew-green.jpg']
              .map(function(x){return P_+x;});
+  var TRV = ['travel.jpg','travel-1.jpg','travel-3.jpg','travel-5.jpg',
+             'travel-10.jpg','travel-20.jpg'].map(function(x){return P_+x;});
 /* 상세 이미지 — 파일을 하나씩 불러 있는 만큼만 보여준다.
    DB 에 목록을 넣지 않아도, assets/detail 에 파일만 올리면 자동으로 늘어납니다.
    이름 규칙 : <계열>-01.jpg / -02.gif / -03.webp …  (번호는 두 자리) */
@@ -1796,7 +1795,8 @@ button[onclick*="addCart"]:active, .acts .cart:active{
 window.cgImgFail = function(el){
     if (el.dataset.done) { el.style.display='none'; return; }
     el.dataset.done = '1';
-    el.src = el.dataset.fb || 'assets/prod/travel.jpg';
+    if (!el.dataset.fb) { el.style.display='none'; return; }
+    el.src = el.dataset.fb;
   };
 
     function show(imgs){
@@ -1805,12 +1805,11 @@ window.cgImgFail = function(el){
     var box=document.getElementById('pDetailImgs');
     if(!wrap||!box) return;
     box.innerHTML=imgs.map(function(u,i){
-      var fb = 'assets/detail/tvd-0' + ((i % 5) + 1) + '.jpg';
       return '<img class="pd-img" src="' + u + '" alt="상품 상세 ' + (i+1) + '"'
         + ' loading="' + (i<2 ? 'eager' : 'lazy') + '"'
         + (i<1 ? ' fetchpriority="high"' : '')
         + ' decoding="async"'
-        + ' data-fb="' + fb + '" onerror="cgImgFail(this)">';
+        + ' onerror="cgImgFail(this)">';
     }).join('');
     wrap.style.display='';
   }
