@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v164 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v165 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8789,6 +8789,57 @@ body, input, select, textarea, button,
   .hero > .h-dots{ bottom:12px !important; gap:6px !important }
   .hero > .h-dots button{ width:7px !important; height:7px !important }
   .hero > .h-dots button.on{ width:17px !important }
+}
+
+/* ══════════════════════════════════════════════
+   상품 카드 — 원본 385×385 기준
+   ══════════════════════════════════════════════ */
+.prod-grid, .card-grid, .p-grid,
+#best .grid, #all .grid, .grid.cards{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill,minmax(min(385px,100%),1fr)) !important;
+  gap:30px !important;
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+.card .thumb, .p-card .thumb{
+  aspect-ratio:1/1 !important;
+  max-width:385px !important;
+  margin:0 auto !important;
+  border-radius:18px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+}
+.card img, .p-card img{
+  width:100% !important;
+  height:100% !important;
+  aspect-ratio:1/1 !important;
+  object-fit:contain !important;
+  display:block !important;
+}
+
+@media (max-width:1024px){
+  .prod-grid, .card-grid, .p-grid,
+  #best .grid, #all .grid, .grid.cards{
+    grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr)) !important;
+    gap:20px !important;
+  }
+}
+@media (max-width:768px){
+  .prod-grid, .card-grid, .p-grid,
+  #best .grid, #all .grid, .grid.cards{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:12px !important;
+    padding:0 14px !important;
+  }
+  .card .thumb, .p-card .thumb{ border-radius:14px !important }
+}
+@media (max-width:380px){
+  .prod-grid, .card-grid, .p-grid,
+  #best .grid, #all .grid, .grid.cards{
+    grid-template-columns:1fr !important;
+  }
 }
 </style>
 <script src="assets/nav.js" defer></script>
