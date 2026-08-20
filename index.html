@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v152 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v153 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1526,6 +1526,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
         
+        <div class="d-tabs" id="dTabs" role="tablist">
+          <button class="dt on" data-t="detail" role="tab">상세정보</button>
+          <button class="dt" data-t="review" role="tab">리뷰 <em id="dtRevN">0</em></button>
+          <button class="dt" data-t="info" role="tab">배송·교환</button>
+        </div>
         <div class="d-detail" id="dDetail">
           <div class="d-detail-in" id="dDetailIn"></div>
           
@@ -1900,6 +1905,7 @@ function openDetail(card){
   try {
     var _rn = card.dataset.no || '';
     if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
+    if (window.resetDetailTab) resetDetailTab();
     var _dd = document.getElementById('dDetail');
     if (_dd) _dd.classList.remove('hide');
     if (typeof loadDetailImgs === 'function') loadDetailImgs(_rn);
@@ -7913,6 +7919,111 @@ body.is-admin .admin-only{ display:inline !important }
     aspect-ratio:4/3 !important;
   }
 }
+
+/* ══════════════════════════════════════════════
+   상품 팝업 — 네이버식 탭 (상세정보 · 리뷰 · 배송)
+   ══════════════════════════════════════════════ */
+.d-tabs{
+  display:flex !important;
+  gap:0 !important;
+  margin:22px 0 0 !important;
+  border-bottom:1px solid rgba(0,0,0,.09) !important;
+  position:sticky !important;
+  top:0 !important;
+  z-index:6 !important;
+  background:rgba(255,255,255,.96) !important;
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+}
+.d-tabs .dt{
+  flex:1 !important;
+  min-height:48px !important;
+  padding:0 8px !important;
+  border:0 !important;
+  background:none !important;
+  cursor:pointer !important;
+  font-size:14px !important;
+  font-weight:600 !important;
+  color:var(--gray,#7a7a82) !important;
+  position:relative !important;
+  letter-spacing:-.02em !important;
+}
+.d-tabs .dt em{
+  font-style:normal;
+  font-size:12.5px;
+  color:var(--main,#D82558);
+  margin-left:3px;
+  font-weight:700;
+}
+.d-tabs .dt.on{
+  color:var(--ink,#17171c) !important;
+  font-weight:800 !important;
+}
+.d-tabs .dt.on::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-1px;
+  height:2px;
+  background:var(--ink,#17171c);
+  border-radius:2px;
+}
+
+/* 탭에 따라 보여줍니다 */
+.d-info[data-tab="detail"] .d-rev,
+.d-info[data-tab="detail"] .d-notice{ display:none !important }
+.d-info[data-tab="review"] .d-detail,
+.d-info[data-tab="review"] .d-notice{ display:none !important }
+.d-info[data-tab="info"] .d-detail,
+.d-info[data-tab="info"] .d-rev{ display:none !important }
+
+/* 탭 아래는 여백을 줄입니다 */
+.d-info .d-detail,
+.d-info .d-rev{
+  margin-top:16px !important;
+  padding-top:0 !important;
+  border-top:0 !important;
+}
+.d-info .d-notice{
+  margin-top:16px !important;
+}
+
+/* 리뷰 탭에서는 세로로 편히 읽도록 */
+.d-info[data-tab="review"] .d-rev-list{
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:visible !important;
+  gap:12px !important;
+  mask-image:none !important;
+  -webkit-mask-image:none !important;
+  cursor:auto !important;
+}
+.d-info[data-tab="review"] .d-rev-track{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  animation:none !important;
+}
+.d-info[data-tab="review"] .d-rv{
+  flex:none !important;
+  width:100% !important;
+  flex-direction:row !important;
+  gap:12px !important;
+}
+.d-info[data-tab="review"] .d-rv img{
+  width:86px !important;
+  height:86px !important;
+  flex:none !important;
+}
+.d-info[data-tab="review"] .d-rv p{
+  -webkit-line-clamp:unset !important;
+  display:block !important;
+}
+.d-info[data-tab="review"] .d-rev-h{ display:none !important }
+
+@media (max-width:640px){
+  .d-tabs .dt{ font-size:13px !important; min-height:46px !important }
+  .d-info[data-tab="review"] .d-rv img{ width:72px !important; height:72px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -8279,6 +8390,7 @@ body.is-admin .admin-only{ display:inline !important }
       var avg = rows.reduce(function(s,x){ return s + (x.rating||5); }, 0) / rows.length;
       var ae=document.getElementById('dRevAvg'); if(ae) ae.textContent=avg.toFixed(1);
       var ne=document.getElementById('dRevN'); if(ne) ne.textContent=rows.length+'개';
+      if(window.setRevCount) setRevCount(rows.length);
       box.innerHTML = rows.map(function(v){
         var d=new Date(v.created_at);
         return '<div class="d-rv">'
@@ -8795,6 +8907,50 @@ body.is-admin .admin-only{ display:inline !important }
       t = setTimeout(setup, 120);
     }).observe(document.documentElement, { childList:true, subtree:true });
   }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', setup);
+  else setup();
+})();
+</script>
+
+<script>
+/* 상품 팝업 탭 — 상세정보 · 리뷰 · 배송 */
+(function(){
+  function setup(){
+    var tabs = document.getElementById('dTabs');
+    var info = document.querySelector('.detail .d-info');
+    if (!tabs || !info || tabs.dataset.ready) return;
+    tabs.dataset.ready = '1';
+    info.setAttribute('data-tab', 'detail');
+
+    tabs.addEventListener('click', function(e){
+      var b = e.target.closest('.dt');
+      if (!b) return;
+      tabs.querySelectorAll('.dt').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      info.setAttribute('data-tab', b.dataset.t);
+      /* 탭을 바꾸면 그 자리로 */
+      tabs.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  }
+
+  /* 리뷰 개수를 탭에 표시 */
+  window.setRevCount = function(n){
+    var el = document.getElementById('dtRevN');
+    if (el) el.textContent = n || 0;
+  };
+
+  /* 팝업을 열 때마다 상세정보 탭으로 */
+  window.resetDetailTab = function(){
+    var tabs = document.getElementById('dTabs');
+    var info = document.querySelector('.detail .d-info');
+    if (!tabs || !info) return;
+    tabs.querySelectorAll('.dt').forEach(function(x, i){
+      x.classList.toggle('on', i === 0);
+    });
+    info.setAttribute('data-tab', 'detail');
+  };
+
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', setup);
   else setup();
