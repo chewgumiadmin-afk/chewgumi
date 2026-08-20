@@ -1662,6 +1662,7 @@ document.querySelectorAll('[data-en]').forEach(el => { el.dataset.ko = el.innerH
   const box = document.getElementById('heroSlider');
   if (!box) return;
   const slides = box.querySelectorAll('.slide');
+  if (!slides.length) return;   /* 지금 마크업은 .hslide 라 이 코드는 쓰지 않습니다 */
   const dotsBox = document.getElementById('heroDots');
   let cur = 0, timer = null;
   slides.forEach((_, i) => {
@@ -4020,7 +4021,9 @@ body.at-foot .kko-fab{
   window._heroCap = cap;
     function place(anim){
     track.classList.toggle('nodrag',!anim);
-    track.style.transform='translate3d('+(-now*W)+'px,0,0)';
+    /* 폭(px)이 아니라 비율로 옮깁니다 — 측정값이 0/1로 잡혀
+       2·3·4번 배너가 안 넘어가던 문제를 없앱니다 */
+    track.style.transform='translate3d('+(-now*100)+'%,0,0)';
     dots.forEach(function(d,k){
       d.classList.toggle('on',k===now);
       d.setAttribute('aria-selected',k===now?'true':'false');
