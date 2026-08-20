@@ -3203,16 +3203,16 @@ section{padding:44px 0}
 (function(){
   var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
   var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-  fetch(SB+'/rest/v1/review_line_summary?select=*',
+  fetch(SB+'/rest/v1/review_product_summary?select=*',
     {headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
   .then(function(r){return r.ok?r.json():[];})
   .then(function(rows){
     if(!rows||!rows.length) return;
     var M={};
-    rows.forEach(function(r){ M[r.product_line]={n:r.review_count,a:r.avg_rating}; });
-    document.querySelectorAll('.card[data-line]').forEach(function(c){
-      var L=c.getAttribute('data-line');
-      var d=M[L]; if(!d||!d.n) return;
+    rows.forEach(function(r){ M[String(r.product_id)]={n:r.review_count,a:r.avg_rating}; });
+    window._revByProduct = M;
+    document.querySelectorAll('.card[data-no]').forEach(function(c){
+      var d=M[c.getAttribute('data-no')]; if(!d||!d.n) return;
       if(c.querySelector('.rv-badge')) return;
       var n=d.n>999?'999+':d.n;
       var el=document.createElement('div');
@@ -9442,7 +9442,7 @@ body, input, select, textarea, button,
     if (!box) return;
     box.innerHTML = '<p style="font-size:12.5px;color:var(--gray)">불러오는 중…</p>';
     fetch(SBd + '/rest/v1/product_reviews?select=author,body,rating,image_url,created_at'
-      + '&visible=eq.true&product_id=eq.' + no + '&order=created_at.desc&limit=8',
+      + '&visible=eq.true&product_id=eq.' + no + '&order=created_at.desc&limit=60',
       { headers:{ apikey:Kd, Authorization:'Bearer '+Kd } })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){
@@ -9452,10 +9452,13 @@ body, input, select, textarea, button,
         var n=document.getElementById('dRevN'); if(n) n.textContent='';
         return;
       }
-      var avg = rows.reduce(function(s,x){ return s + (x.rating||5); }, 0) / rows.length;
+      var sum = (window._revByProduct||{})[String(no)];
+      var total = sum && sum.n ? sum.n : rows.length;
+      var avg = sum && sum.a ? Number(sum.a)
+              : rows.reduce(function(s,x){ return s + (x.rating||5); }, 0) / rows.length;
       var ae=document.getElementById('dRevAvg'); if(ae) ae.textContent=avg.toFixed(1);
-      var ne=document.getElementById('dRevN'); if(ne) ne.textContent=rows.length+'개';
-      if(window.setRevCount) setRevCount(rows.length);
+      var ne=document.getElementById('dRevN'); if(ne) ne.textContent=total+'개';
+      if(window.setRevCount) setRevCount(total);
       box.innerHTML = rows.map(function(v){
         var d=new Date(v.created_at);
         return '<div class="d-rv">'
