@@ -139,6 +139,28 @@ function rows(list){
   const resCd   = param('resCd') || param('res_cd');
   const resMsg  = param('resMsg') || param('res_msg');
 
+  /* 서버(pay-return 함수)가 이미 승인을 끝내고 결과를 넘겨줍니다.
+     그 값이 있으면 그대로 보여줍니다 — 승인을 한 번 더 시도하면
+     이지페이가 "중복된 요청"으로 거절해 실패 화면이 떴습니다. */
+  const okQ  = param('ok');
+  const tidQ = param('tid');
+  const msgQ = param('msg');
+  if(okQ === '1'){
+    show('ok','결제가 완료되었습니다','주문이 정상 접수되었습니다. 곧 발송해 드릴게요.');
+    const list=[['주문번호', orderNo||'-']];
+    if(tidQ) list.push(['거래번호', tidQ]);
+    let amt=0; try{ amt=Number(sessionStorage.getItem('cg_pay_amount')||0); }catch(e){}
+    if(amt) list.push(['결제금액', won(amt)+'원']);
+    rows(list);
+    try{ localStorage.removeItem('cg_cart'); }catch(e){}
+    return;
+  }
+  if(okQ === '0'){
+    show('bad','결제가 완료되지 않았습니다', msgQ || '다시 시도해 주세요.');
+    if(orderNo) rows([['주문번호',orderNo]]);
+    return;
+  }
+
   /* 고객이 취소했거나 인증 실패 */
   if(resCd && resCd!=='0000'){
     show('bad','결제가 완료되지 않았습니다', resMsg || '다시 시도해 주세요.');
