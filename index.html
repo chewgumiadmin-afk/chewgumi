@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v137 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v138 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1900,6 +1900,10 @@ function openDetail(card){
   try {
     var _rn = card.dataset.no || '';
     if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
+    var _dd = document.getElementById('dDetail');
+    if (_dd) _dd.classList.remove('hide');
+    if (typeof loadDetailImgs === 'function') loadDetailImgs(_rn);
+    else if (typeof showDetail === 'function') showDetail(_rn);
     var _di = document.getElementById('dImg');
     if (_di) _di.parentElement.scrollTop = 0;
   } catch(e) {}
@@ -6799,6 +6803,116 @@ select{
 }
 select::-ms-expand{ display:none !important }
 select option{ text-decoration:none !important }
+
+/* ══════════════════════════════════════════════
+   상품 팝업 — 상세 이미지 바로 펼침 · 리뷰 넓게
+   ══════════════════════════════════════════════ */
+
+/* ① 「전체 화면으로 보기」 감추기 */
+#dFull, .d-full, .d-detail-more{ display:none !important }
+
+/* ② 상세 이미지를 접지 않고 항상 펼칩니다 */
+#dDetail, .d-detail{
+  display:block !important;
+  max-height:none !important;
+  overflow:visible !important;
+  margin-top:20px !important;
+  padding-top:18px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+}
+#dDetail.hide, .d-detail.hide{ display:block !important }
+#dDetailIn, .d-detail-in{
+  display:block !important;
+  max-height:none !important;
+  overflow:visible !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  border-radius:14px !important;
+  background:#fff !important;
+}
+#dDetailIn img, .d-detail-in img{
+  width:100% !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:none !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  object-fit:unset !important;
+  aspect-ratio:auto !important;
+}
+
+/* ③ 결제 안내를 구매 버튼 아래로 */
+.d-info{ display:flex !important; flex-direction:column !important }
+.d-line   { order:1 }
+.d-name   { order:2 }
+.d-price  { order:3 }
+.d-desc   { order:4 }
+.d-opt    { order:5 }
+.d-qty    { order:6 }
+.d-total  { order:7 }
+.d-acts   { order:8 }
+.d-npay   { order:9 }
+.d-notice { order:10 }
+.d-rev    { order:11 }
+.d-detail { order:12 }
+
+.d-npay{
+  margin-top:12px !important;
+  padding-top:14px !important;
+  border-top:1px solid rgba(0,0,0,.06) !important;
+}
+
+/* ④ 리뷰를 넓게 */
+.d-rev{
+  margin-top:22px !important;
+  padding-top:20px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+}
+.d-rev-list{
+  max-height:none !important;
+  overflow:visible !important;
+  gap:14px !important;
+}
+.d-rv{
+  padding-bottom:14px !important;
+  gap:12px !important;
+}
+.d-rv img{
+  width:76px !important;
+  height:76px !important;
+  border-radius:12px !important;
+}
+.d-rv p{
+  font-size:13.5px !important;
+  line-height:1.75 !important;
+  -webkit-line-clamp:5 !important;
+}
+.d-rv .who{ font-size:11.5px !important; margin-top:6px !important }
+.d-rev-more{ width:100% !important; justify-content:center !important; margin-top:14px !important }
+
+/* ⑤ 팝업 전체를 넓게 */
+.detail{
+  width:min(96vw,1120px) !important;
+  max-height:94svh !important;
+}
+.detail .d-info{
+  max-height:94svh !important;
+  padding:28px 26px calc(30px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width:860px){
+  .detail{
+    grid-template-columns:1fr !important;
+    width:calc(100vw - 16px) !important;
+    max-height:95svh !important;
+    overflow-y:auto !important;
+  }
+  .detail .d-img{ max-height:44svh !important }
+  .detail .d-info{ max-height:none !important; padding:20px 16px 26px !important }
+  .d-rv img{ width:64px !important; height:64px !important }
+  .d-rv p{ font-size:13px !important }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
