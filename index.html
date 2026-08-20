@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v165 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v166 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1057,7 +1057,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <!-- BEST ITEMS -->
 <section id="best">
   <div class="wrap">
-    <div class="sec-head"><h2 class="sec-title">Best Items</h2><a class="sec-more" href="#all" onclick="filterLine('all')" data-en="VIEW ALL">VIEW ALL ▶</a></div>
+    <div class="sec-head"><h2 class="sec-title">BEST ITEMS</h2><a class="sec-more" href="shop.html" data-en="VIEW ALL">VIEW ALL ▶</a></div>
         <div class="best-tabs" id="bestTabs">
           <button class="on" data-b="">전체</button>
           <button data-b="travel">트래블잇</button>
@@ -8840,6 +8840,80 @@ body, input, select, textarea, button,
   #best .grid, #all .grid, .grid.cards{
     grid-template-columns:1fr !important;
   }
+}
+
+/* ══════════════════════════════════════════════
+   BEST ITEMS — 왼쪽 정렬 · 대문자 · 탭 그대로
+   ══════════════════════════════════════════════ */
+#best .sec-head{
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+  text-align:left !important;
+  margin:0 0 14px !important;
+  padding:0 !important;
+}
+#best .sec-title{
+  text-align:left !important;
+  margin:0 !important;
+  font-family:'Poppins','SUIT Variable',sans-serif !important;
+  font-size:clamp(24px,3.6vw,40px) !important;
+  font-weight:800 !important;
+  letter-spacing:-.01em !important;
+  text-transform:uppercase !important;
+}
+#best .sec-title::after{
+  content:none !important;
+}
+#best .sec-more{
+  flex:none !important;
+  margin:0 !important;
+  font-family:'Poppins','SUIT Variable',sans-serif !important;
+  font-size:clamp(13px,1.6vw,23px) !important;
+  font-weight:400 !important;
+  color:#797979 !important;
+  letter-spacing:.6px !important;
+  white-space:nowrap !important;
+  text-transform:uppercase !important;
+}
+#best .sec-more:hover{ color:#D82558 !important }
+
+/* 탭은 제목 아래 왼쪽에 */
+#best .best-tabs{
+  display:flex !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+  margin:0 0 22px !important;
+  padding:0 !important;
+}
+#best .best-tabs button{
+  min-height:38px !important;
+  padding:0 20px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(0,0,0,.09) !important;
+  background:#fff !important;
+  color:#797979 !important;
+  font-size:13.5px !important;
+  font-weight:600 !important;
+  cursor:pointer !important;
+  transition:all .18s !important;
+}
+#best .best-tabs button:hover{
+  background:#FFE4E6 !important;
+  color:#D82558 !important;
+}
+#best .best-tabs button.on{
+  background:#17171c !important;
+  color:#fff !important;
+  border-color:#17171c !important;
+  font-weight:700 !important;
+}
+
+@media (max-width:768px){
+  #best .sec-head{ margin-bottom:12px !important }
+  #best .best-tabs{ margin-bottom:16px !important; flex-wrap:wrap !important }
+  #best .best-tabs button{ min-height:34px !important; padding:0 15px !important; font-size:12.5px !important }
 }
 </style>
 <script src="assets/nav.js" defer></script>
