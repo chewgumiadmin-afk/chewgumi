@@ -196,6 +196,25 @@ header{
 @media(max-width:380px){
   .grid{grid-template-columns:1fr}
 }
+
+/* 상품 카드 — 원본 385×385 기준 */
+.grid{
+  grid-template-columns:repeat(auto-fill,minmax(min(385px,100%),1fr)) !important;
+  gap:30px !important;
+}
+.thumb{
+  max-width:385px !important;
+  margin:0 auto !important;
+}
+@media(max-width:1024px){
+  .grid{ grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr)) !important; gap:20px !important }
+}
+@media(max-width:768px){
+  .grid{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:12px !important }
+}
+@media(max-width:380px){
+  .grid{ grid-template-columns:1fr !important }
+}
 </style>
 </head>
 <body>
