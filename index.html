@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v139 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v140 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7601,6 +7601,35 @@ select option{ text-decoration:none !important }
   });
   setInterval(unlock, 2000);
   unlock();
+})();
+</script>
+
+<script>
+/* 상세 이미지는 팝업 안에서 항상 펼쳐 둡니다.
+   옛 접기 코드가 남아 있어 다시 닫는 것을 막습니다. */
+(function(){
+  function openDetailImgs(){
+    var box = document.getElementById('dDetail');
+    if (box) box.classList.remove('hide');
+  }
+  /* 접기 함수를 펼치기로 바꿉니다 */
+  window.toggleDetailImgs = function(){
+    openDetailImgs();
+    if (typeof window.fillDetailImgs === 'function') {
+      try { window.fillDetailImgs(); } catch(e){}
+    }
+    return false;
+  };
+  if (window.MutationObserver) {
+    var box = document.getElementById('dDetail');
+    if (box) {
+      new MutationObserver(function(){
+        if (box.classList.contains('hide')) box.classList.remove('hide');
+      }).observe(box, { attributes:true, attributeFilter:['class'] });
+    }
+  }
+  document.addEventListener('DOMContentLoaded', openDetailImgs);
+  openDetailImgs();
 })();
 </script>
 </body>
