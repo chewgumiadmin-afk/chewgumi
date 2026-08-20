@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v142 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v143 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7071,6 +7071,136 @@ body.is-admin .admin-only{ display:inline !important }
   .detail .d-img{ position:static !important }
   .d-grip{ height:34px }
 }
+
+/* ══════════════════════════════════════════════
+   팝업 — 화면 크기별 정리 (최종)
+   ══════════════════════════════════════════════ */
+
+/* 손잡이는 하나만 */
+.detail .d-grip ~ .d-grip{ display:none !important }
+
+/* ── PC (1025px 이상) ── */
+@media (min-width:1025px){
+  .detail-dim{
+    display:flex !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    overflow-y:auto !important;
+    padding:30px 20px !important;
+  }
+  .detail{
+    display:grid !important;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) !important;
+    width:min(94vw,1120px) !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    margin:auto !important;
+    border-radius:24px !important;
+    padding-top:44px !important;
+  }
+  .detail .d-img{
+    position:sticky !important;
+    top:44px !important;
+    align-self:start !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  .detail .d-info{
+    max-height:none !important;
+    overflow:visible !important;
+    padding:8px 28px 32px !important;
+  }
+  .d-grip{ height:44px !important }
+}
+
+/* ── 태블릿 (861~1024px) ── */
+@media (min-width:861px) and (max-width:1024px){
+  .detail-dim{
+    display:flex !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    overflow-y:auto !important;
+    padding:24px 18px !important;
+  }
+  .detail{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    width:calc(100vw - 36px) !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    border-radius:22px !important;
+    padding-top:40px !important;
+  }
+  .detail .d-img{ position:static !important; max-height:none !important }
+  .detail .d-info{
+    max-height:none !important;
+    overflow:visible !important;
+    padding:8px 22px 28px !important;
+  }
+  .d-grip{ height:40px !important }
+}
+
+/* ── 모바일 (860px 이하) ── */
+@media (max-width:860px){
+  .detail-dim{
+    display:block !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+    padding:0 !important;
+  }
+  .detail{
+    display:block !important;
+    grid-template-columns:none !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-height:100svh !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    margin:0 !important;
+    border-radius:0 !important;
+    padding-top:34px !important;
+    transform:none !important;   /* 모바일은 옮기지 않습니다 */
+  }
+  .detail .d-img{
+    position:static !important;
+    width:100% !important;
+    max-height:none !important;
+    border-radius:0 !important;
+  }
+  .detail .d-img img{
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:1/1 !important;
+    object-fit:contain !important;
+    padding:5% !important;
+    box-sizing:border-box !important;
+  }
+  .detail .d-info{
+    max-height:none !important;
+    overflow:visible !important;
+    padding:16px 18px calc(30px + env(safe-area-inset-bottom)) !important;
+  }
+  /* 모바일에서는 손잡이 대신 닫기 버튼만 */
+  .d-grip{
+    height:34px !important;
+    cursor:default !important;
+    pointer-events:none !important;
+  }
+  .d-grip::before{ background:rgba(0,0,0,.12) !important }
+  .detail .d-x{
+    position:fixed !important;
+    top:calc(10px + env(safe-area-inset-top)) !important;
+    right:12px !important;
+    z-index:20 !important;
+    width:38px !important;
+    height:38px !important;
+    background:rgba(255,255,255,.94) !important;
+    box-shadow:0 3px 12px rgba(0,0,0,.16) !important;
+  }
+}
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
@@ -7737,8 +7867,12 @@ body.is-admin .admin-only{ display:inline !important }
 (function(){
   function setup(){
     var card = document.querySelector('.detail');
-    if (!card || card.dataset.grip) return;
-    card.dataset.grip = '1';
+    if (!card) return;
+    /* 이미 붙은 손잡이는 모두 지우고 하나만 다시 만듭니다 */
+    var olds = card.querySelectorAll('.d-grip');
+    for (var i = 0; i < olds.length; i++) olds[i].remove();
+    if (card.dataset.grip === 'done') return;
+    card.dataset.grip = 'done';
 
     var grip = document.createElement('div');
     grip.className = 'd-grip';
@@ -7772,10 +7906,13 @@ body.is-admin .admin-only{ display:inline !important }
     window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
     window.addEventListener('mouseup', end);
 
+    function narrow(){ return window.matchMedia('(max-width:860px)').matches; }
     grip.addEventListener('touchstart', function(e){
+      if (narrow()) return;
       var t = e.touches[0]; begin(t.clientX, t.clientY);
     }, { passive:true });
     grip.addEventListener('touchmove', function(e){
+      if (narrow()) return;
       var t = e.touches[0]; move(t.clientX, t.clientY);
       e.preventDefault();
     }, { passive:false });
