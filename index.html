@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v147 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v148 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7400,7 +7400,7 @@ body.is-admin .admin-only{ display:inline !important }
 
 /* N Pay — 구매 버튼 바로 아래, 초록 버튼 */
 .detail .d-npay{
-  display:flex !important;
+  display:none;
   align-items:center !important;
   justify-content:center !important;
   width:100% !important;
@@ -7420,7 +7420,7 @@ body.is-admin .admin-only{ display:inline !important }
   box-shadow:0 4px 14px rgba(3,199,90,.22) !important;
 }
 .detail .d-npay:active{ transform:scale(.99) }
-.detail .d-npay[href="#"], .detail .d-npay:not([href]){ display:none !important }
+
 
 /* 결제 수단 안내 */
 .detail .d-notice{
@@ -7536,6 +7536,28 @@ body.is-admin .admin-only{ display:inline !important }
   .d-rv{ flex:0 0 240px !important }
   .d-rv img{ height:112px !important }
 }
+
+/* N Pay — 주소가 있을 때만 보입니다 (show 가 붙었을 때) */
+.detail .d-npay.show{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:52px !important;
+  margin:10px 0 0 !important;
+  padding:0 20px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:#03C75A !important;
+  color:#fff !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  letter-spacing:.3px !important;
+  text-decoration:none !important;
+  box-sizing:border-box !important;
+  box-shadow:0 4px 14px rgba(3,199,90,.22) !important;
+}
+.detail .d-npay.show:active{ transform:scale(.99) }
 </style>
 <script src="assets/nav.js" defer></script>
 <script>
