@@ -158,6 +158,36 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
     .tabs::-webkit-scrollbar,.sug::-webkit-scrollbar{display:none}
     .out,pre,code{overflow-x:auto;word-break:break-all}
   }
+
+/* 관심상품 말풍선 */
+.wish-bubble{
+  display:inline-block;
+  position:relative;
+  margin:0 0 16px;
+  padding:11px 20px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#FF4775,#D82558);
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.4px;
+  box-shadow:0 6px 18px rgba(255,71,117,.28);
+  animation:bubbleBob 2.6s ease-in-out infinite;
+}
+.wish-bubble::after{
+  content:"";
+  position:absolute;
+  left:26px; bottom:-7px;
+  width:14px; height:14px;
+  transform:rotate(45deg);
+  background:#D82558;
+  border-radius:2px;
+}
+@keyframes bubbleBob{
+  0%,100%{ transform:translateY(0) }
+  50%    { transform:translateY(-5px) }
+}
+@media (prefers-reduced-motion:reduce){ .wish-bubble{ animation:none } }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="manifest" href="manifest.json">
@@ -178,7 +208,8 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
   <nav><a href="index.html#all">전체상품</a><a href="cart.html">장바구니</a><a href="index.html">홈</a></nav>
 </div>
 <div class="wrap">
-  <h1>Wishlist</h1>
+  <div class="wish-bubble">Do it Do it Chu~ 🍬</div>
+      <h1>Wishlist</h1>
   <p class="lead">관심상품은 로그인하신 계정에 저장됩니다.</p>
   <div id="body"></div>
 </div>
