@@ -4021,9 +4021,14 @@ body.at-foot .kko-fab{
   window._heroCap = cap;
     function place(anim){
     track.classList.toggle('nodrag',!anim);
-    /* 폭(px)이 아니라 비율로 옮깁니다 — 측정값이 0/1로 잡혀
-       2·3·4번 배너가 안 넘어가던 문제를 없앱니다 */
-    track.style.transform='translate3d('+(-now*100)+'%,0,0)';
+    /* 폭을 옮길 때마다 다시 잽니다 — 처음 한 번만 재면 0 이 나와
+       2·3·4번이 안 넘어갑니다. 그래도 0 이면 비율로 대체합니다. */
+    var w = hero.clientWidth
+         || hero.getBoundingClientRect().width
+         || (slides[0] && slides[0].getBoundingClientRect().width) || 0;
+    track.style.transform = w
+      ? 'translate3d('+(-now*w)+'px,0,0)'
+      : 'translate3d('+(-now*100)+'%,0,0)';
     dots.forEach(function(d,k){
       d.classList.toggle('on',k===now);
       d.setAttribute('aria-selected',k===now?'true':'false');
@@ -4040,6 +4045,8 @@ body.at-foot .kko-fab{
   function stop(){ if(timer){ clearInterval(timer); timer=null; } }
 
   window.addEventListener('resize',function(){ W=hero.clientWidth||1; place(false); },{passive:true});
+  window.addEventListener('load',function(){ W=hero.clientWidth||1; place(false); });
+  setTimeout(function(){ W=hero.clientWidth||1; place(false); }, 400);
   hero.addEventListener('mouseenter',stop);
   hero.addEventListener('mouseleave',start);
 
