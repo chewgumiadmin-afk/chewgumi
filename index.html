@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v196 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v197 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1612,7 +1612,825 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <a href="mypage.html"><span>▣</span>MY</a>
 </nav>
 
+<script>
+/* 터치 기기 GNB 드롭다운: 첫 탭은 메뉴 열기, 두 번째 탭은 이동 */
+if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+  document.querySelectorAll('.gnb > li').forEach(li => {
+    if (!li.querySelector('.sub')) return;
+    li.addEventListener('click', e => {
+      const top = li.querySelector(':scope > a');
+      if ((e.target === top || top.contains(e.target)) && !li.classList.contains('open')) {
+        e.preventDefault(); e.stopPropagation();
+        document.querySelectorAll('.gnb > li.open').forEach(o => o.classList.remove('open'));
+        li.classList.add('open');
+      }
+    }, true);
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.gnb > li.open').forEach(o => o.classList.remove('open'));
+  });
+}
 
+/* 한/영 자동 전환 + 토글 */
+let cgLang = 'ko';
+document.querySelectorAll('[data-en]').forEach(el => { el.dataset.ko = el.innerHTML; });
+
+
+/* ---------- 제품 카드: 제품명 아래 핵심 특징 1줄 ---------- */
+(function(){
+  const TAGS = {
+    travel: { ko:'#여행에너지 · 12가지 영양소 · 물 없이 씹는 젤리', en:'#TravelEnergy · 12 nutrients · chewable gummy' },
+    doit:   { ko:'#무설탕 · 핀란드산 자일리톨 93% · 입속 개운함', en:'#SugarFree · 93% Finnish xylitol · fresh mouth' }
+  };
+  document.querySelectorAll('.card').forEach(c => {
+    const t = TAGS[c.dataset.line];
+    const n = c.querySelector('.name');
+    if (!t || !n || c.querySelector('.tagline')) return;
+    const d = document.createElement('div');
+    d.className = 'tagline kr';
+    d.dataset.en = t.en; d.dataset.ko = t.ko;
+    d.textContent = t.ko;
+    n.after(d);
+  });
+})();
+
+/* ---------- 히어로 슬라이더 (자동 4.5초 · 화살표 · 인디케이터) ---------- */
+(function(){
+  const box = document.getElementById('heroSlider');
+  if (!box) return;
+  const slides = box.querySelectorAll('.slide');
+  if (!slides.length) return;   /* 지금 마크업은 .hslide 라 이 코드는 쓰지 않습니다 */
+  const dotsBox = document.getElementById('heroDots');
+  let cur = 0, timer = null;
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', (i+1) + '번 배너');
+    if (i === 0) b.classList.add('on');
+    b.onclick = () => { show(i); restart(); };
+    dotsBox.appendChild(b);
+  });
+  function show(n){
+    cur = (n + slides.length) % slides.length;
+    slides.forEach((sl, i) => sl.classList.toggle('on', i === cur));
+    dotsBox.querySelectorAll('button').forEach((d, i) => d.classList.toggle('on', i === cur));
+  }
+  window.heroGo = d => { show(cur + d); restart(); };
+  function restart(){ clearInterval(timer); timer = null; }
+  box.addEventListener('mouseenter', () => clearInterval(timer));
+  box.addEventListener('mouseleave', restart);
+  restart();
+})();
+
+function setLang(l){
+  cgLang = l;
+  document.querySelectorAll('[data-en]').forEach(el => { el.innerHTML = l === 'en' ? el.dataset.en : el.dataset.ko; });
+  document.getElementById('langBtn').textContent = l === 'en' ? 'KR' : 'EN';
+  document.documentElement.lang = l;
+  try{ if(window._heroCap) window._heroCap(); }catch(e){}
+  if (l === 'en') cgLoadUsd(); else cgUpdUsd();
+  const d = document.getElementById('detail');
+  if (d && !d.classList.contains('hide') && window._curCard) {
+    document.getElementById('dDesc').textContent = l === 'en' && window._curCard.dataset.descEn ? window._curCard.dataset.descEn : window._curCard.dataset.desc;
+  }
+}
+/* 서브페이지에서 ?line=travel|doit 로 들어온 경우 해당 라인 필터 적용 */
+(function(){
+  var p = new URLSearchParams(location.search).get('line');
+  if (p === 'travel' || p === 'doit') {
+    window.addEventListener('load', function(){ try { filterLine(p); } catch(e){} });
+  }
+})();
+
+/* 다른 페이지에서 ?line=travel|doit 로 진입 시 해당 라인 필터 자동 적용 */
+(function(){
+  var m = (location.search || '').match(/[?&]line=(travel|doit|all)/);
+  if (!m) return;
+  var apply = function(){
+    if (typeof filterLine === 'function') filterLine(m[1]);
+    var t = document.getElementById('all');
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+})();
+
+/* 브라우저 언어 자동 감지: 한국어 환경이 아니면 영어로 시작 */
+if (!(navigator.language || 'ko').toLowerCase().startsWith('ko')) setLang('en');
+
+/* 상품명 → 스마트스토어(네이버페이) 매핑 — 트래블잇 주소 확보 시 추가 */
+const SMARTSTORE = {
+  dewit: 'https://smartstore.naver.com/chewgumi/products/13393122244'
+  , travel: 'https://smartstore.naver.com/chewgumi'
+};
+function smartstoreUrl(name){
+  const n = (name || '');
+  const isTravel = n.includes('트래블잇') || n.toLowerCase().includes('travel');
+  if (isTravel) return SMARTSTORE.travel || null;
+  if (n.includes('듀잇')) return SMARTSTORE.dewit || null;
+  return null;
+}
+
+/* 상품명 → 공식몰 상품 상세 페이지 매핑 */
+const CG_TRAVEL_CAT = 'https://chewgumi.com/category/%ED%8A%B8%EB%9E%98%EB%B8%94%EC%9E%87/42/';
+const CG_DEWIT_CAT  = 'https://chewgumi.com/category/%EB%93%80%EC%9E%87/47/';
+function productUrl(name){
+  const n = (name || '').trim();
+  const detail = (no, cate) => 'https://chewgumi.com/product/detail.html?product_no=' + no + '&cate_no=' + cate + '&display_group=1';
+  const isTravel = n.includes('트래블잇') || n.toLowerCase().includes('travel');
+  if (isTravel) {
+    const m = n.match(/\[(\d+)봉\]/);
+    const map = {'1':15, '3':11, '5':12, '10':13, '20':14};
+    return (m && map[m[1]]) ? detail(map[m[1]], 42) : CG_TRAVEL_CAT;
+  }
+  if (n.includes('레몬민트')) return detail(16, 47);
+  if (n.includes('그레이프')) return detail(17, 47);
+  if (n.includes('4개입'))  return detail(18, 47);
+  if (n.includes('6개입'))  return detail(19, 47);
+  if (n.includes('10개입')) return detail(20, 47);
+  if (n.includes('20개입')) return detail(21, 47);
+  return CG_DEWIT_CAT;
+}
+
+/* 상품 상세 페이지 */
+let dPrice = 0, dQty = 1;
+function won(n){ return '₩' + n.toLocaleString('ko-KR'); }
+/* 환율(EN 모드 달러 환산) */
+let cgUsdPerKrw = null;
+function cgLoadUsd(){
+  if (cgUsdPerKrw !== null) { cgUpdUsd(); return; }
+  fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW')
+    .then(r => r.json())
+    .then(d => { if (d && d.rates && d.rates.KRW) { cgUsdPerKrw = d.rates.KRW; cgUpdUsd(); } })
+    .catch(() => {});
+}
+function cgUpdUsd(){
+  const el = document.getElementById('dUsd');
+  if (!el) return;
+  el.textContent = (typeof cgLang !== 'undefined' && cgLang === 'en' && cgUsdPerKrw && dPrice > 0)
+    ? '≈ $' + (dPrice / cgUsdPerKrw).toFixed(2) : '';
+}
+
+/* 상품 구성(옵션) 데이터 — 공식몰 실제 상품번호·가격 */
+const CG_OPTIONS = {
+  travel: [
+    { k:'1',  label:'1봉 (40g)',      name:'[1봉] 트래블잇 Travel-it (40g)',  origin:3500,   sale:3500,  no:15 },
+    { k:'3',  label:'3봉 (40g×3)',    name:'[3봉] 트래블잇 Travel-it (40g)',  origin:18000,  sale:9900,  no:11 },
+    { k:'5',  label:'5봉 (40g×5)',    name:'[5봉] 트래블잇 Travel-it (40g)',  origin:30000,  sale:14900, no:12 },
+    { k:'10', label:'10봉 (40g×10)',  name:'[10봉] 트래블잇 Travel-it (40g)', origin:60000,  sale:27900, no:13 },
+    { k:'20', label:'20봉 (40g×20)',  name:'[20봉] 트래블잇 Travel-it (40g)', origin:120000, sale:52500, no:14 }
+  ],
+  doit: [
+    { k:'lemon', label:'레몬민트', name:'듀잇 레몬민트', origin:39000,  sale:19900, no:16 },
+    { k:'grape', label:'그레이프', name:'듀잇 그레이프', origin:39000,  sale:19900, no:17 },
+    { k:'4',  label:'4개입',  name:'듀잇 4개입',  origin:39000,  sale:19900, no:18 },
+    { k:'6',  label:'6개입',  name:'듀잇 6개입',  origin:54800,  sale:27900, no:19 },
+    { k:'10', label:'10개입', name:'듀잇 10개입', origin:84200,  sale:42900, no:20 },
+    { k:'20', label:'20개입', name:'듀잇 20개입', origin:158900, sale:81000, no:21 }
+  ]
+};
+function findOptIndex(line, name){
+  const list = CG_OPTIONS[line] || [];
+  const n = name || '';
+  for (let i = 0; i < list.length; i++) {
+    const o = list[i];
+    if (line === 'travel') { const m = n.match(/\[(\d+)봉\]/); if (m && m[1] === o.k) return i; }
+    else {
+      if ((o.k === 'lemon' && n.includes('레몬민트')) || (o.k === 'grape' && n.includes('그레이프'))
+          || n.includes(o.k + '개입')) return i;
+    }
+  }
+  return 0;
+}
+function applyOpt(){
+  const sel = document.getElementById('dOpt');
+  const o = (CG_OPTIONS[window._curLine] || [])[sel.selectedIndex];
+  if (!o) return;
+  window._curOpt = o;
+  document.getElementById('dOrigin').textContent = o.origin > o.sale ? '₩' + o.origin.toLocaleString() : '';
+  document.getElementById('dSale').textContent = '₩' + o.sale.toLocaleString();
+  dPrice = o.sale; renderQty();
+  document.getElementById('dBuy').href = 'checkout.html';
+  const df = document.getElementById('dFull');
+  if (df) df.href = 'product.html?no=' + o.no;
+  cgUpdUsd();
+}
+
+/* BUY NOW — 선택 구성·수량을 담고 주문서로 이동 */
+function buyNowDirect(ev){
+  ev.preventDefault();
+  const o = window._curOpt;
+  const name = (o && o.name) || (window._curCard && window._curCard.querySelector('.name').textContent.trim());
+  const price = (o && o.sale) || dPrice || 0;
+  if (name && price) {
+    try {
+      const c = JSON.parse(localStorage.getItem('cg_cart') || '[]');
+      const ex = c.find(i => i.name === name);
+      if (ex) ex.qty = dQty; else c.push({ name: name, price: price, qty: dQty });
+      localStorage.setItem('cg_cart', JSON.stringify(c));
+    } catch(e){}
+  }
+  var su = (typeof smartstoreUrl === 'function') ? smartstoreUrl(name) : '';
+  if (su) { window.open(su, '_blank', 'noopener'); return false; }
+  location.href = 'checkout.html';
+  return false;
+}
+
+/* 히어로 배너 이동 */
+function heroGo(line){
+  if (typeof filterLine === 'function') filterLine(line || 'all');
+  const t = document.getElementById('all');
+  if (t) t.scrollIntoView({ behavior:'smooth', block:'start' });
+  return false;
+}
+
+/* 상품명 → 번호 */
+function matchNo(name){
+  var s = String(name||'');
+  if(s.indexOf('트래블')>-1 || s.toLowerCase().indexOf('travel')>-1){
+    var m = s.match(/\[(\d+)봉\]/);
+    var map = {'1':15,'3':11,'5':12,'10':13,'20':14};
+    return (m && map[m[1]]) || 11;
+  }
+  if(s.indexOf('레몬민트')>-1) return 16;
+  if(s.indexOf('그레이프')>-1) return 17;
+  var m2 = s.match(/(\d+)개입/);
+  var map2 = {'4':18,'6':19,'10':20,'20':21};
+  return (m2 && map2[m2[1]]) || 18;
+}
+
+function openDetail(card){
+  /* 모바일에서는 팝업 없이 상세 페이지로 바로 이동 */
+  var narrow = window.matchMedia('(max-width:768px)').matches ||
+               ('ontouchstart' in window && window.innerWidth < 900);
+  if (narrow) {
+    var _n = card.dataset.no || (function(){
+      var nm = card.querySelector('.name');
+      return nm ? matchNo(nm.textContent) : '';
+    })();
+    if (_n) {
+      var q = /[?&]qa=1/.test(location.search) ? '&qa=1' : '';
+      location.href = 'product.html?no=' + _n + q;
+      return;
+    }
+  }
+
+  /* 모바일(좁은 화면·터치)에서는 팝업 대신 상세 페이지로 바로 이동 */
+  try {
+    var narrow = window.innerWidth <= 820;
+    var touch = ('ontouchstart' in window) ||
+      (navigator.maxTouchPoints > 0) ||
+      window.matchMedia('(pointer:coarse)').matches;
+    if (narrow || touch) {
+      var no = card.dataset.no || (function(){
+        var nm = card.querySelector('.name');
+        return nm ? matchNo(nm.textContent) : '';
+      })();
+      if (no) {
+        var q = /[?&]qa=1/.test(location.search) ? '&qa=1' : '';
+        location.href = 'product.html?no=' + no + q;
+        return;
+      }
+    }
+  } catch (e) {}
+
+  const img = card.querySelector('.thumb img');
+  document.getElementById('dImg').src = img.src;
+  document.getElementById('dName').textContent = card.querySelector('.name').textContent;
+  document.getElementById('dLine').textContent = card.dataset.line === 'travel' ? 'TRAVEL-IT' : 'DEW-IT';
+  var _og = card.querySelector('.p-origin');
+  var _ogEl = document.getElementById('dOrigin');
+  if (_og) { _ogEl.textContent = _og.textContent; _ogEl.style.display = ''; }
+  else { _ogEl.textContent = ''; _ogEl.style.display = 'none'; }
+  const sale = card.querySelector('.p-sale').textContent;
+  document.getElementById('dSale').textContent = sale;
+  window._curCard = card;
+  try {
+    var _rn = card.dataset.no || '';
+    if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
+    if (window.resetDetailTab) resetDetailTab();
+    var _dd = document.getElementById('dDetail');
+    if (_dd) _dd.classList.remove('hide');
+    if (typeof loadDetailImgs === 'function') loadDetailImgs(_rn);
+    else if (typeof showDetail === 'function') showDetail(_rn);
+    var _di = document.getElementById('dImg');
+    if (_di) _di.parentElement.scrollTop = 0;
+  } catch(e) {}
+  document.getElementById('dBuy').href = 'checkout.html';
+    /* 상세 페이지 링크 — 카드에서 상품번호 추출 */
+    try{
+      var _no = card.dataset.no || (function(){
+        var nm = card.querySelector('.name');
+        return nm ? matchNo(nm.textContent) : '';
+      })();
+      var _df = document.getElementById('dFull');
+      if(_df && _no){ _df.href = 'product.html?no=' + _no; _df.style.display=''; }
+      else if(_df){ _df.style.display='none'; }
+    }catch(e){}
+  const np = document.getElementById('dNpay');
+  const su = smartstoreUrl(card.querySelector('.name').textContent);
+  if (su) { np.href = su; np.classList.add('show'); } else { np.classList.remove('show'); }
+  window._curLine = card.dataset.line;
+  const sel = document.getElementById('dOpt');
+  const opts = CG_OPTIONS[card.dataset.line] || [];
+  sel.innerHTML = opts.map(o => '<option>' + o.label + ' — ₩' + o.sale.toLocaleString() + '</option>').join('');
+  sel.selectedIndex = findOptIndex(card.dataset.line, card.querySelector('.name').textContent);
+  applyOpt();
+  document.getElementById('dDesc').textContent = (cgLang === 'en' && card.dataset.descEn) ? card.dataset.descEn : card.dataset.desc;
+  dPrice = Number(sale.replace(/[^0-9]/g,'')); dQty = 1; renderQty();
+  document.getElementById('detail').classList.remove('hide');
+  document.body.style.overflow = 'hidden';
+}
+function closeDetail(){ document.getElementById('detail').classList.add('hide'); document.body.style.overflow=''; }
+function chgQty(d){ dQty = Math.max(1, dQty + d); renderQty(); }
+function renderQty(){ document.getElementById('dQty').textContent = dQty; document.getElementById('dTotal').textContent = won(dPrice * dQty); }
+
+/* 카테고리 페이지 진입 (필터) */
+function filterLine(line){
+  document.querySelectorAll('#all .card').forEach(c => {
+    c.style.display = (line === 'all' || c.dataset.line === line) ? '' : 'none';
+    c.classList.add('inview');
+  });
+  const t = document.querySelector('#all .sec-title');
+  t.textContent = line === 'travel' ? 'Travel-it' : line === 'doit' ? 'Dew-it' : 'All Products';
+}
+
+/* 레이어 팝업 */
+function closePopup(today){
+  document.getElementById('popup').classList.add('hide');
+  document.body.style.overflow = '';
+  if (today) { try { localStorage.setItem('cg_popup_until', String(Date.now() + 864e5)); } catch(e){} }
+}
+(function(){
+      const p = document.getElementById('popup');
+      const qa = /[?&]qa=1/.test(location.search);
+      try {
+        const until = Number(localStorage.getItem('cg_popup_until') || 0);
+        if (!qa && Date.now() < until) p.classList.add('hide');
+      } catch(e){}
+  document.body.style.overflow = p.classList.contains('hide') ? '' : 'hidden';
+})();
+
+/* ══ 스크롤 잠금 안전장치 ══
+   레이어가 하나도 안 열려 있으면 스크롤을 반드시 되살린다. */
+function cgAnyLayerOpen(){
+  var byHide = ['popup','detail','boardLayer','joinPop'];
+  var byOpen = ['cartP','drawer','cartDim'];
+  var byOn   = ['ufPop','filmPop'];
+  var i, el;
+  for(i=0;i<byHide.length;i++){
+    el = document.getElementById(byHide[i]);
+    if (el && !el.classList.contains('hide')) return true;
+  }
+  for(i=0;i<byOpen.length;i++){
+    el = document.getElementById(byOpen[i]);
+    if (el && el.classList.contains('open')) return true;
+  }
+  for(i=0;i<byOn.length;i++){
+    el = document.getElementById(byOn[i]);
+    if (el && el.classList.contains('on')) return true;
+  }
+  /* 동적으로 만들어지는 팝업들 */
+  if (document.querySelector('.mo, .kko-pop, .cg-modal')) return true;
+  return false;
+}
+function cgUnlockIfIdle(){
+  if (!cgAnyLayerOpen()) {
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.touchAction = '';
+  }
+}
+/* 클릭·터치·키보드·뒤로가기·화면복귀 시 모두 확인 */
+['click','touchend','keyup'].forEach(function(ev){
+  document.addEventListener(ev, function(){ setTimeout(cgUnlockIfIdle, 60); }, {passive:true});
+});
+window.addEventListener('pageshow', cgUnlockIfIdle);
+window.addEventListener('popstate', function(){ setTimeout(cgUnlockIfIdle, 60); });
+document.addEventListener('visibilitychange', function(){
+  if (!document.hidden) setTimeout(cgUnlockIfIdle, 60);
+});
+/* ESC 로 열린 레이어 닫기 */
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  ['closePopup','closeDetail','closeBoardLayer','closeCart','filmClose']
+    .forEach(function(fn){ try{ if (typeof window[fn] === 'function') window[fn](); }catch(err){} });
+  var m = document.querySelector('.mo, .kko-pop');
+  if (m) m.remove();
+  setTimeout(cgUnlockIfIdle, 60);
+});
+/* 최후 보루 — 2초마다 확인 */
+
+window.addEventListener('pageshow', (e) => {
+  /* 뒤로가기로 복귀하면 브라우저가 이전 화면 상태를 그대로 되살려
+     드로어·레이어가 열린 채 남아 메뉴가 눌리지 않는 문제를 방지 */
+  try{
+    ['drawer','drawerDim'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.remove('open');
+    });
+    ['detail','boardLayer'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.classList.add('hide');
+    });
+    const cp=document.getElementById('cartP'), cd=document.getElementById('cartDim');
+    if(cp) cp.classList.remove('open'); if(cd) cd.classList.remove('open');
+    document.body.style.overflow='';
+  }catch(err){}
+  setTimeout(cgUnlockIfIdle, 60);
+});
+
+function toggleDrawer(open){
+  document.getElementById('drawer').classList.toggle('open', open);
+  document.getElementById('drawerDim').classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+/* 섹션 타이틀 블러 확대 등장 */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('inview'); io.unobserve(e.target); }
+}), { threshold: 0.4 });
+document.querySelectorAll('.sec-title').forEach(t => io.observe(t));
+const ioCard = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('inview'); ioCard.unobserve(e.target); }
+}), { threshold: 0.15 });
+document.querySelectorAll('.card').forEach(c => ioCard.observe(c));
+
+/* 이미지 로딩 실패 대비: 상품 사진은 플레이스홀더로, 비어버린 화보 레일은 섹션 숨김 */
+const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect width="100%" height="100%" fill="#f4f4f6"/><text x="50%" y="50%" text-anchor="middle" font-family="Arial" font-size="18" letter-spacing="4" fill="#c7c7d0">CHEWGUMI</text></svg>');
+document.querySelectorAll('.card .thumb img, .popup img, .lineup-card img').forEach(img => {
+  img.addEventListener('error', () => {
+    if (!img.dataset.err && img.src.includes('chewgumi.com')) {
+      img.dataset.err = '1';
+      img.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(img.src.replace(/^https?:\/\//,''));
+      return;
+    }
+    if (img.src !== PLACEHOLDER) img.src = PLACEHOLDER;
+  });
+});
+setTimeout(() => {
+  const rail = document.querySelector('.rail');
+  if (rail && rail.querySelectorAll('figure').length === 0) {
+    const sec = rail.closest('section'); if (sec) sec.style.display = 'none';
+  }
+}, 7000);
+
+const hd = document.querySelector('header');
+const setHead = () => {
+  hd.classList.add('solid');
+  hd.classList.toggle('shrink', (window.scrollY || 0) > 60);
+};
+window.addEventListener('scroll', setHead, { passive:true });
+/* 대형 게시판 레이어: 게시판 소스 내장 */
+const BOARDS = {
+  notice: { title:'Notice', sub:'츄구미의 새로운 소식을 알려드립니다', page:'notice.html', items:[
+    { t:'츄구미 자사몰 오픈 안내', m:'2026.07.01', badge:'공지', b:'안녕하세요, 츄구미입니다. 공식 자사몰이 오픈했습니다. 오픈 기념으로 전 상품 할인 판매 중이며, 회원 가입 시 2,000원 할인 쿠폰을 드립니다.', open:true },
+    { t:'배송 안내 (평일 오후 2시 이전 주문 시 당일 출고)', m:'2026.06.20', badge:'배송', b:'평일 오후 2시 이전 결제 완료 건은 당일 출고됩니다. 주말·공휴일 주문은 다음 영업일에 순차 출고되며, 출고 후 1~2일 내 수령하실 수 있습니다.' },
+    { t:'듀잇(Dew-it) 신제품 2종 출시 — 레몬민트 · 그레이프', m:'2026.06.02', b:'핀란드산 자일리톨 93% 함유 무설탕 캔디 듀잇이 레몬민트, 그레이프 2가지 맛으로 출시되었습니다. 4·6·10·20개입 구성으로 만나보세요.' },
+    { t:'교환·반품 안내', m:'2026.05.15', b:'식품 특성상 단순 변심에 의한 교환·반품은 미개봉 상태에 한해 수령 후 7일 이내 가능합니다. 상품 하자·오배송은 배송비 없이 처리해 드립니다. 고객센터 이메일 chewgumi24@gmail.com 으로 연락해 주세요.' } ] },
+  review: { title:'Review', sub:'실제 소비자들의 생생한 후기', page:'review.html', items:[
+    { t:'★★★★★ 새콤달콤 맛있어요!', m:'김O연 · Travel-it', b:'여행 갈 때마다 챙기는데 새콤달콤해서 아이들도 잘 먹어요.', open:true },
+    { t:'★★★★★ 외출할 때 하나씩 들고나가기 너무 좋네요', m:'박O준 · Travel-it', b:'파우치가 작아서 가방에 쏙 들어갑니다. 물 없이 먹을 수 있는 게 제일 편해요.' },
+    { t:'★★★★★ 비타민이 함유되어 있어서 편해요', m:'이O수 · Travel-it', b:'영양제를 자꾸 까먹었는데 젤리라 간식처럼 먹게 되네요.' },
+    { t:'★★★★★ 배송도 빠르고 진짜 비타민 먹는 맛이에여 !!!!', m:'최O민 · Travel-it', b:'주문 다음 날 바로 왔어요. 재구매 의사 있습니다.' },
+    { t:'★★★★☆ 귤향과 맛이 새콤달콤 맛있어요 !', m:'정O아 · Travel-it', b:'향이 인공적이지 않아서 좋아요. 대용량도 나오면 좋겠습니다.' } ] },
+  qna: { title:'Q&A', sub:'자주 묻는 질문을 모았습니다', page:'qna.html', items:[
+    { t:'배송은 얼마나 걸리나요?', m:'배송', badge:'Q', b:'평일 오후 2시 이전 결제 시 당일 출고되며, 출고 후 1~2일 내 도착합니다. 도서·산간 지역은 1~2일 더 걸릴 수 있습니다.', open:true },
+    { t:'하루에 몇 개까지 먹어도 되나요?', m:'섭취', badge:'Q', b:'트래블잇은 1일 1팩, 듀잇은 1일 2~3알을 권장합니다. 자일리톨 특성상 한 번에 많이 드시면 배가 불편할 수 있어요.' },
+    { t:'보관은 어떻게 하나요?', m:'보관', badge:'Q', b:'직사광선을 피해 서늘하고 건조한 곳에 보관해 주세요. 여름철에는 젤리가 말랑해질 수 있으나 품질에는 이상이 없습니다.' },
+    { t:'교환/반품은 어떻게 신청하나요?', m:'반품', badge:'Q', b:'미개봉 상태에 한해 수령 후 7일 이내 가능합니다. 이메일(chewgumi24@gmail.com)로 연락해 주세요.' },
+    { t:'대량 구매(단체·행사)도 가능한가요?', m:'구매', badge:'Q', b:'가능합니다. 수량과 일정에 따라 견적을 드리니 이메일로 문의해 주세요.' } ] }
+};
+/* 하단 배너 3초 자동 전환 */
+(function(){
+  var wrap=document.querySelector('.bb-wrap');
+  if(!wrap) return;
+  var slides=[].slice.call(wrap.querySelectorAll('.bb-slide'));
+  var dots=document.getElementById('bbDots');
+  if(slides.length<2) return;
+  if(dots){
+    dots.innerHTML=slides.map(function(_,i){return '<span'+(i?'':' class="on"')+'></span>';}).join('');
+  }
+  var ds=dots?[].slice.call(dots.children):[];
+  var now=0, timer=null;
+  function go(i){
+    now=(i+slides.length)%slides.length;
+    slides.forEach(function(s,k){s.classList.toggle('on',k===now);});
+    ds.forEach(function(d,k){d.classList.toggle('on',k===now);});
+  }
+  ds.forEach(function(d,i){d.onclick=function(e){e.preventDefault();stop();go(i);start();};});
+  function start(){ if(!timer) timer=setInterval(function(){go(now+1);},4000); }
+  function stop(){ if(timer){clearInterval(timer);timer=null;} }
+  wrap.addEventListener('mouseenter',stop);
+  wrap.addEventListener('mouseleave',start);
+  start();
+})();
+
+/* 사이트 내 가입·로그인 레이어 */
+/* ── Supabase 커뮤니티 DB 연동 (읽기: 공개 / 쓰기: 커뮤니티 회원) ── */
+const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const sbLoaded = {};
+let sbToken = null, sbUser = null;
+try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { sbToken = s.t; sbUser = s.u; } } catch(e){}
+
+function sbFetchBoard(key){
+  if (sbLoaded[key]) return;
+  fetch(SB_URL + '/rest/v1/posts?board=eq.' + key + '&select=title,content,meta,badge,source,source_url&order=created_at.desc',
+    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(rows => {
+      if (!Array.isArray(rows) || !rows.length) return;
+      BOARDS[key].items = rows.map((r, i) => ({ t: r.title, m: r.meta, badge: r.badge, b: r.content, src: r.source, srcUrl: r.source_url, open: i === 0 }));
+      sbLoaded[key] = true;
+      const layer = document.getElementById('boardLayer');
+      if (layer && !layer.classList.contains('hide')) {
+        const on = document.querySelector('.bl-tabs button.on');
+        if (on && on.dataset.b === key) renderBoard(key);
+      }
+      const ul = document.querySelector('.comm-list[data-key="' + key + '"]');
+      if (ul) ul.innerHTML = BOARDS[key].items.slice(0,3).map(i =>
+        `<li><span class="t">${i.t}</span><span class="d">${(i.m||'').replace('2026.','')}</span></li>`).join('');
+    })
+    .catch(() => {}); /* 실패 시 내장 데이터 그대로 표시 */
+}
+['notice','review','qna'].forEach(sbFetchBoard);
+
+function toggleWrite(){
+  const box = document.getElementById('blWrite');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  sbSyncWriteUI();
+}
+function sbSyncWriteUI(){
+  document.getElementById('wAuth').style.display = sbToken ? 'none' : 'block';
+  document.getElementById('wForm').style.display = sbToken ? 'block' : 'none';
+  document.getElementById('wUser').textContent = sbUser ? '· ' + sbUser : '';
+}
+function sbMsg(t){ document.getElementById('wMsg').textContent = t; }
+function sbSignup(){
+  const email = document.getElementById('wEmail').value.trim(), pw = document.getElementById('wPw').value;
+  if (!email || pw.length < 6) return sbMsg('이메일과 6자 이상 비밀번호를 입력해 주세요.');
+  fetch(SB_URL + '/auth/v1/signup', { method:'POST', headers:{ apikey: SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email, password: pw }) })
+    .then(r => r.json())
+    .then(d => {
+      if (d.access_token) { sbSetSession(d.access_token, email); sbMsg('가입 완료! 이제 글을 쓸 수 있습니다.'); }
+      else if (d.id || (d.user && d.user.id)) sbMsg('가입 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 로그인해 주세요.');
+      else sbMsg(d.msg || d.error_description || '가입에 실패했습니다. 이미 가입된 이메일일 수 있어요.');
+    }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
+}
+function sbLogin(){
+  const email = document.getElementById('wEmail').value.trim(), pw = document.getElementById('wPw').value;
+  if (!email || !pw) return sbMsg('이메일과 비밀번호를 입력해 주세요.');
+  fetch(SB_URL + '/auth/v1/token?grant_type=password', { method:'POST', headers:{ apikey: SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email, password: pw }) })
+    .then(r => r.json())
+    .then(d => {
+      if (d.access_token) { sbSetSession(d.access_token, email); sbMsg(''); }
+      else sbMsg('로그인 실패: 이메일·비밀번호를 확인하거나, 가입 메일 인증을 먼저 완료해 주세요.');
+    }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
+}
+function sbSetSession(t, email){
+  sbToken = t; sbUser = email.split('@')[0];
+  try { localStorage.setItem('cg_sb', JSON.stringify({ t: sbToken, u: sbUser })); } catch(e){}
+  sbSyncWriteUI();
+}
+function sbPost(){
+  const on = document.querySelector('.bl-tabs button.on');
+  const key = on ? on.dataset.b : 'review';
+  const title = document.getElementById('wTitle').value.trim();
+  const body = document.getElementById('wBody').value.trim();
+  if (!title || !body) return sbMsg('제목과 내용을 입력해 주세요.');
+  const today = new Date(); const meta = sbUser + ' · ' + today.getFullYear() + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + String(today.getDate()).padStart(2,'0');
+  fetch(SB_URL + '/rest/v1/posts', { method:'POST',
+    headers:{ apikey: SB_KEY, Authorization: 'Bearer ' + sbToken, 'Content-Type':'application/json', Prefer:'return=minimal' },
+    body: JSON.stringify({ board: key, title, content: body, meta, badge: key === 'qna' ? 'Q' : '' }) })
+    .then(r => {
+      if (r.status === 401) { sbToken = null; try{localStorage.removeItem('cg_sb');}catch(e){} sbSyncWriteUI(); return sbMsg('로그인이 만료되었습니다. 다시 로그인해 주세요.'); }
+      if (!r.ok) return sbMsg('등록에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      document.getElementById('wTitle').value = ''; document.getElementById('wBody').value = '';
+      sbLoaded[key] = false; sbFetchBoard(key); sbMsg('등록되었습니다!');
+    }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
+}
+
+function renderBoard(key){
+  sbFetchBoard(key);
+  const wb = document.getElementById('blWriteBtn');
+  if (wb) wb.style.display = key === 'notice' ? 'none' : 'block';
+  const w = document.getElementById('blWrite'); if (w && key === 'notice') w.style.display = 'none';
+  const d = BOARDS[key];
+  document.getElementById('blTitle').textContent = d.title;
+  document.getElementById('blSub').textContent = d.sub;
+  document.getElementById('blMore').href = d.page;
+  document.querySelectorAll('.bl-tabs button').forEach(b => b.classList.toggle('on', b.dataset.b === key));
+  document.getElementById('blList').innerHTML = d.items.map(i => `
+    <div class="bl-item${i.open ? ' open' : ''}">
+      <div class="bl-head" onclick="this.parentElement.classList.toggle('open')">
+        <span class="bl-t">${i.badge ? `<span class=\"bl-badge\">${i.badge}</span>` : ''}${i.t}</span>
+        <span class="bl-m">${i.m}</span>
+      </div>
+      <div class="bl-body">${i.b}${i.srcUrl ? `<a href="${i.srcUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);color:var(--ink);text-decoration:none;">${i.src || 'LINK'}에서 보기 →</a>` : ''}</div>
+    </div>`).join('');
+}
+function goBoard(ev,key){
+  try{
+    const layer=document.getElementById('boardLayer');
+    if(!layer) return true;               /* 레이어 없으면 링크대로 이동 */
+    openBoardLayer(key);
+    ev.preventDefault(); return false;
+  }catch(e){ return true; }               /* 오류 시 링크대로 이동 */
+}
+function openBoardLayer(key){
+  renderBoard(key);
+  document.getElementById('boardLayer').classList.remove('hide');
+  document.body.style.overflow = 'hidden';
+}
+function closeBoardLayer(){
+  document.getElementById('boardLayer').classList.add('hide');
+  document.body.style.overflow = '';
+}
+
+/* 사용자 사용 영상 목록 — assets/videos/ 에 올린 파일명만 적으면 됩니다.
+   (구글 드라이브 임베드는 드라이브 UI 노출·주소 유출 문제로 사용하지 않습니다) */
+/* 사용자 사용 영상
+   mp4 파일을 assets/videos/ 에 올리면 그 파일로 재생됩니다.
+   파일이 없으면 아래 drive 주소로 자동 전환됩니다. */
+const USER_VIDEOS = [
+  { file:'assets/videos/user-1.mp4', drive:'1AtkkqucQrLbTAnuqxvwEnkavVWtIgTSd',
+    title:'츄구미 사용 영상 1', poster:'assets/hero-3.jpg' },
+  { file:'assets/videos/user-2.mp4', drive:'1HnV1lrRMp6MLonyQ2aBoiJpb6TrTk5Hv',
+    title:'츄구미 사용 영상 2', poster:'assets/hero-2.jpg' }
+];
+(function(){
+  const g = document.getElementById('ufilmGrid');
+  if (!g) return;
+  if (!USER_VIDEOS.length) {
+    g.innerHTML = '<div class="ufilm-empty">첫 번째 영상의 주인공이 되어 주세요.<br>'
+      + '<a href="reports.html" style="color:var(--main);text-decoration:underline;'
+      + 'text-underline-offset:3px">의견 남기기 →</a></div>';
+    return;
+  }
+  g.innerHTML = USER_VIDEOS.map(function(v,n){
+    return '<div class="video-card" data-n="'+n+'">'
+      + '<video playsinline muted loop preload="metadata" poster="'+v.poster+'"'
+      + ' aria-label="'+v.title+'"><source src="'+v.file+'" type="video/mp4"></video>'
+      + '<button class="uf-play" type="button" aria-label="재생">'
+      + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></button>'
+      + '<div class="uf-ctl"><button type="button" class="uf-snd" aria-label="소리 켜기">🔇</button>'
+      + '<button type="button" class="uf-full" aria-label="전체화면">⛶</button></div>'
+      + '</div>';
+  }).join('');
+
+  [].slice.call(g.querySelectorAll('.video-card')).forEach(function(card){
+    const n = +card.dataset.n;
+    const v = card.querySelector('video');
+    const play = card.querySelector('.uf-play');
+    const snd = card.querySelector('.uf-snd');
+    const full = card.querySelector('.uf-full');
+    let fellBack = false;
+
+    function fallback(){
+      if (fellBack) return; fellBack = true;
+      card.innerHTML = '<iframe src="https://drive.google.com/file/d/'
+        + USER_VIDEOS[n].drive + '/preview" allow="autoplay; fullscreen"'
+        + ' allowfullscreen loading="lazy" title="'+USER_VIDEOS[n].title+'"></iframe>';
+    }
+    v.addEventListener('error', fallback);
+    const src = v.querySelector('source');
+    if (src) src.addEventListener('error', fallback);
+    setTimeout(function(){ if(!fellBack && v.readyState===0) fallback(); }, 3500);
+
+    function start(){
+      /* 다른 영상은 멈춘다 */
+      [].slice.call(g.querySelectorAll('video')).forEach(function(o){
+        if(o!==v && !o.paused){ o.pause(); o.closest('.video-card').classList.remove('playing'); }
+      });
+      v.play().then(function(){ card.classList.add('playing'); }).catch(fallback);
+    }
+    if (play) play.onclick = start;
+    v.addEventListener('click', function(){
+      if (v.paused) start();
+      else { v.pause(); card.classList.remove('playing'); }
+    });
+    if (snd) snd.onclick = function(e){
+      e.stopPropagation();
+      v.muted = !v.muted;
+      snd.textContent = v.muted ? '🔇' : '🔊';
+      snd.setAttribute('aria-label', v.muted ? '소리 켜기' : '소리 끄기');
+    };
+    if (full) full.onclick = function(e){
+      e.stopPropagation();
+      if (v.requestFullscreen) v.requestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    };
+  });
+
+  /* 화면 밖으로 나가면 정지 */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        const vv = e.target.querySelector('video');
+        if (!e.isIntersecting && vv && !vv.paused) {
+          vv.pause(); e.target.classList.remove('playing');
+        }
+      });
+    }, { threshold:.25 });
+    [].slice.call(g.querySelectorAll('.video-card')).forEach(function(c){ io.observe(c); });
+  }
+})();
+
+/* Community 요약 카드: BOARDS에서 3건씩 자동 추림 */
+document.querySelectorAll('.comm-list[data-key]').forEach(ul => {
+  const d = BOARDS[ul.dataset.key];
+  ul.innerHTML = d.items.slice(0,3).map(i =>
+    `<li><span class="t">${i.t}</span><span class="d">${i.m.replace('2026.','')}</span></li>`).join('');
+});
+
+/* 글래스 장바구니 */
+let CART = [];
+try { CART = JSON.parse(localStorage.getItem('cg_cart') || '[]'); } catch(e){ CART = []; }
+function saveCart(){ try { localStorage.setItem('cg_cart', JSON.stringify(CART)); } catch(e){} }
+function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
+function addToCart(){
+  if (!window._curCard) return;
+  const card = window._curCard;
+  const name = (window._curOpt && window._curOpt.name) || card.querySelector('.name').textContent.trim();
+  const found = CART.find(i => i.name === name);
+  if (found) found.qty += dQty;
+  else { var _im=card.querySelector('.thumb img'); CART.push({ name:name, price:dPrice, qty:dQty, img:(_im&&_im.src)||'' }); }
+  closeDetail(); openCart();
+}
+function cartQty(i, d){ CART[i].qty = Math.max(1, CART[i].qty + d); renderCart(); }
+function cartDel(i){ CART.splice(i,1); renderCart(); }
+/* 상품명으로 이미지 찾기 — 챗봇·구독 등에서 담으면 img가 없다 */
+function cartImg(it){
+  if (it && it.img) return it.img;
+  var nm = String((it && it.name) || '');
+  /* 화면의 상품 카드에서 같은 이름을 찾아 이미지를 가져온다 */
+  var cards = document.querySelectorAll('.grid .card');
+  for (var i = 0; i < cards.length; i++) {
+    var el = cards[i].querySelector('.name');
+    if (el && el.textContent.trim() === nm.trim()) {
+      var im = cards[i].querySelector('.thumb img');
+      if (im && im.src) return im.src;
+    }
+  }
+  /* 못 찾으면 라인별 기본 이미지 */
+  if (/트래블|travel/i.test(nm)) return 'assets/banner-travel-wide.jpg';
+  if (/듀잇|dew/i.test(nm))     return 'assets/banner-dew-wide.jpg';
+  if (/트리플|triple|드림|스파크|리셋/i.test(nm)) return 'assets/banner-new-product.jpg';
+  return 'assets/icon-192.png';
+}
+function renderCart(){
+  saveCart();
+  const list = document.getElementById('cList');
+  const n = CART.reduce((a,i)=>a+i.qty,0);
+  document.getElementById('cartN').textContent = n;
+  if (!CART.length) { list.innerHTML = '<div class="c-empty">장바구니가 비어 있습니다</div>'; document.getElementById('cTotal').textContent = '₩0'; return; }
+  list.innerHTML = CART.map((it,i) => `
+    <div class="c-item">
+      <img src="${cartImg(it)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='assets/icon-192.png';this.classList.add('c-noimg')">
+      <div class="c-info">
+        <div class="c-name">${it.name}</div>
+        <div class="c-price">${won(it.price)} · 소계 ${won(it.price*it.qty)}</div>
+        <a class="c-open" href="${productUrl(it.name)}" target="_blank" rel="noopener">공식몰에서 구매 →</a>
+      </div>
+      <div class="c-qty"><button onclick="cartQty(${i},-1)">−</button><span>${it.qty}</span><button onclick="cartQty(${i},1)">＋</button></div>
+      <button class="c-del" onclick="cartDel(${i})" aria-label="삭제">✕</button>
+    </div>`).join('');
+  document.getElementById('cTotal').textContent = won(CART.reduce((a,i)=>a+i.price*i.qty,0));
+  const btn = document.getElementById('cCheckout');
+  const note = document.getElementById('cNote');
+  const first = CART.length ? productUrl(CART[0].name) : (window.CG_SITE?CG_SITE.MALL:'https://chewgumi.com');
+  if (CART.length === 1) {
+    btn.href = 'checkout.html';
+    btn.textContent = '주문서 작성하기';
+    if (note) note.innerHTML = '공식몰 상품 페이지가 열립니다. <b>옵션·수량을 선택하고 [BUY NOW]</b>를 누르면 결제로 이어집니다.';
+  } else {
+    btn.href = 'checkout.html';
+    btn.textContent = '주문서 작성하기';
+    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 위 목록에서 상품별 <b>「공식몰에서 구매」</b>를 눌러 공식몰에 담아주신 뒤, 이 버튼으로 한 번에 결제하시면 됩니다.';
+  }
+  const bask = document.getElementById('cBasket');
+  if (bask) bask.textContent = '공식몰 장바구니 열기';
+}
+
+/* 링크·버튼 클릭 시 화면 전체 물방울 파동 */
+document.addEventListener('click', e => {
+  const t = e.target.closest('a, button');
+  if (!t) return;
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  r.style.left = e.clientX + 'px';
+  r.style.top  = e.clientY + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 800);
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePopup(false); closeDetail(); toggleDrawer(false); closeCart(); closeBoardLayer(); }
+});
+setHead();
+</script>
 
 
 <!-- 챗봇 상담 -->
@@ -10329,14 +11147,8 @@ body.drawer-on{
 /* 트리플잇 영역으로 이동할 때 머리글에 안 가리게 */
 #triple, .tri-sec{ scroll-margin-top:90px !important }
 
-/* ══════════════════════════════════════════════
-   메뉴바 — 흰 유리 · 제목은 언제나 보이게
-   ══════════════════════════════════════════════ */
-
-/* 메뉴바 흰색 유리 */
-.glass-bar,
-.gnb.glass-bar,
-header .glass-bar{
+/* 메뉴바 — 흰 유리 */
+.glass-bar, .gnb.glass-bar, header .glass-bar{
   background:rgba(255,255,255,.72) !important;
   border:1px solid rgba(255,255,255,.9) !important;
   -webkit-backdrop-filter:blur(22px) saturate(130%) !important;
@@ -10344,56 +11156,42 @@ header .glass-bar{
   box-shadow:0 8px 26px rgba(216,37,88,.10),
              inset 0 1px 0 rgba(255,255,255,.95) !important;
 }
-.gnb > li > a{
-  color:#17171c !important;
-  font-weight:600 !important;
-}
-.gnb > li:hover > a,
-.gnb > li > a:hover{
+.gnb > li > a{ color:#17171c !important; font-weight:600 !important }
+.gnb > li:hover > a{
   background:rgba(255,189,204,.34) !important;
   color:#D82558 !important;
   box-shadow:none !important;
 }
 .gnb > li > a::before{ content:none !important }
-
-/* 하위 메뉴도 흰색 */
 .gnb .sub{
   background:rgba(255,255,255,.94) !important;
   border:1px solid rgba(255,255,255,.9) !important;
-  box-shadow:0 12px 30px rgba(0,0,0,.10) !important;
 }
-.gnb .sub a{ color:#3a3035 !important }
 
-/* ── 제목이 흐리게 남는 문제 ── */
-/* 화면에 들어와야 보이던 효과를 없앱니다 */
-.sec-title,
-.sec-title.inview,
-.nl-title, .rev-head h2, .revsec h2{
+/* 제목이 흐리게 남지 않도록 */
+.sec-title, .sec-title.inview, .nl-title,
+.rev-head h2, .revsec h2{
   opacity:1 !important;
   filter:none !important;
   transform:none !important;
   translate:none !important;
   transition:none !important;
-  visibility:visible !important;
-}
-.sec-title{
-  color:#17171c !important;
-  font-weight:800 !important;
 }
 #best .sec-title{
   font-family:'Poppins','SUIT Variable',sans-serif !important;
-  font-size:clamp(24px,3.6vw,40px) !important;
   text-transform:uppercase !important;
+  font-weight:800 !important;
+  color:#17171c !important;
 }
 
-/* 되돌아왔을 때 흐리게 남는 것 방지 */
-[class*="inview"],
-.reveal, .fade-up, .up{
-  opacity:1 !important;
-  transform:none !important;
-  translate:none !important;
-  filter:none !important;
+/* 배너 점 */
+.hero .h-dots{ background:none !important; padding:0 !important; border:0 !important }
+.hero::before, .hero::after{ content:none !important }
+.hero .h-track{
+  transition:transform .62s cubic-bezier(.32,.72,0,1) !important;
 }
+.hero .h-track.nodrag{ transition:none !important }
+.hero-arw{ display:none !important }
 
 @media (max-width:900px){
   .glass-bar{ background:rgba(255,255,255,.9) !important }
@@ -11065,13 +11863,11 @@ header .glass-bar{
 /* 되돌아왔을 때 제목이 흐리게 남지 않도록 */
 (function(){
   function show(){
-    document.querySelectorAll('.sec-title, .nl-title, .reveal, .fade-up, .up')
-      .forEach(function(el){
-        el.classList.add('inview');
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-        el.style.filter = 'none';
-      });
+    document.querySelectorAll('.sec-title, .nl-title').forEach(function(el){
+      el.classList.add('inview');
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
   }
   ['DOMContentLoaded','load','pageshow'].forEach(function(e){
     window.addEventListener(e, show);
