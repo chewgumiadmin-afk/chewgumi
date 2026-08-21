@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v183 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v184 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10755,6 +10755,57 @@ header{
   max-height:none !important;
   overflow:visible !important;
 }
+
+/* ══════════════════════════════════════════════
+   팝업 탭 — 세 영역을 모두 두고, 고른 곳으로 이동
+   ══════════════════════════════════════════════ */
+
+/* 탭에 따라 감추지 않고 모두 보여줍니다 */
+.detail .d-info[data-tab] .d-detail,
+.detail .d-info[data-tab] .d-rev,
+.detail .d-info[data-tab] .d-notice{
+  display:block !important;
+}
+
+/* 각 영역에 이름표 */
+.detail .d-rev::before,
+.detail .d-notice::before{
+  display:block;
+  font-family:'Poppins','SUIT Variable',sans-serif;
+  font-size:10.5px;
+  letter-spacing:2px;
+  font-weight:700;
+  color:#D82558;
+  margin-bottom:11px;
+  padding-top:6px;
+}
+.detail .d-rev::before{ content:"REVIEW" }
+.detail .d-notice::before{ content:"DELIVERY & RETURN" }
+
+/* 사이 간격 */
+.detail .d-detail,
+.detail .d-rev,
+.detail .d-notice{
+  scroll-margin-top:64px !important;
+  margin-top:26px !important;
+  padding-top:22px !important;
+  border-top:1px solid rgba(0,0,0,.07) !important;
+}
+.detail .d-detail{
+  margin-top:18px !important;
+  padding-top:0 !important;
+  border-top:0 !important;
+}
+
+/* 탭 막대는 위에 붙어 따라옵니다 */
+.d-tabs{
+  position:sticky !important;
+  top:0 !important;
+  z-index:8 !important;
+  background:rgba(255,255,255,.94) !important;
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -11112,6 +11163,66 @@ header{
   setTimeout(watch, 800);
 
   window.cgFillDetail = fill;
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   팝업 탭 — 누르면 그 자리로 이동합니다
+   ══════════════════════════════════════════════ */
+(function(){
+  var MAP = {
+    detail: '#dDetail',
+    review: '#dRev',
+    info:   '.detail .d-notice'
+  };
+
+  function goTab(kind){
+    var info = document.querySelector('.detail .d-info');
+    var tabs = document.getElementById('dTabs');
+    if (!info || !tabs) return;
+
+    /* 어느 탭인지 표시 */
+    tabs.querySelectorAll('.dt').forEach(function(b){
+      b.classList.toggle('on', b.dataset.t === kind);
+    });
+    info.setAttribute('data-tab', kind);
+
+    /* 그 자리로 */
+    var target = info.querySelector(MAP[kind]) || document.querySelector(MAP[kind]);
+    if (!target) return;
+
+    setTimeout(function(){
+      /* 팝업 안에서 스크롤하는 경우 */
+      var box = info.scrollHeight > info.clientHeight + 20 ? info : null;
+      if (!box) {
+        var card = document.querySelector('.detail');
+        if (card && card.scrollHeight > card.clientHeight + 20) box = card;
+      }
+      if (!box) {
+        var dim = document.getElementById('detail');
+        if (dim && dim.scrollHeight > dim.clientHeight + 20) box = dim;
+      }
+
+      if (box) {
+        var pad = tabs.offsetHeight + 14;
+        var top = target.offsetTop - pad;
+        box.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      } else {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 90);
+  }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.d-tabs .dt');
+    if (!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    goTab(b.dataset.t || 'detail');
+  }, true);
+
+  window.cgGoTab = goTab;
 })();
 </script>
 </body>
