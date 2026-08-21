@@ -1,0 +1,40 @@
+/* 권한 없는 화면 */
+.cg-locked {
+  opacity: .38 !important;
+  cursor: not-allowed !important;
+  position: relative;
+  filter: grayscale(.4);
+}
+.cg-locked::after {
+  content: "🔒";
+  margin-left: 6px;
+  font-size: 11px;
+  opacity: .8;
+}
+.cg-locked:hover { opacity: .5 !important; }
+
+.cg-lock-msg {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(14px);
+  z-index: 9000;
+  max-width: min(88vw, 400px);
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: rgba(23, 23, 28, .92);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: center;
+  word-break: keep-all;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .26);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .26s, transform .26s;
+}
+.cg-lock-msg.on {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
