@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v180 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v181 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10895,6 +10895,101 @@ header{
     document.addEventListener('DOMContentLoaded', fix);
   else fix();
   
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   상품 카드 클릭 — 어떤 카드든 팝업이 열리도록
+   (없는 요소를 찾다 멈추던 문제를 막습니다)
+   ══════════════════════════════════════════════ */
+(function(){
+  var real = window.openDetail;
+
+  window.openDetail = function(card){
+    try {
+      if (typeof real === 'function') {
+        var r = real.apply(this, arguments);
+        var dim = document.getElementById('detail');
+        if (dim && !dim.classList.contains('hide')) return r;
+      }
+    } catch (e) {
+      /* 원래 코드가 멈췄습니다 — 직접 채웁니다 */
+    }
+
+    /* 손수 채워 넣기 */
+    try {
+      var dim = document.getElementById('detail');
+      if (!dim) return false;
+
+      function pick(sel){ var el = card.querySelector(sel); return el ? el.textContent.trim() : ''; }
+      function put(id, txt, show){
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = txt;
+        if (show !== undefined) el.style.display = show ? '' : 'none';
+      }
+
+      var img = card.querySelector('.thumb img');
+      var dImg = document.getElementById('dImg');
+      if (dImg && img) dImg.src = img.src;
+
+      put('dName', pick('.name'));
+      put('dLine', card.dataset.line === 'travel' ? 'TRAVEL-IT'
+                 : card.dataset.line === 'triple' ? 'TRIPLE-IT' : 'DEW-IT');
+
+      var org = pick('.p-origin');
+      put('dOrigin', org, !!org);
+      put('dSale', pick('.p-sale'));
+      put('dDesc', card.dataset.desc || '');
+
+      window._curCard = card;
+      window._curLine = card.dataset.line;
+
+      var no = card.dataset.no || '';
+      var buy = document.getElementById('dBuy');
+      if (buy) buy.href = 'checkout.html';
+
+      /* 스마트스토어 */
+      try {
+        var np = document.getElementById('dNpay');
+        if (np && typeof smartstoreUrl === 'function') {
+          var su = smartstoreUrl(pick('.name'));
+          if (su) { np.href = su; np.classList.add('show'); }
+          else np.classList.remove('show');
+        }
+      } catch (e2) {}
+
+      /* 구성 선택 */
+      try {
+        var sel = document.getElementById('dOpt');
+        if (sel && typeof CG_OPTIONS !== 'undefined') {
+          var opts = CG_OPTIONS[card.dataset.line] || [];
+          if (opts.length) {
+            sel.innerHTML = opts.map(function(o){
+              return '<option>' + o.label + ' — ₩' + o.sale.toLocaleString() + '</option>';
+            }).join('');
+            if (typeof findOptIndex === 'function')
+              sel.selectedIndex = findOptIndex(card.dataset.line, pick('.name'));
+            if (typeof applyOpt === 'function') applyOpt();
+          }
+        }
+      } catch (e3) {}
+
+      /* 후기 · 탭 · 상세 이미지 */
+      try { if (no && window.loadDetailReviews) loadDetailReviews(no); } catch (e4) {}
+      try { if (window.resetDetailTab) resetDetailTab(); } catch (e5) {}
+      try {
+        var dd = document.getElementById('dDetail');
+        if (dd) dd.classList.remove('hide');
+      } catch (e6) {}
+
+      dim.classList.remove('hide');
+      document.body.classList.add('modal-open');
+    } catch (e7) {}
+
+    return false;
+  };
 })();
 </script>
 </body>
