@@ -39,7 +39,7 @@ a.logo::before, .logo::before, .brand::before {
   display: block;
   width: clamp(96px, 13vw, 128px);
   height: clamp(34px, 4.6vw, 46px);
-  background: url('assets/logo.png') center/contain no-repeat;
+  background: url('assets/logo-rainbow.png') center/contain no-repeat;
 }
 a.logo img, .logo img, .brand img { display: none !important; }
 
