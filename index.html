@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v173 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v174 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -912,7 +912,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <h1 class="sr-only">ChewGumi 츄구미 — 한입에 건강을 더하다</h1>
 
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
-<div class="popup-dim" id="popup" onclick="if(event.target===this)closePopup(true)">
+<div class="popup-dim hide" id="popup" onclick="if(event.target===this)closePopup(true)">
   <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
     <div class="p-top"><img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true"></div>
     <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
@@ -5312,7 +5312,7 @@ img{max-width:100%}
 /* ══ 팝업 표시 규칙 — 최종 (앞선 규칙들을 정리) ══
    원칙: 열림이 기본, .hide 가 붙으면 숨김.
    여러 곳에 흩어져 충돌하던 것을 여기서 확정합니다. */
-.popup-dim{ display:flex !important }
+
 .popup-dim.hide{ display:none !important }
 
 .detail-dim{ display:flex !important }
@@ -5335,7 +5335,7 @@ header .logo img{
 
 /* 팝업은 하나만 — 중복 표시 방지 */
 .popup-dim > .popup ~ .popup{display:none !important}
-.popup-dim{display:flex !important}
+
 .popup-dim.hide{display:none !important}
 .popup{
   width:min(calc(100vw - 40px),400px) !important;
@@ -10737,6 +10737,42 @@ body.drawer-on, body.modal-open{
     min-height:50px !important;
   }
 }
+
+/* ══════════════════════════════════════════════
+   스크롤 — 팝업이 실제로 열렸을 때만 잠급니다
+   ══════════════════════════════════════════════ */
+
+/* 팝업은 hide 가 없을 때만 보입니다 */
+.popup-dim{ display:none }
+.popup-dim:not(.hide){ display:flex }
+.popup-dim.hide{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* 화면은 기본적으로 스크롤됩니다 */
+html{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:auto !important;
+  position:static !important;
+}
+body{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:auto !important;
+  min-height:100%;
+  position:static !important;
+  touch-action:auto !important;
+}
+
+/* 무언가 실제로 열렸을 때만 잠급니다 */
+body.drawer-on,
+body.modal-open{
+  overflow:hidden !important;
+  touch-action:none !important;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10885,6 +10921,40 @@ body.drawer-on, body.modal-open{
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', boot);
   else boot();
+})();
+</script>
+
+<script>
+/* 스크롤이 잠긴 채 남지 않도록 — 마지막 확인 */
+(function(){
+  function anyOpen(){
+    return document.querySelector('.drawer.open')
+        || document.querySelector('.detail-dim:not(.hide)')
+        || document.querySelector('.popup-dim:not(.hide)')
+        || document.querySelector('.uf-dim:not(.hide)')
+        || document.querySelector('.cart-dim:not(.hide)')
+        || document.querySelector('.board-dim:not(.hide)');
+  }
+  function fix(){
+    if (anyOpen()) return;
+    var b = document.body, d = document.documentElement;
+    b.classList.remove('modal-open','drawer-on');
+    if (b.style.overflow === 'hidden') b.style.overflow = '';
+    if (d.style.overflow === 'hidden') d.style.overflow = '';
+    b.style.position = '';
+    b.style.touchAction = '';
+    b.style.height = '';
+  }
+  ['pageshow','focus','click','touchend'].forEach(function(e){
+    window.addEventListener(e, function(){ setTimeout(fix, 60); }, { passive:true });
+  });
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) setTimeout(fix, 100);
+  });
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', fix);
+  else fix();
+  setInterval(fix, 1200);
 })();
 </script>
 </body>
