@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v204 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v205 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11519,6 +11519,36 @@ body.drawer-on{
     min-height:50px !important;
   }
   .detail .d-ss{ font-size:13px !important; min-height:48px !important }
+}
+
+/* ══════════════════════════════════════════════
+   팝업 순서 — 스마트스토어를 구매 버튼 바로 아래로
+   ══════════════════════════════════════════════ */
+.detail .d-info{
+  display:flex !important;
+  flex-direction:column !important;
+}
+.detail .d-info > .d-x     { order:0 }
+.detail .d-info > .d-line  { order:1 }
+.detail .d-info > .d-name  { order:2 }
+.detail .d-info > .d-price { order:3 }
+.detail .d-info > .d-desc  { order:4 }
+.detail .d-info > .d-opt   { order:5 }
+.detail .d-info > select   { order:5 }
+.detail .d-info > .d-qty   { order:6 }
+.detail .d-info > .d-total { order:7 }
+.detail .d-info > .d-acts  { order:8 }
+.detail .d-info > .d-ss    { order:9 }
+.detail .d-info > .d-tabs  { order:10 }
+.detail .d-info > .d-detail{ order:11 }
+.detail .d-info > .d-rev   { order:12 }
+.detail .d-info > .d-notice{ order:13 }
+.detail .d-info > .d-npay  { order:14 }
+
+/* 스마트스토어 — 구매 버튼 바로 아래 */
+.detail .d-ss{
+  align-self:stretch !important;
+  margin:10px 0 0 !important;
 }
 </style>
 <script>
