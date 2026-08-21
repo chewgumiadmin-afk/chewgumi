@@ -207,6 +207,18 @@ label:has(> input[type=checkbox]){
   .btn{ min-height:50px !important }
   .btns > .btn{ min-width:0 }
 }
+
+.cg-toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(14px);
+  z-index:9000;max-width:min(88vw,430px);
+  padding:14px 22px;border-radius:999px;
+  background:rgba(42,160,96,.95);color:#fff;
+  font-size:13.5px;font-weight:600;text-align:center;line-height:1.6;
+  box-shadow:0 10px 30px rgba(0,0,0,.24);
+  opacity:0;transition:opacity .26s, transform .26s;
+}
+.cg-toast.bad{ background:rgba(192,57,92,.95) }
+.cg-toast.on{ opacity:1;transform:translateX(-50%) translateY(0) }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
@@ -467,7 +479,8 @@ function save(id){
   fetch(SB+'/rest/v1/orders?id=eq.'+id,{method:'PATCH',
     headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
-  .then(r=>{if(r.ok)load();
+  .then(r=>{
+    if(r.ok){ try{ cgNotify(id, body.status, body.tracking_no); }catch(e){} load(); }
     else alert(r.status===401?'로그인이 만료되었습니다.':'저장 권한이 없습니다. 운영자 계정으로 로그인해 주세요.');})
   .catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
@@ -887,5 +900,66 @@ sync();
 <script src="assets/push.js" defer></script>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
+
+<script>
+/* ══════════════════════════════════════════════
+   상태를 바꾸면 고객에게 안내 메일을 보냅니다
+   ══════════════════════════════════════════════ */
+(function(){
+  var FN = SB + '/functions/v1/order-notify';
+  var KR = { paid:'결제 완료', preparing:'상품 준비 중',
+             shipping:'발송 완료', delivered:'배송 완료', cancelled:'주문 취소' };
+  var LAST = {};
+
+  window.cgNotify = function(id, status, tracking){
+    if (!KR[status]) return;
+    if (LAST[id] === status) return;
+
+    var el = document.getElementById('st' + id);
+    var no = '';
+    try {
+      var box = el.closest('.o-row') || el.closest('.order')
+             || el.closest('li') || el.closest('tr') || el.parentElement.parentElement;
+      no = (box.textContent.match(/\d{8}-\d{4,7}/) || [])[0] || '';
+    } catch(e){}
+    if (!no) { LAST[id] = status; return; }
+
+    if (status === 'shipping' && !tracking) {
+      alert('운송장번호를 먼저 넣어주세요.\n넣으시면 고객에게 배송 조회 링크가 함께 갑니다.');
+      return;
+    }
+    if (!confirm('고객에게 「' + KR[status] + '」 안내 메일을 보낼까요?\n\n주문 ' + no)) {
+      LAST[id] = status;
+      return;
+    }
+
+    fetch(FN, { method:'POST',
+      headers:{ apikey:KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ order_no: no, kind: status }) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      LAST[id] = status;
+      var t = document.createElement('div');
+      t.className = 'cg-toast' + (d.ok ? '' : ' bad');
+      t.textContent = d.ok
+        ? '안내 메일을 보냈습니다 · ' + (d.to || []).join(', ')
+        : '메일을 보내지 못했습니다 · ' + (d.error || '');
+      document.body.appendChild(t);
+      setTimeout(function(){ t.classList.add('on'); }, 20);
+      setTimeout(function(){ t.remove(); }, 3600);
+    })
+    .catch(function(){ alert('메일을 보내지 못했습니다.'); });
+  };
+
+  /* 목록을 그린 뒤 지금 상태를 기억해 둡니다 */
+  window.cgRemember = function(){
+    document.querySelectorAll('select[id^="st"]').forEach(function(s){
+      var id = s.id.replace(/^st/, '');
+      if (LAST[id] === undefined) LAST[id] = s.value;
+    });
+  };
+  setInterval(function(){ try{ cgRemember(); }catch(e){} }, 1500);
+})();
+</script>
 </body>
 </html>
