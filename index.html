@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v185 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v186 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8917,29 +8917,13 @@ body, input, select, textarea, button,
 }
 
 /* 상세 이미지 사이 번호 */
-#dDetailIn{ position:relative !important }
-.d-imgno{
-  position:absolute !important;
-  right:12px !important;
-  bottom:12px !important;
-  width:95px !important;
-  height:39px !important;
-  border-radius:999px !important;
-  background:rgba(255,255,255,.6) !important;
-  color:#17171c !important;
-  font-size:15px !important;
-  font-weight:400 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  z-index:3 !important;
-  pointer-events:none !important;
-}
+
+
 
 @media (max-width:768px){
   .nl-head{ margin-bottom:20px !important }
   .nl-grid{ gap:12px !important }
-  .d-pageno, .d-imgno{ width:76px !important; height:32px !important; font-size:12.5px !important }
+  .d-pageno, 
 }
 </style>
 <script src="assets/nav.js" defer></script>
@@ -10040,52 +10024,7 @@ body, input, select, textarea, button,
 })();
 </script>
 
-<script>
-/* 상세정보에 몇 장 중 몇 장인지 표시 */
-(function(){
-  function mark(){
-    var box = document.getElementById('dDetailImgs') || document.getElementById('dDetailIn');
-    if (!box) return;
-    var imgs = box.querySelectorAll('img');
-    if (!imgs.length) return;
 
-    var old = box.querySelector('.d-imgno');
-    if (old) old.remove();
-    var tag = document.createElement('span');
-    tag.className = 'd-imgno';
-    tag.textContent = '1 / ' + imgs.length;
-    box.appendChild(tag);
-
-    /* 스크롤에 따라 번호가 바뀝니다 */
-    var wrap = box.closest('.d-info') || box.parentElement;
-    function upd(){
-      var mid = window.innerHeight / 2;
-      var now = 1;
-      for (var i = 0; i < imgs.length; i++) {
-        var r = imgs[i].getBoundingClientRect();
-        if (r.top <= mid && r.bottom >= 0) { now = i + 1; break; }
-      }
-      tag.textContent = now + ' / ' + imgs.length;
-    }
-    var _t = null;
-    function slow(){ if (_t) return; _t = setTimeout(function(){ _t = null; upd(); }, 250); }
-    if (wrap) wrap.addEventListener('scroll', slow, { passive:true });
-    window.addEventListener('scroll', slow, { passive:true });
-    upd();
-  }
-
-  if (window.MutationObserver) {
-    var t = null;
-    new MutationObserver(function(){
-      clearTimeout(t);
-      t = setTimeout(mark, 300);
-    }).observe(document.documentElement, { childList:true, subtree:true });
-  }
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', mark);
-  else mark();
-})();
-</script>
 <script src="assets/drag-fab.js" defer></script>
 <style>
 /* ══ 리뷰를 풍성하게 ══ */
@@ -10913,6 +10852,19 @@ header{
 
 @media (max-width:640px){
   .detail .d-rev-list .d-rv img{ width:66px !important; height:66px !important }
+}
+
+/* 상세 이미지 위 번호 표시 없앰 */
+.d-imgno,
+#dDetailIn .d-imgno,
+.detail .d-imgno{
+  display:none !important;
+  content:none !important;
+}
+#dDetailIn::after,
+.d-detail-in::after{
+  content:none !important;
+  display:none !important;
 }
 </style>
 <script>
