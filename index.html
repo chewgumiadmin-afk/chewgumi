@@ -980,14 +980,14 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <section class="hero-sec">
       <div class="hero" id="heroSlider" role="region" aria-label="브랜드 배너">
         <div class="h-track" id="hTrack">
-          <a class="hslide" href="#all" onclick="filterLine('doit')"
-             style="background-image:url('assets/hero-1.jpg')" aria-label="듀잇 보기"></a>
-          <a class="hslide" href="#all" onclick="filterLine('doit')"
-             style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 보기"></a>
-          <a class="hslide" href="#all" onclick="filterLine('travel')"
-             style="background-image:url('assets/hero-3.jpg')" aria-label="트래블잇 보기"></a>
           <a class="hslide" href="#all" onclick="filterLine('all')"
-             style="background-image:url('assets/hero-4.jpg')" aria-label="트리플잇 보기"></a>
+             style="background-image:url('assets/hero-1.jpg')" aria-label="트리플잇 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('doit')"
+             style="background-image:url('assets/hero-2.jpg')" aria-label="듀잇 그레이프 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('doit')"
+             style="background-image:url('assets/hero-3.jpg')" aria-label="듀잇 레몬민트 보기"></a>
+          <a class="hslide" href="#all" onclick="filterLine('travel')"
+             style="background-image:url('assets/hero-4.jpg')" aria-label="트래블잇 보기"></a>
         </div>
       </div>
       <div class="hero-bar">
@@ -10552,7 +10552,38 @@ body, input, select, textarea, button,
     if(document.body.style.overflow==='hidden') document.body.style.overflow='';
     document.body.classList.remove('modal-open','drawer-on');
     document.documentElement.style.overflowY='auto';
-  }, 3000);
+  }, 8000);
+})();
+</script>
+<style>
+/* ══ 스크롤 성능 개선 ══
+   유리 효과(backdrop-filter)는 스크롤할 때마다 화면을 다시 계산해
+   PC 에서 특히 버벅입니다. 화면에 실제로 떠 있는 층에만 남깁니다. */
+@media(min-width:900px){
+  .card, .panel, .prod-card, .rev-card, .sec, .box{
+    backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  }
+}
+/* 스크롤 중에는 모든 유리 효과를 잠시 끕니다 */
+body.cg-scrolling *{
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  transition:none !important;
+}
+/* 배너·상품 이미지는 별도 층으로 올려 다시 그리는 범위를 줄입니다 */
+.hero, .h-track, .hslide{ will-change:transform; contain:paint }
+.card, .prod-card{ contain:layout paint }
+</style>
+<script>
+/* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
+(function(){
+  var t=null;
+  addEventListener('scroll', function(){
+    if(!t) document.body.classList.add('cg-scrolling');
+    clearTimeout(t);
+    t=setTimeout(function(){
+      document.body.classList.remove('cg-scrolling'); t=null;
+    }, 140);
+  }, {passive:true});
 })();
 </script>
 </body>
