@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v202 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v203 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1524,6 +1524,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
         
         </div>
+        <a class="d-ss" id="dSS" href="#" target="_blank" rel="noopener"><span class="npay">N Pay</span> 스마트스토어에서 구매</a>
         <div class="d-tabs" id="dTabs" role="tablist">
           <button class="dt on" data-t="detail" role="tab">상세정보</button>
           <button class="dt" data-t="review" role="tab">리뷰 <em id="dtRevN">0</em></button>
@@ -11432,6 +11433,95 @@ body.drawer-on{
     min-height:50px !important;
   }
 }
+
+/* ══════════════════════════════════════════════
+   구매 버튼 — 자사몰 결제 · 스마트스토어 따로
+   ══════════════════════════════════════════════ */
+.detail .d-acts{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  gap:10px !important;
+  width:100% !important;
+  margin-top:16px !important;
+}
+.detail .d-acts .d-buy,
+.detail .d-acts .d-cart{
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:999px !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:1px !important;
+  white-space:nowrap !important;
+  text-decoration:none !important;
+}
+.detail .d-acts .d-buy{
+  background:linear-gradient(135deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  border:0 !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.28) !important;
+}
+.detail .d-acts .d-cart{
+  background:#fff !important;
+  color:#D82558 !important;
+  border:1.6px solid #D82558 !important;
+}
+
+/* 스마트스토어 — 초록 */
+.detail .d-ss{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  width:100% !important;
+  min-height:52px !important;
+  margin-top:10px !important;
+  padding:0 18px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:#03C75A !important;
+  color:#fff !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  letter-spacing:.3px !important;
+  text-decoration:none !important;
+  box-sizing:border-box !important;
+  box-shadow:0 5px 16px rgba(3,199,90,.26) !important;
+}
+.detail .d-ss:active{ transform:scale(.99) }
+.detail .d-ss .npay{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:2px 8px;
+  border-radius:6px;
+  background:#fff;
+  color:#03C75A;
+  font-size:11.5px;
+  font-weight:900;
+  letter-spacing:0;
+}
+.detail .d-ss.hide{ display:none !important }
+
+/* 옛 버튼은 감춤 */
+.detail .d-npay, .detail .d-npay.show, .d-payhint{ display:none !important }
+
+@media (max-width:640px){
+  .detail .d-acts{ gap:8px !important }
+  .detail .d-acts .d-buy,
+  .detail .d-acts .d-cart{
+    font-size:13px !important;
+    letter-spacing:.4px !important;
+    padding:0 12px !important;
+    min-height:50px !important;
+  }
+  .detail .d-ss{ font-size:13px !important; min-height:48px !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -12126,6 +12216,39 @@ body.drawer-on{
     document.addEventListener('DOMContentLoaded', start);
   else start();
   setTimeout(start, 600);
+})();
+</script>
+
+<script>
+/* 스마트스토어 버튼 — 상품에 맞는 주소 연결 */
+(function(){
+  var STORE = {
+    doit:   'https://smartstore.naver.com/chewgumi/products/13393122244',
+    travel: 'https://smartstore.naver.com/chewgumi',
+    triple: ''
+  };
+
+  function set(){
+    var btn = document.getElementById('dSS');
+    var card = window._curCard;
+    if (!btn) return;
+    var line = (card && card.dataset && card.dataset.line) || '';
+    var url = STORE[line] || '';
+    if (url) { btn.href = url; btn.classList.remove('hide'); }
+    else btn.classList.add('hide');
+  }
+
+  var dim = document.getElementById('detail');
+  if (dim && window.MutationObserver && !dim.dataset.ssWatch) {
+    dim.dataset.ssWatch = '1';
+    new MutationObserver(function(){
+      if (!dim.classList.contains('hide')) setTimeout(set, 150);
+    }).observe(dim, { attributes:true, attributeFilter:['class'] });
+  }
+  document.addEventListener('click', function(e){
+    var c = e.target.closest && e.target.closest('.card');
+    if (c) setTimeout(set, 300);
+  }, true);
 })();
 </script>
 </body>
