@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v178 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v179 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -2020,7 +2020,7 @@ document.addEventListener('keydown', function(e){
   setTimeout(cgUnlockIfIdle, 60);
 });
 /* 최후 보루 — 2초마다 확인 */
-setInterval(cgUnlockIfIdle, 2000);
+
 window.addEventListener('pageshow', (e) => {
   /* 뒤로가기로 복귀하면 브라우저가 이전 화면 상태를 그대로 되살려
      드로어·레이어가 열린 채 남아 메뉴가 눌리지 않는 문제를 방지 */
@@ -9543,7 +9543,7 @@ body, input, select, textarea, button,
   document.addEventListener('visibilitychange', function(){
     if(document.visibilityState==='visible') setTimeout(unlock,120);
   });
-  setInterval(unlock, 2000);
+  
   unlock();
 })();
 </script>
@@ -10067,8 +10067,10 @@ body, input, select, textarea, button,
       }
       tag.textContent = now + ' / ' + imgs.length;
     }
-    if (wrap) wrap.addEventListener('scroll', upd, { passive:true });
-    window.addEventListener('scroll', upd, { passive:true });
+    var _t = null;
+    function slow(){ if (_t) return; _t = setTimeout(function(){ _t = null; upd(); }, 250); }
+    if (wrap) wrap.addEventListener('scroll', slow, { passive:true });
+    window.addEventListener('scroll', slow, { passive:true });
     upd();
   }
 
@@ -10623,6 +10625,49 @@ body.drawer-on, body.modal-open{ overflow:hidden !important }
   aspect-ratio:auto !important;
   z-index:1 !important;
 }
+
+/* ══════════════════════════════════════════════
+   화면 떨림 줄이기
+   ══════════════════════════════════════════════ */
+
+/* 스크롤바가 나타났다 사라지며 흔들리는 것 방지 */
+html{
+  scrollbar-gutter:stable !important;
+  overflow-y:scroll !important;
+}
+
+/* 머리글 — 흐림 효과가 스크롤마다 다시 그려져 떨립니다 */
+header{
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  background:rgba(255,255,255,.97) !important;
+  will-change:auto !important;
+  transform:translateZ(0);
+}
+
+/* 배너는 크기가 고정돼 밀리지 않습니다 */
+.hero{
+  aspect-ratio:1630/760 !important;
+  contain:layout !important;
+}
+.hero .hs-img{
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+
+/* 떠 있는 버튼이 다시 그려지지 않게 */
+.float-wrap, .cgbot-fab, .kko-fab, .fl-btns{
+  will-change:auto !important;
+  transform:translateZ(0);
+}
+
+/* 흔들림에 민감한 분 배려 */
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important;
+    transition-duration:.01ms !important;
+  }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10757,7 +10802,7 @@ body.drawer-on, body.modal-open{ overflow:hidden !important }
   function boot(){
     build();
     unlock();
-    setInterval(unlock, 2000);
+    
     document.addEventListener('visibilitychange', function(){
       if (document.hidden) clearInterval(timer); else play();
     });
@@ -10799,7 +10844,7 @@ body.drawer-on, body.modal-open{ overflow:hidden !important }
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', fix);
   else fix();
-  setInterval(fix, 1200);
+  
 })();
 </script>
 </body>
