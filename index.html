@@ -1662,7 +1662,7 @@ document.querySelectorAll('[data-en]').forEach(el => { el.dataset.ko = el.innerH
   const box = document.getElementById('heroSlider');
   if (!box) return;
   const slides = box.querySelectorAll('.slide');
-  if (!slides.length) return;   /* 지금 마크업은 .hslide 라 이 코드는 쓰지 않습니다 */
+  if (!slides.length) return;
   const dotsBox = document.getElementById('heroDots');
   let cur = 0, timer = null;
   slides.forEach((_, i) => {
@@ -4036,6 +4036,24 @@ body.at-foot .kko-fab{
     dotBox.appendChild(b);
   });
   var dots=[].slice.call(dotBox.children);
+
+  /* 좌우 넘김 버튼 — CSS(.hero-arw)는 있는데 요소가 없어 동작하지 않았습니다 */
+  if(!hero.querySelector('.hero-arw')){
+    [['prev','이전 배너','M15 5 8 12l7 7'],['next','다음 배너','M9 5l7 7-7 7']]
+      .forEach(function(a){
+        var b=document.createElement('button');
+        b.type='button'; b.className='hero-arw '+a[0];
+        b.setAttribute('aria-label',a[1]);
+        b.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">'
+          +'<path d="'+a[2]+'" fill="none" stroke="currentColor" stroke-width="2.2" '
+          +'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        b.addEventListener('click',function(e){
+          e.preventDefault(); e.stopPropagation();
+          stop(); go(a[0]==='prev' ? now-1 : now+1); start();
+        });
+        hero.appendChild(b);
+      });
+  }
   var elNow=document.getElementById('hbNow'), elAll=document.getElementById('hbAll');
   if(elAll) elAll.textContent=n;
 
@@ -10617,5 +10635,21 @@ body.cg-scrolling *{
   .catch(function(){});
 })();
 </script>
+<style>
+/* 좌우 넘김 버튼 기본 모양 — 흩어진 규칙이 없을 때를 대비 */
+.hero-arw{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:44px; height:44px; border-radius:999px; border:0; cursor:pointer;
+  background:rgba(255,255,255,.82); color:#2A1B21; z-index:6;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.14); backdrop-filter:blur(6px);
+}
+.hero-arw:active{ transform:translateY(-50%) scale(.94) }
+.hero-arw.prev{ left:16px } .hero-arw.next{ right:16px }
+@media(max-width:640px){
+  .hero-arw{ width:38px; height:38px }
+  .hero-arw.prev{ left:8px } .hero-arw.next{ right:8px }
+}
+</style>
 </body>
 </html>
