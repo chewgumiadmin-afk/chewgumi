@@ -4054,6 +4054,18 @@ body.at-foot .kko-fab{
   });
   var dots=[].slice.call(dotBox.children);
 
+  /* 밖에서 점을 다시 만든 뒤 슬라이더를 재구성할 수 있도록 노출 */
+  window.cgHeroGo = function(i){ stop(); go(i); start(); };
+  window.cgHeroReset = function(){
+    dots = [].slice.call(dotBox.children);
+    slides = [].slice.call(track.children);
+    n = slides.length || 1;
+    dots.forEach(function(b,i){
+      b.onclick = function(){ stop(); go(i); start(); };
+    });
+    now = 0; place(false); stop(); start();
+  };
+
   /* 좌우 넘김 버튼 — CSS(.hero-arw)는 있는데 요소가 없어 동작하지 않았습니다 */
   if(!hero.querySelector('.hero-arw')){
     [['prev','이전 배너','M15 5 8 12l7 7'],['next','다음 배너','M9 5l7 7-7 7']]
@@ -10645,9 +10657,24 @@ body.cg-scrolling *{
         + ' style="background-image:url(\''+url.replace(/'/g,'')+'\')"'
         + ' aria-label="'+alt+'"></a>';
     }).join('');
-    if(d) d.innerHTML='';                       /* 점은 슬라이더가 다시 만듭니다 */
+    /* 점(dot)을 배너 수만큼 다시 만듭니다.
+       앞서 비우기만 하고 다시 만들지 않아 점이 사라졌습니다. */
+    if(d){
+      d.innerHTML='';
+      rows.forEach(function(_,i){
+        var b=document.createElement('button');
+        b.type='button'; b.setAttribute('role','tab');
+        b.setAttribute('aria-label',(i+1)+'번 배너');
+        if(i===0) b.classList.add('on');
+        b.addEventListener('click',function(){
+          if(typeof window.cgHeroGo==='function') window.cgHeroGo(i);
+        });
+        d.appendChild(b);
+      });
+    }
+    var elAll=document.getElementById('hbAll');
+    if(elAll) elAll.textContent=rows.length;
     if(typeof window.cgHeroReset==='function') window.cgHeroReset(rows.length);
-    else window.dispatchEvent(new Event('resize'));
   })
   .catch(function(){});
 })();
