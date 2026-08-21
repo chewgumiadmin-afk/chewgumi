@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v182 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v183 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11030,44 +11030,30 @@ header{
 })();
 </script>
 
+
+
 <script>
 /* ══════════════════════════════════════════════
-   팝업을 열면 상세 이미지를 함께 불러옵니다
-   (「상세 이미지 보기」 버튼을 없앤 뒤로 아무도 부르지 않았습니다)
+   팝업 상세 이미지 — DB 에서 직접 불러옵니다
    ══════════════════════════════════════════════ */
 (function(){
-  var last = '';
+  var SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K  = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var doing = '';
 
-  function loadImgs(){
-    var box = document.getElementById('dDetail');
+  function fill(no){
     var inner = document.getElementById('dDetailIn');
-    var card = window._curCard;
-    if (!box || !inner || !card) return;
+    var box   = document.getElementById('dDetail');
+    if (!inner || !no) return;
+    if (doing === no) return;
+    doing = no;
 
-    var no = card.dataset.no || '';
-    if (!no || no === last) return;
-    last = no;
-
-    box.classList.remove('hide');
-
-    /* 원래 불러오기 코드를 씁니다 */
-    if (typeof window.toggleDetailImgs === 'function') {
-      try {
-        /* 접혀 있으면 펴면서 불러옵니다 */
-        box.classList.add('hide');
-        window.toggleDetailImgs();
-        box.classList.remove('hide');
-        return;
-      } catch (e) {}
-    }
-
-    /* 원래 코드가 안 되면 직접 불러옵니다 */
-    var SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
-    var K = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+    if (box) box.classList.remove('hide');
     inner.innerHTML = '<div class="d-detail-load">상세 이미지를 불러오는 중…</div>';
 
-    fetch(SB + '/rest/v1/products?select=detail_images&id=eq.' + no,
-      { headers: { apikey: K, Authorization: 'Bearer ' + K } })
+    fetch(SB + '/rest/v1/products?select=detail_images&id=eq.' + encodeURIComponent(no), {
+      headers: { apikey: K, Authorization: 'Bearer ' + K }
+    })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){
       var p = (rows || [])[0];
@@ -11077,31 +11063,55 @@ header{
         return;
       }
       inner.innerHTML = list.map(function(src, i){
-        return '<img src="' + src + '" alt="상세 이미지 ' + (i+1) + '" '
-          + (i < 2 ? '' : 'loading="lazy" ') + 'referrerpolicy="no-referrer">';
+        return '<img src="' + String(src).replace(/"/g, '&quot;') + '" '
+          + 'alt="상세 이미지 ' + (i + 1) + '" '
+          + (i < 2 ? '' : 'loading="lazy" ')
+          + 'referrerpolicy="no-referrer" '
+          + 'style="width:100%;height:auto;display:block;margin:0">';
       }).join('');
     })
     .catch(function(){
       inner.innerHTML = '<div class="d-detail-load">불러오지 못했습니다.</div>';
+      doing = '';
     });
   }
 
-  /* 팝업이 열릴 때마다 */
-  var dim = document.getElementById('detail');
-  if (dim && window.MutationObserver) {
+  function now(){
+    var card = window._curCard;
+    var no = (card && card.dataset && card.dataset.no) || '';
+    if (no) fill(no);
+  }
+
+  /* 팝업이 열릴 때 */
+  function watch(){
+    var dim = document.getElementById('detail');
+    if (!dim || dim.dataset.imgWatch) return;
+    dim.dataset.imgWatch = '1';
+    if (!window.MutationObserver) return;
     new MutationObserver(function(){
-      if (!dim.classList.contains('hide')) setTimeout(loadImgs, 120);
-      else last = '';
+      if (dim.classList.contains('hide')) { doing = ''; return; }
+      setTimeout(now, 150);
     }).observe(dim, { attributes:true, attributeFilter:['class'] });
   }
 
-  /* 상세정보 탭을 누를 때도 */
+  /* 카드를 누를 때도 곧바로 */
   document.addEventListener('click', function(e){
-    var b = e.target.closest && e.target.closest('.d-tabs .dt');
-    if (b && b.dataset.t === 'detail') setTimeout(loadImgs, 100);
+    var card = e.target.closest && e.target.closest('.card');
+    if (card && card.dataset && card.dataset.no) {
+      doing = '';
+      setTimeout(function(){ fill(card.dataset.no); }, 260);
+      return;
+    }
+    var tab = e.target.closest && e.target.closest('.d-tabs .dt');
+    if (tab && tab.dataset.t === 'detail') setTimeout(now, 120);
   }, true);
 
-  window.cgLoadDetailImgs = loadImgs;
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', watch);
+  else watch();
+  setTimeout(watch, 800);
+
+  window.cgFillDetail = fill;
 })();
 </script>
 </body>
