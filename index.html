@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v198 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v199 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11286,6 +11286,86 @@ body.drawer-on{
   .hero > .h-dots button{ width:7px !important; height:7px !important }
   .hero > .h-dots button.on{ width:22px !important }
 }
+
+/* ══════════════════════════════════════════════
+   메인 배너 v199 — 겹쳐 놓고 하나씩
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  background:#FFE4E6 !important;
+  border-radius:22px !important;
+}
+.cgb-wrap{
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+  z-index:1;
+}
+.cgb-slide{
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .6s ease, visibility .6s;
+  text-decoration:none;
+}
+.cgb-slide.on{
+  opacity:1;
+  visibility:visible;
+}
+.cgb-img{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  display:block !important;
+  border-radius:0 !important;
+}
+.cgb-dots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:18px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  gap:8px !important;
+  z-index:20 !important;
+  background:none !important;
+  padding:0 !important;
+  border:0 !important;
+}
+.cgb-dot{
+  width:9px;
+  height:9px;
+  border:0;
+  padding:0;
+  border-radius:99px;
+  background:rgba(255,255,255,.62);
+  cursor:pointer;
+  flex:none;
+  transition:width .3s, background .25s;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.cgb-dot:hover{ background:rgba(255,255,255,.9) }
+.cgb-dot.on{
+  background:#D82558;
+  width:28px;
+}
+.hero-bar{ display:none !important }
+
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+  .cgb-dots{ bottom:12px !important }
+  .cgb-dot{ width:7px; height:7px }
+  .cgb-dot.on{ width:22px }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -11851,103 +11931,7 @@ body.drawer-on{
 })();
 </script>
 
-<script>
-/* ══════════════════════════════════════════════
-   메인 배너 — 최종 (점만 사용 · 부드럽게 전환)
-   ══════════════════════════════════════════════ */
-(function(){
-  function build(){
-    var hero  = document.getElementById('heroSlider');
-    var track = document.getElementById('hTrack');
-    var dots  = document.getElementById('hDots');
-    if (!hero || !track) return;
 
-    var n = track.querySelectorAll('.hslide').length;
-    if (n < 2) return;
-
-    /* 앞서 붙은 화살표 정리 */
-    hero.querySelectorAll('.hero-arw').forEach(function(x){ x.remove(); });
-
-    if (hero._cgT) { clearInterval(hero._cgT); hero._cgT = null; }
-    if (hero.dataset.slider === 'done') return;
-    hero.dataset.slider = 'done';
-
-    var cur = 0;
-
-    function go(k, quick){
-      cur = ((k % n) + n) % n;
-      if (quick) track.classList.add('nodrag');
-      else track.classList.remove('nodrag');
-      track.style.transform = 'translateX(' + (-cur * 100) + '%)';
-      if (dots) {
-        var bs = dots.querySelectorAll('button');
-        for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', i === cur);
-      }
-      if (quick) setTimeout(function(){ track.classList.remove('nodrag'); }, 40);
-    }
-
-    function play(){
-      clearInterval(hero._cgT);
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      hero._cgT = setInterval(function(){ go(cur + 1); }, 5000);
-    }
-
-    /* 점 다시 만들기 */
-    if (dots) {
-      if (dots.parentElement !== hero) hero.appendChild(dots);
-      dots.innerHTML = '';
-      for (var d = 0; d < n; d++) {
-        (function(k){
-          var b = document.createElement('button');
-          b.type = 'button';
-          b.setAttribute('aria-label', (k + 1) + '번 배너');
-          if (k === 0) b.classList.add('on');
-          b.onclick = function(e){
-            e.preventDefault(); e.stopPropagation();
-            go(k); play();
-            return false;
-          };
-          dots.appendChild(b);
-        })(d);
-      }
-    }
-
-    /* 손가락으로 넘기기 */
-    var sx = 0, sy = 0, moved = false;
-    hero.addEventListener('touchstart', function(e){
-      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
-      clearInterval(hero._cgT);
-    }, { passive:true });
-    hero.addEventListener('touchmove', function(e){
-      var t = e.touches[0];
-      if (Math.abs(t.clientX - sx) > 10) moved = true;
-    }, { passive:true });
-    hero.addEventListener('touchend', function(e){
-      var t = e.changedTouches[0];
-      var dx = t.clientX - sx, dy = t.clientY - sy;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
-      play();
-    }, { passive:true });
-    track.addEventListener('click', function(e){
-      if (moved) { e.preventDefault(); e.stopPropagation(); }
-    }, true);
-
-    hero.addEventListener('mouseenter', function(){ clearInterval(hero._cgT); });
-    hero.addEventListener('mouseleave', play);
-    document.addEventListener('visibilitychange', function(){
-      if (document.hidden) clearInterval(hero._cgT); else play();
-    });
-
-    go(0, true);
-    play();
-  }
-
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', build);
-  else build();
-  setTimeout(build, 700);
-})();
-</script>
 
 <script>
 /* 되돌아왔을 때 제목이 흐리게 남지 않도록 */
@@ -11964,6 +11948,118 @@ body.drawer-on{
   });
   show();
   setTimeout(show, 600);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   메인 배너 — 새로 만듦 (v199)
+   슬라이드를 겹쳐 놓고 하나씩 보여줍니다.
+   가로로 미는 방식이 계속 실패해 방식을 바꿉니다.
+   ══════════════════════════════════════════════ */
+(function(){
+  var IMGS = [
+    { src:'assets/hero-1.jpg', alt:'트리플잇 보기',    line:'all' },
+    { src:'assets/hero-2.jpg', alt:'듀잇 그레이프 보기', line:'doit' },
+    { src:'assets/hero-3.jpg', alt:'듀잇 레몬민트 보기', line:'doit' },
+    { src:'assets/hero-4.jpg', alt:'트래블잇 보기',    line:'travel' }
+  ];
+
+  function start(){
+    var hero = document.getElementById('heroSlider');
+    if (!hero || hero.dataset.v199) return;
+    hero.dataset.v199 = '1';
+
+    /* 안을 비우고 새로 만듭니다 */
+    hero.innerHTML = '';
+
+    var wrap = document.createElement('div');
+    wrap.className = 'cgb-wrap';
+    hero.appendChild(wrap);
+
+    var dots = document.createElement('div');
+    dots.className = 'cgb-dots';
+    dots.setAttribute('role', 'tablist');
+    hero.appendChild(dots);
+
+    var cur = 0, timer = null;
+
+    IMGS.forEach(function(o, i){
+      var a = document.createElement('a');
+      a.className = 'cgb-slide' + (i === 0 ? ' on' : '');
+      a.href = '#all';
+      a.setAttribute('aria-label', o.alt);
+      a.onclick = function(e){
+        e.preventDefault();
+        if (typeof filterLine === 'function') filterLine(o.line);
+        var all = document.getElementById('all');
+        if (all) all.scrollIntoView({ behavior:'smooth', block:'start' });
+        return false;
+      };
+      var im = document.createElement('img');
+      im.src = o.src;
+      im.alt = o.alt;
+      im.className = 'cgb-img';
+      if (i === 0) im.setAttribute('fetchpriority', 'high');
+      im.decoding = 'async';
+      a.appendChild(im);
+      wrap.appendChild(a);
+
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cgb-dot' + (i === 0 ? ' on' : '');
+      b.setAttribute('aria-label', (i + 1) + '번 배너');
+      b.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        go(i); play();
+        return false;
+      };
+      dots.appendChild(b);
+    });
+
+    var slides = wrap.querySelectorAll('.cgb-slide');
+    var buttons = dots.querySelectorAll('.cgb-dot');
+
+    function go(k){
+      cur = ((k % IMGS.length) + IMGS.length) % IMGS.length;
+      for (var i = 0; i < slides.length; i++) {
+        slides[i].classList.toggle('on', i === cur);
+        buttons[i].classList.toggle('on', i === cur);
+      }
+    }
+    function play(){
+      clearInterval(timer);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      timer = setInterval(function(){ go(cur + 1); }, 5000);
+    }
+
+    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    hero.addEventListener('mouseleave', play);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) clearInterval(timer); else play();
+    });
+
+    /* 손가락으로 넘기기 */
+    var sx = 0, sy = 0;
+    hero.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY;
+      clearInterval(timer);
+    }, { passive:true });
+    hero.addEventListener('touchend', function(e){
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      play();
+    }, { passive:true });
+
+    go(0);
+    play();
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', start);
+  else start();
+  setTimeout(start, 600);
 })();
 </script>
 </body>
