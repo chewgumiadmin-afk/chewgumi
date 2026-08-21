@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v192 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v193 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11068,6 +11068,80 @@ body.drawer-on{
   .hero .h-dots{ bottom:12px !important; gap:6px !important }
   .hero .h-dots button{ width:7px !important; height:7px !important }
   .hero .h-dots button.on{ width:20px !important }
+}
+
+/* ══════════════════════════════════════════════
+   배너 점 — 하얀 바탕 없이 · 부드러운 전환 확정
+   ══════════════════════════════════════════════ */
+
+/* 점 묶음에 바탕·테두리 없음 */
+.hero .h-dots,
+.hero > .h-dots,
+.hero-sec .h-dots,
+#hDots{
+  background:none !important;
+  background-color:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+.hero .h-dots::before,
+.hero .h-dots::after,
+#hDots::before,
+#hDots::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* 배너 안쪽 그림자·선 없음 */
+.hero::before,
+.hero::after,
+.hero .h-track::before,
+.hero .h-track::after{
+  content:none !important;
+  display:none !important;
+  box-shadow:none !important;
+}
+.hero{
+  box-shadow:none !important;
+  border:0 !important;
+}
+
+/* 부드러운 전환 — 마지막에 확정 */
+.hero .h-track{
+  transition:transform .62s cubic-bezier(.32,.72,0,1) !important;
+  will-change:transform !important;
+}
+.hero .h-track.nodrag{
+  transition:none !important;
+}
+
+/* 점 모양 */
+.hero .h-dots button{
+  position:relative !important;
+  width:9px !important;
+  height:9px !important;
+  min-width:0 !important;
+  border-radius:99px !important;
+  border:0 !important;
+  padding:0 !important;
+  background:rgba(255,255,255,.62) !important;
+  cursor:pointer !important;
+  flex:none !important;
+  transition:width .3s cubic-bezier(.32,.72,0,1), background .25s !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.18) !important;
+}
+.hero .h-dots button:hover{ background:rgba(255,255,255,.9) !important }
+.hero .h-dots button.on{
+  background:#D82558 !important;
+  width:28px !important;
+}
+
+@media (max-width:900px){
+  .hero .h-dots button{ width:7px !important; height:7px !important }
+  .hero .h-dots button.on{ width:22px !important }
 }
 </style>
 <script>
