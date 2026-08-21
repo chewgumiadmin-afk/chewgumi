@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v184 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v185 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10779,7 +10779,7 @@ header{
   margin-bottom:11px;
   padding-top:6px;
 }
-.detail .d-rev::before{ content:"REVIEW" }
+
 .detail .d-notice::before{ content:"DELIVERY & RETURN" }
 
 /* 사이 간격 */
@@ -10805,6 +10805,114 @@ header{
   background:rgba(255,255,255,.94) !important;
   -webkit-backdrop-filter:blur(16px);
   backdrop-filter:blur(16px);
+}
+
+/* ══════════════════════════════════════════════
+   팝업 리뷰 · 배송 — 이름표 중복 해결
+   ══════════════════════════════════════════════ */
+
+/* 이름표는 원래 제목(.d-rev-h)만 씁니다 */
+.detail .d-rev::before{ content:none !important }
+.detail .d-rev .d-rev-h{
+  display:flex !important;
+  align-items:baseline !important;
+  gap:10px !important;
+  margin-bottom:13px !important;
+}
+.detail .d-rev .d-rev-h .eb{
+  font-family:'Poppins','SUIT Variable',sans-serif !important;
+  font-size:10.5px !important;
+  letter-spacing:2px !important;
+  font-weight:700 !important;
+  color:#D82558 !important;
+}
+.detail .d-rev .d-rev-h .sc{
+  display:flex !important;
+  align-items:baseline !important;
+  gap:5px !important;
+  font-size:12.5px !important;
+  color:#797979 !important;
+}
+.detail .d-rev .d-rev-h .sc b{
+  font-size:15px !important;
+  font-weight:800 !important;
+  color:#17171c !important;
+}
+.detail .d-rev .d-rev-h .sc i{
+  font-style:normal !important;
+  color:#FFB800 !important;
+  letter-spacing:1px !important;
+}
+
+/* 배송·교환 이름표 */
+.detail .d-notice::before{
+  content:"DELIVERY & RETURN" !important;
+  display:block !important;
+  font-family:'Poppins','SUIT Variable',sans-serif !important;
+  font-size:10.5px !important;
+  letter-spacing:2px !important;
+  font-weight:700 !important;
+  color:#D82558 !important;
+  margin-bottom:11px !important;
+}
+
+/* 팝업 안 리뷰만 보이도록 — 메인 리뷰와 섞이지 않게 */
+.detail .d-rev-list{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  max-height:none !important;
+  overflow:visible !important;
+  mask-image:none !important;
+  -webkit-mask-image:none !important;
+}
+.detail .d-rev-list .d-rev-track{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+  animation:none !important;
+}
+.detail .d-rev-list .d-rv{
+  flex:none !important;
+  width:100% !important;
+  flex-direction:row !important;
+  gap:12px !important;
+  padding:14px 15px !important;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.7) !important;
+  border:1px solid rgba(0,0,0,.06) !important;
+}
+.detail .d-rev-list .d-rv img{
+  width:78px !important;
+  height:78px !important;
+  flex:none !important;
+  border-radius:11px !important;
+  object-fit:cover !important;
+}
+.detail .d-rev-list .d-rv p{
+  -webkit-line-clamp:unset !important;
+  display:block !important;
+  font-size:13px !important;
+  line-height:1.7 !important;
+}
+.detail .d-rev-more{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:44px !important;
+  margin-top:14px !important;
+  padding:0 20px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(0,0,0,.09) !important;
+  background:#fff !important;
+  color:#555 !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+  text-decoration:none !important;
+}
+
+@media (max-width:640px){
+  .detail .d-rev-list .d-rv img{ width:66px !important; height:66px !important }
 }
 </style>
 <script>
