@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!-- ChewGumi Order Lookup v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>주문 조회 | CHEWGUMI</title>
+<meta name="description" content="주문번호와 주문자명으로 주문 내역을 확인하실 수 있습니다.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link rel="stylesheet" href="assets/cgui.css">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink:#FFBDCC; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C;
+  --gray:#797979; --ink:#17171c; --line:rgba(255,255,255,.85);
+  --sp-s:clamp(0.8rem,0.7rem+0.3vw,1.1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.6vw,2rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.7;
+  min-height:100svh;
+  padding:0 0 calc(4rem + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input{font-size:14.5px}}
+.wrap{max-width:640px;margin:0 auto;padding:0 var(--sp-s)}
+
+.topbar{
+  height:45px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,var(--main2),var(--main));
+  color:#fff;font-size:14px;font-weight:500;padding:0 16px;text-align:center;
+}
+.topbar b{font-weight:800;color:#FFE923}
+
+header{
+  background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+.head{max-width:640px;margin:0 auto;padding:14px var(--sp-s);
+  display:flex;align-items:center;gap:14px}
+.head nav{margin-left:auto;display:flex;gap:16px}
+.head nav a{font-size:13.5px;font-weight:600;color:#444}
+
+.hd{padding:var(--sp-m) 0 var(--sp-s)}
+.hd .eb{font-family:'Poppins','SUIT Variable',sans-serif;
+  font-size:11px;letter-spacing:2.6px;color:var(--main);font-weight:700}
+.hd h1{font-size:clamp(24px,4vw,34px);font-weight:800;
+  letter-spacing:-.04em;margin-top:6px}
+.hd p{font-size:14px;color:var(--gray);margin-top:8px;word-break:keep-all}
+
+.panel{
+  background:rgba(255,255,255,.7);border:1px solid var(--line);
+  border-radius:22px;padding:var(--sp-m);margin-bottom:var(--sp-s);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+label{display:block;font-size:12.5px;font-weight:600;color:#555;margin:12px 0 6px}
+input{
+  width:100%;min-height:50px;padding:12px 15px;border-radius:13px;
+  border:1px solid var(--line);background:rgba(255,255,255,.92);color:var(--ink);
+}
+input:focus{outline:2px solid var(--main);outline-offset:-1px}
+.btn{
+  width:100%;min-height:52px;margin-top:18px;border:0;border-radius:999px;
+  cursor:pointer;font-size:14.5px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(216,37,88,.24);
+}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{margin-top:12px;font-size:13.5px;line-height:1.7;min-height:20px;color:var(--gray)}
+.msg.bad{color:var(--bad)}
+.hint{font-size:12.5px;color:var(--gray);line-height:1.9;margin-top:14px;
+  padding:14px 16px;border-radius:14px;background:rgba(0,0,0,.03)}
+.hint b{color:var(--ink)}
+
+/* 결과 */
+.hide{display:none}
+.st{
+  display:inline-flex;align-items:center;padding:6px 14px;border-radius:999px;
+  font-size:12.5px;font-weight:800;margin-bottom:14px;
+}
+.st.pending{background:rgba(233,162,59,.16);color:#8A6015}
+.st.paid{background:rgba(42,160,96,.14);color:#1B6B3F}
+.st.shipping{background:rgba(27,127,168,.13);color:#125A78}
+.st.cancelled{background:rgba(0,0,0,.06);color:#666}
+
+.no{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.when{font-size:12.5px;color:var(--gray);margin-top:3px}
+
+.items{margin-top:20px;border-top:1px solid rgba(0,0,0,.07);
+  border-bottom:1px solid rgba(0,0,0,.07)}
+.item{display:flex;gap:12px;align-items:baseline;padding:12px 0;
+  border-bottom:1px solid rgba(0,0,0,.05)}
+.item:last-child{border-bottom:0}
+.item b{flex:1;min-width:0;font-size:14.5px;font-weight:600}
+.item .q{flex:none;font-size:13px;color:var(--gray)}
+.item .p{flex:none;font-size:14.5px;font-weight:700;min-width:80px;text-align:right}
+
+.sum{margin-top:16px}
+.sum div{display:flex;justify-content:space-between;padding:5px 0;font-size:13.5px}
+.sum div.total{
+  margin-top:11px;padding-top:13px;border-top:1px solid rgba(0,0,0,.08);
+  font-size:16px;font-weight:800;
+}
+.sum div.total span:last-child{color:var(--main);font-size:19px}
+.sum .off{color:var(--main)}
+
+.bank{
+  margin-top:20px;padding:18px 20px;border-radius:16px;
+  background:var(--pink-lt);border:1px solid rgba(255,189,204,.8);
+}
+.bank .t{font-size:12.5px;font-weight:700;color:var(--main);margin-bottom:8px}
+.bank .acc{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.bank p{font-size:13px;color:#666;margin-top:5px}
+
+dl{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;
+  margin-top:20px;padding-top:18px;border-top:1px solid rgba(0,0,0,.07);font-size:13.5px}
+dt{color:var(--gray);white-space:nowrap;font-size:13px}
+dd{margin:0;word-break:keep-all}
+
+.acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.acts a,.acts button{
+  flex:1;min-width:130px;min-height:48px;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink);
+}
+.acts .go{
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;border:0;
+}
+
+.foot{margin-top:var(--sp-m);padding-top:var(--sp-m);
+  border-top:1px solid rgba(0,0,0,.06);text-align:center}
+.foot a{font-size:13px;color:var(--gray);margin:0 10px}
+.foot p{font-size:12px;color:var(--gray);margin-top:12px}
+</style>
+</head>
+<body>
+
+<div class="topbar">주문번호와 주문자명으로 <b>&nbsp;비회원도 조회&nbsp;</b> 가능합니다</div>
+
+<header>
+  <div class="head">
+    <a class="logo" href="index.html">CHEW GUMI</a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a href="mypage.html">마이페이지</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hd">
+    <span class="eb">ORDER LOOKUP</span>
+    <h1>주문 조회</h1>
+    <p>주문하실 때 받으신 주문번호와 주문자명을 넣어주세요.</p>
+  </div>
+
+  <!-- 찾기 -->
+  <div class="panel" id="findBox">
+    <label>주문번호</label>
+    <input id="fNo" placeholder="20260821-442165" autocomplete="off" inputmode="numeric">
+
+    <label>주문자명 또는 전화 뒷 4자리</label>
+    <input id="fKey" placeholder="홍길동  또는  1234" autocomplete="off">
+
+    <button class="btn" onclick="find()" id="findBtn">주문 조회하기</button>
+    <div class="msg" id="m1"></div>
+
+    <div class="hint">
+      주문번호는 <b>주문 완료 화면</b>과 <b>주문 확인 메일</b>에서 보실 수 있습니다.<br>
+      회원이시면 <a href="mypage.html" style="color:var(--main);font-weight:600">마이페이지</a>에서 한 번에 보실 수 있습니다.
+    </div>
+  </div>
+
+  <!-- 결과 -->
+  <div class="panel hide" id="resBox"></div>
+
+  <div class="foot">
+    <a href="index.html">홈</a>
+    <a href="tracking.html">배송 조회</a>
+    <a href="faq.html">자주 묻는 질문</a>
+    <p>문의 · chewgumi24@gmail.com</p>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+
+const PAY={card:'신용카드',bank:'무통장입금',vbank:'가상계좌',trans:'계좌이체',escrow:'에스크로'};
+const ST={pending:'입금 대기',paid:'결제 완료',preparing:'상품 준비 중',
+  shipping:'배송 중',delivered:'배송 완료',cancelled:'취소됨'};
+
+function say(t,k){const m=$('m1');m.className='msg'+(k?' '+k:'');m.textContent=t;}
+
+function find(){
+  const no=$('fNo').value.trim();
+  const key=$('fKey').value.trim();
+  if(!no||!key){ say('주문번호와 주문자명을 모두 넣어주세요.','bad'); return; }
+
+  $('findBtn').disabled=true; say('찾는 중…');
+  fetch(SB+'/rest/v1/rpc/guest_order',{method:'POST',headers:H,
+    body:JSON.stringify({p_no:no,p_key:key})})
+  .then(r=>r.ok?r.json():Promise.reject())
+  .then(function(d){
+    $('findBtn').disabled=false;
+    if(!d||!d.ok){ say((d&&d.msg)||'주문을 찾지 못했습니다.','bad'); $('resBox').classList.add('hide'); return; }
+    say(''); draw(d.order);
+  })
+  .catch(function(){ $('findBtn').disabled=false; say('조회하지 못했습니다. 잠시 후 다시 시도해 주세요.','bad'); });
+}
+
+function draw(o){
+  const t=new Date(o.created_at);
+  const when=t.getFullYear()+'.'+String(t.getMonth()+1).padStart(2,'0')+'.'
+    +String(t.getDate()).padStart(2,'0')+' '
+    +String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+
+  const items=(o.items||[]).map(function(i){
+    return '<div class="item"><b>'+esc(i.name)+'</b>'
+      +'<span class="q">'+i.qty+'개</span>'
+      +'<span class="p">'+won(i.price*i.qty)+'원</span></div>';
+  }).join('') || '<div class="item"><b>상품 정보 없음</b></div>';
+
+  const bank = o.pay_type==='bank' && o.status==='pending'
+    ? '<div class="bank"><div class="t">입금 계좌</div>'
+      +'<div class="acc">국민은행 38183704010801</div>'
+      +'<p>예금주 · 윤소호(츄구미)</p>'
+      +'<p>입금자명 <b>'+esc(o.depositor||o.buyer_name)+'</b> · 금액 <b>'+won(o.pay_amount)+'원</b></p>'
+      +'<p style="font-size:12px;color:#9a9aa2;margin-top:9px">주문 후 3일 안에 입금하지 않으시면 자동 취소됩니다.</p></div>'
+    : '';
+
+  const track = o.tracking_no
+    ? '<a class="go" href="tracking.html?no='+esc(o.tracking_no)+'" >배송 조회 →</a>'
+    : '';
+  const pay = (o.status==='pending' && o.pay_type!=='bank')
+    ? '<a class="go" href="checkout.html?resume='+esc(o.order_no)+'">이어서 결제하기</a>'
+    : '';
+
+  $('resBox').innerHTML =
+    '<span class="st '+esc(o.status)+'">'+esc(ST[o.status]||o.status)+'</span>'
+    +'<div class="no">'+esc(o.order_no)+'</div>'
+    +'<div class="when">'+when+'</div>'
+    +'<div class="items">'+items+'</div>'
+    +'<div class="sum">'
+      +'<div><span>상품 금액</span><span>'+won(o.goods_amount)+'원</span></div>'
+      +'<div><span>배송비</span><span>'+(o.ship_fee?won(o.ship_fee)+'원':'무료')+'</span></div>'
+      +(o.discount_amount?'<div><span>할인</span><span class="off">-'+won(o.discount_amount)+'원</span></div>':'')
+      +'<div class="total"><span>총 결제 금액</span><span>'+won(o.pay_amount)+'원</span></div>'
+    +'</div>'
+    + bank
+    +'<dl>'
+      +'<dt>결제 수단</dt><dd>'+esc(PAY[o.pay_type]||o.pay_type||'—')+'</dd>'
+      +'<dt>받는 분</dt><dd>'+esc(o.buyer_name)+' · ****'+esc(o.phone_tail||'')+'</dd>'
+      +'<dt>배송지</dt><dd>('+esc(o.zipcode)+') '+esc(o.addr1)+' '+esc(o.addr2||'')+'</dd>'
+      +(o.memo?'<dt>요청</dt><dd>'+esc(o.memo)+'</dd>':'')
+      +(o.courier?'<dt>택배</dt><dd>'+esc(o.courier)+' '+esc(o.tracking_no||'')+'</dd>':'')
+    +'</dl>'
+    +'<div class="acts">'+pay+track
+      +'<a href="index.html">쇼핑 계속하기</a></div>';
+
+  $('resBox').classList.remove('hide');
+  $('resBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* 주소에 주문번호가 있으면 채웁니다 */
+(function(){
+  const q=new URLSearchParams(location.search);
+  const no=q.get('no');
+  if(no) $('fNo').value=no;
+  ['fNo','fKey'].forEach(function(id){
+    $(id).addEventListener('keydown',function(e){ if(e.key==='Enter') find(); });
+  });
+})();
+</script>
+</body>
+</html>
