@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v201 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v202 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1520,7 +1520,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="d-total"><span data-en="Total">총 상품금액</span> <b id="dTotal"></b></div>
       <div class="d-acts">
-        <!-- <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a> -->
+        <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
         
         </div>
@@ -11365,6 +11365,72 @@ body.drawer-on{
   .cgb-dots{ bottom:12px !important }
   .cgb-dot{ width:7px; height:7px }
   .cgb-dot.on{ width:22px }
+}
+
+/* ══════════════════════════════════════════════
+   결제 열림 — BUY NOW · ADD TO CART 가로로
+   ══════════════════════════════════════════════ */
+.detail .d-acts{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:100% !important;
+  margin-top:16px !important;
+}
+.detail .d-acts .d-buy{
+  display:inline-flex !important;
+  visibility:visible !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  padding:0 18px !important;
+  border-radius:999px !important;
+  background:linear-gradient(135deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:1px !important;
+  border:0 !important;
+  text-decoration:none !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.28) !important;
+  white-space:nowrap !important;
+}
+.detail .d-acts .d-cart{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  padding:0 18px !important;
+  border-radius:999px !important;
+  border:1.6px solid #D82558 !important;
+  background:#fff !important;
+  color:#D82558 !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:1px !important;
+  text-decoration:none !important;
+  white-space:nowrap !important;
+}
+.detail .d-acts .d-wish, .detail .d-acts .wish{ flex:0 0 auto !important }
+
+/* 스마트스토어 버튼은 감춤 (자사몰에서 결제) */
+.detail .d-npay, .detail .d-npay.show, .d-payhint{ display:none !important }
+
+@media (max-width:640px){
+  .detail .d-acts{ gap:8px !important }
+  .detail .d-acts .d-buy,
+  .detail .d-acts .d-cart{
+    font-size:13px !important;
+    letter-spacing:.4px !important;
+    padding:0 12px !important;
+    min-height:50px !important;
+  }
 }
 </style>
 <script>
