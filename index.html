@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v203 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v204 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1831,8 +1831,6 @@ function buyNowDirect(ev){
       localStorage.setItem('cg_cart', JSON.stringify(c));
     } catch(e){}
   }
-  var su = (typeof smartstoreUrl === 'function') ? smartstoreUrl(name) : '';
-  if (su) { window.open(su, '_blank', 'noopener'); return false; }
   location.href = 'checkout.html';
   return false;
 }
