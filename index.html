@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v189 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v190 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10952,6 +10952,40 @@ header{
 @media (max-width:860px){
   .detail{ padding-top:0 !important }
 }
+
+/* 팝업 후기 */
+.d-rev-empty{
+  padding:26px 18px !important;
+  text-align:center !important;
+  font-size:13px !important;
+  color:#797979 !important;
+  background:rgba(0,0,0,.02) !important;
+  border-radius:14px !important;
+}
+.d-rev-note{
+  padding:9px 13px !important;
+  margin-bottom:11px !important;
+  border-radius:11px !important;
+  background:rgba(255,228,230,.7) !important;
+  font-size:11.5px !important;
+  color:#8A3350 !important;
+  text-align:center !important;
+}
+.detail .d-rv .st{
+  display:block !important;
+  color:#FFB800 !important;
+  font-size:12px !important;
+  letter-spacing:1px !important;
+}
+.detail .d-rv .who .src{
+  margin-left:6px !important;
+  padding:1px 7px !important;
+  border-radius:999px !important;
+  background:rgba(3,199,90,.12) !important;
+  color:#1B6B3F !important;
+  font-size:10.5px !important;
+  font-weight:700 !important;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -11455,6 +11489,115 @@ header{
   else setup();
   setTimeout(setup, 700);
   setTimeout(clean, 1500);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   팝업 후기 — 그 상품에 후기가 없으면 같은 제품군 후기를
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K  = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var doing = '';
+
+  var esc = function(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  };
+
+  function stars(n){
+    n = Math.round(Number(n) || 0);
+    return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+  }
+
+  function draw(rows, no){
+    var list = document.getElementById('dRevList');
+    var avgEl = document.getElementById('dRevAvg');
+    var nEl = document.getElementById('dRevN');
+    var tabN = document.getElementById('dtRevN');
+    if (!list) return;
+
+    if (!rows.length) {
+      list.innerHTML = '<div class="d-rev-empty">첫 후기를 남겨주세요.</div>';
+      if (avgEl) avgEl.textContent = '—';
+      if (nEl) nEl.textContent = '';
+      if (tabN) tabN.textContent = '0';
+      return;
+    }
+
+    var sum = rows.reduce(function(s, r){ return s + (Number(r.rating) || 0); }, 0);
+    var avg = (sum / rows.length).toFixed(1);
+    if (avgEl) avgEl.textContent = avg;
+    if (nEl) nEl.textContent = rows.length + '개';
+    if (tabN) tabN.textContent = rows.length;
+
+    /* 다른 구성의 후기가 섞였는지 */
+    var mine = rows.filter(function(r){ return r.same; }).length;
+    var note = (mine === 0)
+      ? '<div class="d-rev-note">같은 제품군의 후기를 함께 보여드립니다.</div>' : '';
+
+    list.innerHTML = note + rows.map(function(r){
+      var img = r.image_url
+        ? '<img src="' + esc(r.image_url) + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+        : '';
+      var src = r.source && r.source !== '자사몰'
+        ? '<span class="src">' + esc(r.source) + '</span>' : '';
+      var d = r.created_at ? new Date(r.created_at) : null;
+      var when = d ? (d.getMonth() + 1) + '월 ' + d.getDate() + '일' : '';
+      return '<div class="d-rv">' + img
+        + '<span class="t">'
+        + '<span class="st">' + stars(r.rating) + '</span>'
+        + '<p>' + esc(r.body) + '</p>'
+        + '<span class="who">' + esc(r.author || '고객님') + ' · ' + when + src + '</span>'
+        + '</span></div>';
+    }).join('');
+  }
+
+  function load(no){
+    if (!no || doing === no) return;
+    doing = no;
+    var list = document.getElementById('dRevList');
+    if (list) list.innerHTML = '<div class="d-rev-empty">후기를 불러오는 중…</div>';
+
+    fetch(SB + '/rest/v1/rpc/reviews_for', {
+      method: 'POST',
+      headers: { apikey: K, Authorization: 'Bearer ' + K, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_no: Number(no), p_limit: 8 })
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){ draw(rows || [], no); })
+    .catch(function(){
+      if (list) list.innerHTML = '<div class="d-rev-empty">불러오지 못했습니다.</div>';
+      doing = '';
+    });
+  }
+
+  function now(){
+    var card = window._curCard;
+    var no = (card && card.dataset && card.dataset.no) || '';
+    if (no) load(no);
+  }
+
+  var dim = document.getElementById('detail');
+  if (dim && window.MutationObserver && !dim.dataset.revWatch) {
+    dim.dataset.revWatch = '1';
+    new MutationObserver(function(){
+      if (dim.classList.contains('hide')) { doing = ''; return; }
+      setTimeout(now, 180);
+    }).observe(dim, { attributes:true, attributeFilter:['class'] });
+  }
+
+  document.addEventListener('click', function(e){
+    var card = e.target.closest && e.target.closest('.card');
+    if (card && card.dataset && card.dataset.no) {
+      doing = '';
+      setTimeout(function(){ load(card.dataset.no); }, 300);
+    }
+  }, true);
+
+  window.cgLoadReviews = load;
 })();
 </script>
 </body>
