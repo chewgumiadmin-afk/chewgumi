@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v45 · MedIT -->
+<!-- ChewGumi Product Detail v46 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1954,6 +1954,81 @@ select::-ms-expand{ display:none !important }
     min-height:50px !important;
   }
 }
+
+/* ══ 출시 예정 상품 — 살 수 없게, 안내만 ══ */
+body[data-soon="1"] .buy,
+body[data-soon="1"] #btnBuy,
+body[data-soon="1"] .acts .buy,
+body[data-soon="1"] .acts .cart,
+body[data-soon="1"] #btnCart,
+body[data-soon="1"] .price,
+body[data-soon="1"] .qty,
+body[data-soon="1"] select{
+  display:none !important;
+}
+.soon-box{
+  margin-top:18px;
+  padding:20px 22px;
+  border-radius:16px;
+  background:rgba(255,228,230,.7);
+  border:1px solid rgba(255,189,204,.8);
+  text-align:center;
+}
+.soon-box b{
+  display:block;
+  font-size:17px;
+  font-weight:800;
+  color:#D82558;
+  letter-spacing:-.02em;
+}
+.soon-box p{
+  margin-top:7px;
+  font-size:13.5px;
+  line-height:1.75;
+  color:#797979;
+  word-break:keep-all;
+}
 </style>
+
+<script>
+/* 출시 예정 상품이면 구매 대신 안내를 보여줍니다 */
+(function(){
+  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function run(){
+    var no = new URLSearchParams(location.search).get('no');
+    if (!no) return;
+    fetch(SB + '/rest/v1/products?select=name,active&id=eq.' + no,
+      { headers:{ apikey:K, Authorization:'Bearer '+K } })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      var p = (rows || [])[0];
+      if (!p || p.active) return;
+
+      document.body.setAttribute('data-soon','1');
+      if (document.querySelector('.soon-box')) return;
+
+      var box = document.createElement('div');
+      box.className = 'soon-box';
+      box.innerHTML =
+        '<b>출시 준비 중입니다</b>' +
+        '<p>곧 만나보실 수 있습니다.<br>' +
+        '소식을 가장 먼저 받고 싶으시면 회원가입해 주세요.</p>';
+
+      var anchor = document.querySelector('.acts')
+        || document.querySelector('.buy-row')
+        || document.querySelector('.price');
+      if (anchor) anchor.insertAdjacentElement('afterend', box);
+    })
+    .catch(function(){});
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', run);
+  else run();
+  setTimeout(run, 700);
+})();
+</script>
 </body>
 </html>
