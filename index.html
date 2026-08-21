@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v197 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v198 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -985,6 +985,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <a class="hslide" href="#all" onclick="filterLine('doit')" aria-label="듀잇 레몬민트 보기"><img class="hs-img" src="assets/hero-3.jpg" alt="듀잇 레몬민트 보기"  decoding="async"></a>
 <a class="hslide" href="#all" onclick="filterLine('travel')" aria-label="트래블잇 보기"><img class="hs-img" src="assets/hero-4.jpg" alt="트래블잇 보기"  decoding="async"></a>
 </div>
+        <div class="h-dots" id="hDots" role="tablist" aria-label="배너 선택"></div>
       </div>
       <div class="hero-bar">
         <div class="hb-in">
@@ -995,7 +996,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           </div>
           <div class="hb-nav">
             <span class="hb-no"><em id="hbNow">1</em> / <span id="hbAll">4</span></span>
-            <div class="h-dots" id="hDots" role="tablist" aria-label="배너 선택"></div>
+            
           </div>
         </div>
       </div>
@@ -11195,6 +11196,95 @@ body.drawer-on{
 
 @media (max-width:900px){
   .glass-bar{ background:rgba(255,255,255,.9) !important }
+}
+
+/* ══════════════════════════════════════════════
+   배너 — 마지막 확정 (슬라이드 · 점)
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  background:#FFE4E6 !important;
+}
+.hero > .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:1 !important;
+  margin:0 !important;
+  padding:0 !important;
+  transition:transform .62s cubic-bezier(.32,.72,0,1) !important;
+}
+.hero > .h-track.nodrag{ transition:none !important }
+.hero > .h-track > .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:100% !important;
+  height:100% !important;
+  display:block !important;
+  position:relative !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+.hero .hs-img{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+}
+
+/* 점 — 배너 안쪽 아래 */
+.hero > .h-dots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:18px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  gap:8px !important;
+  z-index:20 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+  border:0 !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+.hero > .h-dots button{
+  width:9px !important;
+  height:9px !important;
+  border-radius:99px !important;
+  border:0 !important;
+  padding:0 !important;
+  background:rgba(255,255,255,.62) !important;
+  cursor:pointer !important;
+  flex:none !important;
+  transition:width .3s, background .25s !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.2) !important;
+}
+.hero > .h-dots button.on{
+  background:#D82558 !important;
+  width:28px !important;
+}
+
+/* 캡션 띠는 숨기되 점은 영향 없음 */
+.hero-bar{ display:none !important }
+
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+  .hero > .h-dots{ bottom:12px !important }
+  .hero > .h-dots button{ width:7px !important; height:7px !important }
+  .hero > .h-dots button.on{ width:22px !important }
 }
 </style>
 <script>
