@@ -507,6 +507,73 @@ sync();
   font-size:13.5px; font-weight:700; cursor:pointer }
 .more-btn:active{ transform:scale(.98) }
 .all-done{ text-align:center; margin-top:14px; font-size:12px; color:var(--gray) }
+
+/* 이어서 결제하기 */
+.again-pay{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  margin-top:10px;
+  padding:0 18px;
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(216,37,88,.22);
+}
+.again-pay:active{ transform:scale(.98) }
 </style>
+
+<script>
+/* ══════════════════════════════════════════════
+   미결제 주문 — 이어서 결제하기
+   ══════════════════════════════════════════════ */
+(function(){
+  function won(n){ return Number(n||0).toLocaleString('ko-KR'); }
+
+  function mark(){
+    var list = document.getElementById('list');
+    if (!list) return;
+
+    list.querySelectorAll('.o-row, .order, li').forEach(function(row){
+      if (row.dataset.payBtn) return;
+      var txt = row.textContent || '';
+      /* 입금 대기 · 결제 대기 표시가 있는 주문 */
+      if (!/입금\s*대기|결제\s*대기|미결제|pending/i.test(txt)) return;
+
+      var no = (txt.match(/\d{8}-\d{4,7}/) || [])[0] || '';
+      if (!no) return;
+
+      row.dataset.payBtn = '1';
+      var b = document.createElement('button');
+      b.className = 'again-pay';
+      b.type = 'button';
+      b.textContent = '이어서 결제하기';
+      b.onclick = function(){
+        try { localStorage.setItem('cg_resume', no); } catch(e){}
+        location.href = 'checkout.html?resume=' + encodeURIComponent(no);
+      };
+      row.appendChild(b);
+    });
+  }
+
+  if (window.MutationObserver) {
+    var t = null;
+    var list = document.getElementById('list');
+    if (list) new MutationObserver(function(){
+      clearTimeout(t); t = setTimeout(mark, 200);
+    }).observe(list, { childList:true, subtree:true });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', mark);
+  else mark();
+  setTimeout(mark, 900);
+  setTimeout(mark, 2200);
+})();
+</script>
 </body>
 </html>
