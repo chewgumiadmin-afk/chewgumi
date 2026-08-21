@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v208 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v209 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -2408,7 +2408,7 @@ function renderCart(){
   } else {
     btn.href = 'checkout.html';
     btn.textContent = '주문서 작성하기';
-    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 위 목록에서 상품별 <b>「공식몰에서 구매」</b>를 눌러 공식몰에 담아주신 뒤, 이 버튼으로 한 번에 결제하시면 됩니다.';
+    if (note) note.innerHTML = '담으신 상품이 <b>' + CART.length + '개</b>입니다. 주문서에서 배송지와 결제 수단을 고르실 수 있습니다.';
   }
   const bask = document.getElementById('cBasket');
   if (bask) bask.textContent = '공식몰 장바구니 열기';
