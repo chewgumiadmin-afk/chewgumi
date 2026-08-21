@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v174 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v175 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1391,7 +1391,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </div>
 
         <div class="tri-grid" id="triGrid">
-          <article class="tri-card" data-i="0" style="--c1:#F6A8C0;--c2:#8E5BD8">
+          <article class="tri-card" data-i="0" data-no="101" onclick="location.href='product.html?no=101'" style="--c1:#F6A8C0;--c2:#8E5BD8">
             <div class="tri-glow"></div>
             <div class="tri-tag">BOARDING</div>
             <div class="tri-img"><img src="assets/prod/new-dream.jpg" alt="DREAM-IT" loading="lazy"></div>
@@ -1401,7 +1401,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
               <div class="tri-spec">L-테아닌 200mg</div>
             </div>
           </article>
-          <article class="tri-card" data-i="1" style="--c1:#5AB6E8;--c2:#F2A93B">
+          <article class="tri-card" data-i="1" data-no="102" onclick="location.href='product.html?no=102'" style="--c1:#5AB6E8;--c2:#F2A93B">
             <div class="tri-glow"></div>
             <div class="tri-tag">IN FLIGHT</div>
             <div class="tri-img"><img src="assets/prod/new-spark.jpg" alt="SPARK-IT" loading="lazy"></div>
@@ -1411,7 +1411,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
               <div class="tri-spec">L-아르기닌 1000mg</div>
             </div>
           </article>
-          <article class="tri-card" data-i="2" style="--c1:#B6D94C;--c2:#E8E33C">
+          <article class="tri-card" data-i="2" data-no="103" onclick="location.href='product.html?no=103'" style="--c1:#B6D94C;--c2:#E8E33C">
             <div class="tri-glow"></div>
             <div class="tri-tag">LANDING</div>
             <div class="tri-img"><img src="assets/prod/new-reset.jpg" alt="RESET-IT" loading="lazy"></div>
@@ -10773,6 +10773,16 @@ body.modal-open{
   overflow:hidden !important;
   touch-action:none !important;
 }
+
+/* 트리플잇 카드 — 누를 수 있게 */
+.tri-card{
+  cursor:pointer !important;
+  transition:transform .22s, box-shadow .22s !important;
+}
+.tri-card:hover{
+  transform:translateY(-5px) !important;
+}
+.tri-card:active{ transform:scale(.99) !important }
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
