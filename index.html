@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v191 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v192 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -3626,7 +3626,7 @@ input:focus,select:focus,textarea:focus{
   display:flex;height:100%;width:100%;
   transition:transform .65s cubic-bezier(.32,.72,0,1);
   will-change:transform}
-.h-track.nodrag{transition:none}
+
 .hslide{
   flex:0 0 100%;height:100%;display:block;text-decoration:none;
   background-size:cover;background-position:center;background-repeat:no-repeat;
@@ -3654,7 +3654,7 @@ input:focus,select:focus,textarea:focus{
 }
 @media(max-width:420px){ .hero{aspect-ratio:4/3} }
 @media(max-height:520px) and (orientation:landscape){ .hero{aspect-ratio:auto;height:70vh} }
-@media (prefers-reduced-motion:reduce){ .h-track{transition:none} }
+@media (prefers-reduced-motion:reduce){  }
 
 </style>
 <script>
@@ -3938,7 +3938,7 @@ body.at-foot .kko-fab{
 .hero:active{cursor:grabbing}
 .h-track{display:flex;height:100%;width:100%;
   transition:transform .68s cubic-bezier(.32,.72,0,1);will-change:transform}
-.h-track.nodrag{transition:none}
+
 .hslide{flex:0 0 100%;height:100%;display:block;text-decoration:none;
   background-size:cover;background-position:center;background-repeat:no-repeat;
   background-color:#FFE4E6;-webkit-user-drag:none}
@@ -3993,7 +3993,7 @@ body.at-foot .kko-fab{
   .hb-txt i{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .h-track{transition:none}
+  
   .hb-txt .eb,.hb-txt b,.hb-txt i{opacity:1;transform:none;animation:none !important}
 }
 .lite .hero-bar{background:#3A1128}
@@ -10975,6 +10975,100 @@ body.drawer-on{
   overflow:hidden !important;
   touch-action:none !important;
 }
+
+/* ══════════════════════════════════════════════
+   메인 배너 — 부드럽게 1→2→3→4→1 · 점만 사용
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  background:#FFE4E6 !important;
+  contain:none !important;
+}
+.hero .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  z-index:1 !important;
+  will-change:transform !important;
+  transition:transform .62s cubic-bezier(.32,.72,0,1) !important;
+}
+.hero .h-track.nodrag{ transition:none !important }
+.hero .h-track > .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  position:relative !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  background:none !important;
+}
+.hero .hs-img{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  display:block !important;
+}
+
+/* 좌우 화살표 없앰 */
+.hero-arw,
+.hero > .hero-arw,
+.hero .hero-arw{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* 점 — 배너 안쪽 아래 */
+.hero > .h-dots,
+.hero .h-dots{
+  position:absolute !important;
+  left:50% !important;
+  bottom:18px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important;
+  gap:8px !important;
+  z-index:20 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+}
+.hero .h-dots button{
+  width:9px !important;
+  height:9px !important;
+  border-radius:99px !important;
+  border:0 !important;
+  padding:0 !important;
+  background:rgba(255,255,255,.6) !important;
+  cursor:pointer !important;
+  transition:background .25s, width .25s !important;
+  -webkit-tap-highlight-color:transparent;
+}
+.hero .h-dots button:hover{ background:rgba(255,255,255,.85) !important }
+.hero .h-dots button.on{
+  background:#D82558 !important;
+  width:26px !important;
+}
+
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+  .hero .h-dots{ bottom:12px !important; gap:6px !important }
+  .hero .h-dots button{ width:7px !important; height:7px !important }
+  .hero .h-dots button.on{ width:20px !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -11664,6 +11758,104 @@ body.drawer-on{
   free();
 
   window.cgFreeScroll = free;
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   메인 배너 — 최종 (점만 사용 · 부드럽게 전환)
+   ══════════════════════════════════════════════ */
+(function(){
+  function build(){
+    var hero  = document.getElementById('heroSlider');
+    var track = document.getElementById('hTrack');
+    var dots  = document.getElementById('hDots');
+    if (!hero || !track) return;
+
+    var n = track.querySelectorAll('.hslide').length;
+    if (n < 2) return;
+
+    /* 앞서 붙은 화살표 정리 */
+    hero.querySelectorAll('.hero-arw').forEach(function(x){ x.remove(); });
+
+    if (hero._cgT) { clearInterval(hero._cgT); hero._cgT = null; }
+    if (hero.dataset.slider === 'done') return;
+    hero.dataset.slider = 'done';
+
+    var cur = 0;
+
+    function go(k, quick){
+      cur = ((k % n) + n) % n;
+      if (quick) track.classList.add('nodrag');
+      else track.classList.remove('nodrag');
+      track.style.transform = 'translateX(' + (-cur * 100) + '%)';
+      if (dots) {
+        var bs = dots.querySelectorAll('button');
+        for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', i === cur);
+      }
+      if (quick) setTimeout(function(){ track.classList.remove('nodrag'); }, 40);
+    }
+
+    function play(){
+      clearInterval(hero._cgT);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      hero._cgT = setInterval(function(){ go(cur + 1); }, 5000);
+    }
+
+    /* 점 다시 만들기 */
+    if (dots) {
+      if (dots.parentElement !== hero) hero.appendChild(dots);
+      dots.innerHTML = '';
+      for (var d = 0; d < n; d++) {
+        (function(k){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('aria-label', (k + 1) + '번 배너');
+          if (k === 0) b.classList.add('on');
+          b.onclick = function(e){
+            e.preventDefault(); e.stopPropagation();
+            go(k); play();
+            return false;
+          };
+          dots.appendChild(b);
+        })(d);
+      }
+    }
+
+    /* 손가락으로 넘기기 */
+    var sx = 0, sy = 0, moved = false;
+    hero.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
+      clearInterval(hero._cgT);
+    }, { passive:true });
+    hero.addEventListener('touchmove', function(e){
+      var t = e.touches[0];
+      if (Math.abs(t.clientX - sx) > 10) moved = true;
+    }, { passive:true });
+    hero.addEventListener('touchend', function(e){
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      play();
+    }, { passive:true });
+    track.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    hero.addEventListener('mouseenter', function(){ clearInterval(hero._cgT); });
+    hero.addEventListener('mouseleave', play);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) clearInterval(hero._cgT); else play();
+    });
+
+    go(0, true);
+    play();
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', build);
+  else build();
+  setTimeout(build, 700);
 })();
 </script>
 </body>
