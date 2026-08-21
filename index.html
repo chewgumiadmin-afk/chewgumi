@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v175 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v176 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -4002,144 +4002,7 @@ body.at-foot .kko-fab{
 }
 .lite .hero-bar{background:#3A1128}
 </style>
-<script>
-/* ═══ 히어로 ═══ */
-(function(){
-  var hero=document.getElementById('heroSlider');
-  var track=document.getElementById('hTrack');
-  var dotBox=document.getElementById('hDots');
-  var txt=document.getElementById('hbTxt');
-  if(!hero||!track||!dotBox) return;
 
-  var CAP=[
-    {e:'TRIPLE-IT', t:'여행갈 땐, 트리플 잇',      d:'상황에 맞춰 고르는 세 가지 맛',
-     te:'Three for every moment',    de:'Pick what you need, when you need it'},
-    {e:'TRAVEL-IT', t:'물 없이 챙기는 12가지 영양', d:'감귤맛 비타민 젤리 · 40g',
-     te:'12 nutrients, no water',    de:'Citrus vitamin gummy · 40g'},
-    {e:'DEW-IT',    t:'한 알로 입안을 촉촉하게',    d:'핀란드산 자일리톨 93% · 무설탕',
-     te:'One piece, all-day fresh',  de:'93% Finnish xylitol · Sugar-free'},
-    {e:'EVERY DAY', t:'매일의 상쾌한 습관',         d:'레몬민트 · 그레이프',
-     te:'A fresher daily habit',     de:'Lemon Mint · Grape'}
-  ];
-  var slides=[].slice.call(track.children);
-  var n=slides.length;
-  if(n<2){ dotBox.style.display='none'; return; }
-
-  var now=0, timer=null, W=hero.clientWidth||1;
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  dotBox.innerHTML='';
-  slides.forEach(function(_,i){
-    var b=document.createElement('button');
-    b.type='button'; b.setAttribute('role','tab');
-    b.setAttribute('aria-label',(i+1)+'번 배너');
-    b.addEventListener('click',function(){ stop(); go(i); start(); });
-    dotBox.appendChild(b);
-  });
-  var dots=[].slice.call(dotBox.children);
-  var elNow=document.getElementById('hbNow'), elAll=document.getElementById('hbAll');
-  if(elAll) elAll.textContent=n;
-
-  function cap(){ var c=CAP[now]||CAP[0]; if(!txt) return;
-      var en = (typeof cgLang!=='undefined' && cgLang==='en');
-      txt.classList.remove('in');
-      txt.querySelector('.eb').textContent=c.e;
-      txt.querySelector('b').textContent = en ? (c.te||c.t) : c.t;
-      txt.querySelector('i').textContent = en ? (c.de||c.d) : c.d;
-    void txt.offsetWidth;
-    txt.classList.add('in');
-  }
-  window._heroCap = cap;
-    function place(anim){
-    track.classList.toggle('nodrag',!anim);
-    /* 폭을 옮길 때마다 다시 잽니다 — 처음 한 번만 재면 0 이 나와
-       2·3·4번이 안 넘어갑니다. 그래도 0 이면 비율로 대체합니다. */
-    var w = hero.clientWidth
-         || hero.getBoundingClientRect().width
-         || (slides[0] && slides[0].getBoundingClientRect().width) || 0;
-    track.style.transform = w
-      ? 'translate3d('+(-now*w)+'px,0,0)'
-      : 'translate3d('+(-now*100)+'%,0,0)';
-    dots.forEach(function(d,k){
-      d.classList.toggle('on',k===now);
-      d.setAttribute('aria-selected',k===now?'true':'false');
-    });
-    if(elNow) elNow.textContent=now+1;
-  }
-  function go(i,anim){
-    var prev=now;
-    now=(i+n)%n;
-    place(anim!==false);
-    if(prev!==now||anim===false) cap();
-  }
-  function start(){ if(!timer&&!reduce) timer=setInterval(function(){ go(now+1); },5000); }
-  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
-
-  window.addEventListener('resize',function(){ W=hero.clientWidth||1; place(false); },{passive:true});
-  window.addEventListener('load',function(){ W=hero.clientWidth||1; place(false); });
-  setTimeout(function(){ W=hero.clientWidth||1; place(false); }, 400);
-  hero.addEventListener('mouseenter',stop);
-  hero.addEventListener('mouseleave',start);
-
-  /* 끌기 */
-  var sx=0,sy=0,dx=0,drag=false,decided=false,horiz=false;
-  function down(x,y){ stop(); drag=true; decided=false; horiz=false; sx=x; sy=y; dx=0;
-    W=hero.clientWidth||1; track.classList.add('nodrag'); }
-  function move(x,y,ev){
-    if(!drag) return;
-    var mx=x-sx, my=y-sy;
-    if(!decided){
-      if(Math.abs(mx)<6&&Math.abs(my)<6) return;
-      decided=true; horiz=Math.abs(mx)>Math.abs(my)*1.2;
-      if(!horiz){ drag=false; track.classList.remove('nodrag'); place(false); return; }
-    }
-    if(ev&&ev.cancelable) ev.preventDefault();
-    dx=mx;
-    var over=(now===0&&dx>0)||(now===n-1&&dx<0);
-    track.style.transform='translate3d('+(-now*W+(over?dx*.3:dx))+'px,0,0)';
-  }
-  function up(){
-    if(!drag) return;
-    drag=false; track.classList.remove('nodrag');
-    if(horiz&&Math.abs(dx)>W*.12) go(dx<0?now+1:now-1); else place(true);
-    setTimeout(function(){ dx=0; },30);
-    start();
-  }
-  hero.addEventListener('touchstart',function(e){
-    down(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
-  hero.addEventListener('touchmove',function(e){
-    move(e.touches[0].clientX,e.touches[0].clientY,e); },{passive:false});
-  hero.addEventListener('touchend',up,{passive:true});
-  hero.addEventListener('touchcancel',up,{passive:true});
-  hero.addEventListener('pointerdown',function(e){
-    if(e.pointerType==='mouse'&&e.button!==0) return;
-    if(e.pointerType==='touch') return;
-    e.preventDefault(); down(e.clientX,e.clientY);
-    try{ hero.setPointerCapture(e.pointerId); }catch(x){}
-  });
-  hero.addEventListener('pointermove',function(e){
-    if(e.pointerType==='touch') return; move(e.clientX,e.clientY,e); });
-  hero.addEventListener('pointerup',function(e){
-    if(e.pointerType==='touch') return; up(); });
-  hero.addEventListener('pointercancel',up);
-  slides.forEach(function(s){
-    s.addEventListener('click',function(e){ if(Math.abs(dx)>8) e.preventDefault(); });
-    s.addEventListener('dragstart',function(e){ e.preventDefault(); });
-  });
-
-  hero.setAttribute('tabindex','0');
-  hero.addEventListener('keydown',function(e){
-    if(e.key==='ArrowLeft'){ stop(); go(now-1); start(); }
-    if(e.key==='ArrowRight'){ stop(); go(now+1); start(); }
-  });
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      es.forEach(function(e){ e.isIntersecting?start():stop(); });
-    },{threshold:.2}).observe(hero);
-  }
-  place(false); cap(); start();
-})();
-</script>
 
 <style>
 /* ═══ 상단 서브메뉴 ═══ */
@@ -10158,222 +10021,9 @@ body, input, select, textarea, button,
 })();
 </script>
 
-<script>
-/* 메인 배너 — 1·2·3·4 순서로 자동 전환, 화살표·점·손가락 */
-(function(){
-  function init(){
-    var hero  = document.getElementById('heroSlider');
-    var track = document.getElementById('hTrack');
-    var dots  = document.getElementById('hDots');
-    if (!hero || !track || hero.dataset.slider) return;
-    hero.dataset.slider = '1';
 
-    var slides = track.querySelectorAll('.hslide');
-    var n = slides.length;
-    if (n < 2) return;
 
-    var cur = 0, timer = null;
-    var GAP = 4500;
 
-    /* 옛 화살표·점이 있으면 치웁니다 */
-    hero.querySelectorAll('.hero-arw').forEach(function(x){ x.remove(); });
-    if (dots) dots.innerHTML = '';
-
-    /* 점 만들기 */
-    if (dots) {
-      if (dots.parentElement !== hero) hero.appendChild(dots);
-      for (var i = 0; i < n; i++) {
-        (function(k){
-          var b = document.createElement('button');
-          b.type = 'button';
-          b.setAttribute('aria-label', (k + 1) + '번 배너');
-          if (k === 0) b.classList.add('on');
-          b.addEventListener('click', function(e){
-            e.preventDefault(); e.stopPropagation();
-            go(k); restart();
-          });
-          dots.appendChild(b);
-        })(i);
-      }
-    }
-
-    /* 화살표 만들기 */
-    function arw(dir, d){
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'hero-arw ' + dir;
-      b.setAttribute('aria-label', dir === 'prev' ? '이전 배너' : '다음 배너');
-      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + d + '"/></svg>';
-      b.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation();
-        go(cur + (dir === 'prev' ? -1 : 1)); restart();
-      });
-      hero.appendChild(b);
-    }
-    arw('prev', 'M15 6l-6 6 6 6');
-    arw('next', 'M9 6l6 6-6 6');
-
-    function go(k){
-      cur = ((k % n) + n) % n;
-      track.style.transform = 'translateX(' + (-cur * 100) + '%)';
-      if (dots) {
-        var bs = dots.querySelectorAll('button');
-        for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', i === cur);
-      }
-    }
-
-    function restart(){
-      clearInterval(timer);
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      timer = setInterval(function(){ go(cur + 1); }, GAP);
-    }
-
-    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
-    hero.addEventListener('mouseleave', restart);
-    document.addEventListener('visibilitychange', function(){
-      if (document.hidden) clearInterval(timer); else restart();
-    });
-
-    /* 손가락으로 넘기기 */
-    var sx = 0, sy = 0, on = false;
-    hero.addEventListener('touchstart', function(e){
-      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; on = true;
-      clearInterval(timer);
-    }, { passive:true });
-    hero.addEventListener('touchend', function(e){
-      if (!on) return; on = false;
-      var t = e.changedTouches[0];
-      var dx = t.clientX - sx, dy = t.clientY - sy;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
-        go(cur + (dx < 0 ? 1 : -1));
-      }
-      restart();
-    }, { passive:true });
-
-    go(0);
-    restart();
-  }
-
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', init);
-  else init();
-  setTimeout(init, 600);
-})();
-</script>
-
-<script>
-/* 메인 배너 — 최종 (앞의 것을 모두 지우고 새로 답니다) */
-(function(){
-  function build(){
-    var hero  = document.getElementById('heroSlider');
-    var track = document.getElementById('hTrack');
-    if (!hero || !track) return;
-
-    var slides = track.querySelectorAll('.hslide');
-    var n = slides.length;
-    if (n < 2) return;
-
-    /* 앞서 붙은 것들 정리 */
-    var olds = hero.querySelectorAll('.hero-arw');
-    for (var i = 0; i < olds.length; i++) olds[i].remove();
-
-    var dots = document.getElementById('hDots');
-    if (dots) {
-      if (dots.parentElement !== hero) hero.appendChild(dots);
-      dots.innerHTML = '';
-    }
-
-    if (hero._cgTimer) clearInterval(hero._cgTimer);
-
-    var cur = 0;
-
-    function go(k){
-      cur = ((k % n) + n) % n;
-      track.style.transform = 'translateX(' + (-cur * 100) + '%)';
-      if (dots) {
-        var bs = dots.querySelectorAll('button');
-        for (var j = 0; j < bs.length; j++) bs[j].classList.toggle('on', j === cur);
-      }
-    }
-    function play(){
-      clearInterval(hero._cgTimer);
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      hero._cgTimer = setInterval(function(){ go(cur + 1); }, 4500);
-    }
-
-    /* 점 */
-    if (dots) {
-      for (var d = 0; d < n; d++) {
-        (function(k){
-          var b = document.createElement('button');
-          b.type = 'button';
-          b.setAttribute('aria-label', (k + 1) + '번 배너');
-          if (k === 0) b.classList.add('on');
-          b.onclick = function(e){
-            e.preventDefault(); e.stopPropagation();
-            go(k); play();
-            return false;
-          };
-          dots.appendChild(b);
-        })(d);
-      }
-    }
-
-    /* 화살표 */
-    function arw(cls, path, step){
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'hero-arw ' + cls;
-      b.setAttribute('aria-label', step < 0 ? '이전 배너' : '다음 배너');
-      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + path + '"/></svg>';
-      b.onclick = function(e){
-        e.preventDefault(); e.stopPropagation();
-        go(cur + step); play();
-        return false;
-      };
-      hero.appendChild(b);
-    }
-    arw('prev', 'M15 6l-6 6 6 6', -1);
-    arw('next', 'M9 6l6 6-6 6', 1);
-
-    /* 슬라이드를 눌러도 링크가 안 열리게 — 넘길 때만 */
-    var sx = 0, sy = 0, moved = false;
-    hero.addEventListener('touchstart', function(e){
-      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
-      clearInterval(hero._cgTimer);
-    }, { passive:true });
-    hero.addEventListener('touchmove', function(e){
-      var t = e.touches[0];
-      if (Math.abs(t.clientX - sx) > 10) moved = true;
-    }, { passive:true });
-    hero.addEventListener('touchend', function(e){
-      var t = e.changedTouches[0];
-      var dx = t.clientX - sx, dy = t.clientY - sy;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
-        go(cur + (dx < 0 ? 1 : -1));
-      }
-      play();
-    }, { passive:true });
-    track.addEventListener('click', function(e){
-      if (moved) { e.preventDefault(); e.stopPropagation(); }
-    }, true);
-
-    hero.addEventListener('mouseenter', function(){ clearInterval(hero._cgTimer); });
-    hero.addEventListener('mouseleave', play);
-    document.addEventListener('visibilitychange', function(){
-      if (document.hidden) clearInterval(hero._cgTimer); else play();
-    });
-
-    go(0);
-    play();
-  }
-
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', build);
-  else build();
-  setTimeout(build, 900);
-})();
-</script>
 
 <script>
 /* 배너 위에서도 화면이 정상으로 내려가게 */
@@ -10783,6 +10433,105 @@ body.modal-open{
   transform:translateY(-5px) !important;
 }
 .tri-card:active{ transform:scale(.99) !important }
+
+/* ══════════════════════════════════════════════
+   배너 · 스크롤 — 마지막 확정
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  min-height:220px !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  background:#FFE4E6 !important;
+}
+.hero .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:1 !important;
+  transform:translateX(0);
+  transition:transform .55s cubic-bezier(.4,0,.2,1) !important;
+}
+.hero .h-track > .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  display:block !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  contain:none !important;
+  will-change:auto !important;
+}
+
+/* 화살표 · 점 */
+.hero > .hero-arw{
+  position:absolute !important;
+  top:50% !important; margin-top:-22px !important;
+  width:44px !important; height:44px !important;
+  border:0 !important; border-radius:50% !important;
+  background:rgba(255,255,255,.9) !important;
+  cursor:pointer !important; z-index:20 !important;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  padding:0 !important; box-shadow:0 4px 14px rgba(0,0,0,.2) !important;
+}
+.hero > .hero-arw svg{
+  width:19px !important; height:19px !important;
+  fill:none !important; stroke:#17171c !important; stroke-width:2.3 !important;
+  stroke-linecap:round !important; stroke-linejoin:round !important;
+  pointer-events:none !important;
+}
+.hero > .hero-arw.prev{ left:16px !important; right:auto !important }
+.hero > .hero-arw.next{ right:16px !important; left:auto !important }
+.hero > .h-dots{
+  position:absolute !important; left:50% !important; bottom:16px !important;
+  transform:translateX(-50%) !important;
+  display:flex !important; gap:7px !important; z-index:20 !important;
+  margin:0 !important; padding:0 !important; background:none !important;
+}
+.hero > .h-dots button{
+  width:8px !important; height:8px !important; border-radius:50% !important;
+  border:0 !important; padding:0 !important;
+  background:rgba(255,255,255,.55) !important; cursor:pointer !important;
+}
+.hero > .h-dots button.on{
+  background:#D82558 !important; width:20px !important; border-radius:99px !important;
+}
+
+/* 스크롤 */
+html, body{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  height:auto !important;
+  position:static !important;
+  touch-action:auto !important;
+}
+body.drawer-on, body.modal-open{ overflow:hidden !important }
+
+/* 구매 버튼 가로 */
+.detail .d-acts{
+  display:flex !important; flex-direction:row !important;
+  flex-wrap:nowrap !important; gap:10px !important; width:100% !important;
+}
+.detail .d-acts .d-buy,
+.detail .d-acts .d-cart{
+  flex:1 1 0 !important; min-width:0 !important;
+  display:inline-flex !important; align-items:center !important; justify-content:center !important;
+}
+
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+  .hero > .hero-arw{ width:36px !important; height:36px !important; margin-top:-18px !important }
+  .hero > .hero-arw.prev{ left:8px !important }
+  .hero > .hero-arw.next{ right:8px !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10805,12 +10554,7 @@ body.modal-open{
    메인 배너 — 최종 하나만 (앞의 것 모두 정지)
    ══════════════════════════════════════════════ */
 (function(){
-  /* ① 지금 도는 반복 작업을 모두 멈춥니다 */
-  var top = setInterval(function(){}, 99999);
-  for (var i = 1; i <= top; i++) {
-    try { clearInterval(i); } catch(e){}
-  }
-  clearInterval(top);
+  
 
   var hero, track, dots, cur = 0, n = 0, timer = null;
 
