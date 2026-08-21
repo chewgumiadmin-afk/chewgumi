@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!-- ChewGumi Fix Log v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>수정 이력 | CHEWGUMI</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script src="assets/auth.js"></script>
+<script src="assets/site.js"></script>
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink:#FFBDCC; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C;
+  --gray:#797979; --ink:#17171c;
+  --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.68);
+  --sp-s:clamp(0.75rem,0.7rem+0.24vw,1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.5vw,1.9rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.11),transparent 60%),
+    linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select,textarea{font-size:14.5px}}
+.wrap{max-width:1000px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+label{display:block;font-size:12px;font-weight:600;color:#555;margin:11px 0 5px}
+input,select,textarea{
+  width:100%;min-height:44px;padding:11px 13px;border-radius:11px;
+  border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink);
+}
+textarea{min-height:80px;line-height:1.7;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--main);outline-offset:-1px}
+select{
+  -webkit-appearance:none;appearance:none;cursor:pointer;padding-right:38px;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23D82558' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1;min-width:140px}
+
+.btn{
+  min-height:46px;padding:0 20px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:linear-gradient(135deg,#3FBF7A,#2AA060)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:12.5px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.msg{margin-top:11px;font-size:13px;line-height:1.7;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+/* 이력 */
+.log{
+  border:1px solid rgba(0,0,0,.06);border-radius:16px;
+  background:rgba(255,255,255,.62);padding:16px 17px;margin-bottom:11px;
+}
+.log .h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.log .h b{font-size:14.5px;font-weight:700;letter-spacing:-.02em;flex:1;min-width:150px}
+.log .when{font-size:11.5px;color:var(--gray);white-space:nowrap}
+.tag{
+  font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;
+}
+.tag.fixed{background:rgba(233,162,59,.15);color:#8A6015}
+.tag.dev{background:rgba(42,160,96,.14);color:#1B6B3F}
+.tag.ceo{background:rgba(216,37,88,.1);color:var(--main)}
+.tag.page{background:rgba(0,0,0,.05);color:#555}
+.log dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin-top:11px;font-size:13px}
+.log dt{color:var(--gray);white-space:nowrap;font-size:12px;padding-top:1px}
+.log dd{margin:0;line-height:1.7;word-break:keep-all}
+.log .links{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.log .links a{
+  display:inline-flex;align-items:center;min-height:34px;padding:0 13px;
+  border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.85);font-size:12px;font-weight:600;
+}
+.log .links a:hover{background:var(--pink-lt);color:var(--main)}
+.log .acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;
+  padding-top:12px;border-top:1px solid rgba(0,0,0,.05)}
+.log .note{font-size:12px;color:var(--gray);margin-top:7px;line-height:1.7}
+
+.filt{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{
+  min-height:36px;padding:0 15px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.8);
+  font-size:12.5px;font-weight:600;color:var(--gray);
+  display:inline-flex;align-items:center;
+}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hide{display:none}
+.hint{font-size:12px;color:var(--gray);line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
+.hint b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>수정 이력</h1>
+      <div class="s">무엇을 왜 어떻게 고쳤는지 · 확인하고 닫기</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <!-- 이슈 올리기 -->
+  <div class="panel">
+    <h2>이슈 올리기</h2>
+
+    <label>어느 화면인가요</label>
+    <select id="fPage">
+      <option value="index.html">메인 (index.html)</option>
+      <option value="product.html">상품 상세 (product.html)</option>
+      <option value="shop.html">전체상품 (shop.html)</option>
+      <option value="about.html">브랜드 소개 (about.html)</option>
+      <option value="cart.html">장바구니 (cart.html)</option>
+      <option value="checkout.html">주문·결제 (checkout.html)</option>
+      <option value="review.html">후기 (review.html)</option>
+      <option value="notice.html">공지사항 (notice.html)</option>
+      <option value="etc">그 밖에</option>
+    </select>
+
+    <label>무엇이 잘못됐나요 (한 줄)</label>
+    <input id="fTitle" placeholder="예) 상품을 눌러도 팝업이 안 열립니다" autocomplete="off">
+
+    <label>어떻게 하면 그렇게 되나요</label>
+    <textarea id="fHow" placeholder="예) PC 크롬에서 전체상품 목록의 트래블잇 3봉 카드를 누름&#10;→ 팝업이 안 열리고 화면 맨 위로 올라감"></textarea>
+
+    <div class="row">
+      <div>
+        <label>어디서 보셨나요</label>
+        <select id="fEnv">
+          <option value="pc-chrome">PC · 크롬</option>
+          <option value="pc-safari">PC · 사파리</option>
+          <option value="mobile-android">모바일 · 안드로이드</option>
+          <option value="mobile-ios">모바일 · 아이폰</option>
+          <option value="both">PC와 모바일 모두</option>
+        </select>
+      </div>
+      <div>
+        <label>얼마나 급한가요</label>
+        <select id="fPri">
+          <option value="high">오픈을 막음</option>
+          <option value="mid">보기 나쁨</option>
+          <option value="low">나중에</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="btn" onclick="submitIssue()" id="subBtn">이슈 올리기</button>
+      <button class="btn sub" onclick="copyForm()">양식만 복사</button>
+    </div>
+    <div class="msg" id="m1"></div>
+
+    <div class="hint">
+      올리시면 <b>GitHub 이슈로도 등록</b>됩니다.<br>
+      고친 뒤 <b>확인 주소와 커밋 주소</b>를 여기에 남겨드립니다.
+    </div>
+  </div>
+
+  <!-- 이력 -->
+  <div class="panel">
+    <h2>이력 <span class="n" id="cnt">—</span></h2>
+    <div class="filt" id="filt">
+      <button class="chip on" data-f="">전체</button>
+      <button class="chip" data-f="fixed">확인 대기</button>
+      <button class="chip" data-f="dev">개발 확인됨</button>
+      <button class="chip" data-f="closed">닫힘</button>
+    </div>
+    <div id="list"></div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+function say(t,k){const m=$('m1');m.className='msg'+(k?' '+k:'');m.textContent=t;}
+function tok(){try{return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||KEY;}catch(e){return KEY;}}
+
+let ROWS=[], FILT='';
+
+const ENV={'pc-chrome':'PC 크롬','pc-safari':'PC 사파리',
+  'mobile-android':'안드로이드','mobile-ios':'아이폰','both':'PC·모바일'};
+const PRI={high:'오픈을 막음',mid:'보기 나쁨',low:'나중에'};
+
+function formText(){
+  return '## 무엇이 잘못됐나\n' + ($('fTitle').value.trim() || '(적어주세요)')
+    + '\n\n## 화면\n' + $('fPage').value
+    + '\n\n## 어떻게 하면 그렇게 되나\n' + ($('fHow').value.trim() || '(적어주세요)')
+    + '\n\n## 어디서\n' + ENV[$('fEnv').value]
+    + '\n\n## 급한 정도\n' + PRI[$('fPri').value];
+}
+
+function copyForm(){
+  const t = formText();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(function(){ say('복사했습니다.','ok'); })
+      .catch(function(){ say('복사하지 못했습니다.','bad'); });
+  } else say('이 브라우저에서는 복사가 안 됩니다.','bad');
+}
+
+function submitIssue(){
+  const title=$('fTitle').value.trim();
+  if(!title){ say('무엇이 잘못됐는지 한 줄 적어주세요.','bad'); return; }
+  $('subBtn').disabled=true; say('올리는 중…');
+
+  fetch(SB+'/rest/v1/fix_log',{method:'POST',
+    headers:{...H,Prefer:'return=representation'},
+    body:JSON.stringify({
+      title:title, page:$('fPage').value,
+      cause:'(확인 중)', fixed:'(수정 전)',
+      stage:'open',
+      dev_note:formText()
+    })})
+  .then(r=>r.ok?r.json():Promise.reject())
+  .then(function(){
+    say('올렸습니다. 곧 확인해 고치겠습니다.','ok');
+    $('fTitle').value=''; $('fHow').value='';
+    $('subBtn').disabled=false;
+    load();
+  })
+  .catch(function(){ $('subBtn').disabled=false; say('올리지 못했습니다.','bad'); });
+}
+
+function load(){
+  let q='/rest/v1/fix_log?select=*&order=created_at.desc&limit=60';
+  fetch(SB+q,{headers:H}).then(r=>r.ok?r.json():[]).then(rows=>{
+    ROWS=rows||[]; draw();
+  }).catch(()=>{ $('list').innerHTML='<p style="font-size:13px;color:var(--bad)">불러오지 못했습니다.</p>'; });
+}
+
+function draw(){
+  let list=ROWS.filter(function(x){
+    if(!FILT) return true;
+    if(FILT==='closed') return x.stage==='closed';
+    if(FILT==='dev') return x.dev_ok===true && x.stage!=='closed';
+    if(FILT==='fixed') return x.stage==='fixed' && x.dev_ok!==true;
+    return true;
+  });
+  $('cnt').textContent=list.length+'건';
+  if(!list.length){ $('list').innerHTML='<p style="font-size:13px;color:var(--gray)">없습니다.</p>'; return; }
+
+  $('list').innerHTML=list.map(function(x){
+    const t=new Date(x.created_at);
+    const when=(t.getMonth()+1)+'/'+t.getDate()+' '
+      +String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    let tag='<span class="tag fixed">확인 대기</span>';
+    if(x.stage==='open') tag='<span class="tag page">접수됨</span>';
+    else if(x.stage==='closed') tag='<span class="tag ceo">닫힘</span>';
+    else if(x.dev_ok===true) tag='<span class="tag dev">개발 확인됨</span>';
+
+    const links=[];
+    if(x.check_url) links.push('<a href="'+esc(x.check_url)+'" target="_blank" rel="noopener">확인 화면 ↗</a>');
+    if(x.commit_sha) links.push('<a href="https://github.com/chewgumiadmin-afk/chewgumi/commit/'
+      +esc(x.commit_sha)+'" target="_blank" rel="noopener">변경 내용 ↗</a>');
+    if(x.commit_sha) links.push('<a href="https://raw.githubusercontent.com/chewgumiadmin-afk/chewgumi/'
+      +esc(x.commit_sha)+'/'+esc(x.page||'index.html')+'" target="_blank" rel="noopener">배포 원본 ↗</a>');
+
+    const acts=[];
+    if(x.stage!=='closed' && x.dev_ok!==true)
+      acts.push('<button class="btn sm ok" onclick="mark('+x.id+',\'dev\',true)">개발 확인 완료</button>',
+                '<button class="btn sm sub" onclick="mark('+x.id+',\'dev\',false)">아직 안 됨</button>');
+    if(x.dev_ok===true && x.stage!=='closed')
+      acts.push('<button class="btn sm" onclick="mark('+x.id+',\'close\',true)">닫기 (CEO 확인 요청)</button>');
+
+    return '<div class="log">'
+      +'<div class="h"><b>'+esc(x.title)+'</b>'
+      +'<span class="tag page">'+esc(x.page||'—')+'</span>'+tag
+      +'<span class="when">'+when+'</span></div>'
+      +'<dl>'
+      +(x.cause?'<dt>원인</dt><dd>'+esc(x.cause)+'</dd>':'')
+      +(x.fixed?'<dt>고침</dt><dd>'+esc(x.fixed)+'</dd>':'')
+      +(x.build_status?'<dt>배포</dt><dd>'+(x.build_status==='built'?'성공':esc(x.build_status))+'</dd>':'')
+      +'</dl>'
+      +(links.length?'<div class="links">'+links.join('')+'</div>':'')
+      +(x.dev_note && x.stage==='open'?'<div class="note">'+esc(x.dev_note).replace(/\n/g,'<br>')+'</div>':'')
+      +(x.dev_ok===false?'<div class="note" style="color:var(--bad)">개발 확인: 아직 안 됨</div>':'')
+      +(acts.length?'<div class="acts">'+acts.join('')+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+function mark(id,kind,val){
+  const patch = kind==='dev'
+    ? { dev_ok:val, dev_at:new Date().toISOString(), stage: val?'dev':'fixed' }
+    : { stage:'closed', ceo_ok:null };
+  fetch(SB+'/rest/v1/fix_log?id=eq.'+id,{method:'PATCH',
+    headers:{...H,Authorization:'Bearer '+tok(),Prefer:'return=minimal'},
+    body:JSON.stringify(patch)})
+  .then(r=>{ if(!r.ok) throw new Error(); load(); })
+  .catch(()=>say('바꾸지 못했습니다.','bad'));
+}
+
+$('filt').addEventListener('click',function(e){
+  const b=e.target.closest('.chip'); if(!b) return;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); FILT=b.dataset.f||''; draw();
+});
+
+load();
+</script>
+</body>
+</html>
