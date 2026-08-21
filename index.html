@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v186 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v187 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10866,6 +10866,55 @@ header{
   content:none !important;
   display:none !important;
 }
+
+/* ══════════════════════════════════════════════
+   팝업 손잡이 — 하나만 · PC 는 옮기기 · 모바일은 없음
+   ══════════════════════════════════════════════ */
+
+/* 손잡이는 언제나 하나 */
+.detail .d-grip ~ .d-grip{ display:none !important }
+
+.detail .d-grip{
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  height:40px !important;
+  z-index:9 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+  border:0 !important;
+}
+.detail .d-grip::before{
+  content:"" !important;
+  width:44px !important;
+  height:5px !important;
+  border-radius:99px !important;
+  background:rgba(0,0,0,.14) !important;
+  transition:background .18s !important;
+}
+.detail .d-grip::after{ content:none !important }
+
+/* ── PC · 태블릿 : 잡고 옮길 수 있습니다 ── */
+@media (min-width:861px){
+  .detail .d-grip{
+    cursor:grab !important;
+    pointer-events:auto !important;
+  }
+  .detail .d-grip:hover::before{ background:rgba(216,37,88,.34) !important }
+  .detail .d-grip:active{ cursor:grabbing !important }
+  .detail{ padding-top:40px !important }
+}
+
+/* ── 모바일 : 손잡이 없음 (화면을 꽉 채우므로) ── */
+@media (max-width:860px){
+  .detail .d-grip{ display:none !important }
+  .detail{ padding-top:0 !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -11283,6 +11332,89 @@ header{
   }, true);
 
   window.cgGoTab = goTab;
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   팝업 옮기기 — PC 에서 손잡이를 잡고 끕니다
+   ══════════════════════════════════════════════ */
+(function(){
+  function wide(){ return window.matchMedia('(min-width:861px)').matches; }
+
+  function setup(){
+    var card = document.querySelector('.detail');
+    if (!card) return;
+
+    /* 손잡이는 하나만 남깁니다 */
+    var olds = card.querySelectorAll('.d-grip');
+    for (var i = 1; i < olds.length; i++) olds[i].remove();
+
+    var grip = olds[0];
+    if (!grip) {
+      grip = document.createElement('div');
+      grip.className = 'd-grip';
+      grip.setAttribute('aria-label', '잡고 옮기기');
+      card.insertBefore(grip, card.firstChild);
+    }
+    if (grip.dataset.drag) return;
+    grip.dataset.drag = '1';
+
+    var ox = 0, oy = 0, sx = 0, sy = 0, on = false;
+
+    function begin(x, y){
+      if (!wide()) return;
+      on = true; sx = x; sy = y;
+      card.style.transition = 'none';
+      document.body.style.userSelect = 'none';
+    }
+    function move(x, y){
+      if (!on) return;
+      var nx = ox + (x - sx), ny = oy + (y - sy);
+      var lim = 300;
+      nx = Math.max(-lim, Math.min(lim, nx));
+      ny = Math.max(-lim, Math.min(lim, ny));
+      card.style.transform = 'translate(' + nx + 'px,' + ny + 'px)';
+      card._nx = nx; card._ny = ny;
+    }
+    function end(){
+      if (!on) return;
+      on = false;
+      ox = card._nx || 0; oy = card._ny || 0;
+      card.style.transition = '';
+      document.body.style.userSelect = '';
+    }
+
+    grip.addEventListener('mousedown', function(e){
+      begin(e.clientX, e.clientY);
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', end);
+
+    /* 두 번 누르면 제자리 */
+    grip.addEventListener('dblclick', function(){
+      ox = oy = 0; card._nx = card._ny = 0;
+      card.style.transform = '';
+    });
+
+    /* 팝업을 닫으면 제자리로 */
+    var dim = document.getElementById('detail');
+    if (dim && window.MutationObserver && !dim.dataset.gripReset) {
+      dim.dataset.gripReset = '1';
+      new MutationObserver(function(){
+        if (dim.classList.contains('hide')) {
+          ox = oy = 0; card._nx = card._ny = 0;
+          card.style.transform = '';
+        }
+      }).observe(dim, { attributes:true, attributeFilter:['class'] });
+    }
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', setup);
+  else setup();
+  setTimeout(setup, 800);
 })();
 </script>
 </body>
