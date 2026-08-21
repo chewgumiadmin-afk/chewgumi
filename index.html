@@ -4066,23 +4066,7 @@ body.at-foot .kko-fab{
     now = 0; place(false); stop(); start();
   };
 
-  /* 좌우 넘김 버튼 — CSS(.hero-arw)는 있는데 요소가 없어 동작하지 않았습니다 */
-  if(!hero.querySelector('.hero-arw')){
-    [['prev','이전 배너','M15 5 8 12l7 7'],['next','다음 배너','M9 5l7 7-7 7']]
-      .forEach(function(a){
-        var b=document.createElement('button');
-        b.type='button'; b.className='hero-arw '+a[0];
-        b.setAttribute('aria-label',a[1]);
-        b.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">'
-          +'<path d="'+a[2]+'" fill="none" stroke="currentColor" stroke-width="2.2" '
-          +'stroke-linecap="round" stroke-linejoin="round"/></svg>';
-        b.addEventListener('click',function(e){
-          e.preventDefault(); e.stopPropagation();
-          stop(); go(a[0]==='prev' ? now-1 : now+1); start();
-        });
-        hero.appendChild(b);
-      });
-  }
+
   var elNow=document.getElementById('hbNow'), elAll=document.getElementById('hbAll');
   if(elAll) elAll.textContent=n;
 
@@ -10466,6 +10450,7 @@ body, input, select, textarea, button,
     document.addEventListener('DOMContentLoaded', build);
   else build();
   setTimeout(build, 900);
+  window.cgHeroBuild = build;
 })();
 </script>
 
@@ -10647,6 +10632,7 @@ body.cg-scrolling *{
     if(!rows || !rows.length) return;          /* 비어 있으면 기존 배너 유지 */
     var t=document.getElementById('hTrack');
     var d=document.getElementById('hDots');
+    var hero=document.getElementById('heroSlider');
     if(!t) return;
     t.innerHTML = rows.map(function(b){
       var url=String(b.image_url||'');
@@ -10657,24 +10643,13 @@ body.cg-scrolling *{
         + ' style="background-image:url(\''+url.replace(/'/g,'')+'\')"'
         + ' aria-label="'+alt+'"></a>';
     }).join('');
-    /* 점(dot)을 배너 수만큼 다시 만듭니다.
-       앞서 비우기만 하고 다시 만들지 않아 점이 사라졌습니다. */
-    if(d){
-      d.innerHTML='';
-      rows.forEach(function(_,i){
-        var b=document.createElement('button');
-        b.type='button'; b.setAttribute('role','tab');
-        b.setAttribute('aria-label',(i+1)+'번 배너');
-        if(i===0) b.classList.add('on');
-        b.addEventListener('click',function(){
-          if(typeof window.cgHeroGo==='function') window.cgHeroGo(i);
-        });
-        d.appendChild(b);
-      });
-    }
+    /* 슬라이드를 바꿨으니 최종 슬라이더를 다시 돌려
+       점·화살표·자동전환을 새로 만들게 합니다. */
+    if(hero) hero.dataset.slider='';
+    if(d) d.innerHTML='';
     var elAll=document.getElementById('hbAll');
     if(elAll) elAll.textContent=rows.length;
-    if(typeof window.cgHeroReset==='function') window.cgHeroReset(rows.length);
+    if(typeof window.cgHeroBuild==='function') window.cgHeroBuild();
   })
   .catch(function(){});
 })();
