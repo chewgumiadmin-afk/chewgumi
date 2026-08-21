@@ -124,6 +124,7 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 <link rel="stylesheet" href="assets/stable.css">
 <meta name="description" content="츄구미 공지사항 — 새로운 소식과 안내를 확인하세요.">
 <link rel="stylesheet" href="assets/popup.css">
+<script src="assets/adminbar.js" defer></script>
 </head>
 <body>
 
@@ -167,6 +168,7 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 
 <div class="admbar" id="admBar" hidden>
   <span class="a-tag">운영자</span>
+      <button class="a-btn" onclick="cgLogout()" type="button">로그아웃</button>
   <a class="a-btn" href="posts.html">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
     글 관리
@@ -189,17 +191,7 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 .admbar .a-btn svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;
   stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 </style>
-<script>
-(function(){
-  var t=null; try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s) t=s.t;}catch(e){}
-  if(!t) return;
-  fetch('https://psynvpuedzjvytsgdhgg.supabase.co/rest/v1/admins?select=email',
-    {headers:{apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',Authorization:'Bearer '+t}})
-  .then(function(r){return r.ok?r.json():null;})
-  .then(function(d){ if(Array.isArray(d)&&d.length){ var b=document.getElementById('admBar'); if(b) b.hidden=false; } })
-  .catch(function(){});
-})();
-</script>
+
 
 <div class="wrap"><div class="panel">
 <div class="item open">
