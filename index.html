@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v181 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v182 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10718,6 +10718,43 @@ header{
     border-radius:0 !important;
   }
 }
+
+/* 상세 이미지 */
+#dDetailIn{
+  display:block !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  border-radius:14px !important;
+  overflow:hidden !important;
+  background:#fff !important;
+  min-height:0 !important;
+}
+#dDetailIn img{
+  width:100% !important;
+  height:auto !important;
+  max-width:100% !important;
+  max-height:none !important;
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  object-fit:unset !important;
+  aspect-ratio:auto !important;
+}
+.d-detail-load{
+  padding:36px 20px !important;
+  text-align:center !important;
+  font-size:13px !important;
+  line-height:1.7 !important;
+  color:#797979 !important;
+  background:rgba(0,0,0,.02) !important;
+  border-radius:14px !important;
+}
+#dDetail{
+  display:block !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10990,6 +11027,81 @@ header{
 
     return false;
   };
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   팝업을 열면 상세 이미지를 함께 불러옵니다
+   (「상세 이미지 보기」 버튼을 없앤 뒤로 아무도 부르지 않았습니다)
+   ══════════════════════════════════════════════ */
+(function(){
+  var last = '';
+
+  function loadImgs(){
+    var box = document.getElementById('dDetail');
+    var inner = document.getElementById('dDetailIn');
+    var card = window._curCard;
+    if (!box || !inner || !card) return;
+
+    var no = card.dataset.no || '';
+    if (!no || no === last) return;
+    last = no;
+
+    box.classList.remove('hide');
+
+    /* 원래 불러오기 코드를 씁니다 */
+    if (typeof window.toggleDetailImgs === 'function') {
+      try {
+        /* 접혀 있으면 펴면서 불러옵니다 */
+        box.classList.add('hide');
+        window.toggleDetailImgs();
+        box.classList.remove('hide');
+        return;
+      } catch (e) {}
+    }
+
+    /* 원래 코드가 안 되면 직접 불러옵니다 */
+    var SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+    var K = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+    inner.innerHTML = '<div class="d-detail-load">상세 이미지를 불러오는 중…</div>';
+
+    fetch(SB + '/rest/v1/products?select=detail_images&id=eq.' + no,
+      { headers: { apikey: K, Authorization: 'Bearer ' + K } })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      var p = (rows || [])[0];
+      var list = (p && p.detail_images) || [];
+      if (!list.length) {
+        inner.innerHTML = '<div class="d-detail-load">상세 이미지가 없습니다.</div>';
+        return;
+      }
+      inner.innerHTML = list.map(function(src, i){
+        return '<img src="' + src + '" alt="상세 이미지 ' + (i+1) + '" '
+          + (i < 2 ? '' : 'loading="lazy" ') + 'referrerpolicy="no-referrer">';
+      }).join('');
+    })
+    .catch(function(){
+      inner.innerHTML = '<div class="d-detail-load">불러오지 못했습니다.</div>';
+    });
+  }
+
+  /* 팝업이 열릴 때마다 */
+  var dim = document.getElementById('detail');
+  if (dim && window.MutationObserver) {
+    new MutationObserver(function(){
+      if (!dim.classList.contains('hide')) setTimeout(loadImgs, 120);
+      else last = '';
+    }).observe(dim, { attributes:true, attributeFilter:['class'] });
+  }
+
+  /* 상세정보 탭을 누를 때도 */
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.d-tabs .dt');
+    if (b && b.dataset.t === 'detail') setTimeout(loadImgs, 100);
+  }, true);
+
+  window.cgLoadDetailImgs = loadImgs;
 })();
 </script>
 </body>
