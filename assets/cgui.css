@@ -1,0 +1,161 @@
+/*! ChewGumi 공통 UI · MedIT
+ *  세부 화면을 메인과 같은 모습으로 맞춥니다.
+ *  글꼴 · 로고 · 유리 메뉴 · 색
+ */
+
+/* ── 글꼴 ── */
+body, input, select, textarea, button,
+.wrap, .foot, footer, main, section, div, p, span, a, li, td, th {
+  font-family: 'SUIT Variable', 'SUIT', -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", sans-serif;
+}
+.eb, .en, .logo-en, .sec-eyebrow, .p-eb {
+  font-family: 'Poppins', 'SUIT Variable', sans-serif;
+}
+
+/* ── 색 ── */
+:root {
+  --cg-main: #D82558;
+  --cg-main2: #E95073;
+  --cg-pink: #FFBDCC;
+  --cg-pink-lt: #FFE4E6;
+  --cg-gray: #797979;
+  --cg-ink: #17171c;
+  --cg-sub: #FFE923;
+  --cg-line: rgba(255,255,255,.85);
+}
+
+/* ── 로고 : 글씨 대신 그림 ── */
+a.logo, .logo, .brand, header .logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-decoration: none !important;
+}
+a.logo::before, .logo::before, .brand::before {
+  content: "";
+  display: block;
+  width: clamp(96px, 13vw, 128px);
+  height: clamp(34px, 4.6vw, 46px);
+  background: url('assets/logo.png') center/contain no-repeat;
+}
+a.logo img, .logo img, .brand img { display: none !important; }
+
+/* ── 상단 알림 띠 ── */
+.topbar, .cg-topbar {
+  height: 45px !important;
+  min-height: 45px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(90deg, var(--cg-main2), var(--cg-main)) !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.02em !important;
+  padding: 0 16px !important;
+  text-align: center !important;
+}
+.topbar b, .cg-topbar b { font-weight: 800 !important; color: var(--cg-sub) !important; }
+
+/* ── 머리글 : 흰 유리 ── */
+header, .cg-head {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  background: rgba(255,255,255,.88) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(130%) !important;
+  backdrop-filter: blur(20px) saturate(130%) !important;
+  border-bottom: 1px solid rgba(0,0,0,.05) !important;
+  box-shadow: 0 2px 18px rgba(216,37,88,.05) !important;
+}
+header nav, .cg-head nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: clamp(12px, 2.2vw, 26px) !important;
+}
+header nav a, .cg-head nav a {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: #444 !important;
+  text-decoration: none !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  transition: background .2s, color .2s !important;
+}
+header nav a:hover, .cg-head nav a:hover {
+  background: rgba(255,189,204,.34) !important;
+  color: var(--cg-main) !important;
+}
+header nav a.on, .cg-head nav a.on {
+  background: var(--cg-ink) !important;
+  color: #fff !important;
+}
+
+/* ── 유리 상자 ── */
+.panel, .card-box, .glass, .box {
+  background: rgba(255,255,255,.68) !important;
+  border: 1px solid var(--cg-line) !important;
+  border-radius: 22px !important;
+  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,.07),
+              inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+/* ── 버튼 ── */
+.btn, button.primary, a.btn {
+  min-height: 46px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--cg-main2), var(--cg-main));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.btn.sub, .btn.ghost {
+  background: rgba(255,255,255,.9);
+  color: var(--cg-ink);
+  border: 1px solid var(--cg-line);
+}
+.btn:hover { filter: brightness(1.04); }
+
+/* ── 제목 ── */
+h1 { font-size: clamp(1.4rem, 1.2rem+.8vw, 2rem); font-weight: 800; letter-spacing: -.04em; }
+h2 { font-size: clamp(1.1rem, 1rem+.5vw, 1.5rem); font-weight: 700; letter-spacing: -.03em; }
+.sec-eyebrow, .eb {
+  font-size: 11px;
+  letter-spacing: 2.6px;
+  font-weight: 700;
+  color: var(--cg-main);
+}
+
+/* ── 바탕 ── */
+body {
+  background: linear-gradient(180deg, #FFF9FB, #FDF3F5 45%, #FFFAF6) !important;
+  color: var(--cg-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 푸터 ── */
+.foot, footer {
+  font-size: 12.5px;
+  color: var(--cg-gray);
+  line-height: 1.9;
+}
+.foot a, footer a { color: var(--cg-gray); text-decoration: none; }
+.foot a:hover, footer a:hover { color: var(--cg-main); }
+
+@media (max-width: 640px) {
+  header nav a:not(.cart):not(.on) { font-size: 12.5px !important; padding: 6px 10px !important; }
+  a.logo::before, .logo::before { width: 92px; height: 32px; }
+}
