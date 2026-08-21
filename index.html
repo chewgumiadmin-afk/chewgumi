@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v176 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v177 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10173,7 +10173,7 @@ body.cg-scrolling *{
   transition:none !important;
 }
 /* 배너·상품 이미지는 별도 층으로 올려 다시 그리는 범위를 줄입니다 */
-.hero, .h-track, .hslide{ will-change:transform; contain:paint }
+
 .card, .prod-card{ contain:layout paint }
 
 /* ══════════════════════════════════════════════
@@ -10531,6 +10531,45 @@ body.drawer-on, body.modal-open{ overflow:hidden !important }
   .hero > .hero-arw{ width:36px !important; height:36px !important; margin-top:-18px !important }
   .hero > .hero-arw.prev{ left:8px !important }
   .hero > .hero-arw.next{ right:8px !important }
+}
+
+/* ══════════════════════════════════════════════
+   배너 이미지 — contain 해제 후 최종 확정
+   ══════════════════════════════════════════════ */
+.hero, .hero .h-track, .hero .h-track > .hslide{
+  contain:none !important;
+}
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  background:#FFE4E6 !important;
+}
+.hero .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:1 !important;
+  will-change:auto !important;
+  transition:transform .55s cubic-bezier(.4,0,.2,1) !important;
+}
+.hero .h-track > .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  background-color:#FFE4E6 !important;
+  will-change:auto !important;
+  opacity:1 !important;
+  visibility:visible !important;
 }
 </style>
 <script>
