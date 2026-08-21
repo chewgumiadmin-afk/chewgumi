@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v188 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v189 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11372,84 +11372,7 @@ header{
 })();
 </script>
 
-<script>
-/* ══════════════════════════════════════════════
-   팝업 옮기기 — PC 에서 손잡이를 잡고 끕니다
-   ══════════════════════════════════════════════ */
-(function(){
-  function wide(){ return window.matchMedia('(min-width:861px)').matches; }
 
-  function setup(){
-    var card = document.querySelector('.detail');
-    if (!card) return;
-
-    /* 손잡이는 하나만 남깁니다 */
-    var olds = card.querySelectorAll('.d-grip');
-    for (var i = 1; i < olds.length; i++) olds[i].remove();
-
-    var grip = olds[0];
-    if (!grip) {
-      /* 손잡이 없앰 */
-    if (grip.dataset.drag) return;
-    grip.dataset.drag = '1';
-
-    var ox = 0, oy = 0, sx = 0, sy = 0, on = false;
-
-    function begin(x, y){
-      if (!wide()) return;
-      on = true; sx = x; sy = y;
-      card.style.transition = 'none';
-      document.body.style.userSelect = 'none';
-    }
-    function move(x, y){
-      if (!on) return;
-      var nx = ox + (x - sx), ny = oy + (y - sy);
-      var lim = 300;
-      nx = Math.max(-lim, Math.min(lim, nx));
-      ny = Math.max(-lim, Math.min(lim, ny));
-      card.style.transform = 'translate(' + nx + 'px,' + ny + 'px)';
-      card._nx = nx; card._ny = ny;
-    }
-    function end(){
-      if (!on) return;
-      on = false;
-      ox = card._nx || 0; oy = card._ny || 0;
-      card.style.transition = '';
-      document.body.style.userSelect = '';
-    }
-
-    grip.addEventListener('mousedown', function(e){
-      begin(e.clientX, e.clientY);
-      e.preventDefault();
-    });
-    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', end);
-
-    /* 두 번 누르면 제자리 */
-    grip.addEventListener('dblclick', function(){
-      ox = oy = 0; card._nx = card._ny = 0;
-      card.style.transform = '';
-    });
-
-    /* 팝업을 닫으면 제자리로 */
-    var dim = document.getElementById('detail');
-    if (dim && window.MutationObserver && !dim.dataset.gripReset) {
-      dim.dataset.gripReset = '1';
-      new MutationObserver(function(){
-        if (dim.classList.contains('hide')) {
-          ox = oy = 0; card._nx = card._ny = 0;
-          card.style.transform = '';
-        }
-      }).observe(dim, { attributes:true, attributeFilter:['class'] });
-    }
-  }
-
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', setup);
-  else setup();
-  setTimeout(setup, 800);
-})();
-</script>
 
 <script>
 /* ══════════════════════════════════════════════
