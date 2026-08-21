@@ -127,6 +127,16 @@ select{
 .hint{font-size:12px;color:var(--gray);line-height:1.85;margin-top:12px;
   padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
 .hint b{color:var(--ink)}
+
+.chk{
+  display:flex;align-items:center;gap:9px;margin-top:13px;
+  padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,.6);border:1px solid var(--line);
+  font-size:13px;color:#555;cursor:pointer;
+}
+.chk input{width:18px;height:18px;accent-color:var(--main);margin:0;flex:none}
+.chk b{color:var(--ink)}
+.tag.later{background:rgba(233,162,59,.16);color:#8A6015}
 </style>
 </head>
 <body>
@@ -174,6 +184,13 @@ select{
         </select>
       </div>
       <div>
+        <label>누가 올리나요</label>
+        <select id="fWho">
+          <option value="dev">개발자 · 신현정</option>
+          <option value="ceo">대표 · 윤소호</option>
+        </select>
+      </div>
+      <div>
         <label>얼마나 급한가요</label>
         <select id="fPri">
           <option value="high">오픈을 막음</option>
@@ -182,6 +199,11 @@ select{
         </select>
       </div>
     </div>
+
+    <label class="chk">
+      <input type="checkbox" id="fLater">
+      <span>복잡한 기능이라 <b>런칭 후에</b> 함께 다듬을 것</span>
+    </label>
 
     <div class="btns">
       <button class="btn" onclick="submitIssue()" id="subBtn">이슈 올리기</button>
@@ -213,6 +235,7 @@ select{
 const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const FN=SB+'/functions/v1/issue-flow';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 function say(t,k){const m=$('m1');m.className='msg'+(k?' '+k:'');m.textContent=t;}
@@ -245,19 +268,25 @@ function submitIssue(){
   if(!title){ say('무엇이 잘못됐는지 한 줄 적어주세요.','bad'); return; }
   $('subBtn').disabled=true; say('올리는 중…');
 
-  fetch(SB+'/rest/v1/fix_log',{method:'POST',
-    headers:{...H,Prefer:'return=representation'},
-    body:JSON.stringify({
-      title:title, page:$('fPage').value,
-      cause:'(확인 중)', fixed:'(수정 전)',
-      stage:'open',
-      dev_note:formText()
-    })})
-  .then(r=>r.ok?r.json():Promise.reject())
-  .then(function(){
-    say('올렸습니다. 곧 확인해 고치겠습니다.','ok');
-    $('fTitle').value=''; $('fHow').value='';
+  fetch(FN,{method:'POST',headers:H,body:JSON.stringify({
+    action:'create',
+    title:title,
+    page:$('fPage').value,
+    how:$('fHow').value.trim(),
+    env:$('fEnv').value,
+    priority:$('fPri').value,
+    reporter:$('fWho').value,
+    reporter_name: $('fWho').value==='ceo' ? '윤소호' : '신현정',
+    after_launch: $('fLater').checked
+  })})
+  .then(r=>r.json())
+  .then(function(d){
     $('subBtn').disabled=false;
+    if(!d.ok){ say(d.error||'올리지 못했습니다.','bad'); return; }
+    var t = d.msg || '올렸습니다.';
+    if(d.gh_url) t += ' · GitHub 에도 등록됐습니다';
+    say(t,'ok');
+    $('fTitle').value=''; $('fHow').value=''; $('fLater').checked=false;
     load();
   })
   .catch(function(){ $('subBtn').disabled=false; say('올리지 못했습니다.','bad'); });
@@ -294,6 +323,7 @@ function draw(){
     if(x.check_url) links.push('<a href="'+esc(x.check_url)+'" target="_blank" rel="noopener">확인 화면 ↗</a>');
     if(x.commit_sha) links.push('<a href="https://github.com/chewgumiadmin-afk/chewgumi/commit/'
       +esc(x.commit_sha)+'" target="_blank" rel="noopener">변경 내용 ↗</a>');
+    if(x.gh_url) links.push('<a href="'+esc(x.gh_url)+'" target="_blank" rel="noopener">GitHub 이슈 #'+x.gh_number+' ↗</a>');
     if(x.commit_sha) links.push('<a href="https://raw.githubusercontent.com/chewgumiadmin-afk/chewgumi/'
       +esc(x.commit_sha)+'/'+esc(x.page||'index.html')+'" target="_blank" rel="noopener">배포 원본 ↗</a>');
 
@@ -306,7 +336,7 @@ function draw(){
 
     return '<div class="log">'
       +'<div class="h"><b>'+esc(x.title)+'</b>'
-      +'<span class="tag page">'+esc(x.page||'—')+'</span>'+tag
+      +'<span class="tag page">'+esc(x.page||'—')+'</span>'+(x.after_launch?'<span class="tag later">런칭 후</span>':'')+tag
       +'<span class="when">'+when+'</span></div>'
       +'<dl>'
       +(x.cause?'<dt>원인</dt><dd>'+esc(x.cause)+'</dd>':'')
@@ -322,14 +352,15 @@ function draw(){
 }
 
 function mark(id,kind,val){
-  const patch = kind==='dev'
-    ? { dev_ok:val, dev_at:new Date().toISOString(), stage: val?'dev':'fixed' }
-    : { stage:'closed', ceo_ok:null };
-  fetch(SB+'/rest/v1/fix_log?id=eq.'+id,{method:'PATCH',
-    headers:{...H,Authorization:'Bearer '+tok(),Prefer:'return=minimal'},
-    body:JSON.stringify(patch)})
-  .then(r=>{ if(!r.ok) throw new Error(); load(); })
-  .catch(()=>say('바꾸지 못했습니다.','bad'));
+  var note='';
+  if(kind==='dev' && !val){
+    note = prompt('무엇이 아직 안 되나요? (비워두셔도 됩니다)') || '';
+  }
+  fetch(FN,{method:'POST',headers:H,
+    body:JSON.stringify({action:'mark',id:id,kind:kind,value:val,note:note})})
+  .then(r=>r.json())
+  .then(function(d){ if(d.ok) load(); else say('바꾸지 못했습니다.','bad'); })
+  .catch(function(){ say('바꾸지 못했습니다.','bad'); });
 }
 
 $('filt').addEventListener('click',function(e){
