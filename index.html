@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v190 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v191 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -9592,81 +9592,7 @@ body, input, select, textarea, button,
 })();
 </script>
 
-<script>
-/* 상품 팝업 — 손잡이를 잡고 옮길 수 있게 */
-(function(){
-  function setup(){
-    var card = document.querySelector('.detail');
-    if (!card) return;
-    /* 이미 붙은 손잡이는 모두 지우고 하나만 다시 만듭니다 */
-    var olds = card.querySelectorAll('.d-grip');
-    for (var i = 0; i < olds.length; i++) olds[i].remove();
-    if (card.dataset.grip === 'done') return;
-    card.dataset.grip = 'done';
 
-    /* 손잡이 없앰 */
-
-    var ox = 0, oy = 0, sx = 0, sy = 0, on = false;
-
-    function begin(x, y){
-      on = true; sx = x; sy = y;
-      card.classList.add('dragging');
-    }
-    function move(x, y){
-      if (!on) return;
-      var nx = ox + (x - sx), ny = oy + (y - sy);
-      /* 화면 밖으로 완전히 나가지 않게 */
-      var lim = 260;
-      nx = Math.max(-lim, Math.min(lim, nx));
-      ny = Math.max(-lim, Math.min(lim, ny));
-      card.style.transform = 'translate(' + nx + 'px,' + ny + 'px)';
-      card._nx = nx; card._ny = ny;
-    }
-    function end(){
-      if (!on) return;
-      on = false;
-      ox = card._nx || 0; oy = card._ny || 0;
-      card.classList.remove('dragging');
-    }
-
-    grip.addEventListener('mousedown', function(e){ begin(e.clientX, e.clientY); e.preventDefault(); });
-    window.addEventListener('mousemove', function(e){ move(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', end);
-
-    function narrow(){ return window.matchMedia('(max-width:860px)').matches; }
-    grip.addEventListener('touchstart', function(e){
-      if (narrow()) return;
-      var t = e.touches[0]; begin(t.clientX, t.clientY);
-    }, { passive:true });
-    grip.addEventListener('touchmove', function(e){
-      if (narrow()) return;
-      var t = e.touches[0]; move(t.clientX, t.clientY);
-      e.preventDefault();
-    }, { passive:false });
-    grip.addEventListener('touchend', end);
-
-    /* 두 번 누르면 제자리로 */
-    grip.addEventListener('dblclick', function(){
-      ox = oy = 0; card.style.transform = ''; card._nx = card._ny = 0;
-    });
-
-    /* 팝업을 닫으면 자리 초기화 */
-    var dim = document.getElementById('detail');
-    if (dim && window.MutationObserver) {
-      new MutationObserver(function(){
-        if (dim.classList.contains('hide')) {
-          ox = oy = 0; card.style.transform = ''; card._nx = card._ny = 0;
-          dim.scrollTop = 0;
-        }
-      }).observe(dim, { attributes:true, attributeFilter:['class'] });
-    }
-  }
-
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', setup);
-  else setup();
-})();
-</script>
 
 <script>
 /* USER FILMS — 카드를 누르면 크게 보기 (드라이브 영상 재생) */
@@ -10986,6 +10912,40 @@ header{
   font-size:10.5px !important;
   font-weight:700 !important;
 }
+
+/* ══════════════════════════════════════════════
+   화면 스크롤 — 무엇도 막지 못하게 (마지막 확정)
+   ══════════════════════════════════════════════ */
+html{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:auto !important;
+  min-height:100% !important;
+  position:static !important;
+  scrollbar-gutter:stable;
+}
+body{
+  overflow-y:visible !important;
+  overflow-x:hidden !important;
+  height:auto !important;
+  min-height:100svh !important;
+  position:static !important;
+  top:auto !important;
+  left:auto !important;
+  touch-action:auto !important;
+  overscroll-behavior:auto !important;
+}
+
+/* 팝업이 열렸을 때만 잠급니다 */
+body:has(.detail-dim:not(.hide)),
+body:has(.popup-dim:not(.hide)),
+body:has(.bl-dim:not(.hide)),
+body:has(.drawer.open){
+  overflow:hidden !important;
+}
+
+/* 남은 손잡이는 흔적 없이 */
+.d-grip{ display:none !important }
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -11441,7 +11401,6 @@ header{
       on = true; moved = false;
       sx = e.clientX; sy = e.clientY;
       card.classList.add('cg-drag');
-      e.preventDefault();
     });
 
     window.addEventListener('mousemove', function(e){
@@ -11598,6 +11557,44 @@ header{
   }, true);
 
   window.cgLoadReviews = load;
+})();
+</script>
+
+<script>
+/* 스크롤이 잠긴 채 남지 않도록 — 상태가 바뀔 때만 확인 */
+(function(){
+  function anyOpen(){
+    return document.querySelector('.detail-dim:not(.hide)')
+        || document.querySelector('.popup-dim:not(.hide)')
+        || document.querySelector('.bl-dim:not(.hide)')
+        || document.querySelector('.uf-dim:not(.hide)')
+        || document.querySelector('.drawer.open')
+        || document.querySelector('.cart-dim.open');
+  }
+  function fix(){
+    if (anyOpen()) return;
+    var b = document.body;
+    if (b.style.overflow) b.style.overflow = '';
+    if (b.style.position === 'fixed') b.style.position = '';
+    if (b.style.height) b.style.height = '';
+    b.classList.remove('modal-open', 'drawer-on');
+    var d = document.documentElement;
+    if (d.style.overflow === 'hidden') d.style.overflow = '';
+  }
+
+  if (window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t);
+      t = setTimeout(fix, 150);
+    }).observe(document.documentElement, {
+      attributes: true, subtree: true, attributeFilter: ['class', 'style']
+    });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', fix);
+  else fix();
+  window.addEventListener('pageshow', fix);
 })();
 </script>
 </body>
