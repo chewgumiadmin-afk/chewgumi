@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v171 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v172 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10739,6 +10739,49 @@ body.cg-scrolling *{
   font-size:12px !important;
   color:#797979 !important;
 }
+
+/* 배너 · 스크롤 — 최종 확정 */
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  background:#FFE4E6 !important;
+}
+.hero .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:1 !important;
+  transition:transform .55s cubic-bezier(.4,0,.2,1) !important;
+}
+.hero .h-track > .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  contain:none !important;
+}
+html, body{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  height:auto !important;
+  position:static !important;
+  touch-action:auto !important;
+}
+body.drawer-on, body.modal-open{
+  overflow:hidden !important;
+}
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10782,6 +10825,140 @@ body.cg-scrolling *{
     document.addEventListener('DOMContentLoaded', hide);
   else hide();
   setInterval(hide, 2000);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   메인 배너 — 최종 하나만 (앞의 것 모두 정지)
+   ══════════════════════════════════════════════ */
+(function(){
+  /* ① 지금 도는 반복 작업을 모두 멈춥니다 */
+  var top = setInterval(function(){}, 99999);
+  for (var i = 1; i <= top; i++) {
+    try { clearInterval(i); } catch(e){}
+  }
+  clearInterval(top);
+
+  var hero, track, dots, cur = 0, n = 0, timer = null;
+
+  function go(k){
+    if (!n) return;
+    cur = ((k % n) + n) % n;
+    track.style.transform = 'translateX(' + (-cur * 100) + '%)';
+    if (dots) {
+      var bs = dots.querySelectorAll('button');
+      for (var j = 0; j < bs.length; j++) bs[j].classList.toggle('on', j === cur);
+    }
+  }
+  function play(){
+    clearInterval(timer);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = setInterval(function(){ go(cur + 1); }, 4500);
+  }
+
+  function build(){
+    hero  = document.getElementById('heroSlider');
+    track = document.getElementById('hTrack');
+    dots  = document.getElementById('hDots');
+    if (!hero || !track) return;
+
+    var slides = track.querySelectorAll('.hslide');
+    n = slides.length;
+    if (n < 2) return;
+
+    /* 앞서 붙은 화살표 정리 */
+    var olds = hero.querySelectorAll('.hero-arw');
+    for (var i = 0; i < olds.length; i++) olds[i].remove();
+
+    /* 점 다시 만들기 */
+    if (dots) {
+      if (dots.parentElement !== hero) hero.appendChild(dots);
+      dots.innerHTML = '';
+      for (var d = 0; d < n; d++) {
+        (function(k){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('aria-label', (k+1) + '번 배너');
+          if (k === 0) b.classList.add('on');
+          b.onclick = function(e){
+            e.preventDefault(); e.stopPropagation();
+            go(k); play(); return false;
+          };
+          dots.appendChild(b);
+        })(d);
+      }
+    }
+
+    /* 화살표 */
+    function arw(cls, path, step){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hero-arw ' + cls;
+      b.setAttribute('aria-label', step < 0 ? '이전 배너' : '다음 배너');
+      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + path + '"/></svg>';
+      b.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        go(cur + step); play(); return false;
+      };
+      hero.appendChild(b);
+    }
+    arw('prev', 'M15 6l-6 6 6 6', -1);
+    arw('next', 'M9 6l6 6-6 6', 1);
+
+    /* 손가락으로 넘기기 */
+    var sx = 0, sy = 0, moved = false;
+    hero.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
+      clearInterval(timer);
+    }, { passive:true });
+    hero.addEventListener('touchmove', function(e){
+      var t = e.touches[0];
+      if (Math.abs(t.clientX - sx) > 10) moved = true;
+    }, { passive:true });
+    hero.addEventListener('touchend', function(e){
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      play();
+    }, { passive:true });
+    track.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    hero.addEventListener('mouseleave', play);
+
+    go(0); play();
+  }
+
+  /* ② 스크롤이 잠긴 채 남지 않도록 */
+  function unlock(){
+    var open = document.querySelector('.drawer.open')
+            || document.querySelector('.detail-dim:not(.hide)')
+            || document.querySelector('.popup-dim:not(.hide)')
+            || document.querySelector('.uf-dim:not(.hide)');
+    if (!open) {
+      document.body.classList.remove('modal-open','drawer-on');
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.touchAction = '';
+      document.documentElement.style.overflow = '';
+    }
+  }
+
+  function boot(){
+    build();
+    unlock();
+    setInterval(unlock, 2000);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) clearInterval(timer); else play();
+    });
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
 </script>
 </body>
