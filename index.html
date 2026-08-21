@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v169 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v170 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10624,6 +10624,80 @@ body.cg-scrolling *{
 .tri-sec .btn:hover, .tri-sec .tri-btn:hover{
   background:#FFE4E6 !important;
 }
+
+/* ══════════════════════════════════════════════
+   이지페이 연결 전 — PC 팝업도 모바일과 똑같이
+   (되돌리려면 이 묶음만 지우면 됩니다)
+   ══════════════════════════════════════════════ */
+
+/* BUY NOW 감춤 — 어떤 규칙보다 뒤 */
+.detail .d-acts .d-buy,
+.detail .d-buy,
+.detail #dBuy,
+#detail .d-buy{
+  display:none !important;
+  visibility:hidden !important;
+  width:0 !important;
+  height:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  overflow:hidden !important;
+}
+
+/* 장바구니가 자리를 채웁니다 */
+.detail .d-acts{
+  display:flex !important;
+  gap:10px !important;
+  width:100% !important;
+}
+.detail .d-acts .d-cart{
+  flex:1 1 100% !important;
+  width:100% !important;
+  min-height:54px !important;
+  border-radius:999px !important;
+  border:1.6px solid #D82558 !important;
+  background:#fff !important;
+  color:#D82558 !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:.4px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 4px 14px rgba(216,37,88,.12) !important;
+}
+
+/* 스마트스토어 버튼 */
+.detail .d-npay.show{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:56px !important;
+  margin:10px 0 0 !important;
+  padding:0 20px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  background:#03C75A !important;
+  color:#fff !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  letter-spacing:.3px !important;
+  text-decoration:none !important;
+  box-sizing:border-box !important;
+  box-shadow:0 6px 18px rgba(3,199,90,.28) !important;
+}
+
+/* 안내 문구 */
+.d-payhint{
+  display:block !important;
+  margin-top:9px !important;
+  font-size:11.5px !important;
+  line-height:1.7 !important;
+  color:#797979 !important;
+  text-align:center !important;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10636,6 +10710,37 @@ body.cg-scrolling *{
       document.body.classList.remove('cg-scrolling'); t=null;
     }, 140);
   }, {passive:true});
+})();
+</script>
+
+<script>
+/* 이지페이 전까지 — BUY NOW 가 어떤 경우에도 안 보이게 */
+(function(){
+  function hide(){
+    var b = document.getElementById('dBuy')
+         || document.querySelector('.detail .d-buy');
+    if (b) { b.style.display = 'none'; b.setAttribute('aria-hidden','true'); }
+
+    /* 안내 문구가 없으면 붙입니다 */
+    var np = document.getElementById('dNpay');
+    if (np && np.classList.contains('show')
+        && !document.querySelector('.d-payhint')) {
+      var s = document.createElement('span');
+      s.className = 'd-payhint';
+      s.textContent = '현재 결제는 네이버 스마트스토어에서 진행됩니다';
+      np.insertAdjacentElement('afterend', s);
+    }
+  }
+  if (window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t); t = setTimeout(hide, 200);
+    }).observe(document.documentElement, { childList:true, subtree:true, attributes:true });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', hide);
+  else hide();
+  setInterval(hide, 2000);
 })();
 </script>
 </body>
