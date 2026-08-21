@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v168 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v169 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10572,6 +10572,58 @@ body.cg-scrolling *{
 /* 배너·상품 이미지는 별도 층으로 올려 다시 그리는 범위를 줄입니다 */
 .hero, .h-track, .hslide{ will-change:transform; contain:paint }
 .card, .prod-card{ contain:layout paint }
+
+/* ══════════════════════════════════════════════
+   트리플잇 소개 — 가이드 색으로
+   main #D82558 · sub #E95073 · 연분홍 #FFBDCC
+   아주연한 #FFE4E6 · 노랑 #FFE923
+   ══════════════════════════════════════════════ */
+.tri-sec::before{
+  background:linear-gradient(165deg,#D82558 0%,#E95073 55%,#FF7A9C 100%) !important;
+}
+.tri-bg .o1{ background:#FFBDCC !important; opacity:.34 !important }
+.tri-bg .o2{ background:#FFE4E6 !important; opacity:.26 !important }
+.tri-bg .o3{ background:#FFE923 !important; opacity:.22 !important }
+
+/* 제목 · 설명 */
+.tri-title{ color:#fff !important }
+.tri-title .accent{
+  background:linear-gradient(100deg,#FFE923,#FFF6C4 55%,#FFE923) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  color:transparent !important;
+}
+.tri-lead{ color:rgba(255,255,255,.86) !important }
+
+/* 흐르는 글자 띠 */
+.tri-marquee span{ color:rgba(255,255,255,.16) !important }
+.tri-marquee i{ background:rgba(255,255,255,.3) !important }
+
+/* 카드 */
+.tri-card .tri-body,
+.tri-card .tri-info{
+  background:rgba(255,255,255,.14) !important;
+  border:1px solid rgba(255,255,255,.28) !important;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+}
+.tri-card h3, .tri-card .tri-name{ color:#fff !important }
+.tri-card p, .tri-card .tri-desc{ color:rgba(255,255,255,.8) !important }
+.tri-card .tri-tag, .tri-card .badge{
+  background:#FFE923 !important;
+  color:#17171c !important;
+}
+
+/* 버튼 */
+.tri-sec .btn, .tri-sec .tri-btn, .tri-sec a.more{
+  background:#fff !important;
+  color:#D82558 !important;
+  font-weight:800 !important;
+  border:0 !important;
+}
+.tri-sec .btn:hover, .tri-sec .tri-btn:hover{
+  background:#FFE4E6 !important;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
