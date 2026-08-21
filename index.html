@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v207 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v208 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1597,11 +1597,11 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
   <div class="c-list" id="cList"><div class="c-empty">장바구니가 비어 있습니다</div></div>
   <div class="c-foot">
     <div class="c-total"><span>총 상품금액</span><b id="cTotal">₩0</b></div>
-    <div class="c-note" id="cNote">담으신 상품의 공식몰 페이지가 열립니다. 수량 선택 후 결제를 진행해 주세요.</div>
+    <div class="c-note" id="cNote">주문서에서 배송지와 결제 수단을 고르실 수 있습니다.</div>
     <a class="c-checkout" id="cCheckout" href="checkout.html">주문서 작성하기</a>
     <div class="pay-badges" aria-label="지원 결제수단"><span>네이버페이</span><span>신용카드</span><span>계좌이체</span><span>가상계좌</span><span>무통장입금</span></div>
     <a class="c-continue" href="cart.html" style="margin-top:8px;">장바구니 페이지에서 보기</a>
-      <a class="c-continue" id="cBasket" href="cart.html" style="margin-top:8px;">공식몰 장바구니 열기</a>
+      
     <button class="c-continue" onclick="closeCart()">계속 쇼핑하기</button>
   </div>
 </aside>
@@ -2392,7 +2392,7 @@ function renderCart(){
       <div class="c-info">
         <div class="c-name">${it.name}</div>
         <div class="c-price">${won(it.price)} · 소계 ${won(it.price*it.qty)}</div>
-        <a class="c-open" href="${productUrl(it.name)}" target="_blank" rel="noopener">공식몰에서 구매 →</a>
+        
       </div>
       <div class="c-qty"><button onclick="cartQty(${i},-1)">−</button><span>${it.qty}</span><button onclick="cartQty(${i},1)">＋</button></div>
       <button class="c-del" onclick="cartDel(${i})" aria-label="삭제">✕</button>
@@ -11549,6 +11549,235 @@ body.drawer-on{
 .detail .d-ss{
   align-self:stretch !important;
   margin:10px 0 0 !important;
+}
+
+/* ══════════════════════════════════════════════
+   장바구니 서랍 — 깔끔하게 재배치
+   ══════════════════════════════════════════════ */
+.cartp{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:auto !important;
+  width:min(94vw,400px) !important;
+  z-index:2000 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  background:rgba(255,255,255,.96) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(130%) !important;
+  backdrop-filter:blur(24px) saturate(130%) !important;
+  border-left:1px solid rgba(255,255,255,.9) !important;
+  box-shadow:-14px 0 40px rgba(0,0,0,.14) !important;
+  transform:translateX(100%) !important;
+  transition:transform .34s cubic-bezier(.32,.72,0,1) !important;
+  padding:0 !important;
+}
+.cartp.open{ transform:translateX(0) !important }
+
+.cartp h2{
+  font-family:'Poppins','SUIT Variable',sans-serif !important;
+  font-size:20px !important;
+  font-weight:800 !important;
+  letter-spacing:-.02em !important;
+  padding:24px 22px 16px !important;
+  margin:0 !important;
+  border-bottom:1px solid rgba(0,0,0,.07) !important;
+}
+.cartp .c-x{
+  position:absolute !important;
+  top:20px !important;
+  right:18px !important;
+  width:34px !important;
+  height:34px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(0,0,0,.05) !important;
+  cursor:pointer !important;
+  font-size:14px !important;
+  z-index:3 !important;
+}
+
+/* 담긴 상품 */
+.c-list{
+  flex:1 1 auto !important;
+  overflow-y:auto !important;
+  padding:8px 22px !important;
+  -webkit-overflow-scrolling:touch;
+}
+.c-item{
+  display:grid !important;
+  grid-template-columns:64px 1fr auto !important;
+  grid-template-areas:"img info del" "img qty qty" !important;
+  gap:6px 13px !important;
+  align-items:start !important;
+  padding:16px 0 !important;
+  border-bottom:1px solid rgba(0,0,0,.06) !important;
+}
+.c-item:last-child{ border-bottom:0 !important }
+.c-item img{
+  grid-area:img !important;
+  width:64px !important;
+  height:64px !important;
+  border-radius:12px !important;
+  object-fit:contain !important;
+  background:#FFF6F8 !important;
+  border:1px solid rgba(0,0,0,.05) !important;
+}
+.c-info{
+  grid-area:info !important;
+  min-width:0 !important;
+}
+.c-name{
+  font-size:14px !important;
+  font-weight:700 !important;
+  letter-spacing:-.02em !important;
+  line-height:1.5 !important;
+  word-break:keep-all !important;
+}
+.c-price{
+  font-size:13px !important;
+  color:#797979 !important;
+  margin-top:4px !important;
+}
+.c-price b, .c-price strong{ color:#D82558 !important; font-weight:700 !important }
+.c-open{ display:none !important }
+
+.c-qty{
+  grid-area:qty !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:0 !important;
+  margin-top:6px !important;
+  border:1px solid rgba(0,0,0,.12) !important;
+  border-radius:999px !important;
+  overflow:hidden !important;
+  width:fit-content !important;
+}
+.c-qty button{
+  width:34px !important;
+  height:34px !important;
+  border:0 !important;
+  background:#fff !important;
+  cursor:pointer !important;
+  font-size:15px !important;
+  color:#555 !important;
+}
+.c-qty button:hover{ background:#FFE4E6 !important; color:#D82558 !important }
+.c-qty span{
+  min-width:36px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+}
+.c-del{
+  grid-area:del !important;
+  width:30px !important;
+  height:30px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  color:#9a9aa2 !important;
+  cursor:pointer !important;
+  font-size:13px !important;
+}
+.c-del:hover{ background:rgba(216,37,88,.08) !important; color:#D82558 !important }
+
+/* 아래쪽 */
+.c-foot{
+  flex:0 0 auto !important;
+  padding:18px 22px calc(20px + env(safe-area-inset-bottom)) !important;
+  border-top:1px solid rgba(0,0,0,.08) !important;
+  background:rgba(255,255,255,.7) !important;
+}
+.c-total{
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:baseline !important;
+  font-size:14px !important;
+  font-weight:600 !important;
+}
+.c-total b{
+  font-size:21px !important;
+  font-weight:800 !important;
+  color:#D82558 !important;
+  letter-spacing:-.02em !important;
+}
+.c-note{
+  font-size:12px !important;
+  color:#797979 !important;
+  line-height:1.7 !important;
+  margin-top:9px !important;
+}
+.c-checkout{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:54px !important;
+  margin-top:14px !important;
+  border-radius:999px !important;
+  background:linear-gradient(135deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  letter-spacing:.3px !important;
+  text-decoration:none !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.26) !important;
+}
+.pay-badges{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:5px !important;
+  justify-content:center !important;
+  margin-top:12px !important;
+}
+.pay-badges span{
+  font-size:10.5px !important;
+  color:#797979 !important;
+  padding:3px 9px !important;
+  border-radius:999px !important;
+  background:rgba(0,0,0,.04) !important;
+}
+.c-continue{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:44px !important;
+  margin-top:8px !important;
+  border:1px solid rgba(0,0,0,.1) !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#555 !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+  cursor:pointer !important;
+  text-decoration:none !important;
+}
+.c-empty{
+  padding:60px 20px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  color:#797979 !important;
+}
+.cart-dim{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:1999 !important;
+  background:rgba(20,10,14,.34) !important;
+  -webkit-backdrop-filter:blur(6px) !important;
+  backdrop-filter:blur(6px) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  transition:opacity .3s !important;
+}
+.cart-dim.open{ opacity:1 !important; pointer-events:auto !important }
+
+@media (max-width:640px){
+  .cartp{ width:100vw !important }
+  .c-list{ padding:8px 18px !important }
+  .c-foot{ padding:16px 18px calc(18px + env(safe-area-inset-bottom)) !important }
 }
 </style>
 <script>
