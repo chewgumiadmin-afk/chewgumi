@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v195 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v196 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -10328,6 +10328,76 @@ body.drawer-on{
 
 /* 트리플잇 영역으로 이동할 때 머리글에 안 가리게 */
 #triple, .tri-sec{ scroll-margin-top:90px !important }
+
+/* ══════════════════════════════════════════════
+   메뉴바 — 흰 유리 · 제목은 언제나 보이게
+   ══════════════════════════════════════════════ */
+
+/* 메뉴바 흰색 유리 */
+.glass-bar,
+.gnb.glass-bar,
+header .glass-bar{
+  background:rgba(255,255,255,.72) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(130%) !important;
+  backdrop-filter:blur(22px) saturate(130%) !important;
+  box-shadow:0 8px 26px rgba(216,37,88,.10),
+             inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+.gnb > li > a{
+  color:#17171c !important;
+  font-weight:600 !important;
+}
+.gnb > li:hover > a,
+.gnb > li > a:hover{
+  background:rgba(255,189,204,.34) !important;
+  color:#D82558 !important;
+  box-shadow:none !important;
+}
+.gnb > li > a::before{ content:none !important }
+
+/* 하위 메뉴도 흰색 */
+.gnb .sub{
+  background:rgba(255,255,255,.94) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.10) !important;
+}
+.gnb .sub a{ color:#3a3035 !important }
+
+/* ── 제목이 흐리게 남는 문제 ── */
+/* 화면에 들어와야 보이던 효과를 없앱니다 */
+.sec-title,
+.sec-title.inview,
+.nl-title, .rev-head h2, .revsec h2{
+  opacity:1 !important;
+  filter:none !important;
+  transform:none !important;
+  translate:none !important;
+  transition:none !important;
+  visibility:visible !important;
+}
+.sec-title{
+  color:#17171c !important;
+  font-weight:800 !important;
+}
+#best .sec-title{
+  font-family:'Poppins','SUIT Variable',sans-serif !important;
+  font-size:clamp(24px,3.6vw,40px) !important;
+  text-transform:uppercase !important;
+}
+
+/* 되돌아왔을 때 흐리게 남는 것 방지 */
+[class*="inview"],
+.reveal, .fade-up, .up{
+  opacity:1 !important;
+  transform:none !important;
+  translate:none !important;
+  filter:none !important;
+}
+
+@media (max-width:900px){
+  .glass-bar{ background:rgba(255,255,255,.9) !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10988,6 +11058,26 @@ body.drawer-on{
     document.addEventListener('DOMContentLoaded', build);
   else build();
   setTimeout(build, 700);
+})();
+</script>
+
+<script>
+/* 되돌아왔을 때 제목이 흐리게 남지 않도록 */
+(function(){
+  function show(){
+    document.querySelectorAll('.sec-title, .nl-title, .reveal, .fade-up, .up')
+      .forEach(function(el){
+        el.classList.add('inview');
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.style.filter = 'none';
+      });
+  }
+  ['DOMContentLoaded','load','pageshow'].forEach(function(e){
+    window.addEventListener(e, show);
+  });
+  show();
+  setTimeout(show, 600);
 })();
 </script>
 </body>
