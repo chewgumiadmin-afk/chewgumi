@@ -212,6 +212,45 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
   border:1px solid rgba(255,255,255,.95) !important;
   background:#fff !important;
 }
+
+/* 이미 로그인 */
+.already{ text-align:center; padding:14px 4px }
+.already .ok{
+  width:56px;height:56px;margin:0 auto 16px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#3FBF7A,#2AA060);
+  color:#fff;font-size:26px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 22px rgba(42,160,96,.28);
+}
+.already h2{
+  font-size:19px;font-weight:800;letter-spacing:-.03em;margin:0;
+}
+.already .who{
+  font-size:13.5px;color:#797979;margin-top:7px;word-break:break-all;
+}
+.already .who b{ color:#D82558;font-weight:700 }
+.already .acts{
+  display:flex;flex-direction:column;gap:9px;margin-top:24px;
+}
+.already .acts a, .already .acts button{
+  display:flex;align-items:center;justify-content:center;
+  min-height:50px;border-radius:999px;cursor:pointer;
+  font-size:14px;font-weight:700;text-decoration:none;
+  border:1px solid rgba(255,255,255,.9);
+  background:rgba(255,255,255,.9);color:#17171c;
+  font-family:inherit;
+}
+.already .acts .go{
+  background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;border:0;
+  box-shadow:0 6px 18px rgba(216,37,88,.24);
+}
+.already .acts .out{
+  background:transparent;border:0;color:#9a9aa2;
+  font-size:13px;font-weight:600;min-height:42px;
+}
+.already .acts .out:hover{ color:#C0395C }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -446,12 +485,72 @@ function doLogin(){
     }
   }).catch(function(){ m.style.color='#D82558'; m.textContent='네트워크 오류가 발생했습니다.'; });
 }
-/* 이미 로그인되어 있으면 안내 */
+/* 이미 로그인되어 있으면 입력칸 대신 안내를 보여줍니다 */
 (function(){
-  var t=null; try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)t=s.t;}catch(e){}
-  if(!t) return;
-  var m=document.getElementById('liMsg');
-  if(m){ m.style.color='#2AA060'; m.textContent='이미 로그인되어 있습니다.'; }
+  var SB2 = (typeof SB_URL !== 'undefined') ? SB_URL : SB;
+  var K2  = (typeof SB_KEY !== 'undefined') ? SB_KEY : KEY;
+  var KR  = {ceo:'대표', dev:'개발자', design:'디자이너', qa:'점검', staff:'운영'};
+
+  function tok(){
+    try{
+      var s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
+      if (!s || !s.t) return null;
+      if (s.exp && Date.now()/1000 > s.exp) return null;
+      return s;
+    }catch(e){ return null; }
+  }
+
+  var s = tok();
+  if (!s) return;
+
+  var box = document.getElementById('selfbox') || document.querySelector('.panel');
+  if (!box) return;
+
+  var who = s.em || s.u || '회원';
+
+  fetch(SB2 + '/rest/v1/rpc/my_role', {
+    method:'POST',
+    headers:{ apikey:K2, Authorization:'Bearer '+s.t, 'Content-Type':'application/json' },
+    body:'{}'
+  })
+  .then(function(r){ return r.ok ? r.json() : 'guest'; })
+  .then(function(role){
+    var r = String(role || 'guest').replace(/"/g, '');
+    var admin = r && r !== 'guest';
+
+    box.innerHTML =
+      '<div class="already">'
+      + '<div class="ok">✓</div>'
+      + '<h2>이미 로그인되어 있습니다</h2>'
+      + '<p class="who">' + who + (admin ? ' · <b>' + (KR[r]||r) + '</b>' : '') + '</p>'
+      + '<div class="acts">'
+      + (admin
+          ? '<a class="go" href="console.html">관리자 홈으로</a>'
+            + '<a class="sub" href="hub.html">화면 모음</a>'
+          : '<a class="go" href="mypage.html">마이페이지로</a>'
+            + '<a class="sub" href="index.html">쇼핑 계속하기</a>')
+      + '<button class="out" type="button" onclick="cgOut()">로그아웃</button>'
+      + '</div></div>';
+  })
+  .catch(function(){
+    box.innerHTML =
+      '<div class="already"><div class="ok">✓</div>'
+      + '<h2>이미 로그인되어 있습니다</h2>'
+      + '<p class="who">' + who + '</p>'
+      + '<div class="acts">'
+      + '<a class="go" href="mypage.html">마이페이지로</a>'
+      + '<a class="sub" href="index.html">쇼핑 계속하기</a>'
+      + '<button class="out" type="button" onclick="cgOut()">로그아웃</button>'
+      + '</div></div>';
+  });
+
+  window.cgOut = function(){
+    try{
+      localStorage.removeItem('cg_sb');
+      localStorage.removeItem('cg_user');
+    }catch(e){}
+    location.reload();
+  };
 })();
 </script>
 <script src="assets/nav.js" defer></script>
