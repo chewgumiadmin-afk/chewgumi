@@ -333,6 +333,8 @@ function draw(){
                 '<button class="btn sm sub" onclick="mark('+x.id+',\'dev\',false)">아직 안 됨</button>');
     if(x.dev_ok===true && x.stage!=='closed')
       acts.push('<button class="btn sm" onclick="mark('+x.id+',\'close\',true)">닫기 (CEO 확인 요청)</button>');
+    if(x.stage==='fixed' || x.stage==='dev')
+      acts.push('<button class="btn sm sub" onclick="sendMail('+x.id+')">메일로 받기</button>');
 
     return '<div class="log">'
       +'<div class="h"><b>'+esc(x.title)+'</b>'
@@ -349,6 +351,19 @@ function draw(){
       +(acts.length?'<div class="acts">'+acts.join('')+'</div>':'')
       +'</div>';
   }).join('');
+}
+
+
+function sendMail(id){
+  say('메일을 보내는 중…');
+  fetch(SB+'/functions/v1/issue-mail',{method:'POST',headers:H,
+    body:JSON.stringify({action:'send',id:id})})
+  .then(r=>r.json())
+  .then(function(d){
+    if(d.ok) say(d.msg||'보냈습니다. 메일에서 바로 닫으실 수 있습니다.','ok');
+    else say(d.error||'보내지 못했습니다.','bad');
+  })
+  .catch(function(){ say('보내지 못했습니다.','bad'); });
 }
 
 function mark(id,kind,val){
