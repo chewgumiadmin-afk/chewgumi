@@ -186,6 +186,32 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 
 /* popup.css 가 로그인 화면에 영향 주지 않도록 */
 .card, .box, .login-box{ max-height: none !important; }
+
+/* ══════════════════════════════════════════════
+   로그인 — 재설정 칸이 로그인과 헷갈리지 않도록
+   ══════════════════════════════════════════════ */
+#resetBox{
+  margin-top:18px !important;
+  padding:18px 20px !important;
+  border-radius:16px !important;
+  background:rgba(255,228,230,.5) !important;
+  border:1px solid rgba(255,189,204,.7) !important;
+}
+#resetBox::before{
+  content:"비밀번호 재설정";
+  display:block;
+  font-family:'Poppins','SUIT Variable',sans-serif;
+  font-size:10.5px;
+  letter-spacing:2px;
+  font-weight:700;
+  color:#D82558;
+  margin-bottom:10px;
+}
+#resetBox input{
+  min-height:46px !important;
+  border:1px solid rgba(255,255,255,.95) !important;
+  background:#fff !important;
+}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -232,7 +258,7 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <div id="rsTitle" style="font-size:13px;font-weight:700;margin-bottom:6px"></div>
       <div id="rsDesc" style="font-size:12px;color:#797979;line-height:1.7;margin-bottom:10px"></div>
       <div id="rsForm">
-        <input id="rsEmail" type="email" placeholder="가입하신 이메일"
+        <input id="rsEmail" type="email" placeholder="비밀번호를 재설정할 이메일"
           style="width:100%;padding:11px 13px;border-radius:12px;font-size:13px;font-family:inherit;
           border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.85)">
         <button onclick="sendReset()" style="width:100%;margin-top:9px;padding:12px 0;border:0;border-radius:999px;
