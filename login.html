@@ -207,12 +207,7 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
     <h1>로그인</h1>
     <div class="sub">츄구미 회원으로 더 달콤한 혜택을 받아보세요</div>
 
-    <form onsubmit="goLogin();return false;">
-      <div class="field"><input type="text" id="uid" placeholder="아이디 또는 이메일" autocomplete="username"></div>
-      <div class="field"><input type="password" id="upw" placeholder="비밀번호" autocomplete="current-password"></div>
-      <button class="btn" type="submit">LOGIN</button>
-    </form>
-    <div id="lgMsg" style="font-size:12px;color:#D82558;margin-top:10px;min-height:16px"></div>
+    
     <div class="selfbox">
       <input id="liEmail" type="email" placeholder="이메일" autocomplete="email"
         onkeydown="if(event.key==='Enter')document.getElementById('liPw').focus()">
