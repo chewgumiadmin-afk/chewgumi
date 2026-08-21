@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Product Detail v44 · MedIT -->
+<!-- ChewGumi Product Detail v45 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1610,7 +1610,6 @@ button[onclick*="addCart"]:active, .acts .cart:active{
   .acts .buy, #btnBuy{ min-width:120px !important }
 }
 
-/* 이지페이 연결 전 — 바로구매 감춤, 스마트스토어로 */
 /* 자체 결제가 열렸으므로 BUY NOW 를 다시 보여줍니다 */
 .buy, #btnBuy, .acts .buy, a[href*="checkout"]:not(.cart){
   display:flex !important;
@@ -1855,40 +1854,7 @@ window.cgImgFail = function(el){
 </script>
 <script src="assets/drag.js" defer></script>
 
-<script>
-/* 이지페이 전까지 — 스마트스토어에서 결제 */
-(function(){
-  var STORE = {
-    doit:   'https://smartstore.naver.com/chewgumi/products/13393122244',
-    travel: 'https://smartstore.naver.com/chewgumi'
-  };
-  function add(){
-    var acts = document.querySelector('.acts, .buy-row, .p-acts');
-    if (!acts || document.querySelector('.npay-btn')) return;
-    var nm = document.getElementById('pName');
-    var t = nm ? nm.textContent : '';
-    var url = (/트래블|travel/i.test(t)) ? STORE.travel : STORE.doit;
 
-    var a = document.createElement('a');
-    a.className = 'npay-btn';
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.textContent = 'N Pay 스마트스토어에서 구매';
-    acts.insertAdjacentElement('afterend', a);
-
-    var s = document.createElement('span');
-    s.className = 'pay-hint';
-    s.textContent = '현재 결제는 네이버 스마트스토어에서 진행됩니다';
-    a.insertAdjacentElement('afterend', s);
-  }
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', add);
-  else add();
-  setTimeout(add, 700);
-  setTimeout(add, 1800);
-})();
-</script>
 <style>
 /* ══ 선택 상자 — 화살표 하나, 취소선 없음 (최종 고정) ══
    ui.css 와 페이지 안 규칙이 각각 화살표를 그려 겹쳐 보이던 문제.
@@ -1940,6 +1906,54 @@ select::-ms-expand{ display:none !important }
 }
 /* 스마트스토어 버튼은 자체 결제로 대체 (되돌리려면 이 두 줄을 지우세요) */
 .npay-btn, .pay-hint{ display:none !important }
+
+/* ══ 결제 열림 — 바로구매 사용 ══ */
+.buy, #btnBuy, .acts .buy{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  padding:0 20px !important;
+  border-radius:999px !important;
+  background:linear-gradient(135deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:1.2px !important;
+  border:0 !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.28) !important;
+}
+.acts, .buy-row, .p-acts{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  gap:10px !important;
+  flex-wrap:nowrap !important;
+  width:100% !important;
+}
+.acts .cart, #btnCart, button[onclick*="addCart"]{
+  flex:1 1 0 !important;
+  width:auto !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  white-space:nowrap !important;
+}
+.acts .wish{ flex:0 0 auto !important }
+
+/* 스마트스토어 · 안내 감춤 */
+.npay-btn, .pay-hint{ display:none !important }
+
+@media(max-width:640px){
+  .acts, .buy-row, .p-acts{ gap:8px !important }
+  .buy, #btnBuy, .acts .cart, #btnCart{
+    font-size:13px !important;
+    letter-spacing:.6px !important;
+    padding:0 12px !important;
+    min-height:50px !important;
+  }
+}
 </style>
 </body>
 </html>
