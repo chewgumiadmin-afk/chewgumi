@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v170 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v171 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1534,9 +1534,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </div>
         <div class="d-detail" id="dDetail">
           <div class="d-detail-in" id="dDetailIn"></div>
-          
-        
-        
+        </div>
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
             <span class="eb">REVIEW</span>
@@ -1545,10 +1543,13 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <div class="d-rev-list" id="dRevList"></div>
           <a class="d-rev-more" href="review.html">후기 전체 보기 →</a>
         </div>
-      </div>
-      <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
-      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
-      </div>
+        <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
+        <div class="d-notice">
+          <b>배송</b> 평일 14시 이전 결제 시 당일 출고<br>
+          <b>교환·반품</b> 미개봉 상태에 한해 수령 후 7일 이내<br>
+          <b>결제</b> 현재 네이버 스마트스토어에서 진행됩니다<br>
+          <span class="d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
+        </div>
     </div>
   </div>
 </div>
@@ -10697,6 +10698,46 @@ body.cg-scrolling *{
   line-height:1.7 !important;
   color:#797979 !important;
   text-align:center !important;
+}
+
+/* ══════════════════════════════════════════════
+   팝업 탭 — 내용이 확실히 보이도록
+   ══════════════════════════════════════════════ */
+.detail .d-info > .d-detail,
+.detail .d-info > .d-rev,
+.detail .d-info > .d-notice{
+  display:block !important;
+}
+.d-info[data-tab="detail"] > .d-rev,
+.d-info[data-tab="detail"] > .d-notice{ display:none !important }
+.d-info[data-tab="review"] > .d-detail,
+.d-info[data-tab="review"] > .d-notice{ display:none !important }
+.d-info[data-tab="info"]   > .d-detail,
+.d-info[data-tab="info"]   > .d-rev{ display:none !important }
+
+/* 배송·교환 상자 */
+.detail .d-notice{
+  margin-top:22px !important;
+  padding:18px 20px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.6) !important;
+  border:1px solid rgba(255,255,255,.78) !important;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+  box-shadow:0 4px 14px rgba(0,0,0,.05) !important;
+  font-size:13px !important;
+  line-height:2 !important;
+  color:#555 !important;
+  text-align:left !important;
+}
+.detail .d-notice b{ color:#17171c !important; font-weight:700 !important }
+.detail .d-notice .d-pay{
+  display:block !important;
+  margin-top:8px !important;
+  padding-top:10px !important;
+  border-top:1px solid rgba(0,0,0,.06) !important;
+  font-size:12px !important;
+  color:#797979 !important;
 }
 </style>
 <script>
