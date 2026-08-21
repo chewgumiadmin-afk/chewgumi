@@ -566,7 +566,7 @@ $('payBtn').addEventListener('click',async()=>{
     const res=await fetch(payType==='bank'?FNB:FN,{method:'POST',headers:hd,
       body:JSON.stringify({action:'create',buyer,items,coupon:$('cpSel').value,
         payType, depositor:$('depositor').value.trim()})});
-    od=await res.json();
+    od=await res.json(); try{ if(od && od.orderNo && window.cgMarkOrdered) cgMarkOrdered(od.orderNo); }catch(e){}
     if(!res.ok){$('msg').textContent=od.error||'주문 생성에 실패했습니다.';$('payBtn').disabled=false;return;}
   }catch(e){
     $('payBtn').disabled=false;
@@ -1030,5 +1030,52 @@ select option{ text-decoration:none !important }
 select::-ms-expand{ display:none !important }
 .item .th img{ width:100%; height:100%; object-fit:cover; border-radius:10px }
 </style>
+
+<script>
+/* ══════════════════════════════════════════════
+   결제가 끝나면 장바구니를 비웁니다
+   ══════════════════════════════════════════════ */
+(function(){
+  function empty(){
+    try{
+      localStorage.removeItem('cg_cart');
+      localStorage.setItem('cg_cart', '[]');
+    }catch(e){}
+    if (typeof CART !== 'undefined') { try{ CART.length = 0; }catch(e){} }
+    var n = document.getElementById('cartN');
+    if (n) n.textContent = '0';
+  }
+
+  /* 주문이 만들어진 뒤(결제창으로 넘어가기 직전) 표시해 둡니다 */
+  window.cgMarkOrdered = function(no){
+    try{ sessionStorage.setItem('cg_ordered', no || '1'); }catch(e){}
+  };
+
+  var q = new URLSearchParams(location.search);
+
+  /* 결제 성공으로 돌아왔을 때 */
+  if (q.get('ok')) empty();
+
+  /* 완료 화면이 보이면 */
+  var done = document.getElementById('done');
+  if (done && window.MutationObserver) {
+    new MutationObserver(function(){
+      if (done.style.display && done.style.display !== 'none') empty();
+    }).observe(done, { attributes:true, attributeFilter:['style'] });
+  }
+
+  /* 주문서를 떠날 때, 주문이 만들어졌으면 비웁니다 */
+  window.addEventListener('pagehide', function(){
+    try{
+      if (sessionStorage.getItem('cg_ordered')) {
+        empty();
+        sessionStorage.removeItem('cg_ordered');
+      }
+    }catch(e){}
+  });
+
+  window.cgEmptyCart = empty;
+})();
+</script>
 </body>
 </html>
