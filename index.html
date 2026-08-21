@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v168 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v175 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -912,7 +912,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <h1 class="sr-only">ChewGumi 츄구미 — 한입에 건강을 더하다</h1>
 
 <!-- 레이어 팝업 : 원래 사이트(chewgumi.com)의 회원가입 쿠폰 안내 -->
-<div class="popup-dim" id="popup" onclick="if(event.target===this)closePopup(true)">
+<div class="popup-dim hide" id="popup" onclick="if(event.target===this)closePopup(true)">
   <div class="popup" role="dialog" aria-label="첫 방문 환영 쿠폰 안내">
     <div class="p-top"><img class="p-illust" src="assets/popup.png" alt="" aria-hidden="true"></div>
     <div class="p-title" data-en="Welcome to ChewGumi 🎉">첫 방문을 환영합니다 🎉</div>
@@ -1391,7 +1391,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </div>
 
         <div class="tri-grid" id="triGrid">
-          <article class="tri-card" data-i="0" style="--c1:#F6A8C0;--c2:#8E5BD8">
+          <article class="tri-card" data-i="0" data-no="101" onclick="location.href='product.html?no=101'" style="--c1:#F6A8C0;--c2:#8E5BD8">
             <div class="tri-glow"></div>
             <div class="tri-tag">BOARDING</div>
             <div class="tri-img"><img src="assets/prod/new-dream.jpg" alt="DREAM-IT" loading="lazy"></div>
@@ -1401,7 +1401,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
               <div class="tri-spec">L-테아닌 200mg</div>
             </div>
           </article>
-          <article class="tri-card" data-i="1" style="--c1:#5AB6E8;--c2:#F2A93B">
+          <article class="tri-card" data-i="1" data-no="102" onclick="location.href='product.html?no=102'" style="--c1:#5AB6E8;--c2:#F2A93B">
             <div class="tri-glow"></div>
             <div class="tri-tag">IN FLIGHT</div>
             <div class="tri-img"><img src="assets/prod/new-spark.jpg" alt="SPARK-IT" loading="lazy"></div>
@@ -1411,7 +1411,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
               <div class="tri-spec">L-아르기닌 1000mg</div>
             </div>
           </article>
-          <article class="tri-card" data-i="2" style="--c1:#B6D94C;--c2:#E8E33C">
+          <article class="tri-card" data-i="2" data-no="103" onclick="location.href='product.html?no=103'" style="--c1:#B6D94C;--c2:#E8E33C">
             <div class="tri-glow"></div>
             <div class="tri-tag">LANDING</div>
             <div class="tri-img"><img src="assets/prod/new-reset.jpg" alt="RESET-IT" loading="lazy"></div>
@@ -1523,7 +1523,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       </div>
       <div class="d-total"><span data-en="Total">총 상품금액</span> <b id="dTotal"></b></div>
       <div class="d-acts">
-        <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a>
+        <!-- <a class="d-buy" id="dBuy" href="checkout.html" onclick="return buyNowDirect(event)" title="주문서로 이동합니다">BUY NOW</a> -->
         <a class="d-cart" href="#" onclick="addToCart();return false;">ADD TO CART</a>
         
         </div>
@@ -1534,9 +1534,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
         </div>
         <div class="d-detail" id="dDetail">
           <div class="d-detail-in" id="dDetailIn"></div>
-          
-        
-        
+        </div>
         <div class="d-rev" id="dRev">
           <div class="d-rev-h">
             <span class="eb">REVIEW</span>
@@ -1545,10 +1543,13 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
           <div class="d-rev-list" id="dRevList"></div>
           <a class="d-rev-more" href="review.html">후기 전체 보기 →</a>
         </div>
-      </div>
-      <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
-      <div class="d-notice" data-en="<b>Shipping</b> Same-day dispatch before 2PM (weekdays)<br><b>Returns</b> Unopened, within 7 days<br><b>Payment</b> Completed on the official store<br><span class='d-pay'>NaverPay · Card · Bank transfer · Virtual account</span>"d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
-      </div>
+        <a class="d-npay" id="dNpay" href="#" target="_blank" rel="noopener">N Pay 스마트스토어에서 구매</a>
+        <div class="d-notice">
+          <b>배송</b> 평일 14시 이전 결제 시 당일 출고<br>
+          <b>교환·반품</b> 미개봉 상태에 한해 수령 후 7일 이내<br>
+          <b>결제</b> 현재 네이버 스마트스토어에서 진행됩니다<br>
+          <span class="d-pay">네이버페이 · 신용카드 · 계좌이체 · 가상계좌</span>
+        </div>
     </div>
   </div>
 </div>
@@ -1662,7 +1663,7 @@ document.querySelectorAll('[data-en]').forEach(el => { el.dataset.ko = el.innerH
   const box = document.getElementById('heroSlider');
   if (!box) return;
   const slides = box.querySelectorAll('.slide');
-  if (!slides.length) return;
+  if (!slides.length) return;   /* 지금 마크업은 .hslide 라 이 코드는 쓰지 않습니다 */
   const dotsBox = document.getElementById('heroDots');
   let cur = 0, timer = null;
   slides.forEach((_, i) => {
@@ -1956,23 +1957,6 @@ function filterLine(line){
   const t = document.querySelector('#all .sec-title');
   t.textContent = line === 'travel' ? 'Travel-it' : line === 'doit' ? 'Dew-it' : 'All Products';
 }
-
-/* 다른 페이지에서 넘어올 때 라인 필터를 이어받습니다.
-   about.html 이 cg_line 에 값을 남기는데 여기서 읽지 않아
-   [제품 보기]를 눌러도 필터가 걸리지 않았습니다. */
-(function(){
-  function apply(){
-    var v=null;
-    try{ v=localStorage.getItem('cg_line'); localStorage.removeItem('cg_line'); }catch(e){}
-    if(!v) return;
-    if(typeof filterLine==='function') filterLine(v);
-    var a=document.getElementById('all');
-    if(a) a.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-  if(document.readyState==='loading')
-    document.addEventListener('DOMContentLoaded', function(){ setTimeout(apply, 300); });
-  else setTimeout(apply, 300);
-})();
 
 /* 레이어 팝업 */
 function closePopup(today){
@@ -4053,20 +4037,6 @@ body.at-foot .kko-fab{
     dotBox.appendChild(b);
   });
   var dots=[].slice.call(dotBox.children);
-
-  /* 밖에서 점을 다시 만든 뒤 슬라이더를 재구성할 수 있도록 노출 */
-  window.cgHeroGo = function(i){ stop(); go(i); start(); };
-  window.cgHeroReset = function(){
-    dots = [].slice.call(dotBox.children);
-    slides = [].slice.call(track.children);
-    n = slides.length || 1;
-    dots.forEach(function(b,i){
-      b.onclick = function(){ stop(); go(i); start(); };
-    });
-    now = 0; place(false); stop(); start();
-  };
-
-
   var elNow=document.getElementById('hbNow'), elAll=document.getElementById('hbAll');
   if(elAll) elAll.textContent=n;
 
@@ -5342,7 +5312,7 @@ img{max-width:100%}
 /* ══ 팝업 표시 규칙 — 최종 (앞선 규칙들을 정리) ══
    원칙: 열림이 기본, .hide 가 붙으면 숨김.
    여러 곳에 흩어져 충돌하던 것을 여기서 확정합니다. */
-.popup-dim{ display:flex !important }
+
 .popup-dim.hide{ display:none !important }
 
 .detail-dim{ display:flex !important }
@@ -5365,7 +5335,7 @@ header .logo img{
 
 /* 팝업은 하나만 — 중복 표시 방지 */
 .popup-dim > .popup ~ .popup{display:none !important}
-.popup-dim{display:flex !important}
+
 .popup-dim.hide{display:none !important}
 .popup{
   width:min(calc(100vw - 40px),400px) !important;
@@ -8707,54 +8677,6 @@ body, input, select, textarea, button,
 }
 
 /* ══════════════════════════════════════════════
-   이지페이 연결 전 — BUY NOW 감춤
-   결제는 스마트스토어에서 (되돌리려면 이 묶음만 지우면 됩니다)
-   ══════════════════════════════════════════════ */
-.detail .d-acts .d-buy,
-.detail #dBuy{ display:none !important }
-
-/* 장바구니 버튼이 자리를 채웁니다 */
-.detail .d-acts{
-  display:flex !important;
-  gap:10px !important;
-}
-.detail .d-acts .d-cart{
-  flex:1 !important;
-  width:100% !important;
-  min-height:54px !important;
-  border-radius:999px !important;
-  border:1.6px solid var(--main,#D82558) !important;
-  background:#fff !important;
-  color:var(--main,#D82558) !important;
-  font-size:14.5px !important;
-  font-weight:800 !important;
-  letter-spacing:.4px !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  box-shadow:0 4px 14px rgba(216,37,88,.12) !important;
-}
-
-/* 스마트스토어 버튼을 가장 눈에 띄게 */
-.detail .d-npay.show{
-  min-height:56px !important;
-  margin:10px 0 0 !important;
-  font-size:15px !important;
-  font-weight:800 !important;
-  box-shadow:0 6px 18px rgba(3,199,90,.28) !important;
-}
-
-/* 안내 문구 */
-.d-payhint{
-  display:block;
-  margin-top:9px;
-  font-size:11.5px;
-  line-height:1.7;
-  color:var(--gray,#797979);
-  text-align:center;
-}
-
-/* ══════════════════════════════════════════════
    메인 배너 — 최종 확정 (이 아래가 항상 이깁니다)
    1 → 2 → 3 → 4 자동 · 화살표 · 점 · 손가락
    ══════════════════════════════════════════════ */
@@ -10450,7 +10372,6 @@ body, input, select, textarea, button,
     document.addEventListener('DOMContentLoaded', build);
   else build();
   setTimeout(build, 900);
-  window.cgHeroBuild = build;
 })();
 </script>
 
@@ -10604,6 +10525,264 @@ body.cg-scrolling *{
 /* 배너·상품 이미지는 별도 층으로 올려 다시 그리는 범위를 줄입니다 */
 .hero, .h-track, .hslide{ will-change:transform; contain:paint }
 .card, .prod-card{ contain:layout paint }
+
+/* ══════════════════════════════════════════════
+   트리플잇 소개 — 가이드 색으로
+   main #D82558 · sub #E95073 · 연분홍 #FFBDCC
+   아주연한 #FFE4E6 · 노랑 #FFE923
+   ══════════════════════════════════════════════ */
+.tri-sec::before{
+  background:linear-gradient(165deg,#D82558 0%,#E95073 55%,#FF7A9C 100%) !important;
+}
+.tri-bg .o1{ background:#FFBDCC !important; opacity:.34 !important }
+.tri-bg .o2{ background:#FFE4E6 !important; opacity:.26 !important }
+.tri-bg .o3{ background:#FFE923 !important; opacity:.22 !important }
+
+/* 제목 · 설명 */
+.tri-title{ color:#fff !important }
+.tri-title .accent{
+  background:linear-gradient(100deg,#FFE923,#FFF6C4 55%,#FFE923) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  color:transparent !important;
+}
+.tri-lead{ color:rgba(255,255,255,.86) !important }
+
+/* 흐르는 글자 띠 */
+.tri-marquee span{ color:rgba(255,255,255,.16) !important }
+.tri-marquee i{ background:rgba(255,255,255,.3) !important }
+
+/* 카드 */
+.tri-card .tri-body,
+.tri-card .tri-info{
+  background:rgba(255,255,255,.14) !important;
+  border:1px solid rgba(255,255,255,.28) !important;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+}
+.tri-card h3, .tri-card .tri-name{ color:#fff !important }
+.tri-card p, .tri-card .tri-desc{ color:rgba(255,255,255,.8) !important }
+.tri-card .tri-tag, .tri-card .badge{
+  background:#FFE923 !important;
+  color:#17171c !important;
+}
+
+/* 버튼 */
+.tri-sec .btn, .tri-sec .tri-btn, .tri-sec a.more{
+  background:#fff !important;
+  color:#D82558 !important;
+  font-weight:800 !important;
+  border:0 !important;
+}
+.tri-sec .btn:hover, .tri-sec .tri-btn:hover{
+  background:#FFE4E6 !important;
+}
+
+/* ══════════════════════════════════════════════
+   팝업 탭 — 내용이 확실히 보이도록
+   ══════════════════════════════════════════════ */
+.detail .d-info > .d-detail,
+.detail .d-info > .d-rev,
+.detail .d-info > .d-notice{
+  display:block !important;
+}
+.d-info[data-tab="detail"] > .d-rev,
+.d-info[data-tab="detail"] > .d-notice{ display:none !important }
+.d-info[data-tab="review"] > .d-detail,
+.d-info[data-tab="review"] > .d-notice{ display:none !important }
+.d-info[data-tab="info"]   > .d-detail,
+.d-info[data-tab="info"]   > .d-rev{ display:none !important }
+
+/* 배송·교환 상자 */
+.detail .d-notice{
+  margin-top:22px !important;
+  padding:18px 20px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.6) !important;
+  border:1px solid rgba(255,255,255,.78) !important;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+  box-shadow:0 4px 14px rgba(0,0,0,.05) !important;
+  font-size:13px !important;
+  line-height:2 !important;
+  color:#555 !important;
+  text-align:left !important;
+}
+.detail .d-notice b{ color:#17171c !important; font-weight:700 !important }
+.detail .d-notice .d-pay{
+  display:block !important;
+  margin-top:8px !important;
+  padding-top:10px !important;
+  border-top:1px solid rgba(0,0,0,.06) !important;
+  font-size:12px !important;
+  color:#797979 !important;
+}
+
+/* 배너 · 스크롤 — 최종 확정 */
+.hero{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  aspect-ratio:1630/760 !important;
+  height:auto !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  background:#FFE4E6 !important;
+}
+.hero .h-track{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:1 !important;
+  transition:transform .55s cubic-bezier(.4,0,.2,1) !important;
+}
+.hero .h-track > .hslide{
+  flex:0 0 100% !important;
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  contain:none !important;
+}
+html, body{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  height:auto !important;
+  position:static !important;
+  touch-action:auto !important;
+}
+body.drawer-on, body.modal-open{
+  overflow:hidden !important;
+}
+@media (max-width:900px){
+  .hero{ border-radius:0 !important }
+}
+
+/* ══════════════════════════════════════════════
+   결제 열림 — BUY NOW 사용 · 스마트스토어 안내 제거
+   ══════════════════════════════════════════════ */
+
+/* BUY NOW 되살리기 */
+.detail .d-acts .d-buy,
+.detail .d-buy,
+.detail #dBuy{
+  display:inline-flex !important;
+  visibility:visible !important;
+  width:auto !important;
+  height:auto !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  padding:0 20px !important;
+  border-radius:999px !important;
+  background:linear-gradient(135deg,#E95073,#D82558) !important;
+  color:#fff !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:1.2px !important;
+  border:0 !important;
+  overflow:visible !important;
+  box-shadow:0 6px 18px rgba(216,37,88,.28) !important;
+}
+
+/* 장바구니 — 나란히, 같은 크기 */
+.detail .d-acts{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:100% !important;
+  flex-wrap:nowrap !important;
+}
+.detail .d-acts .d-cart{
+  flex:1 1 0 !important;
+  width:auto !important;
+  min-width:0 !important;
+  min-height:54px !important;
+  padding:0 20px !important;
+  border-radius:999px !important;
+  border:1.6px solid #D82558 !important;
+  background:#fff !important;
+  color:#D82558 !important;
+  font-size:14.5px !important;
+  font-weight:800 !important;
+  letter-spacing:1.2px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 4px 14px rgba(216,37,88,.12) !important;
+  white-space:nowrap !important;
+}
+
+/* 스마트스토어 · 안내 문구 감춤 */
+.detail .d-npay,
+.detail .d-npay.show,
+.d-payhint,
+.detail .d-notice .npay-line{
+  display:none !important;
+}
+
+@media (max-width:640px){
+  .detail .d-acts{ gap:8px !important }
+  .detail .d-acts .d-buy,
+  .detail .d-acts .d-cart{
+    font-size:13px !important;
+    letter-spacing:.6px !important;
+    padding:0 12px !important;
+    min-height:50px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   스크롤 — 팝업이 실제로 열렸을 때만 잠급니다
+   ══════════════════════════════════════════════ */
+
+/* 팝업은 hide 가 없을 때만 보입니다 */
+.popup-dim{ display:none }
+.popup-dim:not(.hide){ display:flex }
+.popup-dim.hide{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* 화면은 기본적으로 스크롤됩니다 */
+html{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:auto !important;
+  position:static !important;
+}
+body{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  height:auto !important;
+  min-height:100%;
+  position:static !important;
+  touch-action:auto !important;
+}
+
+/* 무언가 실제로 열렸을 때만 잠급니다 */
+body.drawer-on,
+body.modal-open{
+  overflow:hidden !important;
+  touch-action:none !important;
+}
+
+/* 트리플잇 카드 — 누를 수 있게 */
+.tri-card{
+  cursor:pointer !important;
+  transition:transform .22s, box-shadow .22s !important;
+}
+.tri-card:hover{
+  transform:translateY(-5px) !important;
+}
+.tri-card:active{ transform:scale(.99) !important }
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -10618,57 +10797,175 @@ body.cg-scrolling *{
   }, {passive:true});
 })();
 </script>
+
+
+
 <script>
-/* ══ 메인 배너를 DB(banners 테이블)에서 불러옵니다 ══
-   코드를 고치지 않고도 순서·링크·노출을 바꿀 수 있습니다.
-   DB 조회가 실패하면 아래 마크업(assets/hero-N.jpg)이 그대로 남습니다. */
+/* ══════════════════════════════════════════════
+   메인 배너 — 최종 하나만 (앞의 것 모두 정지)
+   ══════════════════════════════════════════════ */
 (function(){
-  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var K='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-  fetch(SB+'/rest/v1/banners?select=*&active=eq.true&order=sort_order.asc',
-    {headers:{apikey:K,Authorization:'Bearer '+K}})
-  .then(function(r){ return r.ok?r.json():null; })
-  .then(function(rows){
-    if(!rows || !rows.length) return;          /* 비어 있으면 기존 배너 유지 */
-    var t=document.getElementById('hTrack');
-    var d=document.getElementById('hDots');
-    var hero=document.getElementById('heroSlider');
-    if(!t) return;
-    t.innerHTML = rows.map(function(b){
-      var url=String(b.image_url||'');
-      var line=String(b.line||'all').replace(/'/g,'');
-      var alt=String(b.alt||'').replace(/"/g,'&quot;');
-      return '<a class="hslide" href="'+(b.link||'#all')+'"'
-        + ' onclick="filterLine(\''+line+'\')"'
-        + ' style="background-image:url(\''+url.replace(/'/g,'')+'\')"'
-        + ' aria-label="'+alt+'"></a>';
-    }).join('');
-    /* 슬라이드를 바꿨으니 최종 슬라이더를 다시 돌려
-       점·화살표·자동전환을 새로 만들게 합니다. */
-    if(hero) hero.dataset.slider='';
-    if(d) d.innerHTML='';
-    var elAll=document.getElementById('hbAll');
-    if(elAll) elAll.textContent=rows.length;
-    if(typeof window.cgHeroBuild==='function') window.cgHeroBuild();
-  })
-  .catch(function(){});
+  /* ① 지금 도는 반복 작업을 모두 멈춥니다 */
+  var top = setInterval(function(){}, 99999);
+  for (var i = 1; i <= top; i++) {
+    try { clearInterval(i); } catch(e){}
+  }
+  clearInterval(top);
+
+  var hero, track, dots, cur = 0, n = 0, timer = null;
+
+  function go(k){
+    if (!n) return;
+    cur = ((k % n) + n) % n;
+    track.style.transform = 'translateX(' + (-cur * 100) + '%)';
+    if (dots) {
+      var bs = dots.querySelectorAll('button');
+      for (var j = 0; j < bs.length; j++) bs[j].classList.toggle('on', j === cur);
+    }
+  }
+  function play(){
+    clearInterval(timer);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer = setInterval(function(){ go(cur + 1); }, 4500);
+  }
+
+  function build(){
+    hero  = document.getElementById('heroSlider');
+    track = document.getElementById('hTrack');
+    dots  = document.getElementById('hDots');
+    if (!hero || !track) return;
+
+    var slides = track.querySelectorAll('.hslide');
+    n = slides.length;
+    if (n < 2) return;
+
+    /* 앞서 붙은 화살표 정리 */
+    var olds = hero.querySelectorAll('.hero-arw');
+    for (var i = 0; i < olds.length; i++) olds[i].remove();
+
+    /* 점 다시 만들기 */
+    if (dots) {
+      if (dots.parentElement !== hero) hero.appendChild(dots);
+      dots.innerHTML = '';
+      for (var d = 0; d < n; d++) {
+        (function(k){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('aria-label', (k+1) + '번 배너');
+          if (k === 0) b.classList.add('on');
+          b.onclick = function(e){
+            e.preventDefault(); e.stopPropagation();
+            go(k); play(); return false;
+          };
+          dots.appendChild(b);
+        })(d);
+      }
+    }
+
+    /* 화살표 */
+    function arw(cls, path, step){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hero-arw ' + cls;
+      b.setAttribute('aria-label', step < 0 ? '이전 배너' : '다음 배너');
+      b.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + path + '"/></svg>';
+      b.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        go(cur + step); play(); return false;
+      };
+      hero.appendChild(b);
+    }
+    arw('prev', 'M15 6l-6 6 6 6', -1);
+    arw('next', 'M9 6l6 6-6 6', 1);
+
+    /* 손가락으로 넘기기 */
+    var sx = 0, sy = 0, moved = false;
+    hero.addEventListener('touchstart', function(e){
+      var t = e.touches[0]; sx = t.clientX; sy = t.clientY; moved = false;
+      clearInterval(timer);
+    }, { passive:true });
+    hero.addEventListener('touchmove', function(e){
+      var t = e.touches[0];
+      if (Math.abs(t.clientX - sx) > 10) moved = true;
+    }, { passive:true });
+    hero.addEventListener('touchend', function(e){
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      play();
+    }, { passive:true });
+    track.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    hero.addEventListener('mouseleave', play);
+
+    go(0); play();
+  }
+
+  /* ② 스크롤이 잠긴 채 남지 않도록 */
+  function unlock(){
+    var open = document.querySelector('.drawer.open')
+            || document.querySelector('.detail-dim:not(.hide)')
+            || document.querySelector('.popup-dim:not(.hide)')
+            || document.querySelector('.uf-dim:not(.hide)');
+    if (!open) {
+      document.body.classList.remove('modal-open','drawer-on');
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.touchAction = '';
+      document.documentElement.style.overflow = '';
+    }
+  }
+
+  function boot(){
+    build();
+    unlock();
+    setInterval(unlock, 2000);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) clearInterval(timer); else play();
+    });
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
 </script>
-<style>
-/* 좌우 넘김 버튼 기본 모양 — 흩어진 규칙이 없을 때를 대비 */
-.hero-arw{
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:44px; height:44px; border-radius:999px; border:0; cursor:pointer;
-  background:rgba(255,255,255,.82); color:#2A1B21; z-index:6;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 4px 16px rgba(0,0,0,.14); backdrop-filter:blur(6px);
-}
-.hero-arw:active{ transform:translateY(-50%) scale(.94) }
-.hero-arw.prev{ left:16px } .hero-arw.next{ right:16px }
-@media(max-width:640px){
-  .hero-arw{ width:38px; height:38px }
-  .hero-arw.prev{ left:8px } .hero-arw.next{ right:8px }
-}
-</style>
+
+<script>
+/* 스크롤이 잠긴 채 남지 않도록 — 마지막 확인 */
+(function(){
+  function anyOpen(){
+    return document.querySelector('.drawer.open')
+        || document.querySelector('.detail-dim:not(.hide)')
+        || document.querySelector('.popup-dim:not(.hide)')
+        || document.querySelector('.uf-dim:not(.hide)')
+        || document.querySelector('.cart-dim:not(.hide)')
+        || document.querySelector('.board-dim:not(.hide)');
+  }
+  function fix(){
+    if (anyOpen()) return;
+    var b = document.body, d = document.documentElement;
+    b.classList.remove('modal-open','drawer-on');
+    if (b.style.overflow === 'hidden') b.style.overflow = '';
+    if (d.style.overflow === 'hidden') d.style.overflow = '';
+    b.style.position = '';
+    b.style.touchAction = '';
+    b.style.height = '';
+  }
+  ['pageshow','focus','click','touchend'].forEach(function(e){
+    window.addEventListener(e, function(){ setTimeout(fix, 60); }, { passive:true });
+  });
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) setTimeout(fix, 100);
+  });
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', fix);
+  else fix();
+  setInterval(fix, 1200);
+})();
+</script>
 </body>
 </html>
