@@ -1957,6 +1957,23 @@ function filterLine(line){
   t.textContent = line === 'travel' ? 'Travel-it' : line === 'doit' ? 'Dew-it' : 'All Products';
 }
 
+/* 다른 페이지에서 넘어올 때 라인 필터를 이어받습니다.
+   about.html 이 cg_line 에 값을 남기는데 여기서 읽지 않아
+   [제품 보기]를 눌러도 필터가 걸리지 않았습니다. */
+(function(){
+  function apply(){
+    var v=null;
+    try{ v=localStorage.getItem('cg_line'); localStorage.removeItem('cg_line'); }catch(e){}
+    if(!v) return;
+    if(typeof filterLine==='function') filterLine(v);
+    var a=document.getElementById('all');
+    if(a) a.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(apply, 300); });
+  else setTimeout(apply, 300);
+})();
+
 /* 레이어 팝업 */
 function closePopup(today){
   document.getElementById('popup').classList.add('hide');
