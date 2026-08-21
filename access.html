@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<!-- ChewGumi Access v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>권한 관리 | CHEWGUMI</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script src="assets/auth.js"></script>
+<script src="assets/site.js"></script>
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink:#FFBDCC; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C;
+  --gray:#797979; --ink:#17171c;
+  --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.68);
+  --sp-s:clamp(0.75rem,0.7rem+0.24vw,1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.5vw,1.9rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.11),transparent 60%),
+    linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select,textarea{font-size:14.5px}}
+.wrap{max-width:960px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+textarea{
+  width:100%;min-height:84px;padding:13px 15px;border-radius:14px;line-height:1.7;
+  border:1px solid var(--line);background:rgba(255,255,255,.9);color:var(--ink);resize:vertical;
+}
+textarea:focus{outline:2px solid var(--main);outline-offset:-1px}
+.btn{
+  min-height:46px;padding:0 20px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:linear-gradient(135deg,#3FBF7A,#2AA060)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.msg{margin-top:11px;font-size:13px;line-height:1.7;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+.hint{font-size:12px;color:var(--gray);line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
+.hint b{color:var(--ink)}
+.ex{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ex button{
+  min-height:34px;padding:0 13px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.8);
+  font-size:12px;color:#555;
+}
+.ex button:hover{background:var(--pink-lt);color:var(--main)}
+
+/* 화면 목록 */
+.pg{
+  display:grid;grid-template-columns:1fr auto;gap:10px 14px;align-items:center;
+  padding:14px 0;border-bottom:1px solid rgba(0,0,0,.055);
+}
+.pg:last-child{border-bottom:0}
+.pg .nm{min-width:0}
+.pg .nm b{font-size:14px;font-weight:700;letter-spacing:-.02em;display:block}
+.pg .nm span{font-size:11.5px;color:var(--gray)}
+.roles{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.rl{
+  min-height:32px;padding:0 12px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(0,0,0,.1);background:#fff;
+  font-size:12px;font-weight:600;color:#9a9aa2;
+  display:inline-flex;align-items:center;
+}
+.rl.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.rl.fixed{background:rgba(216,37,88,.1);color:var(--main);
+  border-color:rgba(216,37,88,.2);cursor:default}
+
+/* 미리보기 */
+.pv{
+  margin-top:14px;padding:16px 18px;border-radius:16px;
+  background:rgba(255,228,230,.55);border:1px solid rgba(255,189,204,.7);
+}
+.pv .row{padding:9px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px}
+.pv .row:last-child{border-bottom:0}
+.pv .row b{font-weight:700}
+.pv .arw{color:var(--main);margin:0 7px}
+.pv .why{font-size:12px;color:var(--gray);margin-top:3px}
+.pv .note{font-size:12.5px;color:#8A3350;margin-bottom:10px;line-height:1.7}
+
+/* 이력 */
+.lg{padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12.5px}
+.lg:last-child{border-bottom:0}
+.lg b{font-weight:700}
+.lg .w{color:var(--gray);font-size:11.5px}
+.lg .ai{font-size:10px;font-weight:800;padding:1px 7px;border-radius:999px;
+  background:rgba(216,37,88,.1);color:var(--main);margin-left:5px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>권한 관리</h1>
+      <div class="s">누가 어느 화면을 볼 수 있는지 정합니다 · 대표와 개발자만</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <!-- 말로 바꾸기 -->
+  <div class="panel">
+    <h2>말로 바꾸기</h2>
+    <textarea id="q" placeholder="예) 새로 온 운영 담당자가 상품과 주문만 보게 해주세요&#10;예) 디자이너에게 고객 리포트도 열어주세요&#10;예) 점검 담당은 재고를 못 고치게 해주세요"></textarea>
+
+    <div class="ex">
+      <button onclick="fill('디자이너에게 드라이브와 고객 리포트만 열어주세요')">디자이너 정리</button>
+      <button onclick="fill('운영 담당이 상품·주문·재고·채널을 다루게 해주세요')">운영 정리</button>
+      <button onclick="fill('개인정보가 보이는 화면은 대표만 보게 해주세요')">개인정보 잠그기</button>
+      <button onclick="fill('점검 담당은 보기만 하고 못 고치게 해주세요')">점검 제한</button>
+    </div>
+
+    <div class="btns">
+      <button class="btn" onclick="ask()" id="askBtn">어떻게 바뀔지 보기</button>
+    </div>
+    <div class="msg" id="m1"></div>
+
+    <div class="pv hide" id="pv"></div>
+
+    <div class="hint">
+      <b>대표는 모든 화면에 항상 들어갑니다.</b> 빼려고 해도 자동으로 남습니다.<br>
+      바꾸기 전에 <b>어떻게 바뀔지 먼저 보여드립니다.</b> 확인하고 누르셔야 반영됩니다.
+    </div>
+  </div>
+
+  <!-- 손으로 바꾸기 -->
+  <div class="panel">
+    <h2>화면별 권한 <span class="n" id="cnt">—</span></h2>
+    <div id="list"></div>
+    <div class="msg" id="m2"></div>
+  </div>
+
+  <!-- 이력 -->
+  <div class="panel">
+    <h2>바꾼 이력</h2>
+    <div id="logs"></div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const FN=SB+'/functions/v1/access-admin';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+let KR={}, ROLES=[], PAGES=[], PLAN=[];
+
+function tok(){
+  try{
+    const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+    if(!s||!s.t) return '';
+    if(s.exp && Date.now()/1000>s.exp) return '';
+    return s.t;
+  }catch(e){ return ''; }
+}
+function H(){ return {apikey:KEY,Authorization:'Bearer '+tok(),'Content-Type':'application/json'}; }
+function say(id,t,k){ const m=$(id); m.className='msg'+(k?' '+k:''); m.textContent=t; }
+function fill(t){ $('q').value=t; $('q').focus(); }
+
+function call(p){
+  return fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)}).then(r=>r.json());
+}
+
+function load(){
+  call({action:'list'}).then(function(d){
+    if(!d.ok){ say('m2', d.error||'불러오지 못했습니다.','bad'); return; }
+    KR=d.kr||{}; ROLES=d.roles||[]; PAGES=d.pages||[];
+    drawPages();
+    drawLogs(d.logs||[]);
+  }).catch(function(){ say('m2','불러오지 못했습니다.','bad'); });
+}
+
+function drawPages(){
+  $('cnt').textContent=PAGES.length+'개';
+  $('list').innerHTML=PAGES.map(function(p){
+    const rs=ROLES.map(function(r){
+      const on=(p.roles||[]).indexOf(r)>-1;
+      if(r==='ceo') return '<span class="rl fixed">대표</span>';
+      return '<button class="rl'+(on?' on':'')+'" onclick="toggle(\''
+        +p.page+'\',\''+r+'\')">'+esc(KR[r]||r)+'</button>';
+    }).join('');
+    return '<div class="pg"><div class="nm"><b>'+esc(p.label)+'</b>'
+      +'<span>'+esc(p.page)+'</span></div>'
+      +'<div class="roles">'+rs+'</div></div>';
+  }).join('');
+}
+
+function toggle(page, role){
+  const p=PAGES.find(function(x){ return x.page===page; });
+  if(!p) return;
+  const rs=(p.roles||[]).slice();
+  const i=rs.indexOf(role);
+  if(i>-1) rs.splice(i,1); else rs.push(role);
+
+  say('m2','바꾸는 중…');
+  call({action:'set',page:page,roles:rs}).then(function(d){
+    if(!d.ok){ say('m2', d.error||'바꾸지 못했습니다.','bad'); return; }
+    say('m2', esc(p.label)+' 권한을 바꿨습니다.','ok');
+    load();
+  }).catch(function(){ say('m2','바꾸지 못했습니다.','bad'); });
+}
+
+function ask(){
+  const q=$('q').value.trim();
+  if(!q){ say('m1','무엇을 바꿀지 적어주세요.','bad'); return; }
+  $('askBtn').disabled=true; say('m1','생각하는 중…');
+  $('pv').classList.add('hide');
+
+  call({action:'ask',q:q}).then(function(d){
+    $('askBtn').disabled=false;
+    if(!d.ok){ say('m1', d.error||'답을 받지 못했습니다.','bad'); return; }
+    PLAN=d.preview||[];
+    if(!PLAN.length){
+      say('m1', d.note||'바꿀 것이 없습니다.','ok');
+      return;
+    }
+    say('m1','아래처럼 바꿀 수 있습니다. 확인하고 눌러주세요.');
+    $('pv').innerHTML =
+      (d.note?'<div class="note">'+esc(d.note)+'</div>':'')
+      + PLAN.map(function(c){
+        const b=(c.before||[]).map(function(r){return KR[r]||r;}).join(' · ')||'없음';
+        const a=(c.after||[]).map(function(r){return KR[r]||r;}).join(' · ')||'없음';
+        return '<div class="row"><b>'+esc(c.label)+'</b><br>'
+          +esc(b)+'<span class="arw">→</span>'+esc(a)
+          +(c.why?'<div class="why">'+esc(c.why)+'</div>':'')+'</div>';
+      }).join('')
+      + '<div class="btns"><button class="btn ok sm" onclick="apply()">이대로 바꾸기</button>'
+      + '<button class="btn sub sm" onclick="cancel()">그만두기</button></div>';
+    $('pv').classList.remove('hide');
+  }).catch(function(){ $('askBtn').disabled=false; say('m1','답을 받지 못했습니다.','bad'); });
+}
+
+function apply(){
+  if(!PLAN.length) return;
+  say('m1','바꾸는 중…');
+  call({action:'apply',changes:PLAN,q:$('q').value.trim()}).then(function(d){
+    if(!d.ok){ say('m1', d.error||'바꾸지 못했습니다.','bad'); return; }
+    say('m1', d.msg||'바꿨습니다.','ok');
+    $('pv').classList.add('hide'); PLAN=[]; $('q').value='';
+    load();
+  }).catch(function(){ say('m1','바꾸지 못했습니다.','bad'); });
+}
+function cancel(){ $('pv').classList.add('hide'); PLAN=[]; say('m1',''); }
+
+function drawLogs(rows){
+  if(!rows.length){ $('logs').innerHTML='<p style="font-size:13px;color:var(--gray)">아직 없습니다.</p>'; return; }
+  $('logs').innerHTML=rows.map(function(x){
+    const t=new Date(x.created_at);
+    const w=(t.getMonth()+1)+'/'+t.getDate()+' '
+      +String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    const b=(x.before_roles||[]).map(function(r){return KR[r]||r;}).join(' · ')||'없음';
+    const a=(x.after_roles||[]).map(function(r){return KR[r]||r;}).join(' · ')||'없음';
+    return '<div class="lg"><b>'+esc(x.page)+'</b>'
+      +(x.by_ai?'<span class="ai">AI</span>':'')+'<br>'
+      +esc(b)+' → '+esc(a)
+      +'<div class="w">'+w+' · '+esc(x.actor)+(x.reason?' · '+esc(x.reason):'')+'</div></div>';
+  }).join('');
+}
+
+load();
+</script>
+</body>
+</html>
