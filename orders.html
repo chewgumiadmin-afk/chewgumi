@@ -219,6 +219,31 @@ label:has(> input[type=checkbox]){
 }
 .cg-toast.bad{ background:rgba(192,57,92,.95) }
 .cg-toast.on{ opacity:1;transform:translateX(-50%) translateY(0) }
+
+/* 알림 쪽지 */
+.cg-toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(28px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(14px);
+  z-index:9000;
+  max-width:min(88vw,420px);
+  padding:14px 22px;
+  border-radius:999px;
+  background:rgba(23,23,28,.92);
+  color:#fff;
+  font-size:13.5px;
+  font-weight:600;
+  line-height:1.6;
+  text-align:center;
+  word-break:keep-all;
+  box-shadow:0 10px 30px rgba(0,0,0,.26);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .26s, transform .26s;
+}
+.cg-toast.on{ opacity:1; transform:translateX(-50%) translateY(0) }
+.cg-toast.ok{ background:linear-gradient(135deg,#3FBF7A,#2AA060) }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
@@ -959,6 +984,66 @@ sync();
     });
   };
   setInterval(function(){ try{ cgRemember(); }catch(e){} }, 1500);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   발송 처리하면 고객에게 안내 메일을 보냅니다
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function toast(t, ok){
+    var b = document.getElementById('cgToast');
+    if (!b) {
+      b = document.createElement('div');
+      b.id = 'cgToast';
+      b.className = 'cg-toast';
+      document.body.appendChild(b);
+    }
+    b.textContent = t;
+    b.className = 'cg-toast on' + (ok ? ' ok' : '');
+    clearTimeout(b._t);
+    b._t = setTimeout(function(){ b.className = 'cg-toast'; }, 3400);
+  }
+
+  /* 주문 번호 찾기 */
+  function orderNo(id){
+    try{
+      if (typeof ROWS !== 'undefined' && ROWS.length) {
+        var o = ROWS.find(function(x){ return String(x.id) === String(id); });
+        if (o) return o.order_no;
+      }
+    }catch(e){}
+    var el = document.getElementById('st' + id);
+    var box = el && el.closest('.o-row, .order, li, tr');
+    var m = box && (box.textContent || '').match(/\d{8}-\d{4,7}/);
+    return m ? m[0] : '';
+  }
+
+  window.cgNotify = function(id, status, tracking){
+    /* 배송 시작일 때만 */
+    if (status !== 'shipping' && status !== 'shipped') return;
+    if (!tracking) { toast('운송장번호가 없어 안내를 보내지 않았습니다.'); return; }
+
+    var no = orderNo(id);
+    if (!no) { toast('주문번호를 찾지 못해 안내를 보내지 않았습니다.'); return; }
+
+    toast('발송 안내를 보내는 중…');
+    fetch(SB2 + '/functions/v1/ship-mail', {
+      method:'POST',
+      headers:{ apikey:K2, 'Content-Type':'application/json' },
+      body: JSON.stringify({ order_no: no })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.ok) toast(d.msg || '고객에게 발송 안내를 보냈습니다.', true);
+      else toast((d && d.error) || '안내를 보내지 못했습니다.');
+    })
+    .catch(function(){ toast('안내를 보내지 못했습니다.'); });
+  };
 })();
 </script>
 </body>
