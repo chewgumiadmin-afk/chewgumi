@@ -244,6 +244,47 @@ label:has(> input[type=checkbox]){
 }
 .cg-toast.on{ opacity:1; transform:translateX(-50%) translateY(0) }
 .cg-toast.ok{ background:linear-gradient(135deg,#3FBF7A,#2AA060) }
+
+/* 말로 처리하기 */
+.tag-ai{
+  margin-left:auto;font-size:10px;font-weight:800;letter-spacing:0;
+  padding:2px 9px;border-radius:999px;
+  background:rgba(216,37,88,.1);color:#D82558;
+}
+#bq{
+  width:100%;min-height:48px;padding:12px 15px;border-radius:13px;
+  border:1px solid rgba(255,255,255,.85);
+  background:rgba(255,255,255,.92);color:#17171c;
+  font-family:inherit;font-size:16px;
+}
+@media(min-width:1024px){ #bq{font-size:14.5px} }
+#bq:focus{ outline:2px solid #D82558;outline-offset:-1px }
+.bx{ display:flex;gap:7px;flex-wrap:wrap;margin-top:10px }
+.bpv{
+  margin-top:14px;padding:16px 18px;border-radius:16px;
+  background:rgba(255,228,230,.55);border:1px solid rgba(255,189,204,.7);
+}
+.bpv.hide{ display:none }
+.bnote{ font-size:12.5px;color:#8A3350;margin-bottom:11px;line-height:1.7 }
+.brow{
+  padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px;line-height:1.7;
+}
+.brow:last-of-type{ border-bottom:0 }
+.brow b{ font-weight:700 }
+.barw{ color:#D82558;margin:0 8px;font-weight:700 }
+.btn-no{
+  display:inline-block;margin-top:5px;padding:3px 11px;border-radius:999px;
+  background:rgba(255,255,255,.8);font-size:12px;font-weight:600;
+}
+.bwhy{ font-size:12px;color:#797979;margin-top:4px }
+.bhint{
+  font-size:12px;color:#797979;line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5);
+}
+.bhint b{ color:#17171c }
+.btn.ok{ background:linear-gradient(135deg,#3FBF7A,#2AA060) }
+.msg.bad{ color:#C0395C }
+.msg.ok{ color:#2AA060 }
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
@@ -288,6 +329,24 @@ label:has(> input[type=checkbox]){
     </div>
 
     <div class="panel">
+    <h2>말로 처리하기 <span class="tag-ai">AI</span></h2>
+    <input id="bq" placeholder="예) 20260820 주문 CJ대한통운 1234567890으로 발송 처리해줘" autocomplete="off">
+    <div class="bx">
+      <button class="mini" onclick="bFill('오늘 결제완료된 주문을 모두 배송준비로 바꿔줘')">배송준비로</button>
+      <button class="mini" onclick="bFill('발송할 주문 알려줘')">발송할 것 보기</button>
+    </div>
+    <div class="bx" style="margin-top:10px">
+      <button class="btn" onclick="bAsk()" id="bBtn">어떻게 할지 보기</button>
+    </div>
+    <div class="msg" id="bmsg"></div>
+    <div class="bpv hide" id="bpv"></div>
+    <div class="bhint">
+      바로 바꾸지 않습니다. <b>어떻게 바뀔지 먼저 보여드립니다.</b><br>
+      배송중으로 바꾸면 고객에게 발송 안내 메일이 함께 나갑니다.
+    </div>
+  </div>
+
+  <div class="panel">
       <h2>주문 목록</h2>
       <div class="tabs">
         <button class="on" data-s="all" onclick="setS('all')">전체</button>
@@ -1102,6 +1161,95 @@ sync();
   else check();
   setTimeout(check, 500);
   window.addEventListener('pageshow', check);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   말로 주문 처리하기
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var JOBS=[];
+
+  function el(id){ return document.getElementById(id); }
+  function tok(){
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return '';
+      if(s.exp && Date.now()/1000>s.exp) return '';
+      return s.t;
+    }catch(e){ return ''; }
+  }
+  function esc2(s){
+    return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+  function say(t,k){
+    var m=el('bmsg'); if(!m) return;
+    m.className='msg'+(k?' '+k:''); m.textContent=t;
+  }
+
+  window.bFill=function(t){ el('bq').value=t; el('bq').focus(); };
+
+  function call(p){
+    return fetch(SB2+'/functions/v1/order-bot',{method:'POST',
+      headers:{apikey:K2,Authorization:'Bearer '+tok(),'Content-Type':'application/json'},
+      body:JSON.stringify(p)}).then(function(r){ return r.json(); });
+  }
+
+  window.bAsk=function(){
+    var q=el('bq').value.trim();
+    if(!q){ say('무엇을 할지 적어주세요.','bad'); return; }
+    el('bBtn').disabled=true; say('생각하는 중…');
+    el('bpv').classList.add('hide');
+
+    call({action:'ask',q:q}).then(function(d){
+      el('bBtn').disabled=false;
+      if(!d.ok){ say(d.error||'답을 받지 못했습니다.','bad'); return; }
+      JOBS=d.jobs||[];
+      if(!JOBS.length){
+        say(d.note||'처리할 것을 찾지 못했습니다.','ok');
+        return;
+      }
+      say('아래처럼 처리할 수 있습니다. 확인하고 눌러주세요.');
+      el('bpv').innerHTML =
+        (d.note?'<div class="bnote">'+esc2(d.note)+'</div>':'')
+        + JOBS.map(function(j){
+          return '<div class="brow"><b>'+esc2(j.order_no)+'</b>'
+            + (j.buyer?' · '+esc2(j.buyer):'') + '<br>'
+            + esc2(j.before)+'<span class="barw">→</span>'+esc2(j.after)
+            + (j.tracking_no?'<br><span class="btn-no">'
+                +esc2(j.courier)+' '+esc2(j.tracking_no)+'</span>':'')
+            + (j.why?'<div class="bwhy">'+esc2(j.why)+'</div>':'')
+            + '</div>';
+        }).join('')
+        + '<div class="bx" style="margin-top:12px">'
+        + '<button class="btn ok" onclick="bRun()">이대로 처리하기</button>'
+        + '<button class="mini" onclick="bCancel()">그만두기</button></div>';
+      el('bpv').classList.remove('hide');
+    }).catch(function(){ el('bBtn').disabled=false; say('답을 받지 못했습니다.','bad'); });
+  };
+
+  window.bRun=function(){
+    if(!JOBS.length) return;
+    say('처리하는 중…');
+    call({action:'run',jobs:JOBS}).then(function(d){
+      if(!d.ok){ say(d.error||'처리하지 못했습니다.','bad'); return; }
+      say(d.msg||'처리했습니다.','ok');
+      el('bpv').classList.add('hide'); JOBS=[]; el('bq').value='';
+      try{ if(typeof load==='function') load(); }catch(e){}
+    }).catch(function(){ say('처리하지 못했습니다.','bad'); });
+  };
+
+  window.bCancel=function(){
+    el('bpv').classList.add('hide'); JOBS=[]; say('');
+  };
+
+  var q=document.getElementById('bq');
+  if(q) q.addEventListener('keydown',function(e){ if(e.key==='Enter') bAsk(); });
 })();
 </script>
 </body>
