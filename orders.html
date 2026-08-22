@@ -394,7 +394,15 @@ const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const ST={pending:'미결제',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
   delivered:'배송완료',cancelled:'취소',refunded:'환불'};
 let token=null,who='',filt='all',ORD=[];
-try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
+  /* 진짜 로그인 토큰을 씁니다 */
+  try{
+    var _s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
+    if (_s && _s.t && !(_s.exp && Date.now()/1000 > _s.exp)) {
+      token = _s.t;
+      who = _s.em || _s.u || '';
+    }
+  }catch(e){}
+  try{ if(!who){ var _u=CGAuth.user(); if(_u) who=_u.name||''; } }catch(e){}
 const $=id=>document.getElementById(id);
 const won=v=>Number(v||0).toLocaleString();
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
@@ -1044,6 +1052,56 @@ sync();
     })
     .catch(function(){ toast('안내를 보내지 못했습니다.'); });
   };
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   이미 로그인되어 있으면 바로 주문 목록으로
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function tok(){
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return null;
+      if(s.exp && Date.now()/1000>s.exp) return null;
+      return s;
+    }catch(e){ return null; }
+  }
+
+  function enter(s){
+    if (typeof token !== 'undefined') token = s.t;
+    var lg = document.getElementById('login');
+    var ar = document.getElementById('area');
+    if (lg) lg.classList.add('hide');
+    if (ar) ar.classList.remove('hide');
+    var w = document.getElementById('who');
+    if (w) w.textContent = s.em || s.u || '';
+    try{ if (typeof load === 'function') load(); }catch(e){}
+  }
+
+  function check(){
+    var s = tok();
+    if (!s) return;
+    /* 관리자인지 확인한 뒤 들어갑니다 */
+    fetch(SB2+'/rest/v1/rpc/my_role',{method:'POST',
+      headers:{apikey:K2,Authorization:'Bearer '+s.t,'Content-Type':'application/json'},body:'{}'})
+    .then(function(r){ return r.ok?r.json():'guest'; })
+    .then(function(v){
+      var role = String(v||'guest').replace(/"/g,'');
+      if (role && role !== 'guest') enter(s);
+    })
+    .catch(function(){});
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', check);
+  else check();
+  setTimeout(check, 500);
+  window.addEventListener('pageshow', check);
 })();
 </script>
 </body>
