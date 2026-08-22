@@ -262,7 +262,7 @@ const $=id=>document.getElementById(id);
 const won=v=>Number(v||0).toLocaleString();
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 let token=null, who='', ROWS=[], mkt='';
-try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
+try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token=(function(){try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null');return (s&&s.t&&!(s.exp&&Date.now()/1000>s.exp))?s.t:null;}catch(e){return null;}})();}}catch(e){}
 const H=()=>({apikey:KEY,Authorization:'Bearer '+token});
 
 document.querySelectorAll('#mkt button').forEach(b=>b.onclick=()=>{
@@ -376,5 +376,45 @@ sync();
 <script src="assets/lite.js" defer></script>
 <script src="assets/nav.js" defer></script>
 <script src="assets/sheet.js" defer></script>
+
+<script>
+/* 이미 로그인되어 있으면 바로 들어갑니다 */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  function tok(){
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return null;
+      if(s.exp && Date.now()/1000>s.exp) return null;
+      return s;
+    }catch(e){ return null; }
+  }
+  function enter(s){
+    try{ if (typeof token !== 'undefined') token = s.t; }catch(e){}
+    var lg=document.getElementById('login'), ar=document.getElementById('area');
+    if(lg) lg.classList.add('hide');
+    if(ar) ar.classList.remove('hide');
+    var w=document.getElementById('who');
+    if(w) w.textContent = s.em || s.u || '';
+    try{ if (typeof load === 'function') load(); }catch(e){}
+  }
+  function check(){
+    var s=tok(); if(!s) return;
+    fetch(SB2+'/rest/v1/rpc/my_role',{method:'POST',
+      headers:{apikey:K2,Authorization:'Bearer '+s.t,'Content-Type':'application/json'},body:'{}'})
+    .then(function(r){ return r.ok?r.json():'guest'; })
+    .then(function(v){
+      var role=String(v||'guest').replace(/"/g,'');
+      if(role && role!=='guest') enter(s);
+    }).catch(function(){});
+  }
+  if (document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', check);
+  else check();
+  setTimeout(check, 500);
+  window.addEventListener('pageshow', check);
+})();
+</script>
 </body>
 </html>
