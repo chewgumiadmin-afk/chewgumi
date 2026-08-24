@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v213 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v214 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11865,6 +11865,10 @@ body.drawer-on{
   background:#FFE4E6 !important;
   color:#D82558 !important;
 }
+
+/* 사진이 없는 후기는 글만 넓게 */
+.d-rv.no-photo .t, .rv-card.no-photo{ width:100% !important }
+.d-rv.no-photo img{ display:none !important }
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -12796,6 +12800,58 @@ window.cgClearCart = function(){
   setTimeout(load, 900);
 
   window.cgLoadFilms = load;
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   후기 사진 — 네이버 이미지가 안 뜨던 문제
+   · referrerpolicy 를 no-referrer 로 두면 네이버가 막습니다
+   · 원본이 3MB 를 넘어 느립니다 → 작은 크기로 받습니다
+   ══════════════════════════════════════════════ */
+(function(){
+  function fix(img){
+    if (img.dataset.cgFix) return;
+    var src = img.getAttribute('src') || '';
+    if (src.indexOf('pstatic.net') < 0) return;
+    img.dataset.cgFix = '1';
+
+    /* 참조자를 보내야 네이버가 열어줍니다 */
+    img.setAttribute('referrerpolicy', 'origin');
+
+    /* 작은 크기로 받습니다 (네이버 자체 기능) */
+    if (src.indexOf('?type=') < 0) {
+      img.setAttribute('src', src + '?type=w360');
+    }
+
+    /* 그래도 안 되면 원본으로 한 번 더 */
+    img.addEventListener('error', function(){
+      if (img.dataset.cgRetry) {
+        var box = img.closest('.d-rv, .rv-card, .rv, li');
+        if (box) box.classList.add('no-photo');
+        img.style.display = 'none';
+        return;
+      }
+      img.dataset.cgRetry = '1';
+      img.setAttribute('src', src);
+    }, { once:false });
+  }
+
+  function run(){
+    document.querySelectorAll('img[src*="pstatic.net"]').forEach(fix);
+  }
+
+  if (window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t); t = setTimeout(run, 200);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', run);
+  else run();
+  setTimeout(run, 800);
+  setTimeout(run, 2000);
 })();
 </script>
 </body>
