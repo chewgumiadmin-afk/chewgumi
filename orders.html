@@ -1252,5 +1252,94 @@ sync();
   if(q) q.addEventListener('keydown',function(e){ if(e.key==='Enter') bAsk(); });
 })();
 </script>
+
+<script>
+/* ══════════════════════════════════════════════
+   발송 처리 → 에스크로 배송 등록도 함께
+   가상계좌·계좌이체로 결제한 주문만 해당됩니다.
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function toast(t, ok){
+    var b = document.getElementById('cgToast');
+    if (!b) {
+      b = document.createElement('div');
+      b.id = 'cgToast';
+      b.className = 'cg-toast';
+      document.body.appendChild(b);
+    }
+    b.textContent = t;
+    b.className = 'cg-toast on' + (ok ? ' ok' : '');
+    clearTimeout(b._t);
+    b._t = setTimeout(function(){ b.className = 'cg-toast'; }, 3600);
+  }
+
+  function tok(){
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return '';
+      if(s.exp && Date.now()/1000>s.exp) return '';
+      return s.t;
+    }catch(e){ return ''; }
+  }
+
+  /* 이 주문이 에스크로 대상인지 · 거래번호는 무엇인지 */
+  function payInfo(orderNo){
+    return fetch(SB2 + '/rest/v1/payments?select=pg_tid,method,status'
+      + '&order_no=eq.' + encodeURIComponent(orderNo)
+      + '&status=eq.paid&limit=1', {
+      headers:{ apikey:K2, Authorization:'Bearer ' + (tok() || K2) }
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){ return (rows || [])[0] || null; })
+    .catch(function(){ return null; });
+  }
+
+  var _prev = window.cgNotify;
+
+  window.cgNotify = function(id, status, tracking){
+    /* 원래 하던 일 — 고객 발송 안내 메일 */
+    try{ if (typeof _prev === 'function') _prev(id, status, tracking); }catch(e){}
+
+    if (status !== 'shipping' && status !== 'shipped') return;
+    if (!tracking) return;
+
+    /* 주문번호 · 택배사 찾기 */
+    var el = document.getElementById('st' + id);
+    var box = el && (el.closest('.o-row') || el.closest('.order')
+      || el.closest('li') || el.closest('tr'));
+    var no = box && (box.textContent.match(/\d{8}-\d{4,7}/) || [])[0];
+    if (!no) return;
+
+    var cc = document.getElementById('cc' + id);
+    var courierCode = cc ? cc.value : '';
+
+    payInfo(no).then(function(p){
+      if (!p || !p.pg_tid) return;
+      /* 21 가상계좌 · 22 계좌이체 만 에스크로 대상 */
+      if (['21','22'].indexOf(String(p.method)) < 0) return;
+
+      fetch(SB2 + '/functions/v1/pay', {
+        method:'POST',
+        headers:{ apikey:K2, 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          action:'escrow-ship',
+          tid: p.pg_tid,
+          courier_code: courierCode,
+          tracking_no: tracking
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d && d.ok) toast('에스크로 배송 등록까지 마쳤습니다', true);
+        else toast('에스크로 등록 실패 · ' + ((d && (d.msg || d.error)) || '이지페이 확인 필요'));
+      })
+      .catch(function(){ toast('에스크로 등록을 보내지 못했습니다'); });
+    });
+  };
+})();
+</script>
 </body>
 </html>
