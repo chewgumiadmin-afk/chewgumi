@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v211 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v212 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11833,6 +11833,38 @@ body.drawer-on{
 @media (max-width:640px){
   .detail .d-rv img{ width:70px !important; height:70px !important }
 }
+
+/* 팝업 바깥을 누를 수 있게 */
+.detail-dim:not(.hide){
+  pointer-events:auto !important;
+  cursor:default !important;
+}
+.detail-dim > .detail{
+  cursor:default !important;
+}
+/* 닫기 버튼도 잘 보이게 */
+.detail .d-x{
+  position:absolute !important;
+  top:14px !important;
+  right:14px !important;
+  width:38px !important;
+  height:38px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.9) !important;
+  color:#555 !important;
+  font-size:15px !important;
+  cursor:pointer !important;
+  z-index:30 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.14) !important;
+}
+.detail .d-x:hover{
+  background:#FFE4E6 !important;
+  color:#D82558 !important;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -12632,6 +12664,63 @@ window.cgClearCart = function(){
       t = setTimeout(function(){ reset(); fold(); }, 300);
     }).observe(list, { childList:true });
   }
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   팝업 — 바깥을 누르면 닫힙니다 · Esc 로도
+   ══════════════════════════════════════════════ */
+(function(){
+  function close(){
+    var dim = document.getElementById('detail');
+    if (!dim || dim.classList.contains('hide')) return;
+    if (typeof closeDetail === 'function') { try{ closeDetail(); return; }catch(e){} }
+    dim.classList.add('hide');
+    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
+  }
+
+  function ready(){
+    var dim = document.getElementById('detail');
+    if (!dim || dim.dataset.outClose) return;
+    dim.dataset.outClose = '1';
+
+    var onCard = false;
+
+    /* 카드 안에서 시작한 누름은 바깥 닫기로 치지 않습니다 */
+    dim.addEventListener('mousedown', function(e){
+      onCard = !!(e.target.closest && e.target.closest('.detail'));
+    }, true);
+
+    dim.addEventListener('mouseup', function(e){
+      if (onCard) { onCard = false; return; }
+      if (e.target === dim) close();
+    });
+
+    /* 손가락 */
+    dim.addEventListener('touchstart', function(e){
+      var t = e.target;
+      onCard = !!(t.closest && t.closest('.detail'));
+    }, { passive:true, capture:true });
+
+    dim.addEventListener('touchend', function(e){
+      if (onCard) { onCard = false; return; }
+      if (e.target === dim) close();
+    }, { passive:true });
+  }
+
+  /* Esc 로도 닫힙니다 */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') close();
+  });
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', ready);
+  else ready();
+  setTimeout(ready, 700);
+
+  window.cgCloseDetail = close;
 })();
 </script>
 </body>
