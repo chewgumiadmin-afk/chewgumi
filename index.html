@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v210 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v211 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11798,6 +11798,41 @@ body.drawer-on{
   font-family:inherit !important;
 }
 .c-clear:hover{ color:#C0395C !important; background:rgba(216,37,88,.05) !important }
+
+/* 후기 접기 · 더 보기 */
+.detail .d-rv.rv-hide{ display:none !important }
+.d-rev-more-btn{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  min-height:46px !important;
+  margin-top:12px !important;
+  border:1px solid rgba(0,0,0,.1) !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#555 !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+  font-family:inherit !important;
+}
+.d-rev-more-btn:hover{
+  background:#FFE4E6 !important;
+  color:#D82558 !important;
+  border-color:#FFBDCC !important;
+}
+/* 사진 있는 후기가 눈에 띄게 */
+.detail .d-rv img{
+  width:84px !important;
+  height:84px !important;
+  border-radius:12px !important;
+  object-fit:cover !important;
+  flex:none !important;
+}
+@media (max-width:640px){
+  .detail .d-rv img{ width:70px !important; height:70px !important }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -12220,7 +12255,7 @@ body.drawer-on{
     /* 다른 구성의 후기가 섞였는지 */
     var mine = rows.filter(function(r){ return r.same; }).length;
     var note = (mine === 0)
-      ? '<div class="d-rev-note">같은 제품군의 후기를 함께 보여드립니다.</div>' : '';
+      ? '<div class="d-rev-note">같은 제품의 다른 구성 후기도 함께 보여드립니다.</div>' : '';
 
     list.innerHTML = note + rows.map(function(r){
       var img = r.image_url
@@ -12248,7 +12283,7 @@ body.drawer-on{
     fetch(SB + '/rest/v1/rpc/reviews_for', {
       method: 'POST',
       headers: { apikey: K, Authorization: 'Bearer ' + K, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_no: Number(no), p_limit: 8 })
+      body: JSON.stringify({ p_no: Number(no), p_limit: 20 })
     })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){ draw(rows || [], no); })
@@ -12538,6 +12573,66 @@ window.cgClearCart = function(){
   try{ localStorage.setItem('cg_cart', '[]'); }catch(e){}
   if (typeof renderCart === 'function') renderCart();
 };
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   팝업 후기 — 사진 있는 것 먼저 · 더 보기
+   ══════════════════════════════════════════════ */
+(function(){
+  var SHOW = 6;
+
+  function fold(){
+    var list = document.getElementById('dRevList');
+    if (!list || list.dataset.folded) return;
+    var items = list.querySelectorAll('.d-rv');
+    if (items.length <= SHOW) return;
+    list.dataset.folded = '1';
+
+    for (var i = SHOW; i < items.length; i++) items[i].classList.add('rv-hide');
+
+    var old = list.parentElement.querySelector('.d-rev-more-btn');
+    if (old) old.remove();
+
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'd-rev-more-btn';
+    b.textContent = '후기 ' + items.length + '개 모두 보기';
+    b.onclick = function(e){
+      e.preventDefault(); e.stopPropagation();
+      for (var i = 0; i < items.length; i++) items[i].classList.remove('rv-hide');
+      b.remove();
+      return false;
+    };
+    list.insertAdjacentElement('afterend', b);
+  }
+
+  function reset(){
+    var list = document.getElementById('dRevList');
+    if (list) delete list.dataset.folded;
+    var b = document.querySelector('.d-rev-more-btn');
+    if (b) b.remove();
+  }
+
+  var dim = document.getElementById('detail');
+  if (dim && window.MutationObserver && !dim.dataset.revFold) {
+    dim.dataset.revFold = '1';
+    new MutationObserver(function(){
+      if (dim.classList.contains('hide')) { reset(); return; }
+      setTimeout(fold, 700);
+      setTimeout(fold, 1500);
+    }).observe(dim, { attributes:true, attributeFilter:['class'] });
+  }
+
+  var list = document.getElementById('dRevList');
+  if (list && window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t);
+      t = setTimeout(function(){ reset(); fold(); }, 300);
+    }).observe(list, { childList:true });
+  }
+})();
 </script>
 </body>
 </html>
