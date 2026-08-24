@@ -166,6 +166,7 @@ textarea{resize:vertical;min-height:70px}
           <div class="ptabs">
             <button class="on" id="ptBank" onclick="setPay('bank')">무통장입금</button>
             <button id="ptCard" onclick="setPay('card')">카드 · 간편결제 <em>신용카드 · 네이버페이</em></button>
+        <button id="ptVbank" onclick="setPay('vbank')">가상계좌 <em>에스크로 적용</em></button>
           </div>
           <div id="bankPane">
             <div class="bankbox" id="bankBox">계좌 정보를 불러오는 중…</div>
@@ -173,7 +174,23 @@ textarea{resize:vertical;min-height:70px}
             <input id="depositor" placeholder="주문자와 다르면 입력해 주세요">
             <div class="bhint">주문 후 안내되는 계좌로 입금해 주시면, 확인 후 발송해 드립니다.</div>
           </div>
-          <div id="cardPane" style="display:none">
+          <div id="vbankPane" style="display:none">
+        <div class="vbox">
+          <b>가상계좌로 결제합니다</b>
+          <p>결제하면 나만의 계좌번호가 나옵니다.<br>
+             그 계좌로 입금하시면 자동으로 확인됩니다.</p>
+          <ul class="vlist">
+            <li>입금 기한 <b>3일</b></li>
+            <li><b>에스크로</b>가 적용됩니다 — 물건을 받으신 뒤 대금이 넘어갑니다</li>
+            <li>입금이 확인되면 바로 발송합니다</li>
+          </ul>
+        </div>
+        <label class="f">입금자명</label>
+        <input id="vDepositor" placeholder="주문자와 다르면 입력해 주세요">
+        <div class="bhint">현금영수증은 입금 후 마이페이지에서 신청하실 수 있습니다.</div>
+      </div>
+
+      <div id="cardPane" style="display:none">
             <div class="cardbox">
               <b>이지페이로 안전하게 결제합니다</b>
               <p>신용카드 · 계좌이체 · 가상계좌 · 네이버페이로 결제하실 수 있습니다.<br>
@@ -1029,6 +1046,65 @@ select, select:focus, select:active, select:hover{
 select option{ text-decoration:none !important }
 select::-ms-expand{ display:none !important }
 .item .th img{ width:100%; height:100%; object-fit:cover; border-radius:10px }
+
+/* 가상계좌 */
+.vbox{
+  padding:20px 22px;
+  border-radius:16px;
+  background:rgba(255,244,247,.9);
+  border:1px solid rgba(255,214,224,.9);
+}
+.vbox b{
+  display:block;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:#D82558;
+}
+.vbox p{
+  font-size:13.5px;
+  color:#555;
+  margin-top:8px;
+  line-height:1.8;
+  word-break:keep-all;
+}
+.vlist{
+  margin:14px 0 0;
+  padding:0;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.vlist li{
+  position:relative;
+  padding-left:17px;
+  font-size:12.5px;
+  color:#666;
+  line-height:1.7;
+  word-break:keep-all;
+}
+.vlist li::before{
+  content:"·";
+  position:absolute;
+  left:5px;
+  color:#D82558;
+  font-weight:800;
+}
+.vlist li b{
+  display:inline;
+  font-size:12.5px;
+  color:#17171c;
+  font-weight:700;
+}
+.ptabs button em{
+  display:block;
+  font-style:normal;
+  font-size:11px;
+  font-weight:500;
+  opacity:.75;
+  margin-top:2px;
+}
 </style>
 
 <script>
@@ -1075,6 +1151,39 @@ select::-ms-expand{ display:none !important }
   });
 
   window.cgEmptyCart = empty;
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   가상계좌 · 에스크로 — 암복호화 키 등록 후 열림
+   ══════════════════════════════════════════════ */
+(function(){
+  var _old = window.setPay;
+
+  window.setPay = function(t){
+    ['ptBank','ptCard','ptVbank'].forEach(function(id){
+      var b = document.getElementById(id);
+      if (b) b.classList.remove('on');
+    });
+    ['bankPane','cardPane','vbankPane'].forEach(function(id){
+      var p = document.getElementById(id);
+      if (p) p.style.display = 'none';
+    });
+
+    var map = { bank:['ptBank','bankPane'], card:['ptCard','cardPane'], vbank:['ptVbank','vbankPane'] };
+    var m = map[t] || map.bank;
+    var b = document.getElementById(m[0]);
+    var p = document.getElementById(m[1]);
+    if (b) b.classList.add('on');
+    if (p) p.style.display = '';
+
+    try{ window.payType = t; }catch(e){}
+    if (typeof _old === 'function' && t !== 'vbank') {
+      try{ _old(t); }catch(e){}
+    }
+    try{ if (typeof quote === 'function') quote(); }catch(e){}
+  };
 })();
 </script>
 </body>
