@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v214 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v215 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -907,6 +907,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <link rel="stylesheet" href="assets/stable.css">
 <link rel="stylesheet" href="assets/popup.css">
 <script src="assets/ui.js"></script>
+<script src="assets/push.js" defer></script>
 </head>
 <body>
 <h1 class="sr-only">ChewGumi 츄구미 — 한입에 건강을 더하다</h1>
@@ -11869,6 +11870,80 @@ body.drawer-on{
 /* 사진이 없는 후기는 글만 넓게 */
 .d-rv.no-photo .t, .rv-card.no-photo{ width:100% !important }
 .d-rv.no-photo img{ display:none !important }
+
+/* 알림 받기 띠 */
+.cg-push-bar{
+  position:fixed;
+  left:50%;
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(120px);
+  z-index:1500;
+  width:min(94vw,440px);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px 14px 20px;
+  border-radius:20px;
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 14px 40px rgba(216,37,88,.18);
+  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(20px);
+  opacity:0;
+  transition:transform .42s cubic-bezier(.32,.72,0,1), opacity .32s;
+}
+.cg-push-bar.on{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+.cg-push-bar .cp-t{ flex:1; min-width:0 }
+.cg-push-bar .cp-t b{
+  display:block;
+  font-size:13.5px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  color:#17171c;
+  word-break:keep-all;
+}
+.cg-push-bar .cp-t span{
+  display:block;
+  font-size:11.5px;
+  color:#797979;
+  margin-top:2px;
+}
+.cg-push-bar .cp-yes{
+  flex:none;
+  min-height:40px;
+  padding:0 17px;
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:inherit;
+  white-space:nowrap;
+  box-shadow:0 4px 14px rgba(216,37,88,.26);
+}
+.cg-push-bar .cp-no{
+  flex:none;
+  width:30px;
+  height:30px;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#9a9aa2;
+  font-size:12px;
+  cursor:pointer;
+  font-family:inherit;
+}
+.cg-push-bar .cp-no:hover{ background:rgba(0,0,0,.05) }
+@media (max-width:480px){
+  .cg-push-bar{ padding:13px 14px 13px 17px; gap:9px }
+  .cg-push-bar .cp-t b{ font-size:12.5px }
+  .cg-push-bar .cp-yes{ font-size:12.5px; padding:0 14px }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -12852,6 +12927,60 @@ window.cgClearCart = function(){
   else run();
   setTimeout(run, 800);
   setTimeout(run, 2000);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   알림 받기 — 앱 없이 웹으로
+   ══════════════════════════════════════════════ */
+(function(){
+  var SHOWN = 'cg_push_asked';
+
+  function make(){
+    if (document.getElementById('cgPushBar')) return;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+    /* 이미 켰거나 거절했으면 안 띄웁니다 */
+    if (Notification.permission !== 'default') return;
+    try{ if (localStorage.getItem(SHOWN)) return; }catch(e){}
+
+    var bar = document.createElement('div');
+    bar.id = 'cgPushBar';
+    bar.className = 'cg-push-bar';
+    bar.innerHTML =
+      '<div class="cp-t"><b>재입고 · 쿠폰 소식을 받아보시겠어요?</b>'
+      + '<span>앱을 설치하지 않아도 됩니다</span></div>'
+      + '<button class="cp-yes" onclick="cgPushYes()">알림 받기</button>'
+      + '<button class="cp-no" onclick="cgPushNo()" aria-label="닫기">✕</button>';
+    document.body.appendChild(bar);
+    setTimeout(function(){ bar.classList.add('on'); }, 80);
+  }
+
+  window.cgPushYes = function(){
+    try{ localStorage.setItem(SHOWN, '1'); }catch(e){}
+    var bar = document.getElementById('cgPushBar');
+    if (bar) bar.classList.remove('on');
+    if (typeof cgPushToggle === 'function') cgPushToggle();
+    setTimeout(function(){ if (bar) bar.remove(); }, 400);
+  };
+
+  window.cgPushNo = function(){
+    try{ localStorage.setItem(SHOWN, '1'); }catch(e){}
+    var bar = document.getElementById('cgPushBar');
+    if (bar) { bar.classList.remove('on'); setTimeout(function(){ bar.remove(); }, 400); }
+  };
+
+  /* 조금 둘러본 뒤에 물어봅니다 */
+  var t = null;
+  function later(){
+    clearTimeout(t);
+    t = setTimeout(make, 1200);
+  }
+  window.addEventListener('scroll', function(){
+    if (window.scrollY > 900) { later(); window.removeEventListener('scroll', arguments.callee); }
+  }, { passive:true });
+  setTimeout(make, 25000);
 })();
 </script>
 </body>
