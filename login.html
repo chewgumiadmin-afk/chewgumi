@@ -257,6 +257,7 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 <link rel="stylesheet" href="assets/stable.css">
 <meta name="description" content="츄구미 로그인 — 회원 로그인 후 주문 내역과 적립금을 확인하세요.">
 <link rel="stylesheet" href="assets/popup.css">
+<script src="assets/tok.js"></script>
 </head>
 <body>
 
@@ -496,7 +497,7 @@ function doLogin(){
     try{
       var s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
       if (!s || !s.t) return null;
-      if (s.exp && Date.now()/1000 > s.exp) return null;
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return null;
       return s;
     }catch(e){ return null; }
   }
