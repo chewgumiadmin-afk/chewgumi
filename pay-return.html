@@ -80,6 +80,51 @@ h1{font-size:22px;font-weight:800;letter-spacing:-.03em}
 }
 @keyframes sp{to{transform:rotate(360deg)}}
 .hide{display:none}
+
+/* 이어서 할 일 */
+.cg-next{
+  margin-top:26px;
+  padding-top:22px;
+  border-top:1px solid rgba(0,0,0,.07);
+}
+.cg-next p{
+  font-size:11px;
+  letter-spacing:1.8px;
+  font-weight:700;
+  color:#9a9aa2;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.cn-b{
+  display:grid;
+  gap:8px;
+  grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));
+}
+.cn-b a{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:14px 16px;
+  border-radius:14px;
+  background:rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 4px 14px rgba(0,0,0,.05);
+  font-size:13.5px;
+  font-weight:700;
+  color:#17171c;
+  text-decoration:none;
+  transition:transform .16s, box-shadow .16s;
+}
+.cn-b a:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(216,37,88,.12);
+}
+.cn-b a span{
+  font-size:11px;
+  font-weight:500;
+  color:#9a9aa2;
+  min-height:14px;
+}
 </style>
 </head>
 <body>
@@ -216,6 +261,44 @@ function rows(list){
     show('bad','확인하지 못했습니다','잠시 후 주문 내역에서 다시 확인해 주세요.');
     rows([['주문번호',orderNo]]);
   });
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   돌아온 뒤 — 이어서 할 일을 링크로
+   ══════════════════════════════════════════════ */
+(function(){
+  function no(){
+    var q = new URLSearchParams(location.search);
+    return q.get('shopOrderNo') || q.get('orderNo') || q.get('order_no') || '';
+  }
+
+  function add(){
+    var box = document.querySelector('.acts, .btns, .foot') || document.body;
+    if (document.getElementById('cgNext')) return;
+
+    var n = no();
+    var d = document.createElement('div');
+    d.id = 'cgNext';
+    d.className = 'cg-next';
+    d.innerHTML =
+      '<p>다음으로 하실 수 있는 것</p>'
+      + '<div class="cn-b">'
+      + (n ? '<a href="order-lookup.html?no=' + encodeURIComponent(n) + '">'
+           + '주문 조회 <span>로그인 없이</span></a>' : '')
+      + '<a href="mypage.html">마이페이지 <span>회원이시면</span></a>'
+      + '<a href="tracking.html">배송 조회 <span>발송 뒤</span></a>'
+      + '<a href="index.html">쇼핑 계속하기 <span></span></a>'
+      + '</div>';
+    box.appendChild(d);
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', add);
+  else add();
+  setTimeout(add, 1200);
+  setTimeout(add, 2600);
 })();
 </script>
 </body>
