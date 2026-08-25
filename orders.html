@@ -556,7 +556,7 @@ function render(){
       +(o.tracking_no?'<button class="mini" onclick="track(\''+o.order_no+'\')">배송조회</button>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no&&['bank','vbank','trans'].includes(o.pay_method||'')
         ?'<button class="mini" onclick="openCash(\''+o.order_no+'\')">현금영수증</button>':'')
-      +((o.pay_method==='card'&&o.status!=='cancelled')?'<button class="mini" onclick="cardRcpt(\\''+o.order_no+'\\')">카드 영수증</button>':'')
+      +((o.pay_method==='card'&&o.status!=='cancelled')?'<button class="mini" onclick="cardRcpt(\''+o.order_no+'\')">카드 영수증</button>':'')
       +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증 보기</a>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
