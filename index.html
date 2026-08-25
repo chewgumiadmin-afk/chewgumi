@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v216 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v217 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -11947,6 +11947,64 @@ body.drawer-on{
 
 /* 「전체 N」 표시 없앰 — 라인별로 같은 숫자를 씁니다 */
 .rv-badge .all, .badge .all, i.all{ display:none !important }
+
+/* 재고 표시 */
+.stock-tag{
+  position:absolute;
+  top:10px;
+  left:10px;
+  z-index:5;
+  padding:5px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.4px;
+  pointer-events:none;
+}
+.stock-tag.sold{
+  background:rgba(23,23,28,.86);
+  color:#fff;
+}
+.stock-tag.few{
+  background:rgba(233,162,59,.94);
+  color:#fff;
+}
+.card.is-sold .p-img,
+.card.is-sold .card-img,
+.card.is-sold img{
+  filter:grayscale(.72) opacity(.6);
+}
+.card.is-sold .p-buy,
+.card.is-sold .buy{
+  opacity:.4 !important;
+  pointer-events:none !important;
+}
+
+/* 알림 쪽지 */
+.stock-msg{
+  position:fixed;
+  left:50%;
+  bottom:calc(28px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(14px);
+  z-index:9000;
+  max-width:min(88vw,400px);
+  padding:14px 22px;
+  border-radius:999px;
+  background:rgba(23,23,28,.92);
+  color:#fff;
+  font-size:13.5px;
+  font-weight:600;
+  text-align:center;
+  word-break:keep-all;
+  box-shadow:0 10px 30px rgba(0,0,0,.26);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .26s, transform .26s;
+}
+.stock-msg.on{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -12984,6 +13042,134 @@ window.cgClearCart = function(){
     if (window.scrollY > 900) { later(); window.removeEventListener('scroll', arguments.callee); }
   }, { passive:true });
   setTimeout(make, 25000);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   재고 확인 — 품절인데 담기지 않도록
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var STOCK = {};
+
+  function load(){
+    return fetch(SB2 + '/rest/v1/stock_view?select=id,name,stock,state', {
+      headers:{ apikey:K2, Authorization:'Bearer ' + K2 }
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      (rows || []).forEach(function(p){ STOCK[p.id] = p; });
+      mark();
+      return STOCK;
+    })
+    .catch(function(){ return {}; });
+  }
+
+  /* 품절·임박 표시 */
+  function mark(){
+    document.querySelectorAll('.card[data-no]').forEach(function(c){
+      var id = Number(c.dataset.no);
+      var p = STOCK[id];
+      if (!p) return;
+
+      c.classList.toggle('is-sold', p.state === 'sold');
+      c.classList.toggle('is-few', p.state === 'few');
+
+      var old = c.querySelector('.stock-tag');
+      if (old) old.remove();
+
+      if (p.state === 'sold' || p.state === 'few') {
+        var t = document.createElement('span');
+        t.className = 'stock-tag ' + p.state;
+        t.textContent = p.state === 'sold' ? 'SOLD OUT' : '남은 수량 ' + p.stock + '개';
+        var img = c.querySelector('.p-img, .card-img, img');
+        (img && img.parentElement ? img.parentElement : c).appendChild(t);
+      }
+    });
+  }
+
+  function toast(t){
+    var b = document.getElementById('cgStockMsg');
+    if (!b) {
+      b = document.createElement('div');
+      b.id = 'cgStockMsg';
+      b.className = 'stock-msg';
+      document.body.appendChild(b);
+    }
+    b.textContent = t;
+    b.className = 'stock-msg on';
+    clearTimeout(b._t);
+    b._t = setTimeout(function(){ b.className = 'stock-msg'; }, 3200);
+  }
+
+  /* 담기 전에 확인합니다 */
+  window.cgCanAdd = function(id, qty){
+    var p = STOCK[Number(id)];
+    if (!p) return true;              /* 모르면 통과 — 서버가 다시 봅니다 */
+    if (p.state === 'sold') {
+      toast('죄송합니다. 지금은 품절입니다.');
+      return false;
+    }
+    var have = 0;
+    try {
+      var cart = JSON.parse(localStorage.getItem('cg_cart') || '[]');
+      cart.forEach(function(x){ if (x.name === p.name) have += x.qty; });
+    } catch(e){}
+
+    if (have + qty > p.stock) {
+      toast('남은 수량은 ' + p.stock + '개입니다.');
+      return false;
+    }
+    return true;
+  };
+
+  /* 결제 직전 다시 확인 */
+  window.cgCheckStock = function(){
+    var items = [];
+    try {
+      var cart = JSON.parse(localStorage.getItem('cg_cart') || '[]');
+      cart.forEach(function(x){
+        for (var k in STOCK) {
+          if (STOCK[k].name === x.name) { items.push({ id: Number(k), qty: x.qty }); break; }
+        }
+      });
+    } catch(e){}
+    if (!items.length) return Promise.resolve({ ok: true });
+
+    return fetch(SB2 + '/rest/v1/rpc/check_stock', {
+      method:'POST',
+      headers:{ apikey:K2, Authorization:'Bearer ' + K2, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_items: items })
+    })
+    .then(function(r){ return r.ok ? r.json() : { ok:true }; })
+    .catch(function(){ return { ok:true }; });
+  };
+
+  /* 원래 담기 함수를 감쌉니다 */
+  ['addToCart','addCart'].forEach(function(n){
+    var f = window[n];
+    if (typeof f !== 'function') return;
+    window[n] = function(){
+      var id = (typeof no !== 'undefined') ? no : null;
+      try { if (window._curCard) id = Number(window._curCard.dataset.no); } catch(e){}
+      var q = 1;
+      try { if (typeof dQty !== 'undefined') q = dQty; } catch(e){}
+      if (id && !cgCanAdd(id, q)) return false;
+      return f.apply(this, arguments);
+    };
+  });
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', load);
+  else load();
+  setTimeout(load, 1200);
+  setTimeout(mark, 2500);
+  window.addEventListener('pageshow', load);
+
+  window.cgStock = STOCK;
+  window.cgLoadStock = load;
 })();
 </script>
 </body>
