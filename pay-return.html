@@ -301,5 +301,35 @@ function rows(list){
   setTimeout(add, 2600);
 })();
 </script>
+
+<script>
+/* ══════════════════════════════════════════════
+   승인이 확인됐을 때만 장바구니를 비웁니다
+   ══════════════════════════════════════════════ */
+(function(){
+  var q = new URLSearchParams(location.search);
+  var ok = q.get('ok') === '1';
+
+  if (!ok) {
+    /* 실패했으면 장바구니를 되살립니다 */
+    try{
+      var back = sessionStorage.getItem('cg_cart_backup');
+      var now = localStorage.getItem('cg_cart');
+      if (back && (!now || now === '[]')) {
+        localStorage.setItem('cg_cart', back);
+      }
+    }catch(e){}
+    return;
+  }
+
+  /* 성공했으니 비웁니다 */
+  try{
+    localStorage.setItem('cg_cart', '[]');
+    localStorage.removeItem('cg_cart');
+    sessionStorage.removeItem('cg_cart_backup');
+    sessionStorage.removeItem('cg_pay_amount');
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
