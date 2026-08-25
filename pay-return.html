@@ -81,49 +81,70 @@ h1{font-size:22px;font-weight:800;letter-spacing:-.03em}
 @keyframes sp{to{transform:rotate(360deg)}}
 .hide{display:none}
 
+
+
 /* 이어서 할 일 */
-.cg-next{
+#cgNext{
   margin-top:26px;
   padding-top:22px;
   border-top:1px solid rgba(0,0,0,.07);
 }
-.cg-next p{
-  font-size:11px;
+.cn-t{
+  font-size:10.5px;
   letter-spacing:1.8px;
   font-weight:700;
   color:#9a9aa2;
   text-transform:uppercase;
-  margin-bottom:12px;
+  margin:0 0 12px;
 }
-.cn-b{
+.cn-g{
   display:grid;
   gap:8px;
-  grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));
+  grid-template-columns:repeat(2,minmax(0,1fr));
 }
-.cn-b a{
+.cn-g a{
   display:flex;
   flex-direction:column;
+  justify-content:center;
   gap:2px;
-  padding:14px 16px;
+  min-height:62px;
+  padding:12px 15px;
   border-radius:14px;
-  background:rgba(255,255,255,.9);
-  border:1px solid rgba(255,255,255,.95);
-  box-shadow:0 4px 14px rgba(0,0,0,.05);
-  font-size:13.5px;
-  font-weight:700;
-  color:#17171c;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(0,0,0,.07);
   text-decoration:none;
   transition:transform .16s, box-shadow .16s;
 }
-.cn-b a:hover{
+.cn-g a:hover{
   transform:translateY(-2px);
-  box-shadow:0 10px 24px rgba(216,37,88,.12);
+  box-shadow:0 8px 20px rgba(216,37,88,.12);
+  border-color:rgba(255,189,204,.9);
 }
-.cn-b a span{
+.cn-g a b{
+  font-size:13.5px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  color:#17171c;
+  line-height:1.4;
+}
+.cn-g a span{
   font-size:11px;
   font-weight:500;
   color:#9a9aa2;
-  min-height:14px;
+  min-height:13px;
+  line-height:1.4;
+}
+.cn-g a.go{
+  background:linear-gradient(135deg,#E95073,#D82558);
+  border:0;
+  box-shadow:0 5px 16px rgba(216,37,88,.24);
+}
+.cn-g a.go b{ color:#fff }
+.cn-g a.go span{ color:rgba(255,255,255,.8) }
+
+@media (max-width:400px){
+  .cn-g{ grid-template-columns:1fr }
+  .cn-g a{ min-height:56px }
 }
 </style>
 </head>
@@ -141,10 +162,7 @@ h1{font-size:22px;font-weight:800;letter-spacing:-.03em}
     <p class="sub" id="msg"></p>
     <div class="rows hide" id="rows"></div>
     <div class="vb hide" id="vb"></div>
-    <div class="btns">
-      <a class="btn sub2" href="mypage.html">주문 내역</a>
-      <a class="btn" href="index.html">쇼핑 계속하기</a>
-    </div>
+    <div id="cgNext"></div>
   </div>
 </div>
 
@@ -266,39 +284,37 @@ function rows(list){
 
 <script>
 /* ══════════════════════════════════════════════
-   돌아온 뒤 — 이어서 할 일을 링크로
+   결제 뒤 이어서 할 일
    ══════════════════════════════════════════════ */
 (function(){
   function no(){
     var q = new URLSearchParams(location.search);
-    return q.get('shopOrderNo') || q.get('orderNo') || q.get('order_no') || '';
+    return q.get('orderNo') || q.get('shopOrderNo') || q.get('order_no') || '';
   }
 
-  function add(){
-    var box = document.querySelector('.acts, .btns, .foot') || document.body;
-    if (document.getElementById('cgNext')) return;
+  function fill(){
+    var box = document.getElementById('cgNext');
+    if (!box || box.dataset.done) return;
+    box.dataset.done = '1';
 
     var n = no();
-    var d = document.createElement('div');
-    d.id = 'cgNext';
-    d.className = 'cg-next';
-    d.innerHTML =
-      '<p>다음으로 하실 수 있는 것</p>'
-      + '<div class="cn-b">'
+    var ok = new URLSearchParams(location.search).get('ok') === '1';
+
+    box.innerHTML =
+      '<p class="cn-t">다음으로 하실 수 있는 것</p>'
+      + '<div class="cn-g">'
       + (n ? '<a href="order-lookup.html?no=' + encodeURIComponent(n) + '">'
-           + '주문 조회 <span>로그인 없이</span></a>' : '')
-      + '<a href="mypage.html">마이페이지 <span>회원이시면</span></a>'
-      + '<a href="tracking.html">배송 조회 <span>발송 뒤</span></a>'
-      + '<a href="index.html">쇼핑 계속하기 <span></span></a>'
+           + '<b>주문 조회</b><span>로그인 없이</span></a>' : '')
+      + '<a href="mypage.html"><b>마이페이지</b><span>회원이시면</span></a>'
+      + (ok ? '<a href="tracking.html"><b>배송 조회</b><span>발송 뒤</span></a>' : '')
+      + '<a class="go" href="index.html"><b>쇼핑 계속하기</b><span></span></a>'
       + '</div>';
-    box.appendChild(d);
   }
 
   if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', add);
-  else add();
-  setTimeout(add, 1200);
-  setTimeout(add, 2600);
+    document.addEventListener('DOMContentLoaded', fill);
+  else fill();
+  setTimeout(fill, 900);
 })();
 </script>
 
