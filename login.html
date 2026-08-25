@@ -427,6 +427,7 @@ function cgAfterLogin(d, em, m){
       t: d.access_token,
       r: d.refresh_token || '',
       e: Date.now() + ((d.expires_in || 3600) * 1000),
+      exp: Math.floor(Date.now()/1000) + (d.expires_in || 3600),
       u: String(em||'').split('@')[0],
       em: em || ''
     }));
