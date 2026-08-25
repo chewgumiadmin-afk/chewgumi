@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v217 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v218 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12005,6 +12005,158 @@ body.drawer-on{
   opacity:1;
   transform:translateX(-50%) translateY(0);
 }
+
+/* ══════════════════════════════════════════════
+   PC 후기 표
+   ══════════════════════════════════════════════ */
+.rev-table{ display:none }
+
+@media (min-width:900px){
+  /* 넓은 화면에서는 카드 대신 표를 씁니다 */
+  .detail #dRevList{ display:none !important }
+  .detail .d-rev-more-btn{ display:none !important }
+
+  .rev-table{
+    display:block;
+    margin-top:8px;
+  }
+  .rt-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding-bottom:12px;
+    border-bottom:2px solid #17171c;
+  }
+  .rt-head b{
+    font-family:'Poppins','SUIT Variable',sans-serif;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:1px;
+  }
+  .rt-head span{
+    margin-left:auto;
+    font-size:12.5px;
+    color:#797979;
+  }
+
+  .rev-table table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+  .rev-table thead th{
+    padding:12px 8px;
+    font-size:12px;
+    font-weight:700;
+    color:#797979;
+    border-bottom:1px solid rgba(0,0,0,.1);
+    text-align:center;
+  }
+  .rev-table th.c-ti{ text-align:left; padding-left:14px }
+  .rev-table th.c-no{ width:56px }
+  .rev-table th.c-wr{ width:96px }
+  .rev-table th.c-dt{ width:106px }
+  .rev-table th.c-st{ width:96px }
+
+  .rev-table tbody tr:not(.rt-full){
+    cursor:pointer;
+    transition:background .16s;
+  }
+  .rev-table tbody tr:not(.rt-full):hover{
+    background:rgba(255,228,230,.5);
+  }
+  .rev-table tbody td{
+    padding:13px 8px;
+    font-size:13.5px;
+    border-bottom:1px solid rgba(0,0,0,.055);
+    text-align:center;
+    color:#17171c;
+  }
+  .rev-table td.c-ti{
+    text-align:left;
+    padding-left:14px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .rev-table td.c-no,
+  .rev-table td.c-dt{ font-size:12.5px; color:#9a9aa2 }
+  .rev-table td.c-wr{ font-size:12.5px; color:#555 }
+  .rt-star{ color:#FFB800; font-size:12.5px; letter-spacing:.5px }
+  .rt-img{
+    display:inline-block;
+    margin-left:7px;
+    padding:1px 7px;
+    border-radius:999px;
+    background:rgba(216,37,88,.1);
+    color:#D82558;
+    font-size:10.5px;
+    font-weight:700;
+    font-style:normal;
+    vertical-align:1px;
+  }
+
+  /* 눌러서 펼치기 */
+  .rt-full{ display:none }
+  .rt-full.on{ display:table-row }
+  .rt-full td{
+    padding:20px 18px !important;
+    background:rgba(255,244,247,.6);
+    text-align:left !important;
+  }
+  .rt-full img{
+    max-width:280px;
+    max-height:280px;
+    border-radius:14px;
+    margin-bottom:14px;
+    display:block;
+    object-fit:cover;
+  }
+  .rt-full p{
+    font-size:14px;
+    line-height:1.85;
+    white-space:pre-wrap;
+    word-break:keep-all;
+    margin:0;
+  }
+  .rt-meta{
+    display:inline-block;
+    margin-top:10px;
+    font-size:11.5px;
+    color:#9a9aa2;
+  }
+
+  /* 페이지 나눔 */
+  .rt-page{
+    display:flex;
+    justify-content:center;
+    gap:5px;
+    margin-top:22px;
+  }
+  .rt-page button{
+    min-width:34px;
+    height:34px;
+    padding:0 9px;
+    border:1px solid rgba(0,0,0,.1);
+    border-radius:9px;
+    background:#fff;
+    color:#555;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .rt-page button:hover{
+    background:#FFE4E6;
+    color:#D82558;
+    border-color:#FFBDCC;
+  }
+  .rt-page button.on{
+    background:#17171c;
+    color:#fff;
+    border-color:#17171c;
+  }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -13170,6 +13322,169 @@ window.cgClearCart = function(){
 
   window.cgStock = STOCK;
   window.cgLoadStock = load;
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   PC 후기 — 게시판 표 형식 (10건씩 · 페이지 나눔)
+   좁은 화면에서는 지금 모습 그대로 둡니다.
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var PER = 10;
+  var ROWS = [], PAGE = 1, NO = null;
+
+  function wide(){ return window.matchMedia('(min-width:900px)').matches; }
+
+  function esc2(s){
+    return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+  function ymd(s){
+    var t = new Date(s);
+    if (isNaN(t)) return '-';
+    return t.getFullYear() + '-'
+      + String(t.getMonth()+1).padStart(2,'0') + '-'
+      + String(t.getDate()).padStart(2,'0');
+  }
+  function cut(s, n){
+    s = String(s||'').replace(/\s+/g,' ').trim();
+    return s.length > n ? s.slice(0, n) + '…' : s;
+  }
+
+  function load(no){
+    NO = no;
+    return fetch(SB2 + '/rest/v1/rpc/reviews_for', {
+      method:'POST',
+      headers:{ apikey:K2, Authorization:'Bearer '+K2, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_no: Number(no), p_limit: 200 })
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      ROWS = rows || [];
+      PAGE = 1;
+      draw();
+      return ROWS;
+    })
+    .catch(function(){ return []; });
+  }
+
+  function draw(){
+    var box = document.getElementById('dRev');
+    if (!box || !wide() || !ROWS.length) return;
+
+    var old = document.getElementById('cgRevTable');
+    if (old) old.remove();
+
+    var total = ROWS.length;
+    var pages = Math.max(1, Math.ceil(total / PER));
+    if (PAGE > pages) PAGE = pages;
+    var from = (PAGE - 1) * PER;
+    var page = ROWS.slice(from, from + PER);
+
+    var t = document.createElement('div');
+    t.id = 'cgRevTable';
+    t.className = 'rev-table';
+
+    t.innerHTML =
+      '<div class="rt-head">'
+      + '<b>REVIEW</b>'
+      + '<span>총 ' + total + '건</span>'
+      + '</div>'
+      + '<table><thead><tr>'
+      + '<th class="c-no">번호</th>'
+      + '<th class="c-ti">제목</th>'
+      + '<th class="c-wr">작성자</th>'
+      + '<th class="c-dt">작성일</th>'
+      + '<th class="c-st">평점</th>'
+      + '</tr></thead><tbody>'
+      + page.map(function(r, i){
+          var n = total - from - i;
+          var hasImg = r.image_url ? '<i class="rt-img">사진</i>' : '';
+          return '<tr onclick="cgRevOpen(' + r.id + ')">'
+            + '<td class="c-no">' + n + '</td>'
+            + '<td class="c-ti">' + esc2(cut(r.body, 34)) + hasImg + '</td>'
+            + '<td class="c-wr">' + esc2(r.author) + '</td>'
+            + '<td class="c-dt">' + ymd(r.created_at) + '</td>'
+            + '<td class="c-st"><span class="rt-star">'
+              + '★'.repeat(r.rating) + '</span></td>'
+            + '</tr>'
+            + '<tr class="rt-full" id="rf' + r.id + '"><td colspan="5">'
+            + (r.image_url
+                ? '<img src="' + esc2(r.image_url) + '" alt="" referrerpolicy="origin"'
+                  + ' onerror="this.style.display=\'none\'">'
+                : '')
+            + '<p>' + esc2(r.body) + '</p>'
+            + '<span class="rt-meta">' + esc2(r.source || '') + '</span>'
+            + '</td></tr>';
+        }).join('')
+      + '</tbody></table>'
+      + (pages > 1
+        ? '<div class="rt-page">'
+          + (PAGE > 1 ? '<button onclick="cgRevPage(' + (PAGE-1) + ')">‹</button>' : '')
+          + nums(pages)
+          + (PAGE < pages ? '<button onclick="cgRevPage(' + (PAGE+1) + ')">›</button>' : '')
+          + '</div>'
+        : '');
+
+    box.appendChild(t);
+  }
+
+  function nums(pages){
+    var s = '', a = Math.max(1, PAGE - 2), b = Math.min(pages, a + 4);
+    if (b - a < 4) a = Math.max(1, b - 4);
+    for (var i = a; i <= b; i++) {
+      s += '<button class="' + (i === PAGE ? 'on' : '') + '"'
+        + ' onclick="cgRevPage(' + i + ')">' + i + '</button>';
+    }
+    return s;
+  }
+
+  window.cgRevPage = function(n){
+    PAGE = n;
+    draw();
+    var t = document.getElementById('cgRevTable');
+    if (t) t.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  };
+
+  window.cgRevOpen = function(id){
+    var r = document.getElementById('rf' + id);
+    if (!r) return;
+    document.querySelectorAll('.rt-full.on').forEach(function(x){
+      if (x !== r) x.classList.remove('on');
+    });
+    r.classList.toggle('on');
+  };
+
+  /* 팝업이 열릴 때 */
+  var dim = document.getElementById('detail');
+  if (dim && window.MutationObserver && !dim.dataset.revTable) {
+    dim.dataset.revTable = '1';
+    new MutationObserver(function(){
+      if (dim.classList.contains('hide')) {
+        var t = document.getElementById('cgRevTable');
+        if (t) t.remove();
+        return;
+      }
+      setTimeout(function(){
+        var n = null;
+        try { if (window._curCard) n = Number(window._curCard.dataset.no); } catch(e){}
+        if (!n) { try { n = Number(no); } catch(e){} }
+        if (n) load(n);
+      }, 500);
+    }).observe(dim, { attributes:true, attributeFilter:['class'] });
+  }
+
+  window.addEventListener('resize', function(){
+    var t = document.getElementById('cgRevTable');
+    if (!wide() && t) t.remove();
+    else if (wide() && !t && ROWS.length) draw();
+  });
+
+  window.cgRevLoad = load;
 })();
 </script>
 </body>
