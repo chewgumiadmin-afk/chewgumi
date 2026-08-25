@@ -1008,7 +1008,7 @@ function checkRequired(){
         return false;
       }
       /* 결제창으로 이동 */
-      location.href = d.authPageUrl;
+      if (window.cgGoPay) cgGoPay(d.authPageUrl, d.orderNo); else location.href = d.authPageUrl;
       return true;
     })
     .catch(function(){
@@ -1105,6 +1105,52 @@ select::-ms-expand{ display:none !important }
   opacity:.75;
   margin-top:2px;
 }
+
+/* 다시 시도 안내 */
+.retry-box{
+  margin:0 0 18px;
+  padding:20px 22px;
+  border-radius:18px;
+  background:rgba(255,244,247,.95);
+  border:1px solid rgba(255,189,204,.9);
+  box-shadow:0 6px 20px rgba(216,37,88,.1);
+}
+.retry-box b{
+  display:block;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:#C0395C;
+}
+.retry-box p{
+  font-size:13.5px;
+  color:#555;
+  margin-top:9px;
+  line-height:1.8;
+  word-break:keep-all;
+}
+.retry-box p.tip{
+  font-size:12.5px;
+  color:#8A3350;
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px solid rgba(216,37,88,.14);
+}
+.retry-box p.tip b{ display:inline; font-size:12.5px; color:#C0395C }
+.retry-box button{
+  width:100%;
+  min-height:48px;
+  margin-top:15px;
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:inherit;
+  box-shadow:0 5px 16px rgba(216,37,88,.24);
+}
 </style>
 
 <script>
@@ -1140,15 +1186,8 @@ select::-ms-expand{ display:none !important }
     }).observe(done, { attributes:true, attributeFilter:['style'] });
   }
 
-  /* 주문서를 떠날 때, 주문이 만들어졌으면 비웁니다 */
-  window.addEventListener('pagehide', function(){
-    try{
-      if (sessionStorage.getItem('cg_ordered')) {
-        empty();
-        sessionStorage.removeItem('cg_ordered');
-      }
-    }catch(e){}
-  });
+  /* 장바구니는 서버가 결제 완료를 확인한 뒤에만 비웁니다.
+     주문서를 떠난다고 비우면 승인 전에 사라집니다. */
 
   window.cgEmptyCart = empty;
 })();
@@ -1184,6 +1223,131 @@ select::-ms-expand{ display:none !important }
     }
     try{ if (typeof quote === 'function') quote(); }catch(e){}
   };
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   결제 세션 관리 (v2)
+   · 실패한 결제창 주소를 다시 쓰지 않습니다
+   · 매번 새 거래를 등록합니다
+   · 버튼 연속 누름을 막습니다
+   ══════════════════════════════════════════════ */
+(function(){
+  var busy = false;
+  var LAST = 'cg_pay_url';
+
+  /* 결제창으로 넘어가기 전에 주소를 기록해 둡니다 */
+  function remember(url, orderNo){
+    try{
+      sessionStorage.setItem(LAST, JSON.stringify({
+        url: url, no: orderNo, at: Date.now()
+      }));
+    }catch(e){}
+  }
+
+  /* 돌아왔을 때 — 그 주소는 이제 쓸 수 없습니다 */
+  function forget(){
+    try{ sessionStorage.removeItem(LAST); }catch(e){}
+  }
+
+  /* 결제창에서 돌아왔는지 확인 */
+  function returned(){
+    try{
+      var s = JSON.parse(sessionStorage.getItem(LAST) || 'null');
+      if (!s) return null;
+      /* 30분이 지났으면 만료 */
+      if (Date.now() - s.at > 30 * 60000) { forget(); return null; }
+      return s;
+    }catch(e){ return null; }
+  }
+
+  /* 원래 결제 함수를 감쌉니다 */
+  var _go = window.goPay || window.payNow || window.doPay;
+
+  function wrap(fn){
+    return function(){
+      if (busy) return false;
+      busy = true;
+      var btn = document.getElementById('payBtn');
+      if (btn) { btn.disabled = true; btn.dataset.was = btn.textContent; btn.textContent = '처리 중…'; }
+
+      /* 이전 결제창 주소는 버립니다 */
+      forget();
+
+      var r;
+      try{ r = fn.apply(this, arguments); }
+      catch(e){ busy = false; if (btn) { btn.disabled = false; btn.textContent = btn.dataset.was || '결제하기'; } throw e; }
+
+      /* 12초 뒤 다시 누를 수 있게 (결제창이 안 열렸을 때 대비) */
+      setTimeout(function(){
+        busy = false;
+        if (btn && document.visibilityState === 'visible') {
+          btn.disabled = false;
+          btn.textContent = btn.dataset.was || '결제하기';
+        }
+      }, 12000);
+
+      return r;
+    };
+  }
+
+  ['goPay','payNow','doPay','submitPay'].forEach(function(n){
+    if (typeof window[n] === 'function') window[n] = wrap(window[n]);
+  });
+
+  /* location.href 로 결제창 이동을 가로채 기록합니다 */
+  var _assign = window.location.assign.bind(window.location);
+  window.cgGoPay = function(url, orderNo){
+    remember(url, orderNo);
+    _assign(url);
+  };
+
+  /* 돌아왔을 때 안내 */
+  function onBack(){
+    var q = new URLSearchParams(location.search);
+    if (q.get('ok') || q.get('resCd') === '0000') { forget(); return; }
+
+    var s = returned();
+    if (!s) return;
+    forget();   /* 그 주소는 이제 못 씁니다 */
+
+    var box = document.getElementById('retryBox');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'retryBox';
+      box.className = 'retry-box';
+      var main = document.getElementById('main') || document.querySelector('.wrap') || document.body;
+      main.insertBefore(box, main.firstChild);
+    }
+    box.innerHTML =
+      '<b>결제가 완료되지 않았습니다</b>'
+      + '<p>인증을 취소하셨거나 시간이 지났습니다.<br>'
+      + '장바구니와 배송지는 그대로 있습니다.</p>'
+      + '<p class="tip">앞서 열렸던 결제창은 다시 쓸 수 없습니다. '
+      + '아래 버튼으로 <b>새로 시작</b>해 주세요.</p>'
+      + '<button type="button" onclick="cgRetry()">새 결제창으로 다시 시도</button>';
+    box.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  window.cgRetry = function(){
+    var box = document.getElementById('retryBox');
+    if (box) box.remove();
+    forget();
+    var btn = document.getElementById('payBtn');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.was || '결제하기';
+      btn.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+  };
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', onBack);
+  else onBack();
+  window.addEventListener('pageshow', function(e){
+    if (e.persisted) onBack();
+  });
 })();
 </script>
 </body>
