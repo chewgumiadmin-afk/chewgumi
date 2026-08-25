@@ -1425,5 +1425,23 @@ select::-ms-expand{ display:none !important }
   });
 })();
 </script>
+
+<script>
+/* 결제창으로 가기 전에 장바구니를 백업해 둡니다 */
+(function(){
+  function backup(){
+    try{
+      var c = localStorage.getItem('cg_cart');
+      if (c && c !== '[]') sessionStorage.setItem('cg_cart_backup', c);
+    }catch(e){}
+  }
+  var _go = window.cgGoPay;
+  if (typeof _go === 'function') {
+    window.cgGoPay = function(url, no){ backup(); return _go(url, no); };
+  }
+  window.addEventListener('pagehide', backup);
+  window.addEventListener('beforeunload', backup);
+})();
+</script>
 </body>
 </html>
