@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<!-- ChewGumi Manage v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>정리 도구 | CHEWGUMI</title>
+<script src="assets/tok.js"></script>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="stylesheet" href="assets/pagelist.css">
+<script src="assets/auth.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/pagelist.js" defer></script>
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C;
+  --gray:#797979; --ink:#17171c;
+  --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.68);
+  --sp-s:clamp(0.75rem,0.7rem+0.24vw,1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.5vw,1.9rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.11),transparent 60%),
+    linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select{font-size:14.5px}}
+.wrap{max-width:960px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+/* 탭 */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--sp-s)}
+.tabs button{
+  min-height:40px;padding:0 16px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.8);
+  font-size:13px;font-weight:600;color:#555;
+}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.panel{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 12px 30px rgba(0,0,0,.07);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+.btn{
+  min-height:40px;padding:0 16px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.no{background:rgba(255,255,255,.9);color:var(--bad);border:1px solid rgba(192,57,92,.3)}
+.btn.sm{min-height:34px;padding:0 13px;font-size:12.5px}
+.btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.msg{margin-top:11px;font-size:13px;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+.row{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  padding:14px 0;border-bottom:1px solid rgba(0,0,0,.055);
+}
+.row:last-child{border-bottom:0}
+.row .i{flex:1;min-width:180px}
+.row .i b{display:block;font-size:14px;font-weight:700;letter-spacing:-.02em}
+.row .i span{display:block;font-size:11.5px;color:var(--gray);margin-top:2px;
+  word-break:break-all}
+.row img{width:52px;height:52px;border-radius:10px;object-fit:cover;
+  background:#FFF6F8;border:1px solid rgba(0,0,0,.05);flex:none}
+.tag{
+  font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:999px;flex:none;
+}
+.tag.on{background:rgba(42,160,96,.14);color:#1B6B3F}
+.tag.off{background:rgba(0,0,0,.06);color:#666}
+.tag.out{background:rgba(233,162,59,.16);color:#8A6015}
+
+.empty{padding:38px 20px;text-align:center;font-size:13.5px;color:var(--gray)}
+.hide{display:none}
+.hint{font-size:12px;color:var(--gray);line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
+.hint b{color:var(--ink)}
+.warn{
+  padding:14px 16px;border-radius:14px;margin-bottom:14px;
+  background:rgba(255,228,230,.6);border:1px solid rgba(255,189,204,.8);
+  font-size:12.5px;color:#8A3350;line-height:1.8;
+}
+.warn b{color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>정리 도구</h1>
+      <div class="s">탈퇴 · 삭제 · 회수처럼 되돌리기 어려운 일들</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <div class="tabs">
+    <button class="on" data-t="member">회원</button>
+    <button data-t="review">후기</button>
+    <button data-t="banner">배너</button>
+    <button data-t="coupon">쿠폰</button>
+    <button data-t="report">리포트</button>
+    <button data-t="channel">채널</button>
+  </div>
+
+  <div id="body"><div class="panel"><div class="empty">불러오는 중…</div></div></div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const FN=SB+'/functions/v1/manage';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+
+let TAB='member';
+
+function tok(){ return (window.cgTok ? cgTok() : ''); }
+function H(){ return {apikey:KEY,Authorization:'Bearer '+tok(),'Content-Type':'application/json'}; }
+function call(p){
+  return fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)}).then(r=>r.json());
+}
+function rest(path){
+  return fetch(SB+'/rest/v1/'+path,{headers:{apikey:KEY,Authorization:'Bearer '+tok()}})
+    .then(r=>r.ok?r.json():[]).catch(()=>[]);
+}
+function say(t,k){
+  const m=$('msg'); if(!m) return;
+  m.className='msg'+(k?' '+k:''); m.textContent=t;
+}
+function when(s){
+  const t=new Date(s);
+  return isNaN(t)?'':(t.getMonth()+1)+'/'+t.getDate();
+}
+
+/* ── 회원 ── */
+function member(){
+  $('body').innerHTML='<div class="panel"><h2>회원 <span class="n" id="cnt">—</span></h2>'
+    +'<div class="warn"><b>탈퇴는 되돌릴 수 없습니다.</b><br>'
+    +'개인정보는 모두 지워지고, 주문 기록만 「탈퇴회원」으로 남습니다.<br>'
+    +'전자상거래법상 주문 기록은 5년간 보관해야 합니다.</div>'
+    +'<div id="list"><div class="empty">불러오는 중…</div></div>'
+    +'<div class="msg" id="msg"></div></div>';
+
+  rest('profiles?select=id,email,name,phone,points,grade,blocked,withdrawn_at,created_at&order=created_at.desc&limit=100')
+  .then(function(rows){
+    const live=rows.filter(function(x){ return !x.withdrawn_at; });
+    $('cnt').textContent=live.length+'명';
+    $('list').innerHTML = rows.length ? rows.map(function(p){
+      const out=!!p.withdrawn_at;
+      return '<div class="row">'
+        +'<div class="i"><b>'+esc(p.name||'—')+'</b>'
+        +'<span>'+esc(p.email||'(지워짐)')+(p.phone?' · '+esc(p.phone):'')
+        +' · 적립 '+won(p.points)+'원</span></div>'
+        +'<span class="tag '+(out?'out':(p.blocked?'off':'on'))+'">'
+        +(out?'탈퇴':(p.blocked?'차단':'정상'))+'</span>'
+        +(out?'':'<div class="btns" style="margin:0">'
+          +'<button class="btn sub sm" onclick="editM(\''+p.id+'\')">수정</button>'
+          +'<button class="btn no sm" onclick="wd(\''+p.id+'\',\''+esc(p.name||'')+'\')">탈퇴</button></div>')
+        +'</div>';
+    }).join('') : '<div class="empty">회원이 없습니다</div>';
+  });
+}
+
+function editM(id){
+  const n=prompt('이름'); if(n===null) return;
+  const ph=prompt('연락처'); if(ph===null) return;
+  const pt=prompt('적립금 (숫자만)'); if(pt===null) return;
+  say('바꾸는 중…');
+  call({action:'edit-member',user_id:id,name:n,phone:ph,points:Number(pt)||0})
+  .then(function(d){
+    if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); member();
+  });
+}
+
+function wd(id,name){
+  if(!confirm('「'+name+'」님을 탈퇴 처리합니다.\n\n'
+    +'· 개인정보가 모두 지워집니다\n'
+    +'· 로그인 계정도 지워집니다\n'
+    +'· 주문 기록은 「탈퇴회원」으로 남습니다\n'
+    +'· 되돌릴 수 없습니다\n\n계속할까요?')) return;
+  const r=prompt('사유를 적어주세요','본인 요청');
+  if(r===null) return;
+  say('처리하는 중…');
+  call({action:'withdraw',user_id:id,reason:r}).then(function(d){
+    if(!d.ok){ say(d.error||'처리하지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); member();
+  });
+}
+
+/* ── 후기 ── */
+function review(){
+  $('body').innerHTML='<div class="panel"><h2>후기 <span class="n" id="cnt">—</span></h2>'
+    +'<div id="list"><div class="empty">불러오는 중…</div></div>'
+    +'<div class="msg" id="msg"></div>'
+    +'<div class="hint"><b>내리기</b>는 화면에서만 감춥니다. '
+    +'<b>지우기</b>는 완전히 없앱니다. 광고나 욕설만 지워주세요.</div></div>';
+
+  rest('product_reviews?select=id,author,rating,body,image_url,source,line,visible,written_at&order=written_at.desc&limit=80')
+  .then(function(rows){
+    $('cnt').textContent=rows.length+'건';
+    $('list').innerHTML = rows.length ? rows.map(function(r){
+      return '<div class="row">'
+        +(r.image_url?'<img src="'+esc(r.image_url)+'" alt="" referrerpolicy="origin" onerror="this.style.display=\'none\'">':'')
+        +'<div class="i"><b>'+'★'.repeat(r.rating)+' '+esc(r.author)+'</b>'
+        +'<span>'+esc(String(r.body).slice(0,60))+'</span></div>'
+        +'<span class="tag '+(r.visible?'on':'off')+'">'+(r.visible?'보임':'내림')+'</span>'
+        +'<div class="btns" style="margin:0">'
+        +'<button class="btn sub sm" onclick="hide('+r.id+','+(r.visible?'false':'true')+')">'
+        +(r.visible?'내리기':'올리기')+'</button>'
+        +'<button class="btn no sm" onclick="delR('+r.id+')">지우기</button></div>'
+        +'</div>';
+    }).join('') : '<div class="empty">후기가 없습니다</div>';
+  });
+}
+
+function hide(id,v){
+  fetch(SB+'/rest/v1/product_reviews?id=eq.'+id,{method:'PATCH',
+    headers:Object.assign(H(),{Prefer:'return=minimal'}),
+    body:JSON.stringify({visible:v})})
+  .then(function(r){
+    if(r.ok){ say(v?'올렸습니다':'내렸습니다','ok'); review(); }
+    else say('바꾸지 못했습니다.','bad');
+  });
+}
+
+function delR(id){
+  if(!confirm('이 후기를 완전히 지웁니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
+  const r=prompt('사유','광고성 글');
+  if(r===null) return;
+  say('지우는 중…');
+  call({action:'del-review',id:id,reason:r}).then(function(d){
+    if(!d.ok){ say(d.error||'지우지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); review();
+  });
+}
+
+/* ── 배너 ── */
+function banner(){
+  $('body').innerHTML='<div class="panel"><h2>배너 <span class="n" id="cnt">—</span></h2>'
+    +'<div id="list"><div class="empty">불러오는 중…</div></div>'
+    +'<div class="btns"><button class="btn" onclick="addB()">배너 더하기</button></div>'
+    +'<div class="msg" id="msg"></div></div>';
+
+  call({action:'banner',op:'list'}).then(function(d){
+    if(!d.ok){ $('list').innerHTML='<div class="empty">'+esc(d.error||'')+'</div>'; return; }
+    const rows=d.rows||[];
+    $('cnt').textContent=rows.length+'개';
+    $('list').innerHTML = rows.length ? rows.map(function(b){
+      return '<div class="row">'
+        +(b.image_url?'<img src="'+esc(b.image_url)+'" alt="">':'')
+        +'<div class="i"><b>'+esc(b.title||b.alt||b.place||'배너 '+b.id)+'</b>'
+        +'<span>'+esc(b.image_url||'')+'</span></div>'
+        +'<span class="tag '+(b.active!==false?'on':'off')+'">'
+        +(b.active!==false?'쓰는 중':'꺼짐')+'</span>'
+        +'<div class="btns" style="margin:0">'
+        +'<button class="btn sub sm" onclick="editB('+b.id+')">수정</button>'
+        +'<button class="btn no sm" onclick="delB('+b.id+')">삭제</button></div>'
+        +'</div>';
+    }).join('') : '<div class="empty">배너가 없습니다</div>';
+  });
+}
+
+function addB(){
+  const u=prompt('그림 주소 (assets/… 또는 https://…)'); if(!u) return;
+  const l=prompt('누르면 갈 곳 (비워도 됩니다)','') ;
+  const t=prompt('이름','새 배너');
+  say('더하는 중…');
+  call({action:'banner',op:'save',image_url:u,link_url:l||'',title:t||''})
+  .then(function(d){
+    if(!d.ok){ say(d.error||'더하지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); banner();
+  });
+}
+
+function editB(id){
+  const u=prompt('그림 주소'); if(u===null) return;
+  const l=prompt('누르면 갈 곳',''); if(l===null) return;
+  say('바꾸는 중…');
+  call({action:'banner',op:'save',id:id,image_url:u,link_url:l})
+  .then(function(d){
+    if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); banner();
+  });
+}
+
+function delB(id){
+  if(!confirm('이 배너를 지웁니다. 계속할까요?')) return;
+  call({action:'banner',op:'del',id:id}).then(function(d){
+    if(!d.ok){ say(d.error||'지우지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); banner();
+  });
+}
+
+/* ── 쿠폰 ── */
+function coupon(){
+  $('body').innerHTML='<div class="panel"><h2>발급된 쿠폰 <span class="n" id="cnt">—</span></h2>'
+    +'<div id="list"><div class="empty">불러오는 중…</div></div>'
+    +'<div class="msg" id="msg"></div>'
+    +'<div class="hint"><b>회수</b>는 그분의 쿠폰만 없앱니다.<br>'
+    +'쿠폰 자체를 더 이상 발급하지 않으시려면 아래 목록에서 <b>중단</b>을 누르세요.</div></div>'
+    +'<div class="panel"><h2>쿠폰 종류</h2><div id="kinds"></div></div>';
+
+  call({action:'coupon',op:'list'}).then(function(d){
+    if(!d.ok){ $('list').innerHTML='<div class="empty">'+esc(d.error||'')+'</div>'; return; }
+    const u=d.issued||[], c=d.coupons||[];
+    $('cnt').textContent=u.length+'장';
+    $('list').innerHTML = u.length ? u.map(function(x){
+      return '<div class="row"><div class="i"><b>'+esc(x.code||x.coupon_code||'쿠폰')+'</b>'
+        +'<span>'+esc(x.user_id||'')+(x.used_at?' · 사용함':' · 미사용')+'</span></div>'
+        +'<span class="tag '+(x.used_at?'off':'on')+'">'+(x.used_at?'사용':'남음')+'</span>'
+        +(x.used_at?'':'<button class="btn no sm" onclick="revoke('+x.id+')">회수</button>')
+        +'</div>';
+    }).join('') : '<div class="empty">발급된 쿠폰이 없습니다</div>';
+
+    $('kinds').innerHTML = c.length ? c.map(function(x){
+      return '<div class="row"><div class="i"><b>'+esc(x.code||'')+'</b>'
+        +'<span>'+esc(x.name||x.title||'')+'</span></div>'
+        +'<span class="tag '+(x.active!==false?'on':'off')+'">'
+        +(x.active!==false?'발급 중':'중단')+'</span>'
+        +(x.active!==false?'<button class="btn no sm" onclick="expire(\''+esc(x.code)+'\')">중단</button>':'')
+        +'</div>';
+    }).join('') : '<div class="empty">쿠폰 종류가 없습니다</div>';
+  });
+}
+
+function revoke(id){
+  if(!confirm('이 쿠폰을 회수합니다. 계속할까요?')) return;
+  const r=prompt('사유','부정 발급');
+  if(r===null) return;
+  call({action:'coupon',op:'revoke',id:id,reason:r}).then(function(d){
+    if(!d.ok){ say(d.error||'회수하지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); coupon();
+  });
+}
+
+function expire(code){
+  if(!confirm('「'+code+'」 쿠폰 발급을 중단합니다.\n이미 받으신 분은 그대로 쓰실 수 있습니다.')) return;
+  call({action:'coupon',op:'expire',code:code}).then(function(d){
+    if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); coupon();
+  });
+}
+
+/* ── 리포트 ── */
+function report(){
+  $('body').innerHTML='<div class="panel"><h2>고객 리포트 <span class="n" id="cnt">—</span></h2>'
+    +'<div id="list"><div class="empty">불러오는 중…</div></div>'
+    +'<div class="msg" id="msg"></div></div>';
+
+  rest('reports?select=id,title,kind,status,created_at&order=created_at.desc&limit=60')
+  .then(function(rows){
+    $('cnt').textContent=rows.length+'건';
+    $('list').innerHTML = rows.length ? rows.map(function(r){
+      return '<div class="row"><div class="i"><b>'+esc(r.title||'제목 없음')+'</b>'
+        +'<span>'+esc(r.kind||'')+' · '+when(r.created_at)+'</span></div>'
+        +'<button class="btn no sm" onclick="delRep('+r.id+')">삭제</button></div>';
+    }).join('') : '<div class="empty">리포트가 없습니다</div>';
+  });
+}
+
+function delRep(id){
+  if(!confirm('이 리포트를 지웁니다. 계속할까요?')) return;
+  const r=prompt('사유','부적절한 내용');
+  if(r===null) return;
+  call({action:'del-report',id:id,reason:r}).then(function(d){
+    if(!d.ok){ say(d.error||'지우지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); report();
+  });
+}
+
+/* ── 채널 ── */
+function channel(){
+  $('body').innerHTML='<div class="panel"><h2>채널 연동</h2>'
+    +'<div class="warn"><b>연동을 끊으면 자동 수집이 멈춥니다.</b><br>'
+    +'다시 이으려면 승인 절차를 처음부터 해야 합니다.</div>'
+    +'<div id="list"><div class="empty">불러오는 중…</div></div>'
+    +'<div class="msg" id="msg"></div></div>';
+
+  rest('channels?select=code,name,active&order=code')
+  .then(function(rows){
+    $('list').innerHTML = rows.length ? rows.map(function(c){
+      return '<div class="row"><div class="i"><b>'+esc(c.name||c.code)+'</b>'
+        +'<span>'+esc(c.code)+'</span></div>'
+        +'<span class="tag '+(c.active?'on':'off')+'">'+(c.active?'이어짐':'끊김')+'</span>'
+        +(c.active?'<button class="btn no sm" onclick="chOff(\''+esc(c.code)+'\')">끊기</button>':'')
+        +'</div>';
+    }).join('') : '<div class="empty">등록된 채널이 없습니다</div>';
+  });
+}
+
+function chOff(code){
+  if(!confirm('「'+code+'」 연동을 끊습니다.\n자동 수집이 멈춥니다. 계속할까요?')) return;
+  const r=prompt('사유','운영 중단');
+  if(r===null) return;
+  call({action:'channel-off',channel:code,reason:r}).then(function(d){
+    if(!d.ok){ say(d.error||'끊지 못했습니다.','bad'); return; }
+    say(d.msg,'ok'); channel();
+  });
+}
+
+const VIEW={member:member,review:review,banner:banner,
+  coupon:coupon,report:report,channel:channel};
+
+document.querySelectorAll('.tabs button').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('.tabs button').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    TAB=b.dataset.t;
+    (VIEW[TAB]||member)();
+  };
+});
+
+member();
+</script>
+</body>
+</html>
