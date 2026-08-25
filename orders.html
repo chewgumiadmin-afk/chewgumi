@@ -557,6 +557,7 @@ function render(){
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no&&['bank','vbank','trans'].includes(o.pay_method||'')
         ?'<button class="mini" onclick="openCash(\''+o.order_no+'\')">현금영수증</button>':'')
       +((o.pay_method==='card'&&o.status!=='cancelled')?'<button class="mini" onclick="cardRcpt(\''+o.order_no+'\')">카드 영수증</button>':'')
+      +((['paid','preparing','shipping','delivered'].includes(o.status))?'<button class="mini" onclick="openRefund(\''+o.order_no+'\')">환불</button>':'')
       +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증 보기</a>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
@@ -1371,6 +1372,84 @@ sync();
         + '─────────────────\n\n'
         + '정식 매출전표는 이지페이 가맹점 관리자\n'
         + '(office.easypay.co.kr) 에서 출력하실 수 있습니다.');
+    })
+    .catch(function(){ alert('불러오지 못했습니다.'); });
+  };
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   환불 처리 — 전체 · 부분
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var FN2=SB2+'/functions/v1/refund';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function tok(){
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return '';
+      if(s.exp && Date.now()/1000>s.exp) return '';
+      return s.t;
+    }catch(e){ return ''; }
+  }
+  function call(p){
+    return fetch(FN2,{method:'POST',
+      headers:{apikey:K2,Authorization:'Bearer '+tok(),'Content-Type':'application/json'},
+      body:JSON.stringify(p)}).then(function(r){ return r.json(); });
+  }
+  function won2(n){ return Number(n||0).toLocaleString('ko-KR'); }
+
+  window.openRefund = function(no){
+    call({action:'info',order_no:no}).then(function(d){
+      if(!d.ok){ alert(d.error||'불러오지 못했습니다.'); return; }
+      if(!d.can){ alert(d.why||'환불할 수 없습니다.'); return; }
+
+      var msg = '환불 처리\n'
+        + '─────────────────\n'
+        + '주문번호   ' + d.order_no + '\n'
+        + '주문자     ' + d.buyer + '\n'
+        + '결제 금액   ' + won2(d.pay_amount) + '원\n'
+        + (d.refunded ? '이미 환불   ' + won2(d.refunded) + '원\n' : '')
+        + '환불 가능   ' + won2(d.left) + '원\n'
+        + '─────────────────\n\n'
+        + '환불할 금액을 넣어주세요.\n'
+        + '(전액이면 ' + d.left + ' 그대로)';
+
+      var amt = prompt(msg, String(d.left));
+      if (!amt) return;
+      amt = Number(String(amt).replace(/[^0-9]/g,''));
+      if (!amt || amt <= 0) { alert('금액이 올바르지 않습니다.'); return; }
+      if (amt > d.left) { alert('환불 가능 금액은 ' + won2(d.left) + '원입니다.'); return; }
+
+      var reason = prompt('환불 사유를 적어주세요.\n(고객에게 보내는 메일에 들어갑니다)', '고객 요청');
+      if (reason === null) return;
+
+      var extra = {};
+      if (d.need_account) {
+        var bn = prompt('환불받으실 계좌를 넣어주세요.\n\n은행명 (예: 국민은행)');
+        if (!bn) return;
+        var no2 = prompt('계좌번호 (- 없이)');
+        if (!no2) return;
+        var hd = prompt('예금주');
+        if (!hd) return;
+        extra = { bank:true, bank_code:bn, bank_no:no2, bank_holder:hd };
+      }
+
+      var full = amt >= d.left;
+      if (!confirm(won2(amt) + '원을 ' + (full?'전액':'부분') + ' 환불합니다.\n\n'
+        + (full ? '· 주문이 취소됩니다\n· 재고가 되돌아갑니다\n' : '')
+        + '· 고객에게 안내 메일이 갑니다\n\n계속할까요?')) return;
+
+      call(Object.assign({action:'refund',order_no:no,amount:amt,reason:reason}, extra))
+      .then(function(r){
+        if(!r.ok){ alert(r.error||'환불하지 못했습니다.'); return; }
+        alert(r.msg||'환불했습니다.');
+        try{ if(typeof load==='function') load(); }catch(e){}
+      })
+      .catch(function(){ alert('환불하지 못했습니다.'); });
     })
     .catch(function(){ alert('불러오지 못했습니다.'); });
   };
