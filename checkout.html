@@ -1489,5 +1489,38 @@ select::-ms-expand{ display:none !important }
   window.addEventListener('beforeunload', backup);
 })();
 </script>
+
+<script>
+/* ══════════════════════════════════════════════
+   무통장입금 주문 — 확인 메일 보내기
+   (카드·가상계좌는 승인 뒤 서버가 보냅니다)
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var sent = {};
+
+  window.cgOrderMail = function(no, kind){
+    if (!no || sent[no]) return Promise.resolve();
+    sent[no] = 1;
+    return fetch(SB2 + '/functions/v1/order-mail', {
+      method:'POST',
+      headers:{ apikey:K2, 'Content-Type':'application/json' },
+      body: JSON.stringify({ order_no: no, kind: kind || 'placed' })
+    }).then(function(r){ return r.json(); }).catch(function(){});
+  };
+
+  /* 완료 화면이 뜨면 보냅니다 */
+  var done = document.getElementById('done');
+  if (done && window.MutationObserver) {
+    new MutationObserver(function(){
+      if (!done.style.display || done.style.display === 'none') return;
+      var t = done.textContent || '';
+      var m = t.match(/\d{8}-\d{4,7}/);
+      if (m) cgOrderMail(m[0], 'placed');
+    }).observe(done, { attributes:true, attributeFilter:['style'] });
+  }
+})();
+</script>
 </body>
 </html>
