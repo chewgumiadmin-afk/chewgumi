@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v215 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v216 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -3246,7 +3246,7 @@ section{padding:44px 0}
       el.className='rv-badge';
       el.innerHTML='<span class="st">★★★★★</span>'+(d.a||'5.0')
         +' <b>('+n+')</b>'
-        + (window._revTotal ? '<i class="all">전체 '+window._revTotal+'</i>' : '');
+        ;
       var pr=c.querySelector('.price-row');
       if(pr) pr.parentNode.insertBefore(el,pr);
       else c.appendChild(el);
@@ -11944,6 +11944,9 @@ body.drawer-on{
   .cg-push-bar .cp-t b{ font-size:12.5px }
   .cg-push-bar .cp-yes{ font-size:12.5px; padding:0 14px }
 }
+
+/* 「전체 N」 표시 없앰 — 라인별로 같은 숫자를 씁니다 */
+.rv-badge .all, .badge .all, i.all{ display:none !important }
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
