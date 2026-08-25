@@ -139,6 +139,7 @@ footer{
 .err{font-size:12.5px;color:var(--bad);text-align:center;margin-top:8px;min-height:18px}
 .hide{display:none}
 </style>
+<script src="assets/tok.js"></script>
 </head>
 <body>
 
@@ -188,7 +189,7 @@ function tok(){
   try{
     const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
     if(!s||!s.t) return '';
-    if(s.exp && Date.now()/1000>s.exp) return '';
+    var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
     return s.t;
   }catch(e){ return ''; }
 }
