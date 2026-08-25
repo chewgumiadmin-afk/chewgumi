@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!-- ChewGumi QA Run v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>결제 점검 | CHEWGUMI</title>
+<script src="assets/tok.js"></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --bad:#C0395C; --warn:#E9A23B;
+  --gray:#797979; --ink:#17171c; --line:rgba(255,255,255,.85);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:16px;line-height:1.7;
+  min-height:100svh;
+  padding:0 0 calc(5rem + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font-family:inherit;font-size:16px}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+
+.topbar{
+  height:46px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,var(--main2),var(--main));
+  color:#fff;font-size:13.5px;font-weight:600;padding:0 16px;text-align:center;
+}
+
+.hd{padding:26px 0 18px}
+.hd .eb{font-family:'Poppins','SUIT Variable',sans-serif;
+  font-size:10.5px;letter-spacing:2.4px;color:var(--main);font-weight:700}
+.hd h1{font-size:26px;font-weight:800;letter-spacing:-.04em;margin-top:7px}
+.hd p{font-size:13.5px;color:var(--gray);margin-top:9px;word-break:keep-all}
+
+/* 진행 막대 */
+.bar{
+  height:6px;border-radius:99px;background:rgba(0,0,0,.07);
+  overflow:hidden;margin:16px 0 6px;
+}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--main2),var(--main));
+  border-radius:99px;transition:width .4s}
+.bar-t{font-size:11.5px;color:var(--gray);text-align:right}
+
+/* 단계 */
+.step{
+  background:rgba(255,255,255,.78);border:1px solid var(--line);
+  border-radius:20px;padding:20px 22px;margin-bottom:12px;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+  transition:opacity .3s;
+}
+.step.done{opacity:.55}
+.step.done .st-do{display:none}
+.step .n{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--ink);color:#fff;
+  font-size:12.5px;font-weight:800;margin-bottom:11px;
+}
+.step.done .n{background:var(--ok)}
+.step h3{font-size:16.5px;font-weight:800;letter-spacing:-.03em}
+.step p{font-size:13.5px;color:#555;margin-top:8px;line-height:1.8;word-break:keep-all}
+.step .tip{
+  font-size:12.5px;color:#8A3350;margin-top:10px;padding:11px 14px;
+  border-radius:12px;background:rgba(255,228,230,.55);line-height:1.75;
+}
+.st-go{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;min-height:50px;margin-top:14px;border-radius:999px;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;font-size:14.5px;font-weight:800;text-decoration:none;
+  box-shadow:0 5px 16px rgba(216,37,88,.24);
+}
+.st-do{display:flex;gap:8px;margin-top:12px}
+.st-do button{
+  flex:1;min-height:48px;border:0;border-radius:999px;cursor:pointer;
+  font-size:14px;font-weight:700;font-family:inherit;
+}
+.st-do .y{background:linear-gradient(135deg,#3FBF7A,#2AA060);color:#fff}
+.st-do .n2{background:#fff;color:var(--bad);border:1px solid rgba(192,57,92,.3)}
+.mark{
+  display:inline-block;font-size:11px;font-weight:800;
+  padding:3px 11px;border-radius:999px;margin-top:11px;
+}
+.mark.ok{background:rgba(42,160,96,.14);color:#1B6B3F}
+.mark.bad{background:rgba(192,57,92,.12);color:var(--bad)}
+
+/* 문제 적기 */
+.rep{
+  margin-top:12px;padding:16px 18px;border-radius:16px;
+  background:rgba(255,244,247,.9);border:1px solid rgba(255,189,204,.9);
+}
+.rep label{display:block;font-size:12.5px;font-weight:600;color:#8A3350;margin-bottom:7px}
+.rep textarea{
+  width:100%;min-height:88px;padding:12px 14px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.9);background:#fff;resize:vertical;line-height:1.7;
+}
+.rep textarea:focus{outline:2px solid var(--main);outline-offset:-1px}
+.rep .sd{
+  width:100%;min-height:46px;margin-top:10px;border:0;border-radius:999px;
+  background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+}
+.hide{display:none}
+
+.msg{margin-top:14px;font-size:13px;text-align:center;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+.warn{
+  padding:16px 18px;border-radius:16px;margin:18px 0;
+  background:rgba(255,244,247,.9);border:1px solid rgba(255,189,204,.9);
+  font-size:13px;color:#8A3350;line-height:1.8;
+}
+.warn b{color:var(--bad)}
+
+.foot{margin-top:26px;text-align:center;padding-bottom:20px}
+.foot button{
+  min-height:44px;padding:0 20px;border:0;border-radius:999px;
+  background:rgba(255,255,255,.9);border:1px solid var(--line);
+  color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">폰에서 하나씩 눌러보시면 됩니다</div>
+
+<div class="wrap">
+  <div class="hd">
+    <span class="eb">PAYMENT QA</span>
+    <h1>결제 점검</h1>
+    <p>여덟 단계입니다. 되면 <b>됐어요</b>, 안 되면 <b>안 돼요</b>를 눌러주세요.
+       적어주신 것은 개발자에게 바로 전달됩니다.</p>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
+    <div class="bar-t" id="barT">0 / 8</div>
+  </div>
+
+  <div class="warn">
+    <b>실제 결제입니다.</b> 1봉(6,000원)으로 하시고
+    끝나면 마지막 단계에서 취소해 주세요.<br>
+    <b>카드번호는 결제창에만 넣으세요.</b> 이 화면에는 절대 적지 마세요.
+  </div>
+
+  <div id="steps"></div>
+
+  <div class="foot">
+    <button onclick="reset()">처음부터 다시</button>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+const STEPS=[
+ {k:'cart', t:'상품을 장바구니에 담아보세요',
+  d:'트래블잇 1봉(3,500원)을 담아주세요. 가장 싼 상품입니다.',
+  go:'index.html#all', gt:'상품 보러 가기',
+  tip:'담긴 뒤 오른쪽에서 장바구니가 나오면 정상입니다.'},
+
+ {k:'stock', t:'재고보다 많이 담아보세요',
+  d:'수량을 999개로 바꿔보세요.',
+  tip:'「남은 수량은 N개입니다」가 뜨면 정상입니다. 그냥 담기면 문제입니다.'},
+
+ {k:'form', t:'주문서를 채워보세요',
+  d:'BUY NOW → 이름·연락처·주소를 넣어주세요.',
+  go:'checkout.html', gt:'주문서로 가기',
+  tip:'총 금액이 3,500 + 배송비 2,500 = 6,000원인지 봐주세요.'},
+
+ {k:'open', t:'결제창이 열리는지 보세요',
+  d:'카드·간편결제를 고르고 결제하기를 눌러주세요.',
+  tip:'신한카드면 SuperSOL / SOL페이 중 고른 것과 같은 앱에서 인증하세요.'},
+
+ {k:'auth', t:'결제를 승인해보세요',
+  d:'카드번호를 넣고 본인 인증까지 마쳐주세요.',
+  tip:'실패하면 [새 결제창으로 다시 시도]를 눌러주세요. 같은 창을 다시 열면 안 됩니다.'},
+
+ {k:'done', t:'완료 화면이 나오는지 보세요',
+  d:'승인 뒤 돌아온 화면을 봐주세요.',
+  tip:'주문번호·금액이 맞는지, 아래 「주문 조회」 링크가 눌리는지 봐주세요.'},
+
+ {k:'order', t:'주문이 관리자에 들어왔는지 보세요',
+  d:'주문 목록에 방금 주문이 있는지 확인해주세요.',
+  go:'orders.html', gt:'주문 목록 열기',
+  tip:'상태가 「결제 완료」인지, 배송지가 맞는지 봐주세요.'},
+
+ {k:'cancel', t:'취소하거나 환불해보세요',
+  d:'그 주문에서 [환불]을 눌러 전액 환불해주세요.',
+  go:'orders.html', gt:'주문 목록 열기',
+  tip:'환불 뒤 재고가 돌아오고 고객 메일이 가면 정상입니다.'}
+];
+
+let DONE={}, ORDER='';
+
+try{ DONE=JSON.parse(sessionStorage.getItem('cg_qa')||'{}'); }catch(e){}
+try{ ORDER=sessionStorage.getItem('cg_qa_no')||''; }catch(e){}
+
+function save(){
+  try{
+    sessionStorage.setItem('cg_qa', JSON.stringify(DONE));
+    sessionStorage.setItem('cg_qa_no', ORDER);
+  }catch(e){}
+}
+
+function draw(){
+  $('steps').innerHTML = STEPS.map(function(s,i){
+    const r=DONE[s.k];
+    return '<div class="step'+(r?' done':'')+'">'
+      +'<span class="n">'+(r==='ok'?'✓':(i+1))+'</span>'
+      +'<h3>'+esc(s.t)+'</h3>'
+      +'<p>'+esc(s.d)+'</p>'
+      +(s.tip?'<div class="tip">'+esc(s.tip)+'</div>':'')
+      +(s.go?'<a class="st-go" href="'+s.go+'">'+esc(s.gt||'가기')+'</a>':'')
+      +'<div class="st-do">'
+        +'<button class="y" onclick="mark(\''+s.k+'\',true)">됐어요</button>'
+        +'<button class="n2" onclick="mark(\''+s.k+'\',false)">안 돼요</button>'
+      +'</div>'
+      +(r?'<span class="mark '+(r==='ok'?'ok':'bad')+'">'
+        +(r==='ok'?'확인함':'문제 있음')+'</span>':'')
+      +'<div class="rep hide" id="rep-'+s.k+'">'
+        +'<label>무엇이 어떻게 안 됐나요?</label>'
+        +'<textarea id="tx-'+s.k+'" placeholder="화면에 뜬 글자를 그대로 적어주시면 가장 좋습니다"></textarea>'
+        +'<button class="sd" onclick="send(\''+s.k+'\')">개발자에게 보내기</button>'
+      +'</div>'
+    +'</div>';
+  }).join('') + '<div class="msg" id="msg"></div>';
+
+  const n=Object.keys(DONE).length;
+  $('bar').style.width=Math.round(n/STEPS.length*100)+'%';
+  $('barT').textContent=n+' / '+STEPS.length;
+}
+
+function mark(k, ok){
+  DONE[k]=ok?'ok':'bad';
+  save();
+  draw();
+  if(!ok){
+    const r=$('rep-'+k);
+    if(r){ r.classList.remove('hide'); r.scrollIntoView({behavior:'smooth',block:'center'}); }
+  } else {
+    log(k,'ok','');
+    say('기록했습니다.','ok');
+  }
+}
+
+function send(k){
+  const t=$('tx-'+k);
+  const note=t?t.value.trim():'';
+  if(!note){ say('무엇이 안 됐는지 적어주세요.','bad'); return; }
+  log(k,'bad',note);
+  const r=$('rep-'+k);
+  if(r) r.classList.add('hide');
+  say('보냈습니다. 개발자가 확인합니다.','ok');
+}
+
+function log(k, result, note){
+  const s=STEPS.find(function(x){ return x.k===k; })||{};
+  fetch(SB+'/rest/v1/qa_runs',{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+KEY,
+      'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({
+      step:k, label:s.t||'', result:result, note:note||'',
+      ua:navigator.userAgent.slice(0,200),
+      actor:(window.cgSession&&cgSession()?cgSession().em:'')||'',
+      order_no:ORDER
+    })}).catch(function(){});
+}
+
+function say(t,k){
+  const m=$('msg'); if(!m) return;
+  m.className='msg'+(k?' '+k:''); m.textContent=t;
+  setTimeout(function(){ m.textContent=''; }, 3000);
+}
+
+function reset(){
+  if(!confirm('처음부터 다시 할까요?')) return;
+  DONE={}; ORDER=''; save(); draw();
+}
+
+/* 결제하고 돌아오면 주문번호를 기억합니다 */
+(function(){
+  const q=new URLSearchParams(location.search);
+  const n=q.get('no')||q.get('shopOrderNo');
+  if(n){ ORDER=n; save(); }
+})();
+
+draw();
+</script>
+</body>
+</html>
