@@ -122,6 +122,7 @@ button,input{font-family:inherit;font-size:16px}
   padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
 .hint b{color:var(--ink)}
 </style>
+<script src="assets/tok.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -180,7 +181,7 @@ function tok(){
   try{
     const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
     if(!s||!s.t) return '';
-    if(s.exp && Date.now()/1000>s.exp) return '';
+    var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
     return s.t;
   }catch(e){ return ''; }
 }
