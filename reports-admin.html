@@ -106,6 +106,7 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
 <script src="assets/ui.js"></script>
 <link rel="stylesheet" href="assets/pagelist.css">
 <script src="assets/pagelist.js" defer></script>
+<script src="assets/tok.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -348,7 +349,7 @@ sync();
     try{
       var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
       if(!s||!s.t) return null;
-      if(s.exp && Date.now()/1000>s.exp) return null;
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return null;
       return s;
     }catch(e){ return null; }
   }
