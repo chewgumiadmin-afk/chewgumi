@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v218 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v219 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12270,6 +12270,37 @@ body.drawer-on{
 @media (max-width:899px){
   .rvt-box{ display:none !important }
 }
+
+/* 후기 표 — 다듬기 */
+.rvt th.c-no, .rvt td.c-no{ display:none !important }
+.rvt th.c-tt{ width:auto }
+.rvt td.c-tt{
+  white-space:normal !important;
+  line-height:1.6 !important;
+  padding-top:14px !important;
+  padding-bottom:14px !important;
+}
+.rvt td.c-tt span{
+  display:inline-block;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  vertical-align:middle;
+}
+/* 눌러서 펼칠 수 있다는 표시 */
+.rvt tbody tr[data-i] td.c-tt::after{
+  content:"＋";
+  float:right;
+  margin-left:10px;
+  color:#c9c9d0;
+  font-size:13px;
+  font-weight:400;
+}
+.rvt tbody tr[data-i].sel td.c-tt::after{
+  content:"−";
+  color:#D82558;
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -13607,7 +13638,7 @@ window.cgClearCart = function(){
    좁은 화면은 지금처럼 카드로 둡니다.
    ══════════════════════════════════════════════ */
 (function(){
-  var PER = 5;          /* 한 쪽에 몇 개 */
+  var PER = 10;         /* 한 쪽에 몇 개 */
   var page = 1;
   var ROWS = [];
 
@@ -13673,16 +13704,14 @@ window.cgClearCart = function(){
         + '<span class="rvt-n">REVIEW <b>' + total + '</b></span>'
       + '</div>'
       + '<table class="rvt"><thead><tr>'
-        + '<th class="c-no">번호</th>'
-        + '<th class="c-tt">제목</th>'
+        + '<th class="c-tt">후기</th>'
         + '<th class="c-wh">작성자</th>'
         + '<th class="c-dt">작성일</th>'
         + '<th class="c-st">평점</th>'
       + '</tr></thead><tbody>'
       + (slice.length ? slice.map(function(r, i){
-          var short = r.body.length > 42 ? r.body.slice(0,42) + '…' : r.body;
+          var short = r.body.length > 60 ? r.body.slice(0,60) + '…' : r.body;
           return '<tr data-i="' + (from + i) + '">'
-            + '<td class="c-no">' + r.no + '</td>'
             + '<td class="c-tt">'
               + (r.img ? '<i class="rvt-pic">사진</i>' : '')
               + '<span>' + esc2(short) + '</span></td>'
@@ -13691,10 +13720,10 @@ window.cgClearCart = function(){
             + '<td class="c-st"><span class="rvt-star">'
               + '★'.repeat(r.rating) + '</span></td>'
           + '</tr>'
-          + '<tr class="rvt-open" data-o="' + (from + i) + '"><td colspan="5">'
+          + '<tr class="rvt-open" data-o="' + (from + i) + '"><td colspan="4">'
             + (r.img ? '<img src="' + esc2(r.img) + '" alt="" referrerpolicy="origin">' : '')
             + '<p>' + esc2(r.body) + '</p></td></tr>';
-        }).join('') : '<tr><td colspan="5" class="rvt-empty">아직 후기가 없습니다</td></tr>')
+        }).join('') : '<tr><td colspan="4" class="rvt-empty">아직 후기가 없습니다</td></tr>')
       + '</tbody></table>'
       + (pages > 1 ? nav(pages) : '');
 
