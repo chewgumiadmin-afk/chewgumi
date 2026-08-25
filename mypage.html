@@ -562,6 +562,12 @@ sync();
   cursor:pointer;
 }
 .who-box button:hover{ color:#C0395C; border-color:rgba(192,57,92,.3) }
+
+/* 로그인 상태에 따라 */
+.hide{ display:none !important }
+body.logged #login{ display:none !important }
+body:not(.logged) #area{ display:none !important }
+.who-box{ display:none }
 </style>
 
 <script>
@@ -612,106 +618,98 @@ sync();
 })();
 </script>
 
+
+
 <script>
 /* ══════════════════════════════════════════════
-   로그인했으면 로그인 상자를 감춥니다
+   로그인 상태 — 한 곳에서만 정합니다
    ══════════════════════════════════════════════ */
 (function(){
   var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
   var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 
-  function tok(){
-    if (window.cgTok) return cgTok();
+  function ses(){
+    if (window.cgSession) return cgSession();
     try{
-      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
-      if(!s||!s.t) return '';
-      var ms = s.exp ? s.exp*1000 : (s.e||0);
-      if (ms && Date.now() > ms) return '';
-      return s.t;
-    }catch(e){ return ''; }
+      var s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
+      if (!s || !s.t) return null;
+      var ms = s.exp ? s.exp*1000 : (s.e || 0);
+      if (ms && Date.now() > ms) return null;
+      return s;
+    }catch(e){ return null; }
   }
 
-  function em(){
-    try{
-      var s = (window.cgSession ? cgSession() : JSON.parse(localStorage.getItem('cg_sb')||'null'));
-      return s ? (s.em || s.u || '') : '';
-    }catch(e){ return ''; }
-  }
+  function inBox(){ return document.getElementById('login'); }
+  function myBox(){ return document.getElementById('area'); }
 
-  /* 로그인 입력칸만 골라 감춥니다 (닉네임 카드는 남깁니다) */
-  function fold(){
-    var box = document.getElementById('login');
-    if (!box) return;
-
-    box.querySelectorAll('input, .sns, .snsbtns, .find, .join').forEach(function(el){
-      var wrap = el.closest('label, .field, .row, .f') || el;
-      if (wrap && !wrap.classList.contains('nick-card')) wrap.style.display='none';
-    });
-
-    box.querySelectorAll('button, a').forEach(function(el){
-      var t = (el.textContent||'').trim();
-      if (/로그인|회원가입|구글|카카오|네이버|재설정/.test(t)) {
-        var w = el.closest('.snsbtns, .btns, .f, .row') || el;
-        w.style.display = 'none';
-      }
-    });
-
-    box.querySelectorAll('.lb, h2, .tit').forEach(function(el){
-      if ((el.textContent||'').trim() === 'LOGIN') el.style.display='none';
-    });
-
-    if (document.getElementById('cgWho')) return;
-    var d = document.createElement('div');
-    d.id = 'cgWho';
-    d.className = 'who-box';
-    d.innerHTML =
-      '<div class="w-l">' + (em() || '회원') + ' 님으로 로그인하셨습니다</div>'
-      + '<button type="button" onclick="cgOut()">로그아웃</button>';
-    box.appendChild(d);
-  }
-
-  function open(){
-    var box = document.getElementById('login');
-    if (!box) return;
-    box.querySelectorAll('[style*="display: none"], [style*="display:none"]')
-      .forEach(function(el){
-        if (el.id === 'nickCard') return;
-        el.style.display = '';
-      });
+  /* 로그인 안 한 모습 */
+  function asGuest(){
+    var l = inBox(), a = myBox();
+    if (l) l.classList.remove('hide');
+    if (a) a.classList.add('hide');
     var w = document.getElementById('cgWho');
     if (w) w.remove();
+    document.body.classList.remove('logged');
+  }
+
+  /* 로그인한 모습 */
+  function asUser(s){
+    var l = inBox(), a = myBox();
+    if (l) l.classList.add('hide');
+    if (a) a.classList.remove('hide');
+    document.body.classList.add('logged');
+
+    var who = document.getElementById('who');
+    if (who) who.textContent = (s.em || s.u || '회원') + ' 님으로 로그인 중입니다.';
+
+    /* 닉네임 카드는 마이페이지 쪽으로 옮깁니다 */
+    var nick = document.getElementById('nickCard');
+    if (nick && a && nick.parentElement !== a) {
+      a.insertBefore(nick, a.firstChild);
+    }
+  }
+
+  function run(){
+    var s = ses();
+    if (!s) { asGuest(); return; }
+
+    /* 토큰이 살아 있는지 서버에 한 번 물어봅니다 */
+    fetch(SB2 + '/rest/v1/profiles?select=id&limit=1', {
+      headers:{ apikey:K2, Authorization:'Bearer ' + s.t }
+    })
+    .then(function(r){
+      if (r.status === 401 || r.status === 403) {
+        if (window.cgClearSession) cgClearSession();
+        else { try{ localStorage.removeItem('cg_sb'); }catch(e){} }
+        asGuest();
+        return;
+      }
+      asUser(s);
+      /* 원래 있던 불러오기도 실행합니다 */
+      try{ if (typeof sync === 'function') sync(); }catch(e){}
+    })
+    .catch(function(){ asUser(s); });
   }
 
   window.cgOut = function(){
     if (window.cgClearSession) cgClearSession();
-    else { try{ localStorage.removeItem('cg_sb'); localStorage.removeItem('cg_user'); }catch(e){} }
-    location.reload();
+    else {
+      try{
+        localStorage.removeItem('cg_sb');
+        localStorage.removeItem('cg_user');
+      }catch(e){}
+    }
+    location.href = 'index.html';
   };
-
-  function run(){
-    var t = tok();
-    if (!t) { open(); return; }
-
-    /* 토큰이 살아 있는지 서버에 확인합니다 */
-    fetch(SB2 + '/rest/v1/profiles?select=id&limit=1', {
-      headers:{ apikey:K2, Authorization:'Bearer ' + t }
-    })
-    .then(function(r){
-      if (r.status === 401 || r.status === 403) {
-        try{ localStorage.removeItem('cg_sb'); }catch(e){}
-        open();
-        return;
-      }
-      fold();
-    })
-    .catch(function(){ fold(); });
-  }
 
   if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', run);
   else run();
-  setTimeout(run, 900);
+  setTimeout(run, 600);
   window.addEventListener('pageshow', run);
+  window.addEventListener('storage', function(e){
+    if (e.key === 'cg_sb') run();
+  });
 })();
 </script>
 </body>
