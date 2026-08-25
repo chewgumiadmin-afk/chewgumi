@@ -1350,5 +1350,80 @@ select::-ms-expand{ display:none !important }
   });
 })();
 </script>
+
+<script>
+/* ══════════════════════════════════════════════
+   결제 직전 재고 다시 확인
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var NAMES = {};
+
+  fetch(SB2 + '/rest/v1/stock_view?select=id,name,stock,state', {
+    headers:{ apikey:K2, Authorization:'Bearer ' + K2 }
+  })
+  .then(function(r){ return r.ok ? r.json() : []; })
+  .then(function(rows){ (rows||[]).forEach(function(p){ NAMES[p.name] = p; }); })
+  .catch(function(){});
+
+  function items(){
+    var out = [];
+    try {
+      var cart = JSON.parse(localStorage.getItem('cg_cart') || '[]');
+      cart.forEach(function(x){
+        var p = NAMES[x.name];
+        if (p) out.push({ id: p.id, qty: x.qty });
+      });
+    } catch(e){}
+    return out;
+  }
+
+  window.cgStockOk = function(){
+    var list = items();
+    if (!list.length) return Promise.resolve(true);
+
+    return fetch(SB2 + '/rest/v1/rpc/check_stock', {
+      method:'POST',
+      headers:{ apikey:K2, Authorization:'Bearer ' + K2, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_items: list })
+    })
+    .then(function(r){ return r.ok ? r.json() : { ok:true }; })
+    .then(function(d){
+      if (d && d.ok) return true;
+
+      var bad = (d && d.bad) || [];
+      var lines = bad.map(function(b){
+        return b.why === 'sold'
+          ? '· ' + b.name + ' — 품절되었습니다'
+          : '· ' + b.name + ' — 남은 수량 ' + b.have + '개 (요청 ' + b.want + '개)';
+      }).join('\n');
+
+      alert('재고가 부족합니다.\n\n' + lines
+        + '\n\n장바구니에서 수량을 조절해 주세요.');
+      return false;
+    })
+    .catch(function(){ return true; });
+  };
+
+  /* 결제 함수를 감쌉니다 */
+  ['goPay','payNow','doPay','submitPay'].forEach(function(n){
+    var f = window[n];
+    if (typeof f !== 'function') return;
+    var self = f;
+    window[n] = function(){
+      var args = arguments, ctx = this;
+      cgStockOk().then(function(ok){
+        if (ok) self.apply(ctx, args);
+        else {
+          var btn = document.getElementById('payBtn');
+          if (btn) { btn.disabled = false; btn.textContent = btn.dataset.was || '결제하기'; }
+        }
+      });
+      return false;
+    };
+  });
+})();
+</script>
 </body>
 </html>
