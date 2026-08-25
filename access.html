@@ -128,6 +128,7 @@ textarea:focus{outline:2px solid var(--main);outline-offset:-1px}
   background:rgba(216,37,88,.1);color:var(--main);margin-left:5px}
 .hide{display:none}
 </style>
+<script src="assets/tok.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -192,7 +193,7 @@ function tok(){
   try{
     const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
     if(!s||!s.t) return '';
-    if(s.exp && Date.now()/1000>s.exp) return '';
+    var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
     return s.t;
   }catch(e){ return ''; }
 }
