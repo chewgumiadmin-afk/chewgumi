@@ -1,0 +1,37 @@
+/* 관리자 작은 단추 */
+.adm-fab{
+  position:fixed;
+  right:16px;
+  bottom:calc(90px + env(safe-area-inset-bottom));
+  z-index:900;
+  min-height:34px;
+  padding:0 14px;
+  border:0;
+  border-radius:999px;
+  background:rgba(23,23,28,.82);
+  color:#fff;
+  font-family:inherit;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.4px;
+  cursor:pointer;
+  opacity:.42;
+  transition:opacity .2s, background .2s;
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.adm-fab:hover{ opacity:1 }
+.adm-fab.on{
+  opacity:1;
+  background:linear-gradient(135deg,#E95073,#D82558);
+}
+@media (max-width:640px){
+  .adm-fab{
+    right:12px;
+    bottom:calc(76px + env(safe-area-inset-bottom));
+    font-size:11px;
+    min-height:30px;
+    padding:0 11px;
+  }
+}
