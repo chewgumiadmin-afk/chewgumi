@@ -554,8 +554,9 @@ function render(){
         ?'<button class="mini rf" onclick="doCancel(\''+o.order_no+'\')">주문취소</button>':'')
       +'<button class="mini sh" onclick="ship(\''+o.order_no+'\','+o.id+')">발송처리+알림</button>'
       +(o.tracking_no?'<button class="mini" onclick="track(\''+o.order_no+'\')">배송조회</button>':'')
-      +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no
+      +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no&&['bank','vbank','trans'].includes(o.pay_method||'')
         ?'<button class="mini" onclick="openCash(\''+o.order_no+'\')">현금영수증</button>':'')
+      +((o.pay_method==='card'&&o.status!=='cancelled')?'<button class="mini" onclick="cardRcpt(\\''+o.order_no+'\\')">카드 영수증</button>':'')
       +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증 보기</a>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
@@ -1338,6 +1339,40 @@ sync();
       })
       .catch(function(){ toast('에스크로 등록을 보내지 못했습니다'); });
     });
+  };
+})();
+</script>
+
+<script>
+/* 카드 매출전표 보기 */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  window.cardRcpt = function(no){
+    fetch(SB2 + '/rest/v1/payments?select=pg_tid,approve_no,card_name,card_no,amount,paid_at'
+      + '&order_no=eq.' + encodeURIComponent(no) + '&status=eq.paid&limit=1', {
+      headers:{ apikey:K2, Authorization:'Bearer ' + K2 }
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      var p = (rows || [])[0];
+      if (!p) { alert('결제 기록을 찾지 못했습니다.'); return; }
+      var t = p.paid_at ? new Date(p.paid_at).toLocaleString('ko-KR') : '-';
+      alert('카드 매출전표\n'
+        + '─────────────────\n'
+        + '주문번호   ' + no + '\n'
+        + '승인번호   ' + (p.approve_no || '-') + '\n'
+        + '카드사     ' + (p.card_name || '-') + '\n'
+        + '카드번호   ' + (p.card_no || '-') + '\n'
+        + '금액       ' + Number(p.amount||0).toLocaleString('ko-KR') + '원\n'
+        + '승인일시   ' + t + '\n'
+        + '거래번호   ' + (p.pg_tid || '-') + '\n'
+        + '─────────────────\n\n'
+        + '정식 매출전표는 이지페이 가맹점 관리자\n'
+        + '(office.easypay.co.kr) 에서 출력하실 수 있습니다.');
+    })
+    .catch(function(){ alert('불러오지 못했습니다.'); });
   };
 })();
 </script>
