@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<!-- ChewGumi Reviews Admin v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>후기 관리 | CHEWGUMI</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="stylesheet" href="assets/pagelist.css">
+<script src="assets/auth.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/pagelist.js" defer></script>
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --warn:#E9A23B; --bad:#C0395C; --star:#FFB800;
+  --gray:#797979; --ink:#17171c;
+  --line:rgba(255,255,255,.85); --glass:rgba(255,255,255,.68);
+  --sp-s:clamp(0.75rem,0.7rem+0.24vw,1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.5vw,1.9rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.11),transparent 60%),
+    linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input{font-size:14.5px}}
+.wrap{max-width:900px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:var(--glass);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 12px 30px rgba(0,0,0,.07);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+.btn{
+  min-height:44px;padding:0 20px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.ok{background:linear-gradient(135deg,#3FBF7A,#2AA060)}
+.btn.no{background:rgba(255,255,255,.9);color:var(--bad);border:1px solid rgba(192,57,92,.3)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:default}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.msg{margin-top:11px;font-size:13px;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+/* 보낼 대상 */
+.tg{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 0;border-bottom:1px solid rgba(0,0,0,.055);
+}
+.tg:last-child{border-bottom:0}
+.tg input{width:20px;height:20px;flex:none;accent-color:var(--main)}
+.tg .i{flex:1;min-width:0}
+.tg .i b{display:block;font-size:14px;font-weight:700}
+.tg .i span{display:block;font-size:11.5px;color:var(--gray)}
+
+/* 받은 후기 */
+.dr{
+  padding:16px 0;border-bottom:1px solid rgba(0,0,0,.055);
+}
+.dr:last-child{border-bottom:0}
+.dr .h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.dr .st{color:var(--star);font-size:14px;letter-spacing:1px}
+.dr .who{font-size:13px;font-weight:700}
+.dr .no{font-size:11.5px;color:var(--gray)}
+.dr .tag{
+  margin-left:auto;font-size:10.5px;font-weight:800;
+  padding:2px 10px;border-radius:999px;
+}
+.dr .tag.pending{background:rgba(233,162,59,.16);color:#8A6015}
+.dr .tag.approved{background:rgba(42,160,96,.14);color:#1B6B3F}
+.dr .tag.rejected{background:rgba(0,0,0,.06);color:#666}
+.dr .body{font-size:14px;line-height:1.8;word-break:keep-all}
+.dr .img{font-size:11.5px;color:var(--main);margin-top:6px;word-break:break-all}
+
+/* 보낸 이력 */
+.ak{
+  display:grid;grid-template-columns:1fr auto;gap:4px 12px;
+  padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12.5px;
+}
+.ak:last-child{border-bottom:0}
+.ak b{font-weight:700}
+.ak .w{color:var(--gray);font-size:11.5px}
+.ak .s{font-size:11px;font-weight:700;text-align:right;white-space:nowrap}
+.ak .s.sent{color:var(--gray)}
+.ak .s.opened{color:var(--warn)}
+.ak .s.written{color:var(--ok)}
+
+.empty{padding:40px 20px;text-align:center;font-size:13.5px;color:var(--gray)}
+.hide{display:none}
+.hint{font-size:12px;color:var(--gray);line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5)}
+.hint b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>후기 관리</h1>
+      <div class="s">후기를 요청하고, 받은 것을 확인해 올립니다</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <!-- 보낼 대상 -->
+  <div class="panel">
+    <h2>후기 요청 보내기 <span class="n" id="tn">—</span></h2>
+    <div id="targets"><div class="empty">불러오는 중…</div></div>
+    <div class="btns">
+      <button class="btn sub sm" onclick="pickAll()">모두 고르기</button>
+      <button class="btn" onclick="send()" id="sendBtn">고른 분께 보내기</button>
+    </div>
+    <div class="msg" id="m1"></div>
+    <div class="hint">
+      배송한 지 <b>7일</b> 지난 주문만 나옵니다. 같은 주문에 두 번 보내지 않습니다.<br>
+      메일에는 그분만 쓸 수 있는 링크가 들어갑니다.
+    </div>
+  </div>
+
+  <!-- 받은 후기 -->
+  <div class="panel">
+    <h2>받은 후기 <span class="n" id="dn">—</span></h2>
+    <div id="drafts"><div class="empty">불러오는 중…</div></div>
+    <div class="msg" id="m2"></div>
+    <div class="hint">
+      <b>올리기</b> 를 누르면 화면에 바로 나옵니다.
+      욕설이나 광고는 <b>내리기</b> 로 걸러주세요.
+    </div>
+  </div>
+
+  <!-- 보낸 이력 -->
+  <div class="panel">
+    <h2>보낸 이력</h2>
+    <div id="asks"><div class="empty">불러오는 중…</div></div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const FN=SB+'/functions/v1/review-ask';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+let TARGETS=[];
+
+function tok(){
+  try{
+    const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+    if(!s||!s.t) return '';
+    if(s.exp && Date.now()/1000>s.exp) return '';
+    return s.t;
+  }catch(e){ return ''; }
+}
+function H(){ return {apikey:KEY,Authorization:'Bearer '+tok(),'Content-Type':'application/json'}; }
+function call(p){
+  return fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)}).then(r=>r.json());
+}
+function say(id,t,k){ const m=$(id); m.className='msg'+(k?' '+k:''); m.textContent=t; }
+function when(s){
+  const t=new Date(s);
+  return (t.getMonth()+1)+'/'+t.getDate()+' '
+    +String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+}
+
+function loadTargets(){
+  call({action:'targets'}).then(function(d){
+    if(!d.ok){ $('targets').innerHTML='<div class="empty">'+esc(d.error||'불러오지 못했습니다')+'</div>'; return; }
+    TARGETS=d.targets||[];
+    $('tn').textContent=TARGETS.length+'명';
+    if(!TARGETS.length){
+      $('targets').innerHTML='<div class="empty">보낼 대상이 없습니다</div>';
+      return;
+    }
+    $('targets').innerHTML=TARGETS.map(function(o,i){
+      return '<div class="tg">'
+        +'<input type="checkbox" id="tg'+i+'">'
+        +'<div class="i"><b>'+esc(o.buyer_name)+'</b>'
+        +'<span>'+esc(o.order_no)+' · '+esc(o.buyer_email)+'</span></div>'
+        +'</div>';
+    }).join('');
+  }).catch(function(){ $('targets').innerHTML='<div class="empty">불러오지 못했습니다</div>'; });
+}
+
+function pickAll(){
+  TARGETS.forEach(function(_,i){ const c=$('tg'+i); if(c) c.checked=true; });
+}
+
+function send(){
+  const nos=[];
+  TARGETS.forEach(function(o,i){ const c=$('tg'+i); if(c&&c.checked) nos.push(o.order_no); });
+  if(!nos.length){ say('m1','보낼 분을 고르세요.','bad'); return; }
+
+  $('sendBtn').disabled=true; say('m1','보내는 중…');
+  call({action:'send',orders:nos}).then(function(d){
+    $('sendBtn').disabled=false;
+    if(!d.ok){ say('m1',d.error||'보내지 못했습니다.','bad'); return; }
+    say('m1',d.msg||'보냈습니다.','ok');
+    loadTargets(); loadDrafts();
+  }).catch(function(){ $('sendBtn').disabled=false; say('m1','보내지 못했습니다.','bad'); });
+}
+
+function loadDrafts(){
+  call({action:'drafts'}).then(function(d){
+    if(!d.ok){ $('drafts').innerHTML='<div class="empty">'+esc(d.error||'')+'</div>'; return; }
+    const list=d.drafts||[];
+    const wait=list.filter(function(x){ return x.status==='pending'; });
+    $('dn').textContent=wait.length+'건 대기';
+
+    $('drafts').innerHTML = list.length ? list.map(function(x){
+      const KR={pending:'확인 대기',approved:'올림',rejected:'내림'};
+      return '<div class="dr">'
+        +'<div class="h">'
+          +'<span class="st">'+'★'.repeat(x.rating)+'</span>'
+          +'<span class="who">'+esc(x.author)+'</span>'
+          +'<span class="no">'+esc(x.order_no)+' · '+when(x.created_at)+'</span>'
+          +'<span class="tag '+esc(x.status)+'">'+KR[x.status]+'</span>'
+        +'</div>'
+        +'<div class="body">'+esc(x.body)+'</div>'
+        +(x.image_url?'<div class="img">사진 · '+esc(x.image_url)+'</div>':'')
+        +(x.status==='pending'
+          ? '<div class="btns">'
+            +'<button class="btn ok sm" onclick="judge('+x.id+',true)">올리기</button>'
+            +'<button class="btn no sm" onclick="judge('+x.id+',false)">내리기</button></div>'
+          : '')
+      +'</div>';
+    }).join('') : '<div class="empty">아직 받은 후기가 없습니다</div>';
+
+    const asks=d.asks||[];
+    $('asks').innerHTML = asks.length ? asks.map(function(a){
+      const st = a.written_at ? ['written','후기 남김']
+               : a.opened_at ? ['opened','열어봄']
+               : ['sent','보냄'];
+      return '<div class="ak">'
+        +'<div><b>'+esc(a.buyer_name||a.order_no)+'</b>'
+        +'<div class="w">'+esc(a.order_no)+' · '+when(a.sent_at)+'</div></div>'
+        +'<div class="s '+st[0]+'">'+st[1]+'</div>'
+      +'</div>';
+    }).join('') : '<div class="empty">보낸 이력이 없습니다</div>';
+  }).catch(function(){ $('drafts').innerHTML='<div class="empty">불러오지 못했습니다</div>'; });
+}
+
+function judge(id, ok){
+  if(!ok && !confirm('이 후기를 내릴까요?')) return;
+  say('m2','처리하는 중…');
+  call({action:'judge',id:id,ok:ok}).then(function(d){
+    if(!d.ok){ say('m2',d.error||'처리하지 못했습니다.','bad'); return; }
+    say('m2',d.msg||'처리했습니다.','ok');
+    loadDrafts();
+  }).catch(function(){ say('m2','처리하지 못했습니다.','bad'); });
+}
+
+loadTargets();
+loadDrafts();
+</script>
+</body>
+</html>
