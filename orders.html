@@ -354,6 +354,7 @@ label:has(> input[type=checkbox]){
 <script src="assets/ui.js"></script>
 <link rel="stylesheet" href="assets/pagelist.css">
 <script src="assets/pagelist.js" defer></script>
+<script src="assets/tok.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1185,7 +1186,7 @@ sync();
     try{
       var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
       if(!s||!s.t) return null;
-      if(s.exp && Date.now()/1000>s.exp) return null;
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return null;
       return s;
     }catch(e){ return null; }
   }
@@ -1237,7 +1238,7 @@ sync();
     try{
       var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
       if(!s||!s.t) return '';
-      if(s.exp && Date.now()/1000>s.exp) return '';
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
       return s.t;
     }catch(e){ return ''; }
   }
@@ -1339,7 +1340,7 @@ sync();
     try{
       var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
       if(!s||!s.t) return '';
-      if(s.exp && Date.now()/1000>s.exp) return '';
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
       return s.t;
     }catch(e){ return ''; }
   }
@@ -1448,7 +1449,7 @@ sync();
     try{
       var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
       if(!s||!s.t) return '';
-      if(s.exp && Date.now()/1000>s.exp) return '';
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
       return s.t;
     }catch(e){ return ''; }
   }
