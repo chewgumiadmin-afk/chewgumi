@@ -110,6 +110,43 @@ button,input,select{font-family:inherit;font-size:16px}
   font-size:12.5px;color:#8A3350;line-height:1.8;
 }
 .warn b{color:var(--bad)}
+
+/* 입력 상자 */
+.fm-dim{
+  position:fixed; inset:0; z-index:9500;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  background:rgba(20,10,14,.4);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.fm{
+  width:min(94vw,420px); max-height:86vh; overflow-y:auto;
+  padding:26px 26px 22px; border-radius:22px;
+  background:rgba(255,255,255,.97);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 20px 50px rgba(0,0,0,.22);
+}
+.fm h3{ font-size:17px; font-weight:800; letter-spacing:-.03em; margin:0 }
+.fm label{
+  display:block; font-size:12.5px; font-weight:600;
+  color:#555; margin:15px 0 6px;
+}
+.fm input{
+  width:100%; min-height:46px; padding:11px 14px;
+  border-radius:12px; font-family:inherit; font-size:16px;
+  border:1px solid rgba(0,0,0,.1); background:#fff; color:#17171c;
+}
+@media(min-width:1024px){ .fm input{ font-size:14.5px } }
+.fm input:focus{ outline:2px solid #D82558; outline-offset:-1px }
+.fm-b{ display:flex; gap:9px; margin-top:22px }
+.fm-b button{
+  flex:1; min-height:48px; border:0; border-radius:999px;
+  cursor:pointer; font-size:14px; font-weight:700; font-family:inherit;
+}
+.fm-b .ok{
+  background:linear-gradient(135deg,#E95073,#D82558); color:#fff;
+  box-shadow:0 5px 16px rgba(216,37,88,.24);
+}
+.fm-b .no{ background:#fff; color:#555; border:1px solid rgba(0,0,0,.1) }
 </style>
 </head>
 <body>
@@ -172,8 +209,9 @@ function member(){
     +'<div id="list"><div class="empty">불러오는 중…</div></div>'
     +'<div class="msg" id="msg"></div></div>';
 
-  rest('profiles?select=id,email,name,phone,points,grade,blocked,withdrawn_at,created_at&order=created_at.desc&limit=100')
+  rest('profiles?select=id,email,name,phone,zipcode,addr1,addr2,points,grade,memo,blocked,withdrawn_at,created_at&order=created_at.desc&limit=100')
   .then(function(rows){
+    window._MEM=rows;
     const live=rows.filter(function(x){ return !x.withdrawn_at; });
     $('cnt').textContent=live.length+'명';
     $('list').innerHTML = rows.length ? rows.map(function(p){
@@ -193,14 +231,22 @@ function member(){
 }
 
 function editM(id){
-  const n=prompt('이름'); if(n===null) return;
-  const ph=prompt('연락처'); if(ph===null) return;
-  const pt=prompt('적립금 (숫자만)'); if(pt===null) return;
-  say('바꾸는 중…');
-  call({action:'edit-member',user_id:id,name:n,phone:ph,points:Number(pt)||0})
-  .then(function(d){
-    if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
-    say(d.msg,'ok'); member();
+  const p=(window._MEM||[]).find(function(x){ return x.id===id; })||{};
+  form('회원 정보 수정',[
+    {k:'name',n:'이름',v:p.name||''},
+    {k:'phone',n:'연락처',v:p.phone||''},
+    {k:'zipcode',n:'우편번호',v:p.zipcode||''},
+    {k:'addr1',n:'주소',v:p.addr1||''},
+    {k:'addr2',n:'상세주소',v:p.addr2||''},
+    {k:'points',n:'적립금',v:String(p.points||0),num:true},
+    {k:'memo',n:'메모',v:p.memo||''}
+  ],function(o){
+    say('바꾸는 중…');
+    o.action='edit-member'; o.user_id=id; o.points=Number(o.points)||0;
+    call(o).then(function(d){
+      if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
+      say(d.msg,'ok'); member();
+    });
   });
 }
 
@@ -276,6 +322,7 @@ function banner(){
   call({action:'banner',op:'list'}).then(function(d){
     if(!d.ok){ $('list').innerHTML='<div class="empty">'+esc(d.error||'')+'</div>'; return; }
     const rows=d.rows||[];
+    window._BAN=rows;
     $('cnt').textContent=rows.length+'개';
     $('list').innerHTML = rows.length ? rows.map(function(b){
       return '<div class="row">'
@@ -293,25 +340,36 @@ function banner(){
 }
 
 function addB(){
-  const u=prompt('그림 주소 (assets/… 또는 https://…)'); if(!u) return;
-  const l=prompt('누르면 갈 곳 (비워도 됩니다)','') ;
-  const t=prompt('이름','새 배너');
-  say('더하는 중…');
-  call({action:'banner',op:'save',image_url:u,link_url:l||'',title:t||''})
-  .then(function(d){
-    if(!d.ok){ say(d.error||'더하지 못했습니다.','bad'); return; }
-    say(d.msg,'ok'); banner();
+  form('배너 더하기',[
+    {k:'title',n:'이름',v:'새 배너'},
+    {k:'image_url',n:'그림 주소',v:'assets/'},
+    {k:'link_url',n:'누르면 갈 곳',v:''},
+    {k:'place',n:'놓을 자리',v:'main'}
+  ],function(o){
+    if(!o.image_url){ say('그림 주소를 넣어주세요.','bad'); return; }
+    say('더하는 중…');
+    o.action='banner'; o.op='save';
+    call(o).then(function(d){
+      if(!d.ok){ say(d.error||'더하지 못했습니다.','bad'); return; }
+      say(d.msg,'ok'); banner();
+    });
   });
 }
 
 function editB(id){
-  const u=prompt('그림 주소'); if(u===null) return;
-  const l=prompt('누르면 갈 곳',''); if(l===null) return;
-  say('바꾸는 중…');
-  call({action:'banner',op:'save',id:id,image_url:u,link_url:l})
-  .then(function(d){
-    if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
-    say(d.msg,'ok'); banner();
+  const b=(window._BAN||[]).find(function(x){ return x.id===id; })||{};
+  form('배너 수정',[
+    {k:'title',n:'이름',v:b.title||b.alt||''},
+    {k:'image_url',n:'그림 주소',v:b.image_url||''},
+    {k:'link_url',n:'누르면 갈 곳',v:b.link_url||''},
+    {k:'place',n:'놓을 자리',v:b.place||''}
+  ],function(o){
+    say('바꾸는 중…');
+    o.action='banner'; o.op='save'; o.id=id;
+    call(o).then(function(d){
+      if(!d.ok){ say(d.error||'바꾸지 못했습니다.','bad'); return; }
+      say(d.msg,'ok'); banner();
+    });
   });
 }
 
@@ -443,6 +501,48 @@ document.querySelectorAll('.tabs button').forEach(function(b){
 });
 
 member();
+</script>
+
+<script>
+/* 한 화면에서 여러 칸 입력받기 */
+function form(title, fields, onOk){
+  var old = document.getElementById('fmDim');
+  if (old) old.remove();
+
+  var dim = document.createElement('div');
+  dim.id = 'fmDim';
+  dim.className = 'fm-dim';
+  dim.innerHTML =
+    '<div class="fm">'
+    + '<h3>' + String(title||'') + '</h3>'
+    + fields.map(function(f, i){
+        return '<label>' + String(f.n||'') + '</label>'
+          + '<input id="fm' + i + '"' + (f.num ? ' inputmode="numeric"' : '')
+          + ' value="' + String(f.v==null?'':f.v).replace(/"/g,'&quot;') + '">';
+      }).join('')
+    + '<div class="fm-b">'
+    + '<button class="ok" id="fmOk">저장</button>'
+    + '<button class="no" id="fmNo">그만두기</button>'
+    + '</div></div>';
+  document.body.appendChild(dim);
+
+  function close(){ dim.remove(); }
+  document.getElementById('fmNo').onclick = close;
+  dim.onclick = function(e){ if (e.target === dim) close(); };
+  document.getElementById('fmOk').onclick = function(){
+    var out = {};
+    fields.forEach(function(f, i){
+      out[f.k] = document.getElementById('fm' + i).value.trim();
+    });
+    close();
+    if (typeof onOk === 'function') onOk(out);
+  };
+  document.addEventListener('keydown', function esc2(e){
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc2); }
+  });
+  var f0 = document.getElementById('fm0');
+  if (f0) { f0.focus(); f0.select(); }
+}
 </script>
 </body>
 </html>
