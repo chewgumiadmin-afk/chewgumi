@@ -96,6 +96,7 @@ label{display:block;font-size:12px;font-weight:600;margin:10px 0 5px}
 <script src="assets/ui.js"></script>
 <link rel="stylesheet" href="assets/pagelist.css">
 <script src="assets/pagelist.js" defer></script>
+<script src="assets/tok.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -335,7 +336,7 @@ sync();
     try{
       var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
       if(!s||!s.t) return null;
-      if(s.exp && Date.now()/1000>s.exp) return null;
+      var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return null;
       return s;
     }catch(e){ return null; }
   }
