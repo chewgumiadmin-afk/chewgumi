@@ -147,6 +147,49 @@ dd{margin:0;word-break:keep-all}
   border-top:1px solid rgba(0,0,0,.06);text-align:center}
 .foot a{font-size:13px;color:var(--gray);margin:0 10px}
 .foot p{font-size:12px;color:var(--gray);margin-top:12px}
+
+/* 배송지 수정 상자 */
+.ad-dim{
+  position:fixed; inset:0; z-index:9500;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  background:rgba(20,10,14,.42);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.ad{
+  width:min(94vw,420px); max-height:86vh; overflow-y:auto;
+  padding:26px 26px 22px; border-radius:22px;
+  background:rgba(255,255,255,.97);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 20px 50px rgba(0,0,0,.22);
+}
+.ad h3{ font-size:18px; font-weight:800; letter-spacing:-.03em; margin:0 }
+.ad-t{ font-size:12.5px; color:var(--gray); margin-top:6px }
+.ad label{
+  display:block; font-size:12.5px; font-weight:600;
+  color:#555; margin:15px 0 6px;
+}
+.ad input{
+  width:100%; min-height:46px; padding:11px 14px;
+  border-radius:12px; font-family:inherit; font-size:16px;
+  border:1px solid rgba(0,0,0,.1); background:#fff; color:var(--ink);
+}
+@media(min-width:1024px){ .ad input{ font-size:14.5px } }
+.ad input:focus{ outline:2px solid var(--main); outline-offset:-1px }
+.ad-b{ display:flex; gap:9px; margin-top:22px }
+.ad-b button{
+  flex:1; min-height:48px; border:0; border-radius:999px;
+  cursor:pointer; font-size:14px; font-weight:700; font-family:inherit;
+}
+.ad-b .ok{
+  background:linear-gradient(135deg,var(--main2),var(--main)); color:#fff;
+  box-shadow:0 5px 16px rgba(216,37,88,.24);
+}
+.ad-b .no{ background:#fff; color:#555; border:1px solid rgba(0,0,0,.1) }
+.acts button{
+  flex:1; min-width:130px; min-height:48px; border-radius:999px; cursor:pointer;
+  font-size:13.5px; font-weight:700; font-family:inherit;
+  border:1px solid var(--line); background:rgba(255,255,255,.9); color:var(--ink);
+}
 </style>
 </head>
 <body>
@@ -225,7 +268,7 @@ function find(){
   .then(function(d){
     $('findBtn').disabled=false;
     if(!d||!d.ok){ say((d&&d.msg)||'주문을 찾지 못했습니다.','bad'); $('resBox').classList.add('hide'); return; }
-    say(''); draw(d.order);
+    say(''); window._ORD = d.order; draw(d.order);
   })
   .catch(function(){ $('findBtn').disabled=false; say('조회하지 못했습니다. 잠시 후 다시 시도해 주세요.','bad'); });
 }
@@ -277,6 +320,8 @@ function draw(o){
       +(o.courier?'<dt>택배</dt><dd>'+esc(o.courier)+' '+esc(o.tracking_no||'')+'</dd>':'')
     +'</dl>'
     +'<div class="acts">'+pay+track
+      +(['pending','paid','preparing'].includes(o.status)
+        ? '<button type="button" onclick="editAddr()">배송지 수정</button>' : '')
       +'<a href="index.html">쇼핑 계속하기</a></div>';
 
   $('resBox').classList.remove('hide');
@@ -291,6 +336,94 @@ function draw(o){
   ['fNo','fKey'].forEach(function(id){
     $(id).addEventListener('keydown',function(e){ if(e.key==='Enter') find(); });
   });
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   비회원 배송지 수정
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function form(title, fields, onOk){
+    var old = document.getElementById('adDim');
+    if (old) old.remove();
+
+    var dim = document.createElement('div');
+    dim.id = 'adDim';
+    dim.className = 'ad-dim';
+    dim.innerHTML =
+      '<div class="ad">'
+      + '<h3>' + String(title||'') + '</h3>'
+      + '<p class="ad-t">발송 전까지 바꾸실 수 있습니다.</p>'
+      + fields.map(function(f, i){
+          return '<label>' + String(f.n||'') + '</label>'
+            + '<input id="ad' + i + '" value="'
+            + String(f.v==null?'':f.v).replace(/"/g,'&quot;') + '"'
+            + (f.ph ? ' placeholder="' + f.ph + '"' : '') + '>';
+        }).join('')
+      + '<div class="ad-b">'
+      + '<button class="ok" id="adOk">저장</button>'
+      + '<button class="no" id="adNo">그만두기</button>'
+      + '</div></div>';
+    document.body.appendChild(dim);
+
+    function close(){ dim.remove(); }
+    document.getElementById('adNo').onclick = close;
+    dim.onclick = function(e){ if (e.target === dim) close(); };
+    document.getElementById('adOk').onclick = function(){
+      var out = {};
+      fields.forEach(function(f, i){
+        out[f.k] = document.getElementById('ad' + i).value.trim();
+      });
+      close();
+      onOk(out);
+    };
+    var f0 = document.getElementById('ad0');
+    if (f0) { f0.focus(); f0.select(); }
+  }
+
+  window.editAddr = function(){
+    var o = window._ORD;
+    if (!o) return;
+
+    form('배송지 수정', [
+      { k:'name',  n:'받는 분',   v:o.buyer_name || '' },
+      { k:'phone', n:'연락처',    v:'', ph:'010-0000-0000' },
+      { k:'zip',   n:'우편번호',  v:o.zipcode || '' },
+      { k:'addr1', n:'주소',      v:o.addr1 || '' },
+      { k:'addr2', n:'상세주소',  v:o.addr2 || '' },
+      { k:'memo',  n:'요청사항',  v:o.memo || '', ph:'문 앞에 놓아주세요' }
+    ], function(v){
+      var m = document.getElementById('m1');
+      if (m) { m.className = 'msg'; m.textContent = '바꾸는 중…'; }
+
+      fetch(SB2 + '/rest/v1/rpc/guest_edit_addr', {
+        method:'POST',
+        headers:{ apikey:K2, Authorization:'Bearer ' + K2, 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          p_no: o.order_no,
+          p_key: document.getElementById('fKey').value.trim(),
+          p_name: v.name, p_phone: v.phone,
+          p_zip: v.zip, p_addr1: v.addr1, p_addr2: v.addr2, p_memo: v.memo
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (!d || !d.ok) {
+          if (m) { m.className = 'msg bad'; m.textContent = (d && d.msg) || '바꾸지 못했습니다.'; }
+          return;
+        }
+        if (m) { m.className = 'msg ok'; m.textContent = d.msg; }
+        if (typeof find === 'function') find();
+      })
+      .catch(function(){
+        if (m) { m.className = 'msg bad'; m.textContent = '바꾸지 못했습니다.'; }
+      });
+    });
+  };
 })();
 </script>
 </body>
