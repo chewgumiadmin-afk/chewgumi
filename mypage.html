@@ -527,6 +527,41 @@ sync();
   box-shadow:0 4px 14px rgba(216,37,88,.22);
 }
 .again-pay:active{ transform:scale(.98) }
+
+/* 로그인한 분 안내 */
+.who-box{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:6px;
+  padding:16px 18px;
+  border-radius:16px;
+  background:rgba(255,244,247,.8);
+  border:1px solid rgba(255,189,204,.75);
+}
+.who-box .w-l{
+  flex:1;
+  min-width:0;
+  font-size:13.5px;
+  font-weight:600;
+  color:#17171c;
+  word-break:break-all;
+}
+.who-box button{
+  flex:none;
+  min-height:38px;
+  padding:0 16px;
+  border:1px solid rgba(0,0,0,.1);
+  border-radius:999px;
+  background:#fff;
+  color:#797979;
+  font-family:inherit;
+  font-size:12.5px;
+  font-weight:600;
+  cursor:pointer;
+}
+.who-box button:hover{ color:#C0395C; border-color:rgba(192,57,92,.3) }
 </style>
 
 <script>
@@ -574,6 +609,109 @@ sync();
   else mark();
   setTimeout(mark, 900);
   setTimeout(mark, 2200);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   로그인했으면 로그인 상자를 감춥니다
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function tok(){
+    if (window.cgTok) return cgTok();
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return '';
+      var ms = s.exp ? s.exp*1000 : (s.e||0);
+      if (ms && Date.now() > ms) return '';
+      return s.t;
+    }catch(e){ return ''; }
+  }
+
+  function em(){
+    try{
+      var s = (window.cgSession ? cgSession() : JSON.parse(localStorage.getItem('cg_sb')||'null'));
+      return s ? (s.em || s.u || '') : '';
+    }catch(e){ return ''; }
+  }
+
+  /* 로그인 입력칸만 골라 감춥니다 (닉네임 카드는 남깁니다) */
+  function fold(){
+    var box = document.getElementById('login');
+    if (!box) return;
+
+    box.querySelectorAll('input, .sns, .snsbtns, .find, .join').forEach(function(el){
+      var wrap = el.closest('label, .field, .row, .f') || el;
+      if (wrap && !wrap.classList.contains('nick-card')) wrap.style.display='none';
+    });
+
+    box.querySelectorAll('button, a').forEach(function(el){
+      var t = (el.textContent||'').trim();
+      if (/로그인|회원가입|구글|카카오|네이버|재설정/.test(t)) {
+        var w = el.closest('.snsbtns, .btns, .f, .row') || el;
+        w.style.display = 'none';
+      }
+    });
+
+    box.querySelectorAll('.lb, h2, .tit').forEach(function(el){
+      if ((el.textContent||'').trim() === 'LOGIN') el.style.display='none';
+    });
+
+    if (document.getElementById('cgWho')) return;
+    var d = document.createElement('div');
+    d.id = 'cgWho';
+    d.className = 'who-box';
+    d.innerHTML =
+      '<div class="w-l">' + (em() || '회원') + ' 님으로 로그인하셨습니다</div>'
+      + '<button type="button" onclick="cgOut()">로그아웃</button>';
+    box.appendChild(d);
+  }
+
+  function open(){
+    var box = document.getElementById('login');
+    if (!box) return;
+    box.querySelectorAll('[style*="display: none"], [style*="display:none"]')
+      .forEach(function(el){
+        if (el.id === 'nickCard') return;
+        el.style.display = '';
+      });
+    var w = document.getElementById('cgWho');
+    if (w) w.remove();
+  }
+
+  window.cgOut = function(){
+    if (window.cgClearSession) cgClearSession();
+    else { try{ localStorage.removeItem('cg_sb'); localStorage.removeItem('cg_user'); }catch(e){} }
+    location.reload();
+  };
+
+  function run(){
+    var t = tok();
+    if (!t) { open(); return; }
+
+    /* 토큰이 살아 있는지 서버에 확인합니다 */
+    fetch(SB2 + '/rest/v1/profiles?select=id&limit=1', {
+      headers:{ apikey:K2, Authorization:'Bearer ' + t }
+    })
+    .then(function(r){
+      if (r.status === 401 || r.status === 403) {
+        try{ localStorage.removeItem('cg_sb'); }catch(e){}
+        open();
+        return;
+      }
+      fold();
+    })
+    .catch(function(){ fold(); });
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', run);
+  else run();
+  setTimeout(run, 900);
+  window.addEventListener('pageshow', run);
 })();
 </script>
 </body>
