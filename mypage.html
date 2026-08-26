@@ -517,8 +517,7 @@ function loadOrders(){
         +'<div class="o-b">'+its
       +(['pending','paid','preparing'].includes(o.status)
         ? '<div class="o-act">'
-          + '<button type="button" onclick="myEditAddr(\''+o.order_no+'\')">배송지 수정</button>'
-          + '<button type="button" onclick="myChangeQty(\''+o.order_no+'\')">수량 변경</button>'
+          + '<button type="button" onclick="editOrder(\''+o.order_no+'\')">주문 수정</button>'
           + '<button type="button" class="warn" onclick="myCancel(\''+o.order_no+'\')">주문 취소</button>'
           + '</div>' : '')
         +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
@@ -739,6 +738,76 @@ body:not(.logged) #area{ display:none !important }
 @media (max-width:480px){
   .o-act button{ font-size:12px; min-height:36px; min-width:88px }
 }
+
+/* 주문 수정 */
+.eo-dim{
+  position:fixed;inset:0;z-index:9500;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  background:rgba(20,10,14,.44);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.eo{
+  width:min(94vw,440px);max-height:90vh;overflow-y:auto;
+  padding:26px 24px 22px;border-radius:22px;
+  background:rgba(255,255,255,.98);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 20px 50px rgba(0,0,0,.24);
+}
+.eo h3{font-size:19px;font-weight:800;letter-spacing:-.03em;margin:0}
+.eo-t{font-size:12.5px;color:#797979;margin-top:5px}
+.eo-sec{
+  font-size:10.5px;letter-spacing:1.6px;font-weight:700;color:#797979;
+  text-transform:uppercase;margin:22px 0 10px;padding-bottom:8px;
+  border-bottom:1px solid rgba(0,0,0,.07);
+}
+.eo-it{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid rgba(0,0,0,.05);
+}
+.eo-it:last-child{border-bottom:0}
+.eo-it.zero{opacity:.4}
+.eo-n{flex:1;min-width:0}
+.eo-n b{display:block;font-size:13.5px;font-weight:700;
+  letter-spacing:-.02em;line-height:1.45;word-break:keep-all}
+.eo-n span{display:block;font-size:11.5px;color:#797979;margin-top:2px}
+.eo-q{display:flex;align-items:center;gap:2px;flex:none}
+.eo-q button{
+  width:32px;height:32px;border:1px solid rgba(0,0,0,.12);
+  border-radius:9px;background:#fff;color:#555;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+}
+.eo-q button:hover{background:#FFE4E6;color:#D82558;border-color:#FFBDCC}
+.eo-q em{min-width:34px;text-align:center;font-style:normal;
+  font-size:14.5px;font-weight:800}
+.eo-empty{padding:22px 0;text-align:center;font-size:13px;color:#797979}
+.eo-sum{margin-top:14px;padding:14px 16px;border-radius:14px;background:rgba(0,0,0,.028)}
+.eo-row{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:13px;color:#555;padding:3px 0}
+.eo-row b{font-weight:700;color:#17171c}
+.eo-row.total{margin-top:8px;padding-top:10px;
+  border-top:1px solid rgba(0,0,0,.08);font-size:14px}
+.eo-row.total b{font-size:16px;font-weight:800;color:#D82558}
+.eo-diff{margin-top:10px;padding:9px 12px;border-radius:10px;
+  font-size:12.5px;font-weight:600;text-align:center}
+.eo-diff.up{background:rgba(233,162,59,.14);color:#8A6015}
+.eo-diff.down{background:rgba(42,160,96,.12);color:#1B6B3F}
+.eo label{display:block;font-size:12.5px;font-weight:600;color:#555;margin:13px 0 6px}
+.eo input{
+  width:100%;min-height:46px;padding:11px 14px;border-radius:12px;
+  font-family:inherit;font-size:16px;
+  border:1px solid rgba(0,0,0,.1);background:#fff;color:#17171c;
+}
+@media(min-width:1024px){ .eo input{font-size:14.5px} }
+.eo input:focus{outline:2px solid #D82558;outline-offset:-1px}
+.eo-b{display:flex;gap:9px;margin-top:24px}
+.eo-b button{flex:1;min-height:50px;border:0;border-radius:999px;
+  cursor:pointer;font-size:14.5px;font-weight:700;font-family:inherit}
+.eo-b .ok{background:linear-gradient(135deg,#E95073,#D82558);color:#fff;
+  box-shadow:0 5px 16px rgba(216,37,88,.24)}
+.eo-b .no{background:#fff;color:#555;border:1px solid rgba(0,0,0,.1)}
+.eo-m{margin-top:12px;font-size:13px;text-align:center;min-height:20px;color:#797979}
+.eo-m.ok{color:#2AA060} .eo-m.bad{color:#C0395C}
 </style>
 
 <script>
@@ -884,144 +953,70 @@ body:not(.logged) #area{ display:none !important }
 })();
 </script>
 
-<script>
-/* ══════════════════════════════════════════════
-   회원 주문 — 배송지 수정 단추
-   ══════════════════════════════════════════════ */
-(function(){
-  var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 
-  function tk(){ return (window.cgTok ? cgTok() : ''); }
 
-  function form(title, fields, onOk){
-    var old = document.getElementById('myDim');
-    if (old) old.remove();
-    var dim = document.createElement('div');
-    dim.id = 'myDim';
-    dim.className = 'my-dim';
-    dim.innerHTML =
-      '<div class="my-f"><h3>' + title + '</h3>'
-      + '<p class="my-t">발송 전까지만 바꾸실 수 있습니다.</p>'
-      + fields.map(function(f, i){
-          return '<label>' + f.n + '</label><input id="myf' + i + '" value="'
-            + String(f.v==null?'':f.v).replace(/"/g,'&quot;') + '">';
-        }).join('')
-      + '<div class="my-b"><button class="ok" id="myOk">저장</button>'
-      + '<button class="no" id="myNo">그만두기</button></div>'
-      + '<div class="my-m" id="myM"></div></div>';
-    document.body.appendChild(dim);
-    document.getElementById('myNo').onclick = function(){ dim.remove(); };
-    dim.onclick = function(e){ if (e.target === dim) dim.remove(); };
-    document.getElementById('myOk').onclick = function(){
-      var o = {};
-      fields.forEach(function(f, i){ o[f.k] = document.getElementById('myf' + i).value.trim(); });
-      onOk(o, dim);
-    };
-    var f0 = document.getElementById('myf0');
-    if (f0) { f0.focus(); f0.select(); }
-  }
 
-  window.myEditAddr = function(no){
-    fetch(SB2 + '/rest/v1/orders?select=order_no,buyer_name,buyer_phone,zipcode,addr1,addr2,memo,status'
-      + '&order_no=eq.' + encodeURIComponent(no) + '&limit=1', {
-      headers:{ apikey:K2, Authorization:'Bearer ' + tk() }
-    })
-    .then(function(r){ return r.ok ? r.json() : []; })
-    .then(function(rows){
-      var o = (rows || [])[0];
-      if (!o) { alert('주문을 찾지 못했습니다.'); return; }
-      if (['shipping','delivered','cancelled'].indexOf(o.status) > -1) {
-        alert('이미 발송되어 바꿀 수 없습니다.\n고객센터로 연락 주세요.');
-        return;
-      }
-
-      form('배송지 수정', [
-        { k:'buyer_name',  n:'받는 분',   v:o.buyer_name || '' },
-        { k:'buyer_phone', n:'연락처',    v:o.buyer_phone || '' },
-        { k:'zipcode',     n:'우편번호',  v:o.zipcode || '' },
-        { k:'addr1',       n:'주소',      v:o.addr1 || '' },
-        { k:'addr2',       n:'상세주소',  v:o.addr2 || '' },
-        { k:'memo',        n:'배송 요청', v:o.memo || '' }
-      ], function(v, dim){
-        var m = document.getElementById('myM');
-        if (m) { m.className = 'my-m'; m.textContent = '바꾸는 중…'; }
-
-        fetch(SB2 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
-          method:'PATCH',
-          headers:{ apikey:K2, Authorization:'Bearer ' + tk(),
-            'Content-Type':'application/json', Prefer:'return=minimal' },
-          body: JSON.stringify(v)
-        })
-        .then(function(r){
-          if (!r.ok) {
-            if (m) { m.className = 'my-m bad'; m.textContent = '바꾸지 못했습니다.'; }
-            return;
-          }
-          if (m) { m.className = 'my-m ok'; m.textContent = '배송지를 바꿨습니다.'; }
-          setTimeout(function(){
-            dim.remove();
-            try{ if (typeof loadOrders === 'function') loadOrders(); }catch(e){}
-          }, 900);
-        })
-        .catch(function(){
-          if (m) { m.className = 'my-m bad'; m.textContent = '바꾸지 못했습니다.'; }
-        });
-      });
-    });
-  };
-
-  /* 주문 목록에 단추를 답니다 */
-  function mark(){
-    var list = document.getElementById('list');
-    if (!list) return;
-    list.querySelectorAll('.o-row, .order, li, .oc').forEach(function(row){
-      if (row.dataset.addrBtn) return;
-      var t = row.textContent || '';
-      if (!/입금\s*대기|결제\s*완료|상품\s*준비|배송\s*준비/.test(t)) return;
-      var m = t.match(/\d{8}-\d{4,7}/);
-      if (!m) return;
-      row.dataset.addrBtn = '1';
-      var b = document.createElement('button');
-      b.className = 'addr-btn';
-      b.type = 'button';
-      b.textContent = '배송지 수정';
-      b.onclick = function(e){ e.stopPropagation(); myEditAddr(m[0]); };
-      row.appendChild(b);
-    });
-  }
-
-  var list = document.getElementById('list');
-  if (list && window.MutationObserver) {
-    var t = null;
-    new MutationObserver(function(){
-      clearTimeout(t); t = setTimeout(mark, 250);
-    }).observe(list, { childList:true, subtree:true });
-  }
-  setTimeout(mark, 1200);
-  setTimeout(mark, 2600);
-})();
-</script>
 
 <script>
 /* ══════════════════════════════════════════════
-   주문 수정 — 수량 변경 · 취소
-   (배송지 수정은 myEditAddr 가 이미 있습니다)
+   주문 수정 — 배송지와 수량을 한 화면에서
    ══════════════════════════════════════════════ */
 (function(){
-  var SB4='https://psynvpuedzjvytsgdhgg.supabase.co';
-  var K4='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var SB5='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K5='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var ITEMS = [], WAS = [], BASE = 0, NO = '', SHIP = 2500, FREE = 30000;
 
   function tk(){ return (window.cgTok ? cgTok() : ''); }
   function hh(){
-    return { apikey:K4, Authorization:'Bearer '+tk(), 'Content-Type':'application/json' };
+    return { apikey:K5, Authorization:'Bearer '+tk(), 'Content-Type':'application/json' };
   }
-  function won2(n){ return Number(n||0).toLocaleString('ko-KR'); }
+  function w2(n){ return Number(n||0).toLocaleString('ko-KR'); }
+  function e2(s){
+    return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
 
-  /* ── 수량 변경 ── */
-  window.myChangeQty = function(no){
-    fetch(SB4 + '/rest/v1/orders?select=id,order_no,status,pay_amount,ship_fee,'
-      + 'order_items(id,product_id,product_name,qty,price)'
+  function recount(){
+    var goods = 0;
+    ITEMS.forEach(function(it){ goods += Number(it.price||0) * Number(it.qty||0); });
+    var ship = (goods === 0 || goods >= FREE) ? 0 : SHIP;
+    var box = document.getElementById('eoSum');
+    if (!box) return;
+    var diff = (goods + ship) - BASE;
+
+    box.innerHTML =
+      '<div class="eo-row"><span>상품 금액</span><b>' + w2(goods) + '원</b></div>'
+      + '<div class="eo-row"><span>배송비</span><b>'
+        + (ship ? w2(ship) + '원' : '무료') + '</b></div>'
+      + '<div class="eo-row total"><span>바뀐 결제 금액</span><b>'
+        + w2(goods + ship) + '원</b></div>'
+      + (diff !== 0
+          ? '<div class="eo-diff ' + (diff > 0 ? 'up' : 'down') + '">'
+            + (diff > 0 ? '추가로 ' + w2(diff) + '원을 결제하셔야 합니다'
+                        : w2(-diff) + '원을 환불해 드립니다') + '</div>' : '')
+      + (goods === 0
+          ? '<div class="eo-diff up">상품이 없으면 주문이 취소됩니다</div>' : '');
+  }
+
+  window.eoQty = function(i, d){
+    var it = ITEMS[i];
+    if (!it) return;
+    var q = Number(it.qty||0) + d;
+    if (q < 0) q = 0;
+    if (q > 99) q = 99;
+    it.qty = q;
+    var el = document.getElementById('eoQ' + i);
+    if (el) el.textContent = q;
+    var row = document.getElementById('eoR' + i);
+    if (row) row.classList.toggle('zero', q === 0);
+    recount();
+  };
+
+  window.editOrder = function(no){
+    NO = no;
+    fetch(SB5 + '/rest/v1/orders?select=order_no,buyer_name,buyer_phone,zipcode,'
+      + 'addr1,addr2,memo,status,pay_amount,order_items(id,product_name,qty,unit_price)'
       + '&order_no=eq.' + encodeURIComponent(no) + '&limit=1', { headers: hh() })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){
@@ -1031,110 +1026,107 @@ body:not(.logged) #area{ display:none !important }
         alert('이미 발송되어 바꿀 수 없습니다.'); return;
       }
 
-      var items = o.order_items || [];
-      if (!items.length) { alert('상품 정보가 없습니다.'); return; }
-
-      var it = items[0];
-      if (items.length > 1) {
-        var pick = prompt('어느 상품을 바꿀까요?\n\n'
-          + items.map(function(x,i){ return (i+1)+'. '+x.product_name+' × '+x.qty; }).join('\n')
-          + '\n\n번호를 넣어주세요', '1');
-        if (pick === null) return;
-        it = items[Number(pick) - 1];
-        if (!it) { alert('없는 번호입니다.'); return; }
-      }
-
-      var q = prompt('「' + it.product_name + '」\n\n'
-        + '지금 ' + it.qty + '개입니다. 몇 개로 바꿀까요?\n'
-        + '(0 을 넣으면 이 상품을 뺍니다)', String(it.qty));
-      if (q === null) return;
-      q = Number(q);
-      if (isNaN(q) || q < 0) { alert('숫자를 넣어주세요.'); return; }
-      if (q === it.qty) return;
-
-      /* 재고를 먼저 봅니다 */
-      var more = q - it.qty;
-      var go = more <= 0
-        ? Promise.resolve({ ok:true })
-        : fetch(SB4 + '/rest/v1/rpc/check_stock', {
-            method:'POST', headers: hh(),
-            body: JSON.stringify({ p_items:[{ id: it.product_id, qty: more }] })
-          }).then(function(r){ return r.ok ? r.json() : { ok:true }; });
-
-      go.then(function(st){
-        if (!st.ok) {
-          var b = (st.bad || [{}])[0];
-          alert('재고가 모자랍니다.\n남은 수량 ' + (b.have || 0) + '개');
-          return;
-        }
-
-        var diff = (q - it.qty) * Number(it.price || 0);
-        var paidNow = ['paid','preparing'].indexOf(o.status) > -1;
-
-        if (!confirm('수량을 ' + it.qty + '개 → ' + q + '개로 바꿉니다.\n\n'
-          + (diff > 0 ? '추가 결제 ' + won2(diff) + '원이 필요합니다.\n'
-            : diff < 0 ? '환불 ' + won2(-diff) + '원이 생깁니다.\n' : '')
-          + (paidNow ? '\n결제된 주문이라 요청으로 접수되고,\n하루 안에 연락드립니다.\n' : '')
-          + '\n계속할까요?')) return;
-
-        if (paidNow) {
-          /* 결제된 주문 — 요청만 남깁니다 */
-          fetch(SB4 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
-            method:'PATCH',
-            headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
-            body: JSON.stringify({
-              memo: '[수량변경요청] ' + it.product_name + ' ' + it.qty + '→' + q
-            })
-          })
-          .then(function(r){
-            alert(r.ok
-              ? '수량 변경을 요청했습니다.\n하루 안에 연락드리겠습니다.'
-              : '요청하지 못했습니다.');
-            if (r.ok && typeof loadOrders === 'function') loadOrders();
-          });
-          return;
-        }
-
-        /* 입금 전이면 바로 바꿉니다 */
-        var body = q === 0 ? null : { qty: q };
-        var req = q === 0
-          ? fetch(SB4 + '/rest/v1/order_items?id=eq.' + it.id,
-              { method:'DELETE', headers: hh() })
-          : fetch(SB4 + '/rest/v1/order_items?id=eq.' + it.id, {
-              method:'PATCH',
-              headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
-              body: JSON.stringify(body)
-            });
-
-        req.then(function(r){
-          if (!r.ok) { alert('바꾸지 못했습니다.'); return; }
-          /* 금액을 다시 셉니다 */
-          var goods = 0;
-          items.forEach(function(x){
-            goods += Number(x.price || 0) * (x.id === it.id ? q : x.qty);
-          });
-          var ship = goods >= 30000 ? 0 : Number(o.ship_fee || 2500);
-          if (goods === 0) ship = 0;
-
-          return fetch(SB4 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
-            method:'PATCH',
-            headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
-            body: JSON.stringify({
-              goods_amount: goods, ship_fee: ship, pay_amount: goods + ship
-            })
-          }).then(function(){
-            alert('바꿨습니다.\n결제 금액 ' + won2(goods + ship) + '원');
-            if (typeof loadOrders === 'function') loadOrders();
-          });
-        });
+      WAS = (o.order_items || []).map(function(x){
+        return { id:x.id, qty:Number(x.qty||0) };
       });
+      ITEMS = (o.order_items || []).map(function(x){
+        return { id:x.id, name:x.product_name,
+                 qty:Number(x.qty||0), price:Number(x.unit_price||0) };
+      });
+      BASE = Number(o.pay_amount || 0);
+
+      var old = document.getElementById('eoDim');
+      if (old) old.remove();
+
+      var dim = document.createElement('div');
+      dim.id = 'eoDim';
+      dim.className = 'eo-dim';
+      dim.innerHTML =
+        '<div class="eo"><h3>주문 수정</h3>'
+        + '<p class="eo-t">발송 전까지 바꾸실 수 있습니다.</p>'
+        + '<div class="eo-sec">주문 상품</div>'
+        + '<div class="eo-items">'
+        + (ITEMS.length ? ITEMS.map(function(it, i){
+            return '<div class="eo-it" id="eoR' + i + '">'
+              + '<div class="eo-n"><b>' + e2(it.name) + '</b>'
+              + '<span>' + w2(it.price) + '원</span></div>'
+              + '<div class="eo-q">'
+                + '<button type="button" onclick="eoQty(' + i + ',-1)">−</button>'
+                + '<em id="eoQ' + i + '">' + it.qty + '</em>'
+                + '<button type="button" onclick="eoQty(' + i + ',1)">+</button>'
+              + '</div></div>';
+          }).join('') : '<p class="eo-empty">상품 정보가 없습니다</p>')
+        + '</div><div class="eo-sum" id="eoSum"></div>'
+        + '<div class="eo-sec">받는 곳</div>'
+        + '<label>받는 분</label><input id="eoName" value="' + e2(o.buyer_name || '') + '">'
+        + '<label>연락처</label><input id="eoPhone" value="' + e2(o.buyer_phone || '') + '" '
+          + 'placeholder="010-0000-0000">'
+        + '<label>우편번호</label><input id="eoZip" value="' + e2(o.zipcode || '') + '" inputmode="numeric">'
+        + '<label>주소</label><input id="eoA1" value="' + e2(o.addr1 || '') + '">'
+        + '<label>상세주소</label><input id="eoA2" value="' + e2(o.addr2 || '') + '">'
+        + '<label>요청사항</label><input id="eoMemo" value="' + e2(o.memo || '') + '" '
+          + 'placeholder="문 앞에 놓아주세요">'
+        + '<div class="eo-b"><button class="ok" id="eoOk">저장</button>'
+        + '<button class="no" id="eoNo">그만두기</button></div>'
+        + '<div class="eo-m" id="eoM"></div></div>';
+      document.body.appendChild(dim);
+
+      recount();
+      document.getElementById('eoNo').onclick = function(){ dim.remove(); };
+      dim.onclick = function(e){ if (e.target === dim) dim.remove(); };
+      document.getElementById('eoOk').onclick = function(){ save(dim); };
     })
     .catch(function(){ alert('불러오지 못했습니다.'); });
   };
 
-  /* ── 주문 취소 ── */
+  function save(dim){
+    var m = document.getElementById('eoM');
+    function say(t, k){
+      if (!m) return;
+      m.className = 'eo-m' + (k ? ' ' + k : '');
+      m.textContent = t;
+    }
+    say('저장하는 중…');
+
+    var jobs = [];
+    ITEMS.forEach(function(it){
+      var old = WAS.find(function(x){ return x.id === it.id; });
+      if (!old || old.qty === it.qty) return;
+      jobs.push(fetch(SB5 + '/rest/v1/rpc/guest_change_qty', {
+        method:'POST', headers: hh(),
+        body: JSON.stringify({ p_no:NO, p_key:'', p_item_id:it.id, p_qty:it.qty })
+      }).then(function(r){ return r.ok ? r.json() : { ok:false, msg:'수량을 바꾸지 못했습니다.' }; }));
+    });
+
+    jobs.push(fetch(SB5 + '/rest/v1/rpc/guest_edit_addr', {
+      method:'POST', headers: hh(),
+      body: JSON.stringify({
+        p_no:NO, p_key:'',
+        p_name: document.getElementById('eoName').value.trim(),
+        p_phone: document.getElementById('eoPhone').value.trim(),
+        p_zip: document.getElementById('eoZip').value.trim(),
+        p_addr1: document.getElementById('eoA1').value.trim(),
+        p_addr2: document.getElementById('eoA2').value.trim(),
+        p_memo: document.getElementById('eoMemo').value.trim()
+      })
+    }).then(function(r){ return r.ok ? r.json() : { ok:false, msg:'배송지를 바꾸지 못했습니다.' }; }));
+
+    Promise.all(jobs).then(function(rs){
+      var bad = rs.filter(function(x){ return !x || !x.ok; });
+      if (bad.length) { say((bad[0] && bad[0].msg) || '바꾸지 못했습니다.', 'bad'); return; }
+      var note = rs.map(function(x){ return x.msg; }).filter(Boolean).join('\n');
+      say('저장했습니다.', 'ok');
+      setTimeout(function(){
+        dim.remove();
+        if (note) alert(note);
+        if (typeof loadOrders === 'function') loadOrders();
+      }, 700);
+    })
+    .catch(function(){ say('저장하지 못했습니다.', 'bad'); });
+  }
+
   window.myCancel = function(no){
-    fetch(SB4 + '/rest/v1/orders?select=status,pay_amount&order_no=eq.'
+    fetch(SB5 + '/rest/v1/orders?select=status,pay_amount&order_no=eq.'
       + encodeURIComponent(no) + '&limit=1', { headers: hh() })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){
@@ -1143,46 +1135,26 @@ body:not(.logged) #area{ display:none !important }
       if (['shipping','delivered','cancelled'].indexOf(o.status) > -1) {
         alert(o.status === 'shipping'
           ? '이미 발송되어 취소할 수 없습니다.\n받으신 뒤 반품으로 진행해 주세요.'
-          : o.status === 'delivered'
-          ? '배송이 끝난 주문입니다.\n반품은 고객센터로 연락 주세요.'
+          : o.status === 'delivered' ? '배송이 끝난 주문입니다.'
           : '이미 취소된 주문입니다.');
         return;
       }
-
-      var paidNow = ['paid','preparing'].indexOf(o.status) > -1;
+      var paid = ['paid','preparing'].indexOf(o.status) > -1;
       if (!confirm('주문을 취소합니다.\n\n'
-        + (paidNow ? '· 결제하신 ' + won2(o.pay_amount) + '원은 하루 안에 환불해 드립니다\n' : '')
+        + (paid ? '· 결제하신 ' + w2(o.pay_amount) + '원은 하루 안에 환불해 드립니다\n' : '')
         + '· 되돌릴 수 없습니다\n\n계속할까요?')) return;
 
       var why = prompt('취소 사유를 적어주세요.', '단순 변심');
       if (why === null) return;
 
-      fetch(SB4 + '/rest/v1/rpc/guest_cancel', {
+      fetch(SB5 + '/rest/v1/rpc/guest_cancel', {
         method:'POST', headers: hh(),
-        body: JSON.stringify({ p_no: no, p_key: '', p_reason: why })
+        body: JSON.stringify({ p_no:no, p_key:'', p_reason:why })
       })
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){
-        /* 회원은 본인 확인이 필요 없어 실패하면 직접 처리합니다 */
-        if (d && d.ok) {
-          alert(d.msg);
-          if (typeof loadOrders === 'function') loadOrders();
-          return;
-        }
-        return fetch(SB4 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
-          method:'PATCH',
-          headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
-          body: JSON.stringify(paidNow
-            ? { memo: '[취소요청] ' + why }
-            : { status:'cancelled', cancelled_at: new Date().toISOString(),
-                memo: '[고객취소] ' + why })
-        }).then(function(r){
-          alert(r.ok
-            ? (paidNow ? '취소를 요청했습니다.\n환불은 하루 안에 처리해 드립니다.'
-                       : '주문을 취소했습니다.')
-            : '취소하지 못했습니다.');
-          if (r.ok && typeof loadOrders === 'function') loadOrders();
-        });
+        alert((d && d.msg) || '취소하지 못했습니다.');
+        if (d && d.ok && typeof loadOrders === 'function') loadOrders();
       })
       .catch(function(){ alert('취소하지 못했습니다.'); });
     });
