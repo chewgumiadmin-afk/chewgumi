@@ -517,7 +517,7 @@ function loadOrders(){
         +'<div class="o-b">'+its
       +(['pending','paid','preparing'].includes(o.status)
         ? '<div class="o-act">'
-          + '<button type="button" onclick="editOrder(\''+o.order_no+'\')">주문 수정</button>'
+          + '<button type="button" onclick="cgEditOrder(\\''+o.order_no+'\\',\\'\\')">주문 수정</button>'
           + '<button type="button" class="warn" onclick="myCancel(\''+o.order_no+'\')">주문 취소</button>'
           + '</div>' : '')
         +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
