@@ -1,3 +1,13 @@
-/* 로그인 상태에 따라 보이고 감추기 */
+/* 로그인 상태에 따라 */
 body.cg-out .only-in{ display:none !important }
 body.cg-in  .only-out{ display:none !important }
+
+/* 로그아웃 단추 — 메뉴와 같은 모양 */
+.util .cg-out-btn,
+.u-menu .cg-out-btn{
+  opacity:.62;
+}
+.util .cg-out-btn:hover,
+.u-menu .cg-out-btn:hover{
+  opacity:1;
+}
