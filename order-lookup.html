@@ -407,7 +407,8 @@ function draw(o){
 
     form('배송지 수정', [
       { k:'name',  n:'받는 분',   v:o.buyer_name || '' },
-      { k:'phone', n:'연락처',    v:'', ph:'010-0000-0000' },
+      { k:'phone', n:'연락처',    v:'',
+        ph:(o.phone_mask || '010-0000-0000') + ' — 바꾸실 때만' },
       { k:'zip',   n:'우편번호',  v:o.zipcode || '' },
       { k:'addr1', n:'주소',      v:o.addr1 || '' },
       { k:'addr2', n:'상세주소',  v:o.addr2 || '' },
