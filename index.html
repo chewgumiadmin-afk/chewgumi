@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v220 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v221 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12231,6 +12231,74 @@ body.drawer-on{
 @media (min-width:900px){
   .detail #dRevList{ display:none !important }
 }
+
+/* 인스타그램 띠 */
+.ig-band{
+  margin-top:32px;
+  padding:0 var(--sp-s,1rem);
+}
+.ig-in{
+  max-width:900px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:22px 26px;
+  border-radius:22px;
+  background:linear-gradient(135deg,
+    rgba(255,228,230,.72), rgba(255,249,251,.9));
+  border:1px solid rgba(255,189,204,.7);
+  box-shadow:0 8px 26px rgba(216,37,88,.08);
+}
+.ig-in > svg{
+  width:38px;height:38px;flex:none;
+  color:#D82558;
+}
+.ig-t{flex:1;min-width:0}
+.ig-t b{
+  display:block;
+  font-family:'Poppins','SUIT Variable',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  color:#17171c;
+}
+.ig-t span{
+  display:block;
+  font-size:12.5px;
+  color:#797979;
+  margin-top:3px;
+  word-break:keep-all;
+}
+.ig-in a{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:0 22px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;
+  font-size:13.5px;
+  font-weight:700;
+  text-decoration:none;
+  white-space:nowrap;
+  box-shadow:0 5px 16px rgba(216,37,88,.24);
+  transition:transform .16s;
+}
+.ig-in a:hover{ transform:translateY(-2px) }
+
+@media (max-width:640px){
+  .ig-in{
+    flex-direction:column;
+    text-align:center;
+    gap:13px;
+    padding:22px 20px;
+  }
+  .ig-in a{ width:100% }
+  .ig-t span{ font-size:12px }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -13563,5 +13631,43 @@ window.cgClearCart = function(){
 </script>
 
 
+
+<script>
+/* ══════════════════════════════════════════════
+   인스타그램 — 계정으로 이어주기
+   (API 심사 전까지는 링크만)
+   ══════════════════════════════════════════════ */
+(function(){
+  var URL2 = 'https://www.instagram.com/chewgumi_official/';
+
+  function add(){
+    if (document.getElementById('cgIg')) return;
+    var host = document.getElementById('ufGrid');
+    if (!host) return;
+    var sec = host.closest('section') || host.parentElement;
+    if (!sec) return;
+
+    var d = document.createElement('div');
+    d.id = 'cgIg';
+    d.className = 'ig-band';
+    d.innerHTML =
+      '<div class="ig-in">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+      + 'stroke-width="1.6" stroke-linecap="round">'
+      + '<rect x="2" y="2" width="20" height="20" rx="5.5"/>'
+      + '<circle cx="12" cy="12" r="4.2"/><path d="M17.6 6.4h.01"/></svg>'
+      + '<div class="ig-t"><b>@chewgumi_official</b>'
+      + '<span>새 소식과 사진을 먼저 만나보세요</span></div>'
+      + '<a href="' + URL2 + '" target="_blank" rel="noopener">인스타그램에서 보기</a>'
+      + '</div>';
+    sec.appendChild(d);
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', add);
+  else add();
+  setTimeout(add, 1400);
+})();
+</script>
 </body>
 </html>
