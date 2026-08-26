@@ -353,25 +353,77 @@ function loadProfile(){
   }).catch(s=>{if(s===401){doLogout();}});
 }
 function saveProfile(){
-  const body={name:$('fName').value.trim(),phone:$('fPhone').value.trim(),
-    zipcode:$('fZip').value.trim(),addr1:$('fAddr1').value.trim(),addr2:$('fAddr2').value.trim(),
-    marketing_sms:$('mSms').checked,marketing_email:$('mEmail').checked,
-    updated_at:new Date().toISOString()};
-  fetch(SB+'/rest/v1/profiles',{method:'PATCH',
-    headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
-    body:JSON.stringify(body)})
-  .then(r=>{
-    if(r.ok){ $('pmsg').textContent='저장되었습니다.'; $('pmsg').className='pm ok'; }else{ r.text().then(function(t){$('pmsg').textContent = r.status===401 ? '로그인이 풀렸습니다. 다시 로그인해 주세요.' : ('저장하지 못했습니다. ('+r.status+')');$('pmsg').className='pm bad'; }); }
-    if(r.ok){
-      const items=[['marketing_shop',$('mSms').checked||$('mEmail').checked],
-        ['marketing_sms',$('mSms').checked],['marketing_email',$('mEmail').checked]]
-        .map(([t,v])=>({consent_type:t,is_agreed:v,policy_version:'2026-08-05',source:'mypage'}));
-      fetch(SB+'/rest/v1/consents',{method:'POST',
-        headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
-        body:JSON.stringify(items)}).catch(()=>{});
-    }
+  var uid = (window.myId ? myId() : '');
+  if (!uid) {
+    $('pmsg').textContent = '로그인이 풀렸습니다. 다시 로그인해 주세요.';
+    $('pmsg').className = 'pm bad';
+    return;
+  }
+
+  var body = {
+    name: $('fName').value.trim(),
+    phone: $('fPhone').value.trim(),
+    zipcode: $('fZip').value.trim(),
+    addr1: $('fAddr1').value.trim(),
+    addr2: $('fAddr2').value.trim(),
+    marketing_sms: $('mSms').checked,
+    marketing_email: $('mEmail').checked,
+    marketing_shop: ($('mSms').checked || $('mEmail').checked),
+    consent_checked_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  $('pmsg').textContent = '저장하는 중…';
+  $('pmsg').className = 'pm';
+
+  fetch(SB + '/rest/v1/profiles?id=eq.' + encodeURIComponent(uid), {
+    method: 'PATCH',
+    headers: Object.assign({}, H(), {
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal'
+    }),
+    body: JSON.stringify(body)
   })
-  .catch(()=>$('pmsg').textContent='네트워크 오류가 발생했습니다.');
+  .then(function(r){
+    if (r.ok) {
+      $('pmsg').textContent = '저장되었습니다.';
+      $('pmsg').className = 'pm ok';
+      /* 동의 기록을 남깁니다 */
+      var items = [
+        ['marketing_sms', $('mSms').checked],
+        ['marketing_email', $('mEmail').checked]
+      ];
+      items.forEach(function(it){
+        fetch(SB + '/rest/v1/consents', {
+          method: 'POST',
+          headers: Object.assign({}, H(), {
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
+          }),
+          body: JSON.stringify({
+            user_id: uid, kind: it[0], agreed: it[1]
+          })
+        }).catch(function(){});
+      });
+      return;
+    }
+    return r.text().then(function(t){
+      var msg = '저장하지 못했습니다. (' + r.status + ')';
+      if (r.status === 401) msg = '로그인이 풀렸습니다. 다시 로그인해 주세요.';
+      else if (t) {
+        try{
+          var e = JSON.parse(t);
+          if (e.message) msg = e.message;
+        }catch(x){ if (t.length < 90) msg = t; }
+      }
+      $('pmsg').textContent = msg;
+      $('pmsg').className = 'pm bad';
+    });
+  })
+  .catch(function(){
+    $('pmsg').textContent = '연결하지 못했습니다.';
+    $('pmsg').className = 'pm bad';
+  });
 }
 
 function showConsents(){
