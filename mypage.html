@@ -515,6 +515,12 @@ function loadOrders(){
         +'<span class="o-d">'+new Date(o.created_at).toLocaleDateString('ko-KR')+'</span></div>'
         +'<div class="o-amt">₩'+won(o.pay_amount)+'</div></div>'
         +'<div class="o-b">'+its
+      +(['pending','paid','preparing'].includes(o.status)
+        ? '<div class="o-act">'
+          + '<button type="button" onclick="myEditAddr(\''+o.order_no+'\')">배송지 수정</button>'
+          + '<button type="button" onclick="myChangeQty(\''+o.order_no+'\')">수량 변경</button>'
+          + '<button type="button" class="warn" onclick="myCancel(\''+o.order_no+'\')">주문 취소</button>'
+          + '</div>' : '')
         +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
         +(o.track_status?' · '+esc(o.track_status):'')
         +(o.refund_amount>0?'<br>환불 ₩'+won(o.refund_amount):'')
@@ -695,6 +701,44 @@ body:not(.logged) #area{ display:none !important }
 .pm{font-size:13px;margin-top:10px;min-height:20px;color:#797979}
 .pm.ok{color:#2AA060}
 .pm.bad{color:#C0395C}
+
+/* 주문 수정 단추 */
+.o-act{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid rgba(0,0,0,.055);
+}
+.o-act button{
+  flex:1;
+  min-width:98px;
+  min-height:38px;
+  padding:0 12px;
+  border:1px solid rgba(0,0,0,.1);
+  border-radius:999px;
+  background:#fff;
+  color:#555;
+  font-family:inherit;
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .16s, color .16s;
+}
+.o-act button:hover{
+  background:#FFE4E6;
+  color:#D82558;
+  border-color:#FFBDCC;
+}
+.o-act button.warn{ color:#C0395C }
+.o-act button.warn:hover{
+  background:rgba(192,57,92,.06);
+  border-color:rgba(192,57,92,.3);
+}
+@media (max-width:480px){
+  .o-act button{ font-size:12px; min-height:36px; min-width:88px }
+}
 </style>
 
 <script>
@@ -956,6 +1000,193 @@ body:not(.logged) #area{ display:none !important }
   }
   setTimeout(mark, 1200);
   setTimeout(mark, 2600);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   주문 수정 — 수량 변경 · 취소
+   (배송지 수정은 myEditAddr 가 이미 있습니다)
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB4='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K4='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function tk(){ return (window.cgTok ? cgTok() : ''); }
+  function hh(){
+    return { apikey:K4, Authorization:'Bearer '+tk(), 'Content-Type':'application/json' };
+  }
+  function won2(n){ return Number(n||0).toLocaleString('ko-KR'); }
+
+  /* ── 수량 변경 ── */
+  window.myChangeQty = function(no){
+    fetch(SB4 + '/rest/v1/orders?select=id,order_no,status,pay_amount,ship_fee,'
+      + 'order_items(id,product_id,product_name,qty,price)'
+      + '&order_no=eq.' + encodeURIComponent(no) + '&limit=1', { headers: hh() })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      var o = (rows || [])[0];
+      if (!o) { alert('주문을 찾지 못했습니다.'); return; }
+      if (['shipping','delivered','cancelled'].indexOf(o.status) > -1) {
+        alert('이미 발송되어 바꿀 수 없습니다.'); return;
+      }
+
+      var items = o.order_items || [];
+      if (!items.length) { alert('상품 정보가 없습니다.'); return; }
+
+      var it = items[0];
+      if (items.length > 1) {
+        var pick = prompt('어느 상품을 바꿀까요?\n\n'
+          + items.map(function(x,i){ return (i+1)+'. '+x.product_name+' × '+x.qty; }).join('\n')
+          + '\n\n번호를 넣어주세요', '1');
+        if (pick === null) return;
+        it = items[Number(pick) - 1];
+        if (!it) { alert('없는 번호입니다.'); return; }
+      }
+
+      var q = prompt('「' + it.product_name + '」\n\n'
+        + '지금 ' + it.qty + '개입니다. 몇 개로 바꿀까요?\n'
+        + '(0 을 넣으면 이 상품을 뺍니다)', String(it.qty));
+      if (q === null) return;
+      q = Number(q);
+      if (isNaN(q) || q < 0) { alert('숫자를 넣어주세요.'); return; }
+      if (q === it.qty) return;
+
+      /* 재고를 먼저 봅니다 */
+      var more = q - it.qty;
+      var go = more <= 0
+        ? Promise.resolve({ ok:true })
+        : fetch(SB4 + '/rest/v1/rpc/check_stock', {
+            method:'POST', headers: hh(),
+            body: JSON.stringify({ p_items:[{ id: it.product_id, qty: more }] })
+          }).then(function(r){ return r.ok ? r.json() : { ok:true }; });
+
+      go.then(function(st){
+        if (!st.ok) {
+          var b = (st.bad || [{}])[0];
+          alert('재고가 모자랍니다.\n남은 수량 ' + (b.have || 0) + '개');
+          return;
+        }
+
+        var diff = (q - it.qty) * Number(it.price || 0);
+        var paidNow = ['paid','preparing'].indexOf(o.status) > -1;
+
+        if (!confirm('수량을 ' + it.qty + '개 → ' + q + '개로 바꿉니다.\n\n'
+          + (diff > 0 ? '추가 결제 ' + won2(diff) + '원이 필요합니다.\n'
+            : diff < 0 ? '환불 ' + won2(-diff) + '원이 생깁니다.\n' : '')
+          + (paidNow ? '\n결제된 주문이라 요청으로 접수되고,\n하루 안에 연락드립니다.\n' : '')
+          + '\n계속할까요?')) return;
+
+        if (paidNow) {
+          /* 결제된 주문 — 요청만 남깁니다 */
+          fetch(SB4 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
+            method:'PATCH',
+            headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
+            body: JSON.stringify({
+              memo: '[수량변경요청] ' + it.product_name + ' ' + it.qty + '→' + q
+            })
+          })
+          .then(function(r){
+            alert(r.ok
+              ? '수량 변경을 요청했습니다.\n하루 안에 연락드리겠습니다.'
+              : '요청하지 못했습니다.');
+            if (r.ok && typeof loadOrders === 'function') loadOrders();
+          });
+          return;
+        }
+
+        /* 입금 전이면 바로 바꿉니다 */
+        var body = q === 0 ? null : { qty: q };
+        var req = q === 0
+          ? fetch(SB4 + '/rest/v1/order_items?id=eq.' + it.id,
+              { method:'DELETE', headers: hh() })
+          : fetch(SB4 + '/rest/v1/order_items?id=eq.' + it.id, {
+              method:'PATCH',
+              headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
+              body: JSON.stringify(body)
+            });
+
+        req.then(function(r){
+          if (!r.ok) { alert('바꾸지 못했습니다.'); return; }
+          /* 금액을 다시 셉니다 */
+          var goods = 0;
+          items.forEach(function(x){
+            goods += Number(x.price || 0) * (x.id === it.id ? q : x.qty);
+          });
+          var ship = goods >= 30000 ? 0 : Number(o.ship_fee || 2500);
+          if (goods === 0) ship = 0;
+
+          return fetch(SB4 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
+            method:'PATCH',
+            headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
+            body: JSON.stringify({
+              goods_amount: goods, ship_fee: ship, pay_amount: goods + ship
+            })
+          }).then(function(){
+            alert('바꿨습니다.\n결제 금액 ' + won2(goods + ship) + '원');
+            if (typeof loadOrders === 'function') loadOrders();
+          });
+        });
+      });
+    })
+    .catch(function(){ alert('불러오지 못했습니다.'); });
+  };
+
+  /* ── 주문 취소 ── */
+  window.myCancel = function(no){
+    fetch(SB4 + '/rest/v1/orders?select=status,pay_amount&order_no=eq.'
+      + encodeURIComponent(no) + '&limit=1', { headers: hh() })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      var o = (rows || [])[0];
+      if (!o) { alert('주문을 찾지 못했습니다.'); return; }
+      if (['shipping','delivered','cancelled'].indexOf(o.status) > -1) {
+        alert(o.status === 'shipping'
+          ? '이미 발송되어 취소할 수 없습니다.\n받으신 뒤 반품으로 진행해 주세요.'
+          : o.status === 'delivered'
+          ? '배송이 끝난 주문입니다.\n반품은 고객센터로 연락 주세요.'
+          : '이미 취소된 주문입니다.');
+        return;
+      }
+
+      var paidNow = ['paid','preparing'].indexOf(o.status) > -1;
+      if (!confirm('주문을 취소합니다.\n\n'
+        + (paidNow ? '· 결제하신 ' + won2(o.pay_amount) + '원은 하루 안에 환불해 드립니다\n' : '')
+        + '· 되돌릴 수 없습니다\n\n계속할까요?')) return;
+
+      var why = prompt('취소 사유를 적어주세요.', '단순 변심');
+      if (why === null) return;
+
+      fetch(SB4 + '/rest/v1/rpc/guest_cancel', {
+        method:'POST', headers: hh(),
+        body: JSON.stringify({ p_no: no, p_key: '', p_reason: why })
+      })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        /* 회원은 본인 확인이 필요 없어 실패하면 직접 처리합니다 */
+        if (d && d.ok) {
+          alert(d.msg);
+          if (typeof loadOrders === 'function') loadOrders();
+          return;
+        }
+        return fetch(SB4 + '/rest/v1/orders?order_no=eq.' + encodeURIComponent(no), {
+          method:'PATCH',
+          headers: Object.assign({}, hh(), { Prefer:'return=minimal' }),
+          body: JSON.stringify(paidNow
+            ? { memo: '[취소요청] ' + why }
+            : { status:'cancelled', cancelled_at: new Date().toISOString(),
+                memo: '[고객취소] ' + why })
+        }).then(function(r){
+          alert(r.ok
+            ? (paidNow ? '취소를 요청했습니다.\n환불은 하루 안에 처리해 드립니다.'
+                       : '주문을 취소했습니다.')
+            : '취소하지 못했습니다.');
+          if (r.ok && typeof loadOrders === 'function') loadOrders();
+        });
+      })
+      .catch(function(){ alert('취소하지 못했습니다.'); });
+    });
+  };
 })();
 </script>
 </body>
