@@ -287,11 +287,12 @@ function render(){
     const n = matchNo(it.name);
     return '<div class="item">' +
       '<input type="checkbox" class="pick" data-i="' + i + '" checked onchange="sumUp()" aria-label="선택">' +
-      '<div class="th"><img src="' + CDN + P[n].img + '" alt="" loading="lazy"></div>' +
+      '<div class="th"><img src="' + ((P[n] && P[n].img) || CDN) + '" alt="" loading="lazy" '
+        + 'onerror="this.onerror=null;this.src=\''+CDN+'\'"></div>' +
       '<div class="c">' +
-        '<a class="n" href="product.html?no=' + n + '">' + esc(it.name) + '</a>' +
-        '<div class="opt">구성 : ' + esc(P[n].n) + '</div>' +
-        '<div class="opt-act"><a href="product.html?no=' + n + '">옵션 변경</a>' +
+        '<a class="n" href="product.html?no=' + (n || '') + '">' + esc(it.name) + '</a>' +
+        '<div class="opt">구성 : ' + esc((P[n] && P[n].n) || it.name) + '</div>' +
+        '<div class="opt-act"><a href="product.html?no=' + (n || '') + '">옵션 변경</a>' +
         '<a href="' + detailUrl(n) + '" target="_blank" rel="noopener">공식몰에서 구매 →</a></div>' +
       '</div>' +
       '<div class="right">' +
@@ -588,6 +589,29 @@ input:not([type=checkbox]):not([type=radio]), textarea, select{
 .head .logo, .logo{ line-height:0 }
 .head .logo img, a.logo img{ height:38px; width:auto; display:block; background:transparent }
 @media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
+
+/* 장바구니 사진 */
+.item .th{
+  width:76px;
+  height:76px;
+  flex:none;
+  border-radius:14px;
+  overflow:hidden;
+  background:#FFF6F8;
+  border:1px solid rgba(0,0,0,.05);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.item .th img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:6px;
+}
+@media (max-width:480px){
+  .item .th{ width:64px;height:64px;border-radius:12px }
+}
 </style>
 <script src="assets/drag-fab.js" defer></script>
 </body>
