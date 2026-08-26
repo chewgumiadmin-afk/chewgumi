@@ -407,8 +407,8 @@ function draw(o){
 
     form('배송지 수정', [
       { k:'name',  n:'받는 분',   v:o.buyer_name || '' },
-      { k:'phone', n:'연락처',    v:'',
-        ph:(o.phone_mask || '010-0000-0000') + ' — 바꾸실 때만' },
+      { k:'phone', n:'연락처',    v:(o.phone_mask || ''),
+        ph:'010-0000-0000' },
       { k:'zip',   n:'우편번호',  v:o.zipcode || '' },
       { k:'addr1', n:'주소',      v:o.addr1 || '' },
       { k:'addr2', n:'상세주소',  v:o.addr2 || '' },
@@ -423,7 +423,7 @@ function draw(o){
         body: JSON.stringify({
           p_no: o.order_no,
           p_key: document.getElementById('fKey').value.trim(),
-          p_name: v.name, p_phone: v.phone,
+          p_name: v.name, p_phone: (v.phone && v.phone.indexOf('*') < 0) ? v.phone : '',
           p_zip: v.zip, p_addr1: v.addr1, p_addr2: v.addr2, p_memo: v.memo
         })
       })
@@ -487,10 +487,9 @@ function draw(o){
    ══════════════════════════════════════════════ */
 (function(){
   function no(){
-    var box = document.getElementById('resBox');
-    var t = box ? box.textContent : '';
-    var m = t.match(/\d{8}-\d{4,7}/);
-    return m ? m[0] : '';
+    if (window._ORD && window._ORD.order_no) return window._ORD.order_no;
+    var e = document.getElementById('fNo');
+    return e ? e.value.trim() : '';
   }
   function key(){
     var e = document.getElementById('fKey');
