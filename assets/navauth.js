@@ -1,6 +1,8 @@
 /*! ChewGumi 로그인 표시 · MedIT
- *  로그인해 있으면 LOGIN 을 MY PAGE 로 바꿉니다.
- *  화면마다 따로 만들지 않고 한 곳에서 정합니다.
+ *  로그인 여부에 따라 메뉴를 정리합니다.
+ *
+ *  로그인 안 함   LOGIN · JOIN US · EN · CART
+ *  로그인 함      MY PAGE · LOGOUT · EN · CART
  */
 (function () {
   'use strict';
@@ -18,8 +20,8 @@
     } catch (e) { return null; }
   }
 
-  function who(s) {
-    return (s && (s.u || (s.em || '').split('@')[0])) || '회원';
+  function isLoginPage() {
+    return /\/(login|join)\.html$/.test(location.pathname);
   }
 
   function apply() {
@@ -29,27 +31,46 @@
     document.body.classList.toggle('cg-in', on);
     document.body.classList.toggle('cg-out', !on);
 
-    /* login.html 로 가는 링크를 바꿉니다 */
-    document.querySelectorAll('a[href*="login.html"]').forEach(function (a) {
-      /* 로그인 화면 안에서는 건드리지 않습니다 */
-      if (/login\.html$/.test(location.pathname)) return;
-      if (a.dataset.cgKeep) return;
+    if (isLoginPage()) return;   /* 로그인·가입 화면은 건드리지 않습니다 */
 
-      var t = (a.textContent || '').trim();
-      /* 비밀번호 재설정 같은 링크는 그대로 둡니다 */
-      if (t.length > 12) return;
+    document.querySelectorAll('.util, .u-menu, nav .links').forEach(function (box) {
+      var login = null, join = null, mypage = null;
+
+      box.querySelectorAll('a').forEach(function (a) {
+        var href = (a.getAttribute('href') || '').split('?')[0];
+        if (/login\.html$/.test(href)) login = a;
+        else if (/join\.html$/.test(href)) join = a;
+        else if (/mypage\.html$/.test(href)) mypage = a;
+      });
 
       if (on) {
-        if (!a.dataset.cgWas) a.dataset.cgWas = a.getAttribute('href') + '|' + t;
-        a.setAttribute('href', 'mypage.html');
-        a.textContent = /[A-Z]{3,}/.test(t) ? 'MY PAGE' : '마이페이지';
-        a.title = who(s) + ' 님';
-      } else if (a.dataset.cgWas) {
-        var p = a.dataset.cgWas.split('|');
-        a.setAttribute('href', p[0]);
-        a.textContent = p[1] || 'LOGIN';
-        a.removeAttribute('title');
-        delete a.dataset.cgWas;
+        /* 로그인했으면 — MY PAGE 하나만 두고 LOGOUT 을 답니다 */
+        if (login) login.style.display = 'none';
+        if (join) join.style.display = 'none';
+        if (mypage) mypage.style.display = '';
+
+        if (!box.querySelector('.cg-out-btn')) {
+          var b = document.createElement('a');
+          b.className = 'cg-out-btn';
+          b.href = '#';
+          b.textContent = 'LOGOUT';
+          b.title = (s.u || (s.em || '').split('@')[0] || '회원') + ' 님';
+          b.onclick = function (e) {
+            e.preventDefault();
+            if (window.cgClearSession) cgClearSession();
+            else { try { localStorage.removeItem('cg_sb'); } catch (x) {} }
+            location.reload();
+          };
+          if (mypage && mypage.nextSibling) box.insertBefore(b, mypage.nextSibling);
+          else if (mypage) mypage.parentElement.appendChild(b);
+        }
+      } else {
+        /* 로그인 안 했으면 — LOGIN · JOIN US 만 */
+        if (login) login.style.display = '';
+        if (join) join.style.display = '';
+        if (mypage) mypage.style.display = 'none';
+        var old = box.querySelector('.cg-out-btn');
+        if (old) old.remove();
       }
     });
   }
@@ -58,8 +79,8 @@
     document.addEventListener('DOMContentLoaded', apply);
   else apply();
 
-  setTimeout(apply, 700);
-  setTimeout(apply, 1800);
+  setTimeout(apply, 600);
+  setTimeout(apply, 1600);
   window.addEventListener('pageshow', apply);
   window.addEventListener('storage', function (e) {
     if (e.key === 'cg_sb') apply();
