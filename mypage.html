@@ -517,8 +517,8 @@ function loadOrders(){
         +'<div class="o-b">'+its
       +(['pending','paid','preparing'].includes(o.status)
         ? '<div class="o-act">'
-          + '<button type="button" onclick="cgEditOrder(\\''+o.order_no+'\\',\\'\\')">주문 수정</button>'
-          + '<button type="button" class="warn" onclick="myCancel(\''+o.order_no+'\')">주문 취소</button>'
+          + '<button type="button" data-no="' + o.order_no + '" onclick="cgMyEdit(this)">주문 수정</button>'
+          + '<button type="button" class="warn" data-no="' + o.order_no + '" onclick="cgMyCancel(this)">주문 취소</button>'
           + '</div>' : '')
         +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
         +(o.track_status?' · '+esc(o.track_status):'')
@@ -1160,6 +1160,20 @@ body:not(.logged) #area{ display:none !important }
     });
   };
 })();
+</script>
+
+<script>
+/* 주문 수정 · 취소 열기 */
+function cgMyEdit(el){
+  var no = (el && el.dataset && el.dataset.no) || '';
+  if (!no) { alert('주문번호를 찾지 못했습니다.'); return; }
+  cgEditOrder(no, '');
+}
+function cgMyCancel(el){
+  var no = (el && el.dataset && el.dataset.no) || '';
+  if (!no) { alert('주문번호를 찾지 못했습니다.'); return; }
+  if (typeof myCancel === 'function') myCancel(no);
+}
 </script>
 </body>
 </html>
