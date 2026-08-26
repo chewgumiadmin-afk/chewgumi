@@ -137,6 +137,26 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
 <script src="assets/ui.js"></script>
 <link rel="stylesheet" href="assets/cgui.css">
 <script src="assets/tok.js"></script>
+
+<script>
+/* 내 회원 번호 — 토큰에서 꺼냅니다 */
+function myId(){
+  try{
+    var s = (window.cgSession ? cgSession() : null);
+    if (!s) {
+      s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
+    }
+    if (!s || !s.t) return '';
+    var p = s.t.split('.')[1];
+    if (!p) return '';
+    p = p.replace(/-/g,'+').replace(/_/g,'/');
+    while (p.length % 4) p += '=';
+    var d = JSON.parse(decodeURIComponent(escape(atob(p))));
+    return d.sub || '';
+  }catch(e){ return ''; }
+}
+window.myId = myId;
+</script>
 </head>
 <body>
 <div class="topbar">마이페이지</div>
@@ -312,7 +332,7 @@ function findAddr(){
 function flushPending(){
   let p=null; try{p=JSON.parse(localStorage.getItem('cg_pending')||'null');}catch(e){}
   if(!p||!token) return Promise.resolve();
-  return fetch(SB+'/rest/v1/profiles',{method:'PATCH',
+  return fetch(SB+'/rest/v1/profiles?id=eq.'+encodeURIComponent(myId()),{method:'PATCH',
     headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify({...p.profile,updated_at:new Date().toISOString()})})
   .then(()=>fetch(SB+'/rest/v1/consents',{method:'POST',
@@ -341,7 +361,7 @@ function saveProfile(){
     headers:{...H(),'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
   .then(r=>{
-    $('pmsg').textContent=r.ok?'저장되었습니다.':'저장에 실패했습니다.';
+    if(r.ok){ $('pmsg').textContent='저장되었습니다.'; $('pmsg').className='pm ok'; }else{ r.text().then(function(t){$('pmsg').textContent = r.status===401 ? '로그인이 풀렸습니다. 다시 로그인해 주세요.' : ('저장하지 못했습니다. ('+r.status+')');$('pmsg').className='pm bad'; }); }
     if(r.ok){
       const items=[['marketing_shop',$('mSms').checked||$('mEmail').checked],
         ['marketing_sms',$('mSms').checked],['marketing_email',$('mEmail').checked]]
@@ -613,6 +633,10 @@ body:not(.logged) #area{ display:none !important }
 .my-b .no{background:#fff;color:#555;border:1px solid rgba(0,0,0,.1)}
 .my-m{margin-top:12px;font-size:13px;text-align:center;min-height:20px;color:#797979}
 .my-m.ok{color:#2AA060} .my-m.bad{color:#C0395C}
+
+.pm{font-size:13px;margin-top:10px;min-height:20px;color:#797979}
+.pm.ok{color:#2AA060}
+.pm.bad{color:#C0395C}
 </style>
 
 <script>
