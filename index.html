@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v221 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v222 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12302,6 +12302,37 @@ body.drawer-on{
   .ig-in a{ width:100% }
   .ig-t span{ font-size:12px }
 }
+
+/* 재입고 알림 단추 */
+.restock-btn{
+  display:block;
+  width:calc(100% - 24px);
+  margin:0 12px 12px;
+  min-height:42px;
+  border:0;
+  border-radius:999px;
+  background:rgba(23,23,28,.88);
+  color:#fff;
+  font-family:inherit;
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  position:relative;
+  z-index:6;
+  transition:background .18s;
+}
+.restock-btn:hover{
+  background:linear-gradient(135deg,#E95073,#D82558);
+}
+.card.is-sold{ position:relative }
+@media (max-width:480px){
+  .restock-btn{
+    width:calc(100% - 16px);
+    margin:0 8px 10px;
+    min-height:38px;
+    font-size:12px;
+  }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -13670,6 +13701,80 @@ window.cgClearCart = function(){
     document.addEventListener('DOMContentLoaded', add);
   else add();
   setTimeout(add, 1400);
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   재입고 알림 — 품절 상품에 신청 단추
+   ══════════════════════════════════════════════ */
+(function(){
+  var SB3='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var K3='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+
+  function mine(){
+    try{
+      var s = (window.cgSession ? cgSession() : null);
+      if (s && s.em) return s.em;
+    }catch(e){}
+    try{ return localStorage.getItem('cg_last_email') || ''; }catch(e){ return ''; }
+  }
+
+  window.askRestock = function(id, name){
+    var em = prompt(
+      '「' + (name || '이 상품') + '」이(가) 들어오면 알려드릴게요.\n\n'
+      + '알림 받으실 이메일을 넣어주세요.',
+      mine());
+    if (em === null) return;
+    em = em.trim();
+    if (!em) return;
+
+    fetch(SB3 + '/rest/v1/rpc/ask_restock', {
+      method:'POST',
+      headers:{ apikey:K3, Authorization:'Bearer ' + K3, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_product_id: Number(id), p_email: em, p_phone: '' })
+    })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if (!d) { alert('신청하지 못했습니다.'); return; }
+      alert(d.msg || (d.ok ? '신청했습니다.' : '신청하지 못했습니다.'));
+      if (d.ok) {
+        try{ localStorage.setItem('cg_last_email', em); }catch(e){}
+        mark();
+      }
+    })
+    .catch(function(){ alert('신청하지 못했습니다.'); });
+  };
+
+  /* 품절 카드에 단추를 답니다 */
+  function mark(){
+    document.querySelectorAll('.card.is-sold').forEach(function(c){
+      if (c.querySelector('.restock-btn')) return;
+      var id = Number(c.dataset.no);
+      if (!id) return;
+      var nm = (c.querySelector('.p-name, .name, h3') || {}).textContent || '';
+
+      var b = document.createElement('button');
+      b.className = 'restock-btn';
+      b.type = 'button';
+      b.textContent = '재입고 알림 받기';
+      b.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        askRestock(id, nm.trim());
+      };
+      c.appendChild(b);
+    });
+  }
+
+  if (window.MutationObserver) {
+    var t = null;
+    new MutationObserver(function(){
+      clearTimeout(t); t = setTimeout(mark, 300);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  }
+  setTimeout(mark, 1500);
+  setTimeout(mark, 3000);
+  window.cgMarkRestock = mark;
 })();
 </script>
 </body>
