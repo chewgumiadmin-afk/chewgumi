@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v222 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v223 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12333,6 +12333,10 @@ body.drawer-on{
     font-size:12px;
   }
 }
+
+.uf-msg{font-size:12.5px;margin-top:10px;min-height:18px;color:#797979;text-align:center}
+.uf-msg.ok{color:#2AA060}
+.uf-msg.bad{color:#C0395C}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -13775,6 +13779,73 @@ window.cgClearCart = function(){
   setTimeout(mark, 1500);
   setTimeout(mark, 3000);
   window.cgMarkRestock = mark;
+})();
+</script>
+
+<script>
+/* USER FILMS — 사진·영상 보내기 */
+(function(){
+  if (window.filmClose) return;
+
+  window.filmClose = function(){
+    var d = document.getElementById('filmDim')
+         || document.querySelector('.uf-send, .film-dim');
+    if (d) d.classList.add('hide');
+    var m = document.getElementById('ufMsg');
+    if (m) { m.textContent = ''; m.className = 'uf-msg'; }
+  };
+
+  window.filmSubmit = function(){
+    var m = document.getElementById('ufMsg');
+    function say(t, k){
+      if (!m) { alert(t); return; }
+      m.className = 'uf-msg' + (k ? ' ' + k : '');
+      m.textContent = t;
+    }
+
+    var url = (document.getElementById('ufUrl') || {}).value || '';
+    var memo = (document.getElementById('ufMemo') || {}).value || '';
+    url = String(url).trim();
+
+    if (!url) { say('사진이나 영상 주소를 넣어주세요.', 'bad'); return; }
+    if (!/^https?:\/\//.test(url)) {
+      say('http 로 시작하는 주소를 넣어주세요.', 'bad'); return;
+    }
+
+    var btn = document.getElementById('ufGo');
+    if (btn) btn.disabled = true;
+    say('보내는 중…');
+
+    fetch('https://psynvpuedzjvytsgdhgg.supabase.co/rest/v1/reports', {
+      method:'POST',
+      headers:{
+        apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
+        Authorization:'Bearer sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
+        'Content-Type':'application/json',
+        Prefer:'return=minimal'
+      },
+      body: JSON.stringify({
+        kind: 'user_film',
+        title: '고객 사진·영상',
+        body: String(memo).trim(),
+        link: url
+      })
+    })
+    .then(function(r){
+      if (btn) btn.disabled = false;
+      if (!r.ok) { say('보내지 못했습니다. 잠시 뒤 다시 해주세요.', 'bad'); return; }
+      say('고맙습니다. 확인 후 올려드리겠습니다.', 'ok');
+      var u = document.getElementById('ufUrl');
+      var mm = document.getElementById('ufMemo');
+      if (u) u.value = '';
+      if (mm) mm.value = '';
+      setTimeout(filmClose, 1800);
+    })
+    .catch(function(){
+      if (btn) btn.disabled = false;
+      say('보내지 못했습니다.', 'bad');
+    });
+  };
 })();
 </script>
 </body>
