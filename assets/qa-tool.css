@@ -1,0 +1,174 @@
+/* ChewGumi QA 기록 도구 · MedIT */
+
+.qa-box {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 99999;
+  width: min(92vw, 300px);
+  border-radius: 16px;
+  background: rgba(23, 23, 28, .94);
+  color: #fff;
+  font-family: 'SUIT Variable', -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', sans-serif;
+  font-size: 12.5px;
+  line-height: 1.6;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .34);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* 머리 */
+.qa-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 12px;
+  background: rgba(255, 255, 255, .07);
+  cursor: move;
+}
+.qa-head b {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+.qa-run {
+  font-size: 10.5px;
+  opacity: .5;
+  font-family: ui-monospace, monospace;
+}
+.qa-n {
+  margin-left: auto;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #D82558;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qa-head button {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qa-head button:hover { background: rgba(255, 255, 255, .2) }
+
+/* 몸 */
+.qa-body { padding: 10px 12px 12px }
+.qa-box.mini .qa-body { display: none }
+
+.qa-list {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 9px;
+}
+.qa-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  font-size: 11.5px;
+}
+.qa-row:last-child { border-bottom: 0 }
+.qa-row i {
+  flex: none;
+  width: 13px;
+  font-style: normal;
+  text-align: center;
+  opacity: .6;
+}
+.qa-row span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .88;
+}
+.qa-row em {
+  flex: none;
+  font-style: normal;
+  font-size: 10.5px;
+  opacity: .5;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qa-row.bug i, .qa-row.bug span { color: #FF7A9A; opacity: 1 }
+.qa-row.note i, .qa-row.note span { color: #FFC46B; opacity: 1 }
+.qa-row.check i, .qa-row.check span { color: #6BE49A; opacity: 1 }
+.qa-row.move span { opacity: .55 }
+
+.qa-empty {
+  padding: 22px 0;
+  text-align: center;
+  font-size: 11.5px;
+  opacity: .4;
+  margin: 0;
+}
+
+/* 메모 */
+.qa-memo {
+  width: 100%;
+  min-height: 54px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  resize: vertical;
+  user-select: text;
+}
+.qa-memo::placeholder { color: rgba(255, 255, 255, .35) }
+.qa-memo:focus {
+  outline: 2px solid rgba(216, 37, 88, .6);
+  outline-offset: -1px;
+}
+
+.qa-b { display: flex; gap: 6px; margin-top: 8px }
+.qa-b button {
+  flex: 1;
+  min-height: 36px;
+  border: 0;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+}
+.qa-b .bug { background: #C0395C }
+.qa-b .note { background: #9A6A1E }
+.qa-b .ok { background: #1F7A48 }
+.qa-b button:hover { filter: brightness(1.15) }
+
+@media (max-width: 480px) {
+  .qa-box {
+    right: 10px;
+    left: 10px;
+    width: auto;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+  .qa-list { max-height: 130px }
+}
