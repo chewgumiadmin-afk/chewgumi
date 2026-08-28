@@ -2,14 +2,11 @@
  *
  *  화면 위에 작은 창을 띄워
  *   · 누른 곳 · 넣은 값 · 옮긴 화면을 기록하고
+ *   · 화면을 녹화하고
  *   · 이상한 것을 그 자리에서 적을 수 있게 합니다.
  *
- *  켜는 법
- *    주소 뒤에 ?qa=1 을 붙이거나
- *    개발자 도구에서  cgQA.on()
- *
- *  끄는 법
- *    cgQA.off()
+ *  켜는 법   주소 뒤에 ?qa=1  또는  cgQA.on()
+ *  끄는 법   cgQA.off()
  */
 (function () {
   'use strict';
@@ -23,8 +20,10 @@
   var run = '';
   var buf = [];
   var min = false;
+  var rec = null;      /* MediaRecorder */
+  var chunks = [];
+  var recStart = 0;
 
-  /* ── 켜져 있나 ── */
   function isOn() {
     try {
       if (new URLSearchParams(location.search).get('qa') === '1') {
@@ -46,18 +45,14 @@
     } catch (e) { return 'QA0'; }
   }
 
-  function page() {
-    return (location.pathname.split('/').pop() || 'index.html');
-  }
+  function page() { return (location.pathname.split('/').pop() || 'index.html'); }
 
   function label(el) {
     if (!el) return '';
     var t = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (t && t.length < 40) return t;
-    return el.getAttribute('aria-label')
-      || el.getAttribute('placeholder')
-      || el.getAttribute('title')
-      || el.id || el.className || el.tagName;
+    return el.getAttribute('aria-label') || el.getAttribute('placeholder')
+      || el.getAttribute('title') || el.id || el.className || el.tagName;
   }
 
   function where(el) {
@@ -70,17 +65,28 @@
     return t;
   }
 
-  /* ── 기록 ── */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* 녹화 중이면 몇 초째인지 */
+  function stamp() {
+    if (!recStart) return '';
+    var s = Math.floor((Date.now() - recStart) / 1000);
+    return String(Math.floor(s / 60)).padStart(2, '0') + ':'
+         + String(s % 60).padStart(2, '0');
+  }
+
   function log(kind, o) {
     if (!isOn()) return;
     var row = {
-      run_id: run,
-      page: page(),
-      kind: kind,
+      run_id: run, page: page(), kind: kind,
       target: (o && o.target) || '',
       label: (o && o.label) || '',
       value: (o && o.value) || '',
-      note: (o && o.note) || '',
+      note: ((stamp() ? '[' + stamp() + '] ' : '') + ((o && o.note) || '')).trim(),
       rule: (o && o.rule) || '',
       url: location.href.slice(0, 300),
       ua: navigator.userAgent.slice(0, 160)
@@ -98,7 +104,6 @@
     }).catch(function () {});
   }
 
-  /* ── 화면 ── */
   function box() { return document.getElementById('cgQaBox'); }
 
   function paint() {
@@ -111,7 +116,7 @@
     list.innerHTML = last.length
       ? last.map(function (r) {
           var ic = { click: '·', input: '✎', move: '→',
-                     bug: '✕', note: '!', check: '✓' }[r.kind] || '·';
+                     bug: '✕', note: '!', check: '✓', rec: '●' }[r.kind] || '·';
           return '<div class="qa-row ' + r.kind + '">'
             + '<i>' + ic + '</i>'
             + '<span>' + esc(r.note || r.label || r.target) + '</span>'
@@ -124,10 +129,89 @@
     if (n) n.textContent = buf.length;
   }
 
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  /* ── 화면 녹화 ── */
+  function canRec() {
+    return !!(navigator.mediaDevices
+      && navigator.mediaDevices.getDisplayMedia
+      && window.MediaRecorder);
+  }
+
+  function recBtn() { return document.querySelector('#cgQaBox .qa-rec'); }
+
+  function startRec() {
+    if (!canRec()) {
+      alert('이 브라우저는 화면 녹화를 지원하지 않습니다.\n\n'
+        + '크롬이나 엣지에서 열어주세요.\n'
+        + '아이폰 사파리는 안 됩니다.');
+      return;
+    }
+
+    navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: 12 },
+      audio: false,
+      preferCurrentTab: true
+    })
+    .then(function (stream) {
+      chunks = [];
+      var type = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9' : 'video/webm';
+
+      rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 900000 });
+      rec.ondataavailable = function (e) {
+        if (e.data && e.data.size) chunks.push(e.data);
+      };
+      rec.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        save();
+      };
+      rec.start(1000);
+      recStart = Date.now();
+
+      /* 사용자가 브라우저 「공유 중지」를 누르면 */
+      stream.getVideoTracks()[0].onended = function () { stopRec(); };
+
+      var b = recBtn();
+      if (b) { b.textContent = '● 녹화 중'; b.classList.add('on'); }
+      log('rec', { note: '녹화 시작', target: page() });
+    })
+    .catch(function (e) {
+      if (String(e).indexOf('NotAllowed') < 0) {
+        alert('녹화를 시작하지 못했습니다.');
+      }
     });
+  }
+
+  function stopRec() {
+    if (!rec || rec.state === 'inactive') return;
+    log('rec', { note: '녹화 끝 · ' + stamp(), target: page() });
+    rec.stop();
+    rec = null;
+    recStart = 0;
+    var b = recBtn();
+    if (b) { b.textContent = '● 녹화'; b.classList.remove('on'); }
+  }
+
+  function save() {
+    if (!chunks.length) return;
+    var blob = new Blob(chunks, { type: 'video/webm' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = run + '_' + page().replace('.html', '') + '.webm';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+      a.remove();
+    }, 1500);
+
+    var mb = (blob.size / 1048576).toFixed(1);
+    setTimeout(function () {
+      alert('녹화한 영상을 내려받았습니다. (' + mb + 'MB)\n\n'
+        + '파일 이름 · ' + a.download + '\n\n'
+        + '이 영상과 [개발자에게 보낼 글 복사]를 함께 주시면\n'
+        + '무엇이 언제 일어났는지 맞춰 볼 수 있습니다.');
+    }, 400);
   }
 
   function build() {
@@ -145,6 +229,7 @@
         + '<button class="qa-x" title="끄기">✕</button>'
       + '</div>'
       + '<div class="qa-body">'
+        + '<button class="qa-rec">● 녹화</button>'
         + '<div class="qa-list"></div>'
         + '<textarea class="qa-memo" placeholder="이상한 점을 적어주세요"></textarea>'
         + '<div class="qa-b">'
@@ -159,6 +244,9 @@
     b.querySelector('.qa-min').onclick = function () {
       min = !min;
       b.classList.toggle('mini', min);
+    };
+    b.querySelector('.qa-rec').onclick = function () {
+      if (rec) stopRec(); else startRec();
     };
 
     function send(kind) {
@@ -176,7 +264,7 @@
     b.querySelector('.note').onclick = function () { send('note'); };
     b.querySelector('.ok').onclick = function () { send('check'); };
 
-    /* 드래그로 옮기기 */
+    /* 드래그 */
     var head = b.querySelector('.qa-head');
     var dx = 0, dy = 0, on = false;
     head.addEventListener('pointerdown', function (e) {
@@ -195,10 +283,14 @@
     });
     head.addEventListener('pointerup', function () { on = false; });
 
+    if (!canRec()) {
+      var r = b.querySelector('.qa-rec');
+      if (r) { r.disabled = true; r.textContent = '녹화 안 됨 (크롬에서)'; }
+    }
+
     paint();
   }
 
-  /* ── 무엇을 잡을까 ── */
   function watch() {
     document.addEventListener('click', function (e) {
       var el = e.target.closest('button, a, [onclick], input[type=checkbox], input[type=radio]');
@@ -212,7 +304,6 @@
       if (!/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) return;
 
       var v = el.type === 'checkbox' ? (el.checked ? '켬' : '끔') : (el.value || '');
-      /* 비밀번호와 카드번호는 기록하지 않습니다 */
       if (el.type === 'password') v = '(가림)';
       if (/card|카드|cvc|pw|비밀/i.test(el.id + el.name + (el.placeholder || ''))) v = '(가림)';
 
@@ -223,7 +314,6 @@
       });
     }, true);
 
-    /* 화면 이동 */
     var last = location.href;
     setInterval(function () {
       if (location.href === last) return;
@@ -231,7 +321,6 @@
       last = location.href;
     }, 700);
 
-    /* 자바스크립트 오류도 잡습니다 */
     window.addEventListener('error', function (e) {
       log('bug', {
         note: '코드 오류 · ' + String(e.message).slice(0, 80),
@@ -240,7 +329,6 @@
       });
     });
 
-    /* 서버 오류도 */
     var _f = window.fetch;
     window.fetch = function () {
       var url = String(arguments[0] || '');
@@ -257,7 +345,6 @@
     };
   }
 
-  /* ── 화면 규칙 검사 ── */
   function inspect() {
     var out = [];
     var p = page();
@@ -283,8 +370,9 @@
     /* R2 · 주소 찾기 */
     var zip = document.querySelector('[id*=zip i], [id*=Zip]');
     if (zip && zip.offsetParent) {
-      var hasFind = /주소.?찾기|우편번호.?찾기/.test(document.body.innerText);
-      if (!hasFind) out.push({ rule: 'R2', note: '우편번호 칸이 있는데 주소 찾기가 없습니다' });
+      if (!/주소.?찾기|우편번호.?찾기/.test(document.body.innerText)) {
+        out.push({ rule: 'R2', note: '우편번호 칸이 있는데 주소 찾기가 없습니다' });
+      }
       if (!zip.readOnly) out.push({ rule: 'R2', note: '우편번호를 직접 칠 수 있습니다' });
     }
 
@@ -298,11 +386,14 @@
       out.push({ rule: 'R3', note: '없는 함수 · ' + [...new Set(miss)].slice(0, 4).join(', ') });
     }
 
-    /* R9 · 메뉴 */
-    var hasLogin = !!document.querySelector('a[href*="login.html"]:not([style*="none"])');
-    var hasMy = !!document.querySelector('a[href*="mypage.html"]:not([style*="none"])');
-    if (hasLogin && hasMy) {
-      out.push({ rule: 'R9', note: 'LOGIN 과 MY PAGE 가 함께 보입니다' });
+    /* R9 · 메뉴 — 서랍까지 봅니다 */
+    var showing = function (a) {
+      return a && a.offsetParent !== null && getComputedStyle(a).display !== 'none';
+    };
+    var l = [...document.querySelectorAll('a[href*="login.html"]')].filter(showing);
+    var m2 = [...document.querySelectorAll('a[href*="mypage.html"]')].filter(showing);
+    if (l.length && m2.length && !/\/(login|join)\.html$/.test(location.pathname)) {
+      out.push({ rule: 'R9', note: 'LOGIN 과 MY PAGE 가 함께 보입니다 (' + l.length + '곳)' });
     }
 
     /* R15 · 글자 크기 */
@@ -312,33 +403,28 @@
       var s = parseFloat(getComputedStyle(el).fontSize);
       if (s && s < 16 && innerWidth < 1024) small++;
     });
-    if (small) {
-      out.push({ rule: 'R15', note: '폰에서 글자가 16px 미만인 칸 ' + small + '개' });
-    }
+    if (small) out.push({ rule: 'R15', note: '폰에서 글자가 16px 미만인 칸 ' + small + '개' });
 
     /* R14 · 링크 */
     var badLink = [];
     document.querySelectorAll('a[href^="http://"]').forEach(function (a) {
       if (a.href.indexOf('w3.org') < 0) badLink.push(a.href.slice(0, 40));
     });
-    if (badLink.length) {
-      out.push({ rule: 'R14', note: 'http 링크 · ' + badLink[0] });
-    }
+    if (badLink.length) out.push({ rule: 'R14', note: 'http 링크 · ' + badLink[0] });
 
     out.forEach(function (o) {
       log('bug', { note: o.note, rule: o.rule, target: p });
     });
-
     return out;
   }
 
-  /* ── 밖에서 쓰는 것 ── */
   window.cgQA = {
     on: function () {
       try { localStorage.setItem(ON, '1'); } catch (e) {}
       location.reload();
     },
     off: function () {
+      stopRec();
       try { localStorage.removeItem(ON); } catch (e) {}
       var b = box();
       if (b) b.remove();
@@ -351,12 +437,13 @@
         : '이 화면은 규칙에 맞습니다.');
       return r;
     },
+    record: startRec,
+    stop: stopRec,
     log: log,
     run: function () { return run; },
     events: function () { return buf; }
   };
 
-  /* ── 시작 ── */
   if (!isOn()) return;
   run = runId();
 
