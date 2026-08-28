@@ -211,7 +211,7 @@ window.myId = myId;
 
     <div class="panel">
       <h2>MY INFO · 회원 정보</h2>
-      <label>이름</label><input id="fName">
+      <div id="infoForm"><label>이름</label><input id="fName">
       <label>휴대전화</label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000">
       <label>우편번호</label>
       <div class="row2"><input id="fZip" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
@@ -219,7 +219,7 @@ window.myId = myId;
       <label>상세주소</label><input id="fAddr2">
       <div class="chk"><input type="checkbox" id="mSms"><label for="mSms" style="margin:0">SMS 마케팅 수신 동의</label></div>
       <div class="chk"><input type="checkbox" id="mEmail"><label for="mEmail" style="margin:0">이메일 마케팅 수신 동의</label></div>
-      <div style="margin-top:16px"><button class="btn" onclick="saveProfile()">저장하기</button></div>
+      <div style="margin-top:16px"><button class="btn" onclick="saveProfile()">저장하기</button></div></div>
       <div class="msg" id="pmsg"></div>
     </div>
 
@@ -351,7 +351,7 @@ function loadProfile(){
     $('fName').value=p.name||'';$('fPhone').value=p.phone||'';
     $('fZip').value=p.zipcode||'';$('fAddr1').value=p.addr1||'';$('fAddr2').value=p.addr2||'';
     $('mSms').checked=!!p.marketing_sms;$('mEmail').checked=!!p.marketing_email;
-    $('pts').textContent=won(p.points);
+    $('pts').textContent=won(p.points); if(window.cgShowInfo) cgShowInfo(p);
   }).catch(s=>{if(s===401){doLogout();}});
 }
 function saveProfile(){
@@ -389,6 +389,7 @@ function saveProfile(){
   .then(function(r){
     if (r.ok) {
       $('pmsg').textContent = '저장되었습니다.';
+      if (window.loadProfile) setTimeout(loadProfile, 400);
       $('pmsg').className = 'pm ok';
       /* 동의 기록을 남깁니다 */
       var items = [
@@ -810,6 +811,52 @@ body:not(.logged) #area{ display:none !important }
 .eo-b .no{background:#fff;color:#555;border:1px solid rgba(0,0,0,.1)}
 .eo-m{margin-top:12px;font-size:13px;text-align:center;min-height:20px;color:#797979}
 .eo-m.ok{color:#2AA060} .eo-m.bad{color:#C0395C}
+
+/* 회원 정보 보기 */
+.iv{margin-top:4px}
+.iv.hide{display:none !important}
+#infoForm.hide{display:none !important}
+.iv-row{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(0,0,0,.055);
+}
+.iv-row:last-of-type{border-bottom:0}
+.iv-row span{
+  flex:none;
+  width:88px;
+  font-size:12.5px;
+  color:#797979;
+}
+.iv-row b{
+  flex:1;
+  min-width:0;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.02em;
+  word-break:keep-all;
+  color:#17171c;
+}
+.iv-edit{
+  width:100%;
+  min-height:46px;
+  margin-top:16px;
+  border:1px solid rgba(0,0,0,.1);
+  border-radius:999px;
+  background:#fff;
+  color:#555;
+  font-family:inherit;
+  font-size:13.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+.iv-edit:hover{
+  background:#FFE4E6;
+  color:#D82558;
+  border-color:#FFBDCC;
+}
 </style>
 
 <script>
@@ -1191,6 +1238,78 @@ function cgMyCancel(el){
   if (!no) { alert('주문번호를 찾지 못했습니다.'); return; }
   if (typeof myCancel === 'function') myCancel(no);
 }
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   회원 정보 — 값이 있으면 보기 모드로
+   ══════════════════════════════════════════════ */
+(function(){
+  var P = null;
+
+  function esc3(s){
+    return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+
+  function filled(p){
+    return !!(p && (p.name || p.phone || p.addr1));
+  }
+
+  /* 보기 모드 */
+  function showView(p){
+    P = p;
+    var form = document.getElementById('infoForm');
+    var view = document.getElementById('infoView');
+    if (!form) return;
+
+    if (!view) {
+      view = document.createElement('div');
+      view.id = 'infoView';
+      form.insertAdjacentElement('beforebegin', view);
+    }
+
+    var addr = [p.zipcode, p.addr1, p.addr2].filter(Boolean).join(' ');
+    var mk = [];
+    if (p.marketing_sms) mk.push('문자');
+    if (p.marketing_email) mk.push('이메일');
+
+    view.className = 'iv';
+    view.innerHTML =
+      '<div class="iv-row"><span>이름</span><b>' + esc3(p.name || '—') + '</b></div>'
+      + '<div class="iv-row"><span>휴대전화</span><b>' + esc3(p.phone || '—') + '</b></div>'
+      + '<div class="iv-row"><span>주소</span><b>' + esc3(addr || '—') + '</b></div>'
+      + '<div class="iv-row"><span>마케팅 수신</span><b>'
+        + (mk.length ? mk.join(' · ') : '받지 않음') + '</b></div>'
+      + '<button type="button" class="iv-edit" onclick="cgEditInfo()">고치기</button>';
+
+    view.classList.remove('hide');
+    form.classList.add('hide');
+  }
+
+  /* 고치기 모드 */
+  window.cgEditInfo = function(){
+    var form = document.getElementById('infoForm');
+    var view = document.getElementById('infoView');
+    if (view) view.classList.add('hide');
+    if (form) {
+      form.classList.remove('hide');
+      var f = document.getElementById('fName');
+      if (f) f.focus();
+    }
+  };
+
+  window.cgShowInfo = function(p){
+    if (filled(p)) showView(p);
+    else {
+      var view = document.getElementById('infoView');
+      if (view) view.classList.add('hide');
+      var form = document.getElementById('infoForm');
+      if (form) form.classList.remove('hide');
+    }
+  };
+})();
 </script>
 </body>
 </html>
