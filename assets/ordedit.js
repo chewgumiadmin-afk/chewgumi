@@ -60,6 +60,31 @@
             + '<span>상품이 하나도 없습니다</span></div>' : '');
   }
 
+
+  /* 우편번호 찾기 */
+  window.oeFindAddr = function () {
+    function go() {
+      new daum.Postcode({
+        oncomplete: function (d) {
+          var addr = d.roadAddress || d.jibunAddress || '';
+          if (d.buildingName) addr += ' (' + d.buildingName + ')';
+          var z = document.getElementById('oeZip');
+          var a = document.getElementById('oeA1');
+          var a2 = document.getElementById('oeA2');
+          if (z) z.value = d.zonecode || '';
+          if (a) a.value = addr;
+          if (a2) a2.focus();
+        }
+      }).open();
+    }
+    if (window.daum && daum.Postcode) { go(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    s.onload = go;
+    s.onerror = function () { alert('주소 찾기를 열지 못했습니다.'); };
+    document.head.appendChild(s);
+  };
+
   window.oeQty = function (i, d) {
     var it = ITEMS[i];
     if (!it) return;
@@ -138,8 +163,12 @@
       + '<label>받는 분</label><input id="oeName" value="' + e(o.buyer_name || '') + '">'
       + '<label>연락처</label><input id="oePhone" value="'
         + e(o.phone_mask || o.buyer_phone || '') + '" placeholder="010-0000-0000">'
-      + '<label>우편번호</label><input id="oeZip" value="' + e(o.zipcode || '') + '" inputmode="numeric">'
-      + '<label>주소</label><input id="oeA1" value="' + e(o.addr1 || '') + '">'
+      + '<label>우편번호</label>'
+      + '<div class="oe-zip">'
+        + '<input id="oeZip" value="' + e(o.zipcode || '') + '" inputmode="numeric" readonly>'
+        + '<button type="button" onclick="oeFindAddr()">주소 찾기</button>'
+      + '</div>'
+      + '<label>주소</label><input id="oeA1" value="' + e(o.addr1 || '') + '" readonly>'
       + '<label>상세주소</label><input id="oeA2" value="' + e(o.addr2 || '') + '">'
       + '<label>배송 요청사항</label><input id="oeMemo" value="' + e(o.memo || '') + '" '
         + 'placeholder="문 앞에 놓아주세요">'
