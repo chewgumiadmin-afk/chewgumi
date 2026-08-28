@@ -88,3 +88,14 @@
 .oe-m{margin-top:12px;font-size:13px;text-align:center;min-height:20px;color:#797979}
 .oe-m.ok{color:#2AA060}
 .oe-m.bad{color:#C0395C}
+/* 우편번호 찾기 */
+.oe-zip{display:flex;gap:7px}
+.oe-zip input{flex:1;min-width:0}
+.oe-zip button{
+  flex:none;min-height:46px;padding:0 16px;
+  border:1px solid rgba(0,0,0,.12);border-radius:12px;
+  background:#fff;color:#555;
+  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  white-space:nowrap;
+}
+.oe-zip button:hover{background:#FFE4E6;color:#D82558;border-color:#FFBDCC}
