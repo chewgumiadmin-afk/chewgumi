@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>츄구미 QA 기록</title>
+<style>
+:root{
+  --main:#D82558; --main2:#E95073;
+  --ok:#2AA060; --bad:#C0395C; --warn:#E9A23B;
+  --gray:#797979; --ink:#17171c;
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',
+    'Apple SD Gothic Neo',sans-serif;
+  font-size:13px;line-height:1.6;color:var(--ink);
+  background:linear-gradient(180deg,#FFF9FB,#FDF3F5);
+  padding:14px;min-height:100vh;
+}
+button,textarea{font-family:inherit}
+
+.hd{margin-bottom:12px}
+.hd h1{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.hd p{font-size:11.5px;color:var(--gray);margin-top:2px}
+
+.state{
+  display:flex;align-items:center;gap:9px;
+  padding:11px 13px;border-radius:13px;margin-bottom:11px;
+  background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.9);
+}
+.dot{width:9px;height:9px;border-radius:50%;background:#c9c9d0;flex:none}
+.dot.on{background:var(--ok);box-shadow:0 0 0 3px rgba(42,160,96,.18)}
+.state .t{flex:1;min-width:0}
+.state .t b{display:block;font-size:12.5px;font-weight:700}
+.state .t span{display:block;font-size:10.5px;color:var(--gray);
+  font-family:ui-monospace,monospace}
+
+.btn{
+  width:100%;min-height:42px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+}
+.btn.off{background:rgba(0,0,0,.72)}
+.btn.sub{
+  background:#fff;color:#555;border:1px solid rgba(0,0,0,.1);
+}
+.btn.rec{background:rgba(0,0,0,.72)}
+.btn.rec.on{background:var(--bad);animation:bl 1.4s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.6}}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:7px;margin-bottom:9px}
+.row .btn{min-height:38px;font-size:12.5px}
+
+.memo{
+  width:100%;min-height:64px;padding:10px 12px;
+  border:1px solid rgba(0,0,0,.1);border-radius:12px;
+  background:#fff;font-size:12.5px;line-height:1.6;resize:vertical;
+  margin-bottom:8px;
+}
+.memo:focus{outline:2px solid var(--main);outline-offset:-1px}
+
+.b3{display:flex;gap:6px;margin-bottom:12px}
+.b3 button{
+  flex:1;min-height:38px;border:0;border-radius:10px;
+  font-size:12px;font-weight:700;cursor:pointer;color:#fff;
+}
+.b3 .bug{background:var(--bad)}
+.b3 .note{background:#9A6A1E}
+.b3 .ok{background:#1F7A48}
+
+.sec{
+  font-size:10px;letter-spacing:1.4px;font-weight:700;color:var(--gray);
+  text-transform:uppercase;margin:14px 0 8px;
+}
+.list{
+  max-height:260px;overflow-y:auto;
+  background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);
+  border-radius:13px;padding:4px 12px;
+}
+.ev{
+  display:flex;align-items:baseline;gap:7px;
+  padding:7px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:11.5px;
+}
+.ev:last-child{border-bottom:0}
+.ev i{flex:none;width:13px;font-style:normal;text-align:center;color:var(--gray)}
+.ev .t{flex:1;min-width:0;word-break:break-word;line-height:1.55}
+.ev .p{flex:none;font-size:9.5px;color:#aaa;font-family:ui-monospace,monospace}
+.ev .r{
+  flex:none;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;
+  background:rgba(216,37,88,.1);color:var(--main);
+}
+.ev.bug .t{color:var(--bad);font-weight:600}
+.ev.note .t{color:#8A6015}
+.ev.check .t{color:#1B6B3F}
+.ev.move .t{color:var(--gray)}
+.empty{padding:26px 0;text-align:center;font-size:11.5px;color:var(--gray)}
+
+.msg{margin-top:9px;font-size:11.5px;text-align:center;min-height:16px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+.tip{font-size:10.5px;color:var(--gray);line-height:1.7;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>츄구미 QA 기록</h1>
+  <p>쓰시는 것을 따라 적고, 이상한 것을 모읍니다</p>
+</div>
+
+<div class="state">
+  <span class="dot" id="dot"></span>
+  <div class="t"><b id="stTxt">꺼져 있습니다</b><span id="stRun"></span></div>
+</div>
+
+<button class="btn" id="toggle">기록 시작</button>
+
+<div class="row" style="margin-top:9px">
+  <button class="btn rec" id="rec">● 녹화</button>
+  <button class="btn sub" id="check">이 화면 검사</button>
+</div>
+
+<textarea class="memo" id="memo" placeholder="이상한 점을 적어주세요"></textarea>
+<div class="b3">
+  <button class="bug" id="bBug">버그</button>
+  <button class="note" id="bNote">메모</button>
+  <button class="ok" id="bOk">잘 됨</button>
+</div>
+
+<div class="row">
+  <button class="btn sub" id="copy">글 복사</button>
+  <button class="btn sub" id="fresh">새 기록</button>
+</div>
+
+<div class="sec">기록 <span id="cnt">0</span></div>
+<div class="list" id="list"><p class="empty">아직 없습니다</p></div>
+
+<div class="msg" id="msg"></div>
+
+<p class="tip">
+  녹화는 이 창이 아니라 <b>츄구미 탭</b>을 고르세요.<br>
+  영상은 컴퓨터에만 저장되고 서버로 가지 않습니다.
+</p>
+
+<script src="panel.js"></script>
+</body>
+</html>
