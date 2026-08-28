@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<!-- ChewGumi QA Tool v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>QA 도구 | CHEWGUMI</title>
+<script src="assets/tok.js"></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --bad:#C0395C; --warn:#E9A23B;
+  --gray:#797979; --ink:#17171c; --line:rgba(255,255,255,.85);
+  --sp-s:clamp(0.75rem,0.7rem+0.24vw,1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.5vw,1.9rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.11),transparent 60%),
+    linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select{font-size:14.5px}}
+.wrap{max-width:900px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:rgba(255,255,255,.68);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 12px 30px rgba(0,0,0,.07);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+.btn{
+  min-height:44px;padding:0 20px;border:0;border-radius:999px;cursor:pointer;
+  font-size:13.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:12.5px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* 시작 안내 */
+.how{
+  padding:18px 20px;border-radius:16px;
+  background:rgba(255,244,247,.85);border:1px solid rgba(255,189,204,.8);
+  margin-bottom:var(--sp-s);
+}
+.how b{display:block;font-size:13.5px;font-weight:800;color:var(--main)}
+.how ol{margin:11px 0 0;padding-left:18px;font-size:13px;color:#555;line-height:1.9}
+.how code{
+  background:rgba(0,0,0,.06);padding:2px 7px;border-radius:5px;
+  font-family:ui-monospace,monospace;font-size:12px;
+}
+
+/* 기록 */
+.run{
+  display:flex;align-items:center;gap:11px;
+  padding:13px 0;border-bottom:1px solid rgba(0,0,0,.055);
+  cursor:pointer;
+}
+.run:last-child{border-bottom:0}
+.run:hover{background:rgba(255,228,230,.3)}
+.run .i{flex:1;min-width:0}
+.run .i b{display:block;font-size:13.5px;font-weight:700;font-family:ui-monospace,monospace}
+.run .i span{display:block;font-size:11.5px;color:var(--gray);margin-top:2px}
+.tag{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:999px;flex:none}
+.tag.bug{background:rgba(192,57,92,.13);color:var(--bad)}
+.tag.ok{background:rgba(42,160,96,.13);color:#1B6B3F}
+
+.ev{
+  display:flex;align-items:baseline;gap:10px;
+  padding:9px 0;border-bottom:1px solid rgba(0,0,0,.045);font-size:12.5px;
+}
+.ev:last-child{border-bottom:0}
+.ev i{flex:none;width:16px;font-style:normal;text-align:center;color:var(--gray)}
+.ev .t{flex:1;min-width:0;word-break:keep-all;line-height:1.6}
+.ev .p{flex:none;font-size:10.5px;color:var(--gray);font-family:ui-monospace,monospace}
+.ev .r{
+  flex:none;font-size:10px;font-weight:800;
+  padding:1px 7px;border-radius:5px;
+  background:rgba(216,37,88,.1);color:var(--main);
+}
+.ev.bug .t{color:var(--bad);font-weight:600}
+.ev.note .t{color:#8A6015}
+.ev.check .t{color:#1B6B3F}
+.ev.move .t{color:var(--gray)}
+
+.empty{padding:40px 20px;text-align:center;font-size:13.5px;color:var(--gray)}
+.hide{display:none}
+.msg{margin-top:11px;font-size:13px;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+/* 규칙 */
+.rule{
+  display:flex;gap:11px;align-items:baseline;
+  padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);
+}
+.rule:last-child{border-bottom:0}
+.rule b{
+  flex:none;width:34px;font-size:11.5px;font-weight:800;color:var(--main);
+}
+.rule span{flex:1;min-width:0;font-size:13px;line-height:1.7;word-break:keep-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>QA 도구</h1>
+      <div class="s">화면을 쓰면서 기록하고, 이상한 것을 그 자리에서 적습니다</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <div class="how">
+    <b>쓰는 법</b>
+    <ol>
+      <li>아래 <b>[기록 시작]</b>을 누르세요</li>
+      <li>평소처럼 화면을 쓰시면 됩니다 — 오른쪽 아래 작은 창이 따라다닙니다</li>
+      <li>이상한 것이 보이면 그 창에 적고 <b>[버그]</b>를 누르세요</li>
+      <li>다 하셨으면 여기로 돌아와 결과를 보시면 됩니다</li>
+    </ol>
+    <div class="btns">
+      <button class="btn" onclick="startQA()">기록 시작</button>
+      <button class="btn sub" onclick="stopQA()">기록 끄기</button>
+      <button class="btn sub sm" onclick="load()">새로 고침</button>
+    </div>
+    <div class="msg" id="m1"></div>
+  </div>
+
+  <div class="panel">
+    <h2>기록 <span class="n" id="rc">—</span></h2>
+    <div id="runs"><div class="empty">불러오는 중…</div></div>
+  </div>
+
+  <div class="panel hide" id="detailBox">
+    <h2>자세히 <span class="n" id="dc">—</span></h2>
+    <div id="detail"></div>
+    <div class="btns">
+      <button class="btn sub sm" onclick="copyOne()">개발자에게 보낼 글 복사</button>
+      <button class="btn sub sm" onclick="closeDetail()">닫기</button>
+    </div>
+    <div class="msg" id="m2"></div>
+  </div>
+
+  <div class="panel">
+    <h2>검사하는 규칙 <span class="n">15</span></h2>
+    <div id="rules"></div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+const RULES=[
+ ['R1','값이 있으면 입력칸 대신 읽는 모습으로'],
+ ['R2','우편번호·주소는 찾기로만 넣게'],
+ ['R3','버튼이 부르는 함수가 실제로 있어야'],
+ ['R4','한 화면에 같은 id 는 하나만'],
+ ['R5','무엇이 잘못됐는지 알려주기'],
+ ['R6','금액이 바뀌면 저장 전에 보여주기'],
+ ['R7','되돌릴 수 없으면 두 번 묻기'],
+ ['R8','로그인 상태는 한 곳에서 (tok.js)'],
+ ['R9','로그인 여부에 맞는 메뉴만'],
+ ['R10','PATCH·DELETE 에 고칠 행 지정'],
+ ['R11','기다리는 동안 무엇을 하는지 보여주기'],
+ ['R12','개인정보는 가려서 보여주기'],
+ ['R13','못 하는 일은 버튼을 안 보여주기'],
+ ['R14','링크가 살아 있어야'],
+ ['R15','폰에서 글자 16px · 버튼 44px 이상']
+];
+
+let RUNS={}, CUR='';
+
+function tok(){ return (window.cgTok ? cgTok() : ''); }
+function H(){ return {apikey:KEY,Authorization:'Bearer '+(tok()||KEY)}; }
+function say(id,t,k){ const m=$(id); m.className='msg'+(k?' '+k:''); m.textContent=t; }
+
+function when(s){
+  const t=new Date(s);
+  return (t.getMonth()+1)+'/'+t.getDate()+' '
+    +String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+}
+
+function startQA(){
+  try{ localStorage.setItem('cg_qa_on','1'); }catch(e){}
+  try{ sessionStorage.removeItem('cg_qa_run'); }catch(e){}
+  say('m1','켰습니다. 이제 메인으로 가서 평소처럼 써보세요.','ok');
+  setTimeout(function(){ location.href='index.html?qa=1'; }, 1100);
+}
+
+function stopQA(){
+  try{ localStorage.removeItem('cg_qa_on'); }catch(e){}
+  say('m1','껐습니다.','ok');
+}
+
+function load(){
+  fetch(SB+'/rest/v1/qa_events?select=*&order=at.desc&limit=400',{headers:H()})
+  .then(r=>r.ok?r.json():[])
+  .then(function(rows){
+    RUNS={};
+    rows.forEach(function(x){
+      (RUNS[x.run_id] = RUNS[x.run_id] || []).push(x);
+    });
+    const keys=Object.keys(RUNS);
+    $('rc').textContent=keys.length+'회';
+
+    $('runs').innerHTML = keys.length ? keys.map(function(k){
+      const ev=RUNS[k];
+      const bug=ev.filter(function(x){ return x.kind==='bug'; }).length;
+      const pages=[...new Set(ev.map(function(x){ return x.page; }))];
+      return '<div class="run" onclick="openRun(\''+k+'\')">'
+        +'<div class="i"><b>'+esc(k)+'</b>'
+        +'<span>'+when(ev[ev.length-1].at)+' · '
+        +ev.length+'건 · '+pages.length+'화면</span></div>'
+        +'<span class="tag '+(bug?'bug':'ok')+'">'
+        +(bug? bug+'건 문제' : '이상 없음')+'</span></div>';
+    }).join('') : '<div class="empty">아직 기록이 없습니다</div>';
+  })
+  .catch(function(){ $('runs').innerHTML='<div class="empty">불러오지 못했습니다</div>'; });
+}
+
+function openRun(k){
+  CUR=k;
+  const ev=(RUNS[k]||[]).slice().reverse();
+  $('dc').textContent=ev.length+'건';
+  $('detail').innerHTML = ev.map(function(x){
+    const ic={click:'·',input:'✎',move:'→',bug:'✕',note:'!',check:'✓'}[x.kind]||'·';
+    return '<div class="ev '+esc(x.kind)+'">'
+      +'<i>'+ic+'</i>'
+      +'<span class="t">'+esc(x.note||x.label||x.target)
+      +(x.value?' <b style="opacity:.6;font-weight:500">'+esc(x.value)+'</b>':'')+'</span>'
+      +(x.rule?'<span class="r">'+esc(x.rule)+'</span>':'')
+      +'<span class="p">'+esc(String(x.page).replace('.html',''))+'</span></div>';
+  }).join('');
+  $('detailBox').classList.remove('hide');
+  $('detailBox').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeDetail(){ $('detailBox').classList.add('hide'); }
+
+function copyOne(){
+  const ev=(RUNS[CUR]||[]).slice().reverse();
+  const bugs=ev.filter(function(x){ return x.kind==='bug'||x.kind==='note'; });
+  let t='['+CUR+'] QA 기록\n\n';
+  if(bugs.length){
+    t+='찾은 것\n';
+    bugs.forEach(function(x){
+      t+='  '+(x.rule?'['+x.rule+'] ':'')+x.note+'  ('+x.page+')\n';
+    });
+    t+='\n';
+  }
+  t+='한 일\n';
+  ev.filter(function(x){ return x.kind!=='bug'&&x.kind!=='note'; })
+    .forEach(function(x){
+      t+='  '+x.kind+' · '+(x.note||x.label||x.target)
+        +(x.value?' = '+x.value:'')+'  ('+x.page+')\n';
+    });
+
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t)
+      .then(function(){ say('m2','복사했습니다. 붙여넣으시면 됩니다.','ok'); })
+      .catch(function(){ say('m2','복사하지 못했습니다.','bad'); });
+  } else {
+    say('m2','이 브라우저는 복사를 지원하지 않습니다.','bad');
+  }
+}
+
+$('rules').innerHTML = RULES.map(function(r){
+  return '<div class="rule"><b>'+r[0]+'</b><span>'+r[1]+'</span></div>';
+}).join('');
+
+load();
+</script>
+</body>
+</html>
