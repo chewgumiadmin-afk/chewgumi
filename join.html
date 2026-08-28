@@ -135,6 +135,22 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6px;top:3p
 <link rel="stylesheet" href="assets/ui.css">
 <link rel="stylesheet" href="assets/stable.css">
 <link rel="stylesheet" href="assets/popup.css">
+
+<script>
+/* 내 회원 번호 — 토큰에서 꺼냅니다 */
+function cgMyId(){
+  try{
+    var s = (window.cgSession ? cgSession() : null);
+    if (!s) s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
+    if (!s || !s.t) return '';
+    var p = s.t.split('.')[1];
+    if (!p) return '';
+    p = p.replace(/-/g,'+').replace(/_/g,'/');
+    while (p.length % 4) p += '=';
+    return (JSON.parse(decodeURIComponent(escape(atob(p)))).sub) || '';
+  }catch(e){ return ''; }
+}
+</script>
 </head>
 <body>
 <div class="topbar">회원 가입 하고 <b>&nbsp;2000원 할인 쿠폰&nbsp;</b> 받기!</div>
@@ -532,7 +548,7 @@ function saveProfile(token,email,needVerify){
     zipcode:$('zip').value.trim(),addr1:$('addr1').value.trim(),addr2:$('addr2').value.trim(),
     marketing_shop:$('m0').checked, marketing_sms:$('m1').checked, marketing_email:$('m2').checked,
     updated_at:new Date().toISOString()};
-  fetch(SB+'/rest/v1/profiles',{method:'PATCH',
+  fetch(SB+'/rest/v1/profiles?id=eq.'+encodeURIComponent(cgMyId()),{method:'PATCH',
     headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
     body:JSON.stringify(body)})
   .then(()=>logConsents(token,email))
