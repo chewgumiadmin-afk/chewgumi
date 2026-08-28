@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "츄구미 QA 기록",
+  "version": "1.0.0",
+  "description": "화면을 쓰면서 누른 곳·넣은 값을 기록하고, 이상한 것을 그 자리에서 적습니다.",
+  "permissions": ["storage", "sidePanel", "tabs", "scripting"],
+  "host_permissions": [
+    "https://shop.chewgumi.com/*",
+    "https://chewgumi.com/*",
+    "https://*.easypay.co.kr/*",
+    "https://psynvpuedzjvytsgdhgg.supabase.co/*"
+  ],
+  "background": { "service_worker": "bg.js" },
+  "side_panel": { "default_path": "panel.html" },
+  "action": { "default_title": "츄구미 QA 기록 열기" },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://shop.chewgumi.com/*",
+        "https://chewgumi.com/*",
+        "https://*.easypay.co.kr/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}
