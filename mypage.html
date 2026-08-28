@@ -901,13 +901,28 @@ body:not(.logged) #area{ display:none !important }
     if (a) a.classList.remove('hide');
     document.body.classList.add('logged');
 
-    var who = document.getElementById('who');
-    if (who) who.textContent = (s.em || s.u || '회원') + ' 님으로 로그인 중입니다.';
+    /* 다른 코드가 보는 token 을 여기서 채웁니다 */
+    try {
+      token = s.t;
+      who = s.em || s.u || '회원';
+    } catch (e) {}
 
-    /* 닉네임 카드는 마이페이지 쪽으로 옮깁니다 */
+    var w = document.getElementById('who');
+    if (w) w.textContent = (s.em || s.u || '회원') + ' 님으로 로그인 중입니다.';
+
     var nick = document.getElementById('nickCard');
     if (nick && a && nick.parentElement !== a) {
       a.insertBefore(nick, a.firstChild);
+    }
+
+    /* 내용을 불러옵니다 — 이게 빠져 있었습니다 */
+    if (!window._cgLoaded) {
+      window._cgLoaded = 1;
+      try { if (typeof flushPending === 'function') flushPending(); } catch (e) {}
+      try { if (typeof loadProfile === 'function') loadProfile(); } catch (e) {}
+      try { if (typeof loadOrders === 'function') loadOrders(); } catch (e) {}
+      try { if (typeof loadCoupons === 'function') loadCoupons(); } catch (e) {}
+      try { if (typeof issueWelcome === 'function') issueWelcome(); } catch (e) {}
     }
   }
 
@@ -928,7 +943,7 @@ body:not(.logged) #area{ display:none !important }
       }
       asUser(s);
       /* 원래 있던 불러오기도 실행합니다 */
-      try{ if (typeof sync === 'function') sync(); }catch(e){}
+      /* sync 는 asUser 가 대신합니다 */
     })
     .catch(function(){ asUser(s); });
   }
