@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<!-- ChewGumi QA Lab v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>QA 시험대 | CHEWGUMI</title>
+<script src="assets/tok.js"></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --bad:#C0395C; --warn:#E9A23B;
+  --gray:#797979; --ink:#17171c; --line:rgba(0,0,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html,body{height:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  font-size:14px;line-height:1.6;color:var(--ink);
+  background:#FDF3F5;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+button,input,select,textarea{font-family:inherit;font-size:14px}
+a{color:inherit;text-decoration:none}
+
+/* 머리 */
+.bar{
+  flex:none;display:flex;align-items:center;gap:10px;
+  padding:9px 14px;background:#fff;border-bottom:1px solid var(--line);
+}
+.bar h1{font-size:14.5px;font-weight:800;letter-spacing:-.02em;flex:none}
+.bar .run{
+  font-size:11px;color:var(--gray);font-family:ui-monospace,monospace;
+  padding:2px 9px;border-radius:999px;background:rgba(0,0,0,.05);
+}
+.bar select{
+  min-height:34px;padding:0 10px;border-radius:9px;
+  border:1px solid var(--line);background:#fff;max-width:220px;
+}
+.bar .sp{flex:1}
+.bar a.out{font-size:12px;color:var(--gray)}
+
+.b{
+  min-height:34px;padding:0 14px;border:0;border-radius:999px;cursor:pointer;
+  font-size:12.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.b.sub{background:#fff;color:#555;border:1px solid var(--line)}
+.b.rec{background:rgba(0,0,0,.75)}
+.b.rec.on{background:var(--bad);animation:bl 1.4s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.6}}
+.b:disabled{opacity:.45;cursor:default}
+
+/* 두 칸 */
+.split{flex:1;display:flex;min-height:0}
+.left{flex:1;min-width:0;position:relative;background:#fff}
+.left iframe{width:100%;height:100%;border:0;display:block}
+.right{
+  flex:none;width:min(42vw,420px);
+  border-left:1px solid var(--line);background:#fff;
+  display:flex;flex-direction:column;min-height:0;
+}
+
+/* 안내 */
+.hint{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:30px;text-align:center;pointer-events:none;
+}
+.hint div{max-width:340px}
+.hint b{display:block;font-size:15px;font-weight:800;margin-bottom:8px}
+.hint p{font-size:13px;color:var(--gray);line-height:1.9;word-break:keep-all}
+
+/* 오른쪽 */
+.r-sec{
+  flex:none;padding:12px 14px;border-bottom:1px solid var(--line);
+}
+.r-sec h2{
+  font-size:10px;letter-spacing:1.4px;font-weight:700;color:var(--gray);
+  text-transform:uppercase;margin-bottom:9px;
+}
+.r-body{flex:1;overflow-y:auto;padding:12px 14px}
+
+.memo{
+  width:100%;min-height:80px;padding:11px 13px;
+  border:1px solid var(--line);border-radius:12px;background:#fff;
+  font-size:13px;line-height:1.65;resize:vertical;
+}
+.memo:focus{outline:2px solid var(--main);outline-offset:-1px}
+.b3{display:flex;gap:6px;margin-top:8px}
+.b3 button{
+  flex:1;min-height:38px;border:0;border-radius:10px;
+  font-size:12.5px;font-weight:700;cursor:pointer;color:#fff;
+}
+.b3 .bug{background:var(--bad)}
+.b3 .note{background:#9A6A1E}
+.b3 .ok{background:#1F7A48}
+
+.ev{
+  display:flex;align-items:baseline;gap:8px;
+  padding:9px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12.5px;
+}
+.ev:last-child{border-bottom:0}
+.ev i{flex:none;width:14px;font-style:normal;text-align:center;color:var(--gray)}
+.ev .t{flex:1;min-width:0;word-break:break-word;line-height:1.6}
+.ev .p{flex:none;font-size:10px;color:#b4b4bc;font-family:ui-monospace,monospace}
+.ev .r{
+  flex:none;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:5px;
+  background:rgba(216,37,88,.1);color:var(--main);
+}
+.ev.bug .t{color:var(--bad);font-weight:600}
+.ev.note .t{color:#8A6015}
+.ev.check .t{color:#1B6B3F}
+.ev.move .t{color:var(--gray)}
+.empty{padding:34px 0;text-align:center;font-size:12.5px;color:var(--gray)}
+
+.msg{margin-top:9px;font-size:12px;text-align:center;min-height:17px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+.tip{
+  font-size:11.5px;color:var(--gray);line-height:1.8;
+  padding:11px 13px;border-radius:11px;background:rgba(255,244,247,.8);
+  margin-top:10px;word-break:keep-all;
+}
+.tip b{color:var(--main)}
+
+/* 좁은 화면 */
+@media (max-width:860px){
+  .split{flex-direction:column}
+  .right{width:auto;border-left:0;border-top:1px solid var(--line);
+    max-height:46vh}
+  .left{min-height:44vh}
+  .bar{flex-wrap:wrap;gap:7px}
+  .bar select{max-width:150px}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <h1>QA 시험대</h1>
+  <span class="run" id="runId">—</span>
+  <select id="pick">
+    <option value="index.html">메인</option>
+    <option value="cart.html">장바구니</option>
+    <option value="checkout.html">주문서</option>
+    <option value="mypage.html">마이페이지</option>
+    <option value="order-lookup.html">주문 조회</option>
+    <option value="login.html">로그인</option>
+    <option value="join.html">회원가입</option>
+    <option value="tracking.html">배송 조회</option>
+    <option value="review.html">후기</option>
+    <option value="notice.html">공지</option>
+    <option value="qna.html">문의</option>
+    <option value="guide.html">이용안내</option>
+    <option value="orders.html">주문 관리</option>
+    <option value="stock.html">재고 관리</option>
+    <option value="manage.html">정리 도구</option>
+  </select>
+  <button class="b sub" id="go">열기</button>
+  <button class="b sub" id="newtab">새 창으로</button>
+  <div class="sp"></div>
+  <button class="b rec" id="rec">● 녹화</button>
+  <button class="b" id="toggle">기록 시작</button>
+  <a class="out" href="console.html">닫기</a>
+</div>
+
+<div class="split">
+  <div class="left">
+    <iframe id="fr" title="시험 화면"></iframe>
+    <div class="hint" id="hint">
+      <div>
+        <b>왼쪽에서 화면을 쓰시면 됩니다</b>
+        <p>위에서 화면을 고르고 <b>[열기]</b>를 누르세요.<br>
+           이상한 것이 보이면 오른쪽에 적어주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="r-sec">
+      <h2>수정 요청</h2>
+      <textarea class="memo" id="memo"
+        placeholder="이 화면에서 무엇이 이상한가요&#10;&#10;예) 저장했는데 다시 빈 칸으로 나옵니다&#10;예) 우편번호 옆에 찾기 단추가 없습니다"></textarea>
+      <div class="b3">
+        <button class="bug" id="bBug">버그</button>
+        <button class="note" id="bNote">고쳐주세요</button>
+        <button class="ok" id="bOk">잘 됩니다</button>
+      </div>
+      <div class="msg" id="m1"></div>
+      <div class="tip">
+        <b>결제창은 새 창으로</b> 열어주세요.<br>
+        이지페이는 안에서 열리지 않습니다.
+      </div>
+    </div>
+
+    <div class="r-sec" style="border-bottom:0;padding-bottom:0">
+      <h2>기록 <span id="cnt">0</span>건</h2>
+    </div>
+    <div class="r-body" id="list">
+      <p class="empty">아직 없습니다</p>
+    </div>
+
+    <div class="r-sec" style="border-bottom:0;border-top:1px solid var(--line)">
+      <div style="display:flex;gap:6px">
+        <button class="b sub" style="flex:1" id="copy">글 복사</button>
+        <button class="b sub" style="flex:1" id="fresh">새 기록</button>
+      </div>
+      <div class="msg" id="m2"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+let RUN='', ON=false, BUF=[], PAGE='index.html';
+let rec=null, chunks=[], recStart=0;
+
+function tok(){ return (window.cgTok ? cgTok() : ''); }
+function H(){ return {apikey:KEY,Authorization:'Bearer '+(tok()||KEY),
+  'Content-Type':'application/json',Prefer:'return=minimal'}; }
+
+function say(id,t,k){
+  const m=$(id);
+  m.className='msg'+(k?' '+k:'');
+  m.textContent=t;
+  if(t) setTimeout(function(){ if(m.textContent===t) m.textContent=''; }, 4000);
+}
+
+function newRun(){
+  RUN='QA'+Date.now().toString(36).toUpperCase();
+  $('runId').textContent=RUN;
+  BUF=[]; paint();
+}
+
+function stamp(){
+  if(!recStart) return '';
+  const s=Math.floor((Date.now()-recStart)/1000);
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+
+function log(kind, o){
+  o = o || {};
+  const row={
+    run_id:RUN, page:o.page||PAGE, kind:kind,
+    target:o.target||'', label:o.label||'', value:o.value||'',
+    note:((stamp()?'['+stamp()+'] ':'')+(o.note||'')).trim(),
+    rule:o.rule||'', url:location.origin+'/'+(o.page||PAGE),
+    ua:navigator.userAgent.slice(0,160)
+  };
+  BUF.push(row); paint();
+  fetch(SB+'/rest/v1/qa_events',{method:'POST',headers:H(),
+    body:JSON.stringify(row)}).catch(function(){});
+}
+
+function paint(){
+  $('cnt').textContent=BUF.length;
+  const last=BUF.slice(-60).reverse();
+  $('list').innerHTML = last.length ? last.map(function(r){
+    const ic={click:'·',input:'✎',move:'→',bug:'✕',note:'!',check:'✓',rec:'●'}[r.kind]||'·';
+    return '<div class="ev '+esc(r.kind)+'">'
+      +'<i>'+ic+'</i>'
+      +'<span class="t">'+esc(r.note||r.label||r.target)+'</span>'
+      +(r.rule?'<span class="r">'+esc(r.rule)+'</span>':'')
+      +'<span class="p">'+esc(String(r.page).replace('.html',''))+'</span></div>';
+  }).join('') : '<p class="empty">아직 없습니다</p>';
+}
+
+/* 화면 열기 */
+function open2(){
+  PAGE=$('pick').value;
+  const url=PAGE+(PAGE.indexOf('?')>0?'&':'?')+'qa=1&nc='+Date.now();
+  $('fr').src=url;
+  $('hint').style.display='none';
+  if(ON) log('move',{note:PAGE+' 열림'});
+}
+$('go').onclick=open2;
+$('pick').onchange=open2;
+$('newtab').onclick=function(){
+  const p=$('pick').value;
+  window.open(p+'?qa=1','_blank');
+  if(ON) log('move',{note:p+' 새 창으로 열림', page:p});
+};
+
+/* 기록 켜고 끄기 */
+$('toggle').onclick=function(){
+  ON=!ON;
+  this.textContent=ON?'기록 끄기':'기록 시작';
+  this.className='b'+(ON?' sub':'');
+  if(ON){ newRun(); log('move',{note:'기록 시작'}); say('m1','기록을 시작했습니다.','ok'); }
+  else say('m1','껐습니다.');
+};
+
+/* 수정 요청 */
+function note(kind){
+  if(!ON){ say('m1','먼저 [기록 시작]을 눌러주세요.','bad'); return; }
+  const t=$('memo');
+  const v=t.value.trim();
+  if(kind!=='check' && !v){
+    t.focus();
+    t.placeholder='무엇이 이상한지 적어주세요';
+    return;
+  }
+  log(kind,{note:v||'이 화면은 잘 됩니다'});
+  t.value='';
+  say('m1','적었습니다.','ok');
+}
+$('bBug').onclick=function(){ note('bug'); };
+$('bNote').onclick=function(){ note('note'); };
+$('bOk').onclick=function(){ note('check'); };
+
+/* 녹화 */
+$('rec').onclick=function(){
+  if(rec){ stopRec(); return; }
+  if(!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia && window.MediaRecorder)){
+    say('m1','이 브라우저는 녹화를 지원하지 않습니다.','bad');
+    return;
+  }
+  navigator.mediaDevices.getDisplayMedia({video:{frameRate:12},audio:false})
+  .then(function(stream){
+    chunks=[];
+    const type=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? 'video/webm;codecs=vp9':'video/webm';
+    rec=new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:900000});
+    rec.ondataavailable=function(e){ if(e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop=function(){
+      stream.getTracks().forEach(function(t){ t.stop(); });
+      save();
+    };
+    rec.start(1000);
+    recStart=Date.now();
+    stream.getVideoTracks()[0].onended=function(){ stopRec(); };
+    $('rec').textContent='● 녹화 중';
+    $('rec').classList.add('on');
+    if(ON) log('rec',{note:'녹화 시작'});
+  })
+  .catch(function(e){
+    if(String(e).indexOf('NotAllowed')<0) say('m1','녹화를 시작하지 못했습니다.','bad');
+  });
+};
+
+function stopRec(){
+  if(!rec || rec.state==='inactive') return;
+  if(ON) log('rec',{note:'녹화 끝 · '+stamp()});
+  rec.stop(); rec=null; recStart=0;
+  $('rec').textContent='● 녹화';
+  $('rec').classList.remove('on');
+}
+
+function save(){
+  if(!chunks.length) return;
+  const blob=new Blob(chunks,{type:'video/webm'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=(RUN||'QA')+'_'+Date.now().toString(36)+'.webm';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },1500);
+  say('m1','영상을 내려받았습니다. ('+(blob.size/1048576).toFixed(1)+'MB)','ok');
+}
+
+/* 글 복사 */
+$('copy').onclick=function(){
+  if(!BUF.length){ say('m2','기록이 없습니다.','bad'); return; }
+  const bugs=BUF.filter(function(x){ return x.kind==='bug'||x.kind==='note'; });
+  let t='['+RUN+'] QA 기록\n\n';
+  if(bugs.length){
+    t+='고쳐야 할 것\n';
+    bugs.forEach(function(x){
+      t+='  '+(x.rule?'['+x.rule+'] ':'')+x.note+'  ('+x.page+')\n';
+    });
+    t+='\n';
+  }
+  t+='한 일\n';
+  BUF.filter(function(x){ return x.kind!=='bug'&&x.kind!=='note'; })
+    .forEach(function(x){
+      t+='  '+x.kind+' · '+(x.note||x.label||x.target)
+        +(x.value?' = '+x.value:'')+'  ('+x.page+')\n';
+    });
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t)
+      .then(function(){ say('m2','복사했습니다. 개발자에게 붙여넣으세요.','ok'); })
+      .catch(function(){ say('m2','복사하지 못했습니다.','bad'); });
+  }
+};
+
+$('fresh').onclick=function(){
+  newRun();
+  say('m2','새 기록으로 시작합니다.','ok');
+};
+
+/* 안쪽 화면에서 오는 알림 */
+window.addEventListener('message', function(e){
+  if(!ON) return;
+  if(e.origin !== location.origin) return;
+  const d=e.data;
+  if(!d || d.src!=='cgqa') return;
+  log(d.kind||'click', {
+    page:d.page||PAGE, target:d.target||'',
+    label:d.label||'', value:d.value||'',
+    note:d.note||'', rule:d.rule||''
+  });
+});
+
+newRun();
+open2();
+</script>
+</body>
+</html>
