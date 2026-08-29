@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ChewGumi Site Build v223 · 2026-07-31 · MedIT -->
+<!-- ChewGumi Site Build v224 · 2026-07-31 · MedIT -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12339,6 +12339,66 @@ body.drawer-on{
 .uf-msg{font-size:12.5px;margin-top:10px;min-height:18px;color:#797979;text-align:center}
 .uf-msg.ok{color:#2AA060}
 .uf-msg.bad{color:#C0395C}
+
+/* 사진·영상 크게 보기 */
+.uf-dim{
+  position:fixed;
+  inset:0;
+  z-index:9600;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(12,6,9,.82);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+.uf-w{
+  position:relative;
+  width:min(94vw,900px);
+  max-height:88vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.uf-w img{
+  max-width:100%;
+  max-height:88vh;
+  border-radius:14px;
+  display:block;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.uf-w iframe{
+  width:min(94vw,900px);
+  aspect-ratio:16/9;
+  max-height:88vh;
+  border:0;
+  border-radius:14px;
+  background:#000;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.uf-close{
+  position:absolute;
+  top:-46px;
+  right:0;
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+  font-family:inherit;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.uf-close:hover{ background:rgba(255,255,255,.3) }
+@media (max-width:640px){
+  .uf-dim{ padding:14px }
+  .uf-close{ top:-42px; width:34px; height:34px }
+}
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */
@@ -13847,6 +13907,54 @@ window.cgClearCart = function(){
       if (btn) btn.disabled = false;
       say('보내지 못했습니다.', 'bad');
     });
+  };
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════
+   USER FILMS — 사진 크게 보기 · 영상 재생
+   ══════════════════════════════════════════════ */
+(function(){
+  if (window.ufView) return;
+
+  function dim(inner){
+    var old = document.getElementById('ufDim');
+    if (old) old.remove();
+
+    var d = document.createElement('div');
+    d.id = 'ufDim';
+    d.className = 'uf-dim';
+    d.innerHTML = '<div class="uf-w">'
+      + '<button class="uf-close" type="button" aria-label="닫기">✕</button>'
+      + inner + '</div>';
+    document.body.appendChild(d);
+
+    function close(){
+      d.remove();
+      document.removeEventListener('keydown', esc);
+    }
+    function esc(e){ if (e.key === 'Escape') close(); }
+
+    d.querySelector('.uf-close').onclick = close;
+    d.onclick = function(e){ if (e.target === d) close(); };
+    document.addEventListener('keydown', esc);
+  }
+
+  /* 사진 크게 보기 */
+  window.ufView = function(src){
+    if (!src) return;
+    dim('<img src="' + String(src).replace(/"/g,'&quot;') + '" alt="" '
+      + 'referrerpolicy="origin" loading="eager">');
+  };
+
+  /* 구글 드라이브 영상 */
+  window.ufPlay = function(id){
+    if (!id) return;
+    var url = 'https://drive.google.com/file/d/'
+      + String(id).replace(/[^\w-]/g,'') + '/preview';
+    dim('<iframe src="' + url + '" allow="autoplay" '
+      + 'allowfullscreen title="영상"></iframe>');
   };
 })();
 </script>
