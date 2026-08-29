@@ -94,6 +94,17 @@
     buf.push(row);
     paint();
 
+    /* 시험대(qa-lab) 안에서 열렸으면 바깥에도 알립니다 */
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          src: 'cgqa', kind: kind, page: row.page,
+          target: row.target, label: row.label,
+          value: row.value, note: row.note, rule: row.rule
+        }, location.origin);
+      }
+    } catch (e) {}
+
     fetch(SB + '/rest/v1/qa_events', {
       method: 'POST',
       headers: {
@@ -216,6 +227,10 @@
 
   function build() {
     if (box()) return;
+    /* 시험대 안이면 창을 안 띄웁니다 (바깥에 이미 있습니다) */
+    try {
+      if (window.parent && window.parent !== window) return;
+    } catch (e) {}
 
     var b = document.createElement('div');
     b.id = 'cgQaBox';
