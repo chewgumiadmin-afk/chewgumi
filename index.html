@@ -1799,9 +1799,14 @@ const CG_OPTIONS = {
     { k:'20', label:'20개입', name:'듀잇 20개입', origin:158900, sale:81000, no:21 }
   ]
 };
-function findOptIndex(line, name){
+/* QA 2026-08-31 — 상품번호가 있으면 그것으로 먼저 찾습니다.
+   이름으로만 찾던 탓에 영어 화면(setLang('en'))에서는 이름이 영어라 하나도 못 맞추고
+   늘 첫 항목(트래블잇 1봉 · 듀잇 레몬민트)이 골라졌습니다. */
+function findOptIndex(line, name, no){
   const list = CG_OPTIONS[line] || [];
   const n = name || '';
+  const want = Number(no) || 0;
+  if (want) { for (let i = 0; i < list.length; i++) if (Number(list[i].no) === want) return i; }
   for (let i = 0; i < list.length; i++) {
     const o = list[i];
     if (line === 'travel') { const m = n.match(/\[(\d+)봉\]/); if (m && m[1] === o.k) return i; }
@@ -1836,10 +1841,10 @@ function buyNowDirect(ev){
     try {
       const c = JSON.parse(localStorage.getItem('cg_cart') || '[]');
       const ex = c.find(i => i.name === name);
+      const _id = Number((o && o.no) || (window._curCard && window._curCard.dataset.no)) || 0;
       if (ex) ex.qty = dQty;
-      else c.push({ id: Number(window._curCard && window._curCard.dataset.no) || 0,
-                    name: name, price: price, qty: dQty,
-                    img: (window.cgCardImg ? cgCardImg(window._curCard) : '') });
+      else c.push({ id: _id, name: name, price: price, qty: dQty,
+                    img: cgImgByNo(_id) || cgCardImg(window._curCard) });
       localStorage.setItem('cg_cart', JSON.stringify(c));
     } catch(e){}
   }
@@ -1939,13 +1944,13 @@ function openDetail(card){
       else if(_df){ _df.style.display='none'; }
     }catch(e){}
   const np = document.getElementById('dNpay');
-  const su = smartstoreUrl(card.querySelector('.name').textContent);
+  const su = smartstoreUrl(cgCardName(card));   /* QA: 영어 화면에서도 한국어 이름으로 찾는다 */
   if (su) { np.href = su; np.classList.add('show'); } else { np.classList.remove('show'); }
   window._curLine = card.dataset.line;
   const sel = document.getElementById('dOpt');
   const opts = CG_OPTIONS[card.dataset.line] || [];
   sel.innerHTML = opts.map(o => '<option>' + o.label + ' — ₩' + o.sale.toLocaleString() + '</option>').join('');
-  sel.selectedIndex = findOptIndex(card.dataset.line, card.querySelector('.name').textContent);
+  sel.selectedIndex = findOptIndex(card.dataset.line, cgCardName(card), card.dataset.no);
   applyOpt();
   document.getElementById('dDesc').textContent = (cgLang === 'en' && card.dataset.descEn) ? card.dataset.descEn : card.dataset.desc;
   dPrice = Number(sale.replace(/[^0-9]/g,'')); dQty = 1; renderQty();
@@ -2361,6 +2366,10 @@ document.querySelectorAll('.comm-list[data-key]').forEach(ul => {
    장바구니 화면(cart.html)이 이름만 보고 자기 표에서 이미지를 되찾던 방식이
    상품이 늘 때마다 어긋나서, 담는 쪽에서 넣어 주는 방식으로 바꿨습니다.
    주소는 상대경로로 저장합니다 — 도메인을 옮겨도 그대로 쓰이도록. */
+/* 상품번호 → 상품 사진 (고른 구성에 맞는 사진을 담기 위해) */
+var CG_PROD_IMG = {15:'travel-1',11:'travel-3',12:'travel-5',13:'travel-10',14:'travel-20',
+  16:'dew-lemon',17:'dew-grape',18:'dew-4',19:'dew-6',20:'dew-10',21:'dew-20'};
+function cgImgByNo(no){ var b = CG_PROD_IMG[Number(no)]; return b ? ('assets/prod/' + b + '.jpg') : ''; }
 function cgCardName(card){
   /* QA 2026-08-31 — 영어 화면(setLang('en'))에서는 카드의 이름이 영어로 바뀌어 있어
      그대로 담으면 장바구니·재고확인이 영어 이름을 들고 다니게 됩니다.
@@ -2396,10 +2405,15 @@ function closeCart(){ document.getElementById('cartP').classList.remove('open');
 function addToCart(){
   if (!window._curCard) return;
   const card = window._curCard;
-  const name = (window._curOpt && window._curOpt.name) || cgCardName(card);
+  /* QA: 손님이 구성(1봉/3봉/…)을 바꿨으면 카드가 아니라 고른 구성이 기준입니다.
+     전에는 카드의 상품번호·사진이 그대로 들어가 엉뚱한 상품이 담겼습니다. */
+  const o = window._curOpt;
+  const id = Number((o && o.no) || card.dataset.no) || 0;
+  const name = (o && o.name) || cgCardName(card);
+  const img = cgImgByNo(id) || cgCardImg(card);
   const found = CART.find(i => i.name === name);
   if (found) found.qty += dQty;
-  else { CART.push({ id:Number(card.dataset.no)||0, name:name, price:dPrice, qty:dQty, img:cgCardImg(card) }); }
+  else { CART.push({ id:id, name:name, price:dPrice, qty:dQty, img:img }); }
   closeDetail(); openCart();
 }
 function cartQty(i, d){ CART[i].qty = Math.max(1, CART[i].qty + d); renderCart(); }
@@ -12545,7 +12559,7 @@ body.drawer-on{
       try {
         var np = document.getElementById('dNpay');
         if (np && typeof smartstoreUrl === 'function') {
-          var su = smartstoreUrl(pick('.name'));
+          var su = smartstoreUrl((typeof cgCardName==='function' ? cgCardName(card) : pick('.name')));
           if (su) { np.href = su; np.classList.add('show'); }
           else np.classList.remove('show');
         }
@@ -12561,7 +12575,7 @@ body.drawer-on{
               return '<option>' + o.label + ' — ₩' + o.sale.toLocaleString() + '</option>';
             }).join('');
             if (typeof findOptIndex === 'function')
-              sel.selectedIndex = findOptIndex(card.dataset.line, pick('.name'));
+              sel.selectedIndex = findOptIndex(card.dataset.line, pick('.name'), card.dataset.no);
             if (typeof applyOpt === 'function') applyOpt();
           }
         }
