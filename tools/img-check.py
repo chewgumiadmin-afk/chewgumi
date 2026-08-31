@@ -66,7 +66,10 @@ for card in re.finditer(r'<a class="card"[^>]*data-no="(\d+)"(.*?)</a>', h, re.S
 
 # ── 4. 장바구니에 담을 때 이미지를 함께 저장하는지 (2026-08-31 추가) ──
 for page, marks in (('product.html', ["img: imgUrl(p.img)", "img: imgUrl(P[no].img)"]),
-                    ('index.html',   ["img:cgCardImg(card)", "cgImgByName(p.name)"])):
+                    ('index.html',   ["function cgImgByNo(no)", "function cgCardName(card)",
+                                      "cgImgByName(p.name)",
+                                      "const img = cgImgByNo(id) || cgCardImg(card)",
+                                      "id:id, name:name, price:dPrice, qty:dQty, img:img"])):
     if not os.path.exists(page): continue
     h = open(page, encoding='utf-8').read()
     for mk in marks:
