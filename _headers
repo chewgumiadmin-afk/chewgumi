@@ -1,0 +1,17 @@
+# Cloudflare Pages · 응답 헤더
+# GitHub Pages 에서는 헤더를 못 붙였습니다. 옮기면서 함께 켜는 것들입니다.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(self)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# 이미지·폰트는 오래 캐시 (파일명이 바뀌면 새로 받습니다)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 화면은 항상 최신으로
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
