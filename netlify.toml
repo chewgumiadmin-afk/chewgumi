@@ -1,0 +1,27 @@
+# Netlify 배포 설정 (QA 미리보기용)
+#
+# 이 사이트는 빌드 과정이 없는 정적 파일 묶음입니다.
+# 후처리를 끄지 않으면 Netlify 가 링크를 제 마음대로 바꿉니다
+#   login.html → /login,  index.html → /
+# 그러면 실제 배포(GitHub Pages·Cloudflare Pages)와 화면이 달라져서
+# QA 결과를 그대로 믿을 수 없게 됩니다. 그래서 손대지 않도록 막습니다.
+
+[build]
+  publish = "."
+
+[build.processing]
+  skip_processing = true
+
+[build.processing.html]
+  pretty_urls = false
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+[build.processing.images]
+  compress = false
