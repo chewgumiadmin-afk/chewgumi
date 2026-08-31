@@ -859,6 +859,10 @@ body:not(.logged) #area{ display:none !important }
   color:#D82558;
   border-color:#FFBDCC;
 }
+/* ── QA: 폰에서 입력칸을 누르면 화면이 확대되는 문제 (UX-RULES R15) ── */
+@media (max-width:768px){
+  input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
+}
 </style>
 
 <script>

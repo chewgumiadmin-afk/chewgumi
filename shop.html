@@ -364,6 +364,10 @@ load();
 .head .logo, .logo{ line-height:0 }
 .head .logo img, a.logo img{ height:38px; width:auto; display:block; background:transparent }
 @media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
+/* ── QA: 폰에서 입력칸을 누르면 화면이 확대되는 문제 (UX-RULES R15) ── */
+@media (max-width:768px){
+  input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
+}
 </style>
 <script src="assets/drag-fab.js" defer></script>
 </body>

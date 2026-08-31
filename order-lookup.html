@@ -211,6 +211,10 @@ dd{margin:0;word-break:keep-all}
 .acts button:hover{background:var(--pink-lt);color:var(--main)}
 .acts button.warn{color:var(--bad);border-color:rgba(192,57,92,.28)}
 .acts button.warn:hover{background:rgba(192,57,92,.06);color:var(--bad)}
+/* ── QA: 폰에서 입력칸을 누르면 화면이 확대되는 문제 (UX-RULES R15) ── */
+@media (max-width:768px){
+  input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
+}
 </style>
 <link rel="stylesheet" href="assets/navauth.css">
 <script src="assets/tok.js"></script>
