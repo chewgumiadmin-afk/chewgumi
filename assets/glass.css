@@ -53,11 +53,15 @@
       inset 0 1px 0 rgba(255,255,255,.6) !important}
 
   /* ══ 입력 필드 ══ */
-  input,select,textarea{
+  /* QA 2026-08-31 — 체크박스·라디오는 빼야 합니다.
+     여기서 흰 배경을 !important 로 덮어써서, 체크된 칸이 분홍색으로 안 바뀌고
+     흰 바탕에 흰 체크표시가 그려져 "선택됨"이 눈에 보이지 않았습니다.
+     장바구니의 선택·전체선택이 켜져 있는지 손님이 알 수 없었습니다. */
+  input:not([type=checkbox]):not([type=radio]),select,textarea{
     border:1px solid rgba(255,255,255,.78) !important;
     background:rgba(255,255,255,.82) !important;
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-  input:focus,select:focus,textarea:focus{
+  input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{
     background:rgba(255,255,255,.96) !important;
     box-shadow:0 0 0 3px rgba(216,37,88,.1)}
 
