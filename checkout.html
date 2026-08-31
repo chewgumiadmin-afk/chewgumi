@@ -171,7 +171,13 @@ textarea{resize:vertical;min-height:70px}
           <div class="ptabs">
             <button class="on" id="ptBank" onclick="setPay('bank')">무통장입금</button>
             <button id="ptCard" onclick="setPay('card')">카드 · 간편결제 <em>신용카드 · 네이버페이</em></button>
-        <button id="ptVbank" onclick="setPay('vbank')">가상계좌 <em>에스크로 적용</em></button>
+        <!-- QA: 가상계좌는 화면만 있고 실제로는 무통장입금 주문이 만들어졌습니다.
+             (뒤쪽에서 setPay 를 덮어쓰는 스크립트가 window.payType 만 바꾸고,
+              주문을 만드는 안쪽 payType 은 'bank' 로 남습니다)
+             에스크로·가상계좌 발급이 실제로 붙으면 아래 CG_VBANK_READY 를 true 로 바꾸고,
+             payType 전달과 vDepositor 저장까지 함께 고쳐 주세요. (UX-RULES R13)
+             가상계좌는 카드 결제창(이지페이) 안에서 이미 고를 수 있습니다. -->
+        <button id="ptVbank" onclick="setPay('vbank')" style="display:none">가상계좌 <em>에스크로 적용</em></button>
           </div>
           <div id="bankPane">
             <div class="bankbox" id="bankBox">계좌 정보를 불러오는 중…</div>
@@ -256,15 +262,32 @@ const $=id=>document.getElementById(id);
 let CART=[]; try{CART=JSON.parse(localStorage.getItem('cg_cart')||'[]');}catch(e){}
 let PRODS={}, amount=0, widgets=null;
 
+/* QA 2026-08-31 — 이름으로 상품번호를 찾는 함수입니다.
+   전에는 아는 이름이 하나도 없으면 무엇이든 18(듀잇 4개입)을 돌려줬습니다.
+   그래서 표에 없는 상품(예: DREAM-IT 등 신제품)을 담으면
+   화면에는 안 보이면서 주문은 '듀잇 4개입'으로 만들어졌습니다.
+   이제 모르면 0 을 돌려주고, 아래 cgItemId 가 담을 때 저장된 id 를 먼저 씁니다. */
 function matchId(name){
   const s=String(name||'');
-  if(s.includes('트래블잇')||s.toLowerCase().includes('travel')){
-    const m=s.match(/\[(\d+)봉\]/); const map={'1':15,'3':11,'5':12,'10':13,'20':14};
+  if(s.includes('트래블')||s.toLowerCase().includes('travel')){
+    const m=s.match(/(\d+)\s*봉/); const map={'1':15,'3':11,'5':12,'10':13,'20':14};
     return (m&&map[m[1]])||11;}
-  if(s.includes('레몬민트'))return 16;
-  if(s.includes('그레이프'))return 17;
-  const m2=s.match(/(\d+)개입/); const map2={'4':18,'6':19,'10':20,'20':21};
-  return (m2&&map2[m2[1]])||18;
+  if(s.includes('레몬민트')||s.includes('레몬'))return 16;
+  if(s.includes('그레이프')||s.includes('포도'))return 17;
+  const m2=s.match(/(\d+)\s*개입/); const map2={'4':18,'6':19,'10':20,'20':21};
+  if(m2&&map2[m2[1]])return map2[m2[1]];
+  if(s.includes('듀잇')||/dew/i.test(s))return 18;
+  return 0;
+}
+/* 담을 때 저장된 상품번호가 있으면 그것이 1순위입니다 (이름 짐작보다 확실합니다) */
+function cgItemId(it){
+  const n = Number(it && (it.id || it.no));
+  if (n) return n;
+  return matchId(it && it.name);
+}
+/* 주문서에 올릴 수 없는 항목(상품번호를 모르거나 판매중이 아닌 것) */
+function cgBadItems(){
+  return CART.filter(it => { const id = cgItemId(it); return !id || !PRODS[id]; });
 }
 
 function findAddr(){
@@ -300,7 +323,10 @@ async function init(){
 
   let goods=0;
   $('items').innerHTML=CART.map((it,ix)=>{
-      const id=matchId(it.name), p=PRODS[id]; if(!p)return '';
+      const id=cgItemId(it), p=PRODS[id];
+      if(!p) return '<div class="item"><div class="c"><div class="n">'+esc(it.name)+'</div>'
+        +'<div class="p" style="color:#c0395c">현재 주문할 수 없는 상품입니다. 장바구니에서 빼 주세요.</div></div>'
+        +'<button type="button" class="rm" onclick="rmItem('+ix+')" aria-label="이 상품 빼기">✕</button></div>';
       goods+=p.price_sale*it.qty;
       return '<div class="item"><div class="th"><img src="'+esc(p.image||'')+'" alt="" '
         +'referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'"></div>'
@@ -329,7 +355,10 @@ async function init(){
      그 아래 줄이 통째로 실행되지 않아 결제 버튼이 잠긴 채 남았습니다. */
   var eb=$('envBadge');
   if(eb) eb.textContent = 'EASYPAY';
-  $('payBtn').disabled = !(CART && CART.length);
+  const bad = cgBadItems();
+  $('payBtn').disabled = !(CART && CART.length) || bad.length > 0;
+  if (bad.length) $('msg').textContent =
+    '주문할 수 없는 상품이 담겨 있습니다 — ' + bad.map(b=>b.name).join(', ') + ' (장바구니에서 빼 주세요)';
 }
 
 /* 상품명 → 공식몰 상품번호 */
@@ -364,7 +393,7 @@ async function loadCoupons(){
   }catch(e){}
 }
 async function quote(){
-  const items=CART.map(it=>({id:matchId(it.name),qty:it.qty}));
+  const items=CART.map(it=>({id:cgItemId(it),qty:it.qty})).filter(x=>x.id);
   try{
     const r=await fetch(SB+'/functions/v1/coupon',{method:'POST',headers:authH(),
       body:JSON.stringify({action:'quote',items,coupon:$('cpSel').value})});
@@ -384,6 +413,8 @@ async function quote(){
 }
 function applyCoupon(){ quote(); }
 
+/* 가상계좌·에스크로가 실제로 붙으면 true 로 바꿉니다 (탭이 다시 보입니다) */
+window.CG_VBANK_READY = false;
 let payType='bank';
 function setPay(t){
   payType=t;
@@ -590,7 +621,12 @@ $('payBtn').addEventListener('click',async()=>{
   if(!buyer.addr1){$('msg').textContent='배송지 주소를 입력해 주세요.';return;}
   $('payBtn').disabled=true;$('msg').textContent='주문서를 생성하는 중…';
 
-  const items=CART.map(it=>({id:matchId(it.name),qty:it.qty}));
+  const bad0 = cgBadItems();
+  if (bad0.length){
+    $('msg').textContent='주문할 수 없는 상품이 담겨 있습니다 — '+bad0.map(b=>b.name).join(', ');
+    $('payBtn').disabled=false; return;
+  }
+  const items=CART.map(it=>({id:cgItemId(it),qty:it.qty}));
   let od;
   try{
     let tk=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)tk=s.t;}catch(e){}
@@ -600,8 +636,10 @@ $('payBtn').addEventListener('click',async()=>{
     const res=await fetch(payType==='bank'?FNB:FN,{method:'POST',headers:hd,
       body:JSON.stringify({action:'create',buyer,items,coupon:$('cpSel').value,
         payType, depositor:$('depositor').value.trim()})});
-    od=await res.json(); try{ if(od && od.orderNo && window.cgMarkOrdered) cgMarkOrdered(od.orderNo); }catch(e){}
+    od=await res.json();
     if(!res.ok){$('msg').textContent=od.error||'주문 생성에 실패했습니다.';$('payBtn').disabled=false;return;}
+    /* QA: 성공을 확인한 뒤에 '주문됨'으로 표시한다 (전에는 실패해도 표시됐습니다) */
+    try{ if(od && od.orderNo && window.cgMarkOrdered) cgMarkOrdered(od.orderNo); }catch(e){}
   }catch(e){
     $('payBtn').disabled=false;
     $('msg').textContent='주문 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
@@ -669,7 +707,14 @@ $('payBtn').addEventListener('click',async()=>{
       successUrl:location.origin+location.pathname+'?ok=1',
       failUrl:location.origin+location.pathname+'?fail=1'
     });
-  }catch(e){$('payBtn').disabled=false;$('msg').textContent='결제가 취소되었습니다.';}
+  }catch(e){
+    $('payBtn').disabled=false;
+    /* QA: widgets 는 저장소 어디에서도 만들어지지 않습니다.
+       여기로 오면 손님이 취소한 것이 아니라 결제수단이 미연결인 것입니다. (R5) */
+    $('msg').textContent = widgets
+      ? '결제가 취소되었습니다.'
+      : '이 결제수단은 아직 연결되지 않았습니다. 무통장입금 또는 카드로 진행해 주세요.';
+  }
 });
 
 /* 결제 인증 후 리턴 → 서버 승인 */
@@ -1201,6 +1246,10 @@ select::-ms-expand{ display:none !important }
   margin-top:11px; padding-top:10px;
   border-top:1px solid rgba(216,37,88,.13);
   font-size:11.5px; color:#8A3350;
+}
+/* ── QA: 폰에서 입력칸을 누르면 화면이 확대되는 문제 (UX-RULES R15) ── */
+@media (max-width:768px){
+  input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
 }
 </style>
 
