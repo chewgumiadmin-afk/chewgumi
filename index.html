@@ -1830,7 +1830,7 @@ function applyOpt(){
 function buyNowDirect(ev){
   ev.preventDefault();
   const o = window._curOpt;
-  const name = (o && o.name) || (window._curCard && window._curCard.querySelector('.name').textContent.trim());
+  const name = (o && o.name) || (window._curCard && cgCardName(window._curCard));
   const price = (o && o.sale) || dPrice || 0;
   if (name && price) {
     try {
@@ -2361,6 +2361,16 @@ document.querySelectorAll('.comm-list[data-key]').forEach(ul => {
    장바구니 화면(cart.html)이 이름만 보고 자기 표에서 이미지를 되찾던 방식이
    상품이 늘 때마다 어긋나서, 담는 쪽에서 넣어 주는 방식으로 바꿨습니다.
    주소는 상대경로로 저장합니다 — 도메인을 옮겨도 그대로 쓰이도록. */
+function cgCardName(card){
+  /* QA 2026-08-31 — 영어 화면(setLang('en'))에서는 카드의 이름이 영어로 바뀌어 있어
+     그대로 담으면 장바구니·재고확인이 영어 이름을 들고 다니게 됩니다.
+     setLang 이 초기에 넣어 둔 한국어 원문(data-ko)을 먼저 씁니다. */
+  var el = card && card.querySelector('.name');
+  if (!el) return '';
+  var raw = (el.dataset && el.dataset.ko) ? el.dataset.ko : el.innerHTML;
+  var tmp = document.createElement('div'); tmp.innerHTML = raw;
+  return (tmp.textContent || '').trim();
+}
 function cgCardImg(card){
   if (!card) return '';
   var im = card.querySelector('.thumb img:not(.hover)') || card.querySelector('.thumb img');
@@ -2386,7 +2396,7 @@ function closeCart(){ document.getElementById('cartP').classList.remove('open');
 function addToCart(){
   if (!window._curCard) return;
   const card = window._curCard;
-  const name = (window._curOpt && window._curOpt.name) || card.querySelector('.name').textContent.trim();
+  const name = (window._curOpt && window._curOpt.name) || cgCardName(card);
   const found = CART.find(i => i.name === name);
   if (found) found.qty += dQty;
   else { CART.push({ id:Number(card.dataset.no)||0, name:name, price:dPrice, qty:dQty, img:cgCardImg(card) }); }
@@ -13536,7 +13546,12 @@ window.cgClearCart = function(){
     var have = 0;
     try {
       var cart = JSON.parse(localStorage.getItem('cg_cart') || '[]');
-      cart.forEach(function(x){ if (x.name === p.name) have += x.qty; });
+      /* QA: 이름이 아니라 담을 때 저장한 상품번호로 짝을 맞춥니다.
+         (영어 화면에서 담으면 이름이 달라 재고 검사가 통째로 건너뛰어졌습니다) */
+      cart.forEach(function(x){
+        var xid = Number(x.id || x.no) || 0;
+        if (xid ? (xid === Number(id)) : (x.name === p.name)) have += x.qty;
+      });
     } catch(e){}
 
     if (have + qty > p.stock) {
@@ -13552,6 +13567,8 @@ window.cgClearCart = function(){
     try {
       var cart = JSON.parse(localStorage.getItem('cg_cart') || '[]');
       cart.forEach(function(x){
+        var xid = Number(x.id || x.no) || 0;
+        if (xid && STOCK[xid]) { items.push({ id: xid, qty: x.qty }); return; }
         for (var k in STOCK) {
           if (STOCK[k].name === x.name) { items.push({ id: Number(k), qty: x.qty }); break; }
         }
