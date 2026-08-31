@@ -322,6 +322,7 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 </div>
 
 <script>
+window.CG_NAVER_READY = false;   /* 네이버 Edge Function 배포 후 true */
 function sso(provider){
   var m=document.getElementById('ssoMsg');
   var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
@@ -329,8 +330,15 @@ function sso(provider){
   var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
   var back=location.origin+location.pathname.replace(/[^/]*$/,'mypage.html');
 
-  /* 네이버는 자체 서버(Edge Function)로 처리 */
+  /* 네이버는 자체 서버(Edge Function)로 처리한다.
+     QA: 그 함수가 아직 배포되지 않아 누르면 503 화면으로 갔다.
+     배포를 마치면 CG_NAVER_READY 를 true 로 바꾸면 된다. (UX-RULES R13) */
   if(provider==='naver'){
+    if(!window.CG_NAVER_READY){
+      if(m){m.className='sso-msg bad';
+        m.innerHTML='네이버 로그인은 아직 준비 중입니다.<br>구글·카카오 또는 이메일로 진행해 주세요.';}
+      return;
+    }
     if(m){m.className='sso-msg';m.textContent='네이버로 이동합니다…';}
     location.href=base+'/functions/v1/naver?redirect_to='+encodeURIComponent(back);
     return;

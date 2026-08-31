@@ -152,6 +152,7 @@ function cgMyId(){
 }
 </script>
 <link rel="stylesheet" href="assets/qa-tool.css">
+<script src="assets/tok.js"></script>   <!-- QA: 세션 저장을 cgSaveSession 한 곳으로 -->
 <script src="assets/qa-tool.js" defer></script>
 </head>
 <body>
@@ -291,6 +292,7 @@ function cgMyId(){
 const SSO_BASE='https://psynvpuedzjvytsgdhgg.supabase.co';
 
 /* 소셜 로그인 (Supabase OAuth) */
+window.CG_NAVER_READY = false;   /* 네이버 Edge Function 배포 후 true */
 function sso(provider){
   var m=document.getElementById('ssoMsg');
   var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
@@ -298,8 +300,15 @@ function sso(provider){
   var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
   var back=location.origin+location.pathname.replace(/[^/]*$/,'mypage.html');
 
-  /* 네이버는 자체 서버(Edge Function)로 처리 */
+  /* 네이버는 자체 서버(Edge Function)로 처리한다.
+     QA: 그 함수가 아직 배포되지 않아 누르면 503 화면으로 갔다.
+     배포를 마치면 CG_NAVER_READY 를 true 로 바꾸면 된다. (UX-RULES R13) */
   if(provider==='naver'){
+    if(!window.CG_NAVER_READY){
+      if(m){m.className='sso-msg bad';
+        m.innerHTML='네이버 로그인은 아직 준비 중입니다.<br>구글·카카오 또는 이메일로 진행해 주세요.';}
+      return;
+    }
     if(m){m.className='sso-msg';m.textContent='네이버로 이동합니다…';}
     location.href=base+'/functions/v1/naver?redirect_to='+encodeURIComponent(back);
     return;
@@ -377,7 +386,7 @@ function sendVerify(){
     $('vBtn').disabled=false; $('vBtn').textContent='메일 재발송';
     if(d.access_token){ /* 인증 불필요 설정 → 즉시 완료 */
       vSent=true; vDone=true; vEmail=email;
-      window._preToken=d.access_token;
+      window._preToken=d.access_token; window._preAuth=d;
       markVerified('이메일 확인이 완료되었습니다.');
     } else if(d.id || (d.user && d.user.id)){
       vSent=true; vEmail=email;
@@ -414,7 +423,7 @@ function tryVerify(email,pw){
     headers:{apikey:KEY,'Content-Type':'application/json'},
     body:JSON.stringify({email,password:pw})})
   .then(r=>r.json()).then(d=>{
-    if(d.access_token){ window._preToken=d.access_token; return true; }
+    if(d.access_token){ window._preToken=d.access_token; window._preAuth=d; return true; }
     return false;
   }).catch(()=>false);
 }
@@ -444,7 +453,7 @@ window.addEventListener('beforeunload', function(e){
   }
 });
 function resetVerify(){
-  vSent=false; vDone=false; vEmail=''; window._preToken=null;
+  vSent=false; vDone=false; vEmail=''; window._preToken=null; window._preAuth=null;
   ['email','pw1','pw2'].forEach(x=>{$(x).readOnly=false;});
   $('vBox').classList.remove('on','done');
   const re=document.querySelector('.vre'); if(re) re.style.display='';
@@ -510,7 +519,7 @@ function signup(){
   stashPending(email);
   if(vDone && window._preToken){
     $('go').disabled=true; $('msg').textContent='가입 처리 중…';
-    return saveProfile(window._preToken,email,false);
+    return saveProfile(window._preAuth||{access_token:window._preToken},email,false);
   }
   $('go').disabled=true; $('msg').textContent='가입 처리 중…';
   const BACK = location.origin + location.pathname.replace(/[^/]*$/, 'mypage.html');
@@ -518,7 +527,7 @@ function signup(){
     headers:{apikey:KEY,'Content-Type':'application/json'},
     body:JSON.stringify({email,password:pw,options:{emailRedirectTo:BACK}})})
   .then(r=>r.json()).then(d=>{
-    if(d.access_token){ saveProfile(d.access_token,email,false); }
+    if(d.access_token){ saveProfile(d,email,false); }
     else if(d.id || (d.user && d.user.id)){ autoLogin(email,pw); }
     else { $('go').disabled=false;
       $('msg').textContent = d.msg || d.error_description || '가입에 실패했습니다. 이미 가입된 이메일일 수 있습니다.'; }
@@ -541,11 +550,15 @@ function autoLogin(email,pw){
     headers:{apikey:KEY,'Content-Type':'application/json'},
     body:JSON.stringify({email,password:pw})})
   .then(r=>r.json()).then(d=>{
-    if(d.access_token){ saveProfile(d.access_token,email,false); }
+    if(d.access_token){ saveProfile(d,email,false); }
     else { finish(email,true); }   /* 인증 필요 → 안내 화면 */
   }).catch(()=>finish(email,true));
 }
-function saveProfile(token,email,needVerify){
+function saveProfile(auth,email,needVerify){
+  /* QA: 예전에는 토큰만 저장해(cg_sb={t,u}) 만료·갱신 정보가 없었습니다.
+     assets/tok.js 의 alive() 는 만료 정보가 없으면 '살아있다'고 보기 때문에,
+     메뉴는 로그인 상태로 남고 실제 호출만 조용히 401 이 나던 문제가 있었습니다. */
+  const token = (auth && auth.access_token) ? auth.access_token : auth;
   const body={name:$('name').value.trim(),phone:$('phone').value.trim(),
     zipcode:$('zip').value.trim(),addr1:$('addr1').value.trim(),addr2:$('addr2').value.trim(),
     marketing_shop:$('m0').checked, marketing_sms:$('m1').checked, marketing_email:$('m2').checked,
@@ -556,16 +569,28 @@ function saveProfile(token,email,needVerify){
   .then(()=>logConsents(token,email))
   .then(()=>{try{localStorage.removeItem('cg_pending');}catch(e){}})
   .then(()=>{
-    try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:email.split('@')[0]}));}catch(e){}
+    saveSession(auth,email,token);
     finish(email,needVerify);
-  }).catch(()=>finish(email,needVerify));
+  }).catch(()=>{ saveSession(auth,email,token); finish(email,needVerify,true); });
 }
-function finish(email,needVerify){
+function saveSession(auth,email,token){
+  try{
+    if(window.cgSaveSession && auth && auth.access_token){ window.cgSaveSession(auth,email); return; }
+    const sec=(auth&&auth.expires_in)||3600;
+    localStorage.setItem('cg_sb',JSON.stringify({
+      t:token, r:(auth&&auth.refresh_token)||'',
+      e:Date.now()+sec*1000, exp:Math.floor(Date.now()/1000)+sec,
+      u:email.split('@')[0], em:email }));
+  }catch(e){}
+}
+function finish(email,needVerify,profileFailed){
   $('main').classList.add('hide'); $('done').classList.remove('hide');
   var s2=document.getElementById('st2'); if(s2) s2.className='on';
   $('doneMsg').innerHTML = needVerify
     ? '<b>'+email+'</b> 으로 인증 메일을 보냈습니다.<br>메일의 링크를 누르시면 <b>바로 로그인된 상태</b>로 이동합니다.<br>(메일이 보이지 않으면 스팸함을 확인해 주세요)'
-    : '<b>'+email+'</b> 님, 환영합니다!<br>이제 주문 시 배송지가 자동으로 입력됩니다.';
+    : profileFailed
+      ? '<b>'+email+'</b> 님, 계정은 만들어졌습니다.<br>다만 <b>이름·전화·주소 저장에 실패</b>했습니다.<br>마이페이지에서 한 번 더 입력해 주세요.'
+      : '<b>'+email+'</b> 님, 환영합니다!<br>이제 주문 시 배송지가 자동으로 입력됩니다.';
   const gb=$('goBtn');
   if(gb && needVerify){ gb.href='login.html'; gb.textContent='메일 인증 후 로그인하기'; }
   window.scrollTo({top:0,behavior:'smooth'});
@@ -650,6 +675,10 @@ check();
 .head .logo, .logo{ line-height:0 }
 .head .logo img, a.logo img{ height:38px; width:auto; display:block; background:transparent }
 @media(max-width:640px){ .head .logo img, a.logo img{ height:28px } }
+/* ── QA: 폰에서 입력칸을 누르면 화면이 확대되는 문제 (UX-RULES R15) ── */
+@media (max-width:768px){
+  input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
+}
 </style>
 <script src="assets/drag-fab.js" defer></script>
 </body>
