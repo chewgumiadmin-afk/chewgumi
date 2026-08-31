@@ -39,7 +39,7 @@ a.logo::before, .logo::before, .brand::before {
   display: block;
   width: clamp(96px, 13vw, 128px);
   height: clamp(34px, 4.6vw, 46px);
-  background: url('logo.png') center/contain no-repeat;
+  background: url('../logo.png') center/contain no-repeat;   /* QA: assets/ 기준 상대경로라 ../ 필요 */
 }
 a.logo img, .logo img, .brand img { display: none !important; }
 
