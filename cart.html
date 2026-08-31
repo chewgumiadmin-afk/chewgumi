@@ -168,9 +168,11 @@ input[type=checkbox]:checked::after{content:"";position:absolute;left:6.5px;top:
 
 <div class="head">
   <a class="logo" href="index.html"><img src="logo.png" alt="ChewGumi" width="200" height="149" decoding="sync" onerror="this.onerror=null;this.src='assets/logo-rainbow.png'" onerror="this.outerHTML='CHEW GUMI'"></a>
-  <nav>
+  <nav class="nav-auth">
     <a href="index.html#all">전체상품</a>
+    <a href="login.html">LOGIN</a>
     <a href="join.html">SIGN UP</a>
+    <a href="mypage.html" style="display:none">MY PAGE</a>
     <a href="wish.html">관심상품</a>
     <a href="index.html">홈</a>
   </nav>
@@ -224,30 +226,56 @@ function cgModal(o){
 }
 
 const CDN='assets/logo-rainbow.png';
+/* QA 2026-08-31 — 배너 이미지를 실제 상품 사진으로 바꿨습니다.
+   (트래블잇 3·5·20봉에 듀잇 초록 배너가, 듀잇 4·6·20개입에 같은 광고 배너가 붙어 있었습니다) */
 const P = {
-  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/hero-travel.png'},
-  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/travel-thumb.jpg'},
-  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/travel-thumb.jpg'},
-  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/banner-travel-cloud.png'},
-  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/travel-thumb.jpg'},
-  16:{n:'듀잇 레몬민트', cate:47, img:'assets/hero-dew-green.png'},
-  17:{n:'듀잇 그레이프', cate:47, img:'assets/hero-dew-purple.png'},
-  18:{n:'듀잇 4개입', cate:47, img:'assets/dew-thumb.jpg'},
-  19:{n:'듀잇 6개입', cate:47, img:'assets/dew-thumb.jpg'},
-  20:{n:'듀잇 10개입', cate:47, img:'assets/banner-dew-bottom.png'},
-  21:{n:'듀잇 20개입', cate:47, img:'assets/dew-thumb.jpg'}
+  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-1.jpg'},
+  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-3.jpg'},
+  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-5.jpg'},
+  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-10.jpg'},
+  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-20.jpg'},
+  16:{n:'듀잇 레몬민트', cate:47, img:'assets/prod/dew-lemon.jpg'},
+  17:{n:'듀잇 그레이프', cate:47, img:'assets/prod/dew-grape.jpg'},
+  18:{n:'듀잇 4개입', cate:47, img:'assets/prod/dew-4.jpg'},
+  19:{n:'듀잇 6개입', cate:47, img:'assets/prod/dew-6.jpg'},
+  20:{n:'듀잇 10개입', cate:47, img:'assets/prod/dew-10.jpg'},
+  21:{n:'듀잇 20개입', cate:47, img:'assets/prod/dew-20.jpg'}
 };
+/* QA 2026-08-31 — 두 가지를 고쳤습니다.
+   · 챗봇이 담는 '트래블잇 5봉'(대괄호 없음)을 못 알아보고 3봉으로 보던 것
+   · 아는 상품이 하나도 없으면 무엇이든 18(듀잇 4개입)로 보던 것 → 0 을 돌려줍니다 */
 function matchNo(name){
   const s = String(name || '');
-  const t = s.includes('트래블잇') || s.toLowerCase().includes('travel');
-  if (t) { const m = s.match(/\[(\d+)봉\]/); const map={'1':15,'3':11,'5':12,'10':13,'20':14}; return (m && map[m[1]]) || 11; }
-  if (s.includes('레몬민트')) return 16;
-  if (s.includes('그레이프')) return 17;
-  const m2 = s.match(/(\d+)개입/);
+  if (s.includes('트래블') || /travel/i.test(s)) {
+    const m = s.match(/(\d+)\s*봉/);
+    const map = {'1':15,'3':11,'5':12,'10':13,'20':14};
+    return (m && map[m[1]]) || 11;
+  }
+  if (s.includes('레몬민트') || s.includes('레몬')) return 16;
+  if (s.includes('그레이프') || s.includes('포도')) return 17;
+  const m2 = s.match(/(\d+)\s*개입/);
   const map2 = {'4':18,'6':19,'10':20,'20':21};
-  return (m2 && map2[m2[1]]) || 18;
+  if (m2 && map2[m2[1]]) return map2[m2[1]];
+  if (s.includes('듀잇') || /dew/i.test(s)) return 18;
+  return 0;
 }
-const detailUrl = n => 'https://chewgumi.com/product/detail.html?product_no=' + n + '&cate_no=' + P[n].cate + '&display_group=1';
+
+/* QA 2026-08-31 — 장바구니 썸네일을 정하는 한 곳.
+   1순위는 담을 때 함께 저장한 이미지(it.img)입니다.
+   상품표(P)는 그 값이 없는 예전 항목을 위한 예비로만 씁니다. */
+function cartImg(it, n){
+  const raw = it && it.img;
+  if (raw) return String(raw).replace(/^https?:\/\/[^/]+\//, '');
+  if (P[n] && P[n].img) return P[n].img;
+  const s = String((it && it.name) || '');
+  if (/트래블|travel/i.test(s)) return 'assets/prod/travel.jpg';
+  if (/듀잇|dew/i.test(s))      return 'assets/prod/dew-lemon.jpg';
+  return CDN;
+}
+function prodHref(n){ return n ? ('product.html?no=' + n) : 'index.html#all'; }
+const detailUrl = n => (n && P[n])
+  ? ('https://chewgumi.com/product/detail.html?product_no=' + n + '&cate_no=' + P[n].cate + '&display_group=1')
+  : 'https://chewgumi.com/';
 const won = v => '₩' + Number(v).toLocaleString();
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 
@@ -289,15 +317,15 @@ function render(){
     return;
   }
   const rows = CART.map((it, i) => {
-    const n = matchNo(it.name);
+    const n = Number(it.id || it.no) || matchNo(it.name);   /* QA: 담을 때 저장된 상품번호가 1순위 */
     return '<div class="item">' +
       '<input type="checkbox" class="pick" data-i="' + i + '" checked onchange="sumUp()" aria-label="선택">' +
-      '<div class="th"><img src="' + ((P[n] && P[n].img) || CDN) + '" alt="" loading="lazy" '
+      '<div class="th"><img src="' + esc(cartImg(it, n)) + '" alt="" loading="lazy" '
         + 'onerror="this.onerror=null;this.src=\''+CDN+'\'"></div>' +
       '<div class="c">' +
-        '<a class="n" href="product.html?no=' + (n || '') + '">' + esc(it.name) + '</a>' +
+        '<a class="n" href="' + prodHref(n) + '">' + esc(it.name) + '</a>' +
         '<div class="opt">구성 : ' + esc((P[n] && P[n].n) || it.name) + '</div>' +
-        '<div class="opt-act"><a href="product.html?no=' + (n || '') + '">옵션 변경</a>' +
+        '<div class="opt-act"><a href="' + prodHref(n) + '">옵션 변경</a>' +
         '<a href="' + detailUrl(n) + '" target="_blank" rel="noopener">공식몰에서 구매 →</a></div>' +
       '</div>' +
       '<div class="right">' +
@@ -616,6 +644,16 @@ input:not([type=checkbox]):not([type=radio]), textarea, select{
 }
 @media (max-width:480px){
   .item .th{ width:64px;height:64px;border-radius:12px }
+}
+
+/* ── QA: 폰에서 누르기 어려운 단추 (UX-RULES R15 · 44px 이상) ── */
+@media (max-width:768px){
+  input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
+  /* 눈에 보이는 크기는 그대로 두고, 누를 수 있는 넓이만 44px 로 넓힌다 */
+  .ctrl button{ min-width:44px; min-height:44px; }
+  .item .del, .delsel{ position:relative; }
+  .item .del::after, .delsel::after{ content:''; position:absolute; left:50%; top:50%;
+    width:44px; height:44px; transform:translate(-50%,-50%); }
 }
 </style>
 <script src="assets/drag-fab.js" defer></script>
