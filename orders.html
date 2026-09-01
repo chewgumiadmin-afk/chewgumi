@@ -60,6 +60,17 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .o-open:hover,.o-open:focus-visible{background:rgba(216,37,88,.06)}
 .o-open .o-no{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(216,37,88,.35)}
 .mini.de{display:inline-flex;align-items:center}
+/* 찾기 · 쪽 나눔 */
+.ofind{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
+.ofind input{margin:0;flex:1;min-width:0;font-size:16px}
+.ocnt{font-size:11.5px;color:var(--gray);white-space:nowrap;font-weight:600}
+.opager{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:14px}
+.opager:empty{margin:0}
+.pg{min-width:38px;min-height:38px;padding:0 11px;border-radius:11px;border:1px solid var(--line);
+  background:rgba(255,255,255,.72);font-size:12.5px;font-weight:700;color:var(--gray)}
+.pg.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.pg:disabled{opacity:.4;cursor:default}
+.pgd{color:var(--gray);font-size:12px;padding:0 2px}
 .o-d{font-size:11.5px;color:var(--gray)}
 .st{font-size:10.5px;font-weight:700;letter-spacing:.5px;padding:5px 11px;border-radius:999px;color:#fff}
 .st.pending{background:#999}.st.paid{background:#3182F6}.st.preparing{background:#E9A23B}
@@ -474,7 +485,13 @@ label:has(> input[type=checkbox]){
       </div>
       <div id="c24List" style="margin-top:12px"></div>
     </div>
+    <div class="ofind">
+      <input id="oq" type="search" placeholder="주문번호 · 이름 · 전화 · 상품명으로 찾기"
+             oninput="setQ(this.value)" autocomplete="off">
+      <span class="ocnt" id="oCnt"></span>
+    </div>
     <div id="list"><div class="empty">불러오는 중…</div></div>
+    <div class="opager" id="pager"></div>
     </div>
 
     <div class="panel">
@@ -514,6 +531,7 @@ const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const ST={pending:'미결제',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
   delivered:'배송완료',cancelled:'취소',refunded:'환불'};
 let token=null,who='',filt='all',ORD=[];
+let oq='',page=1;const PER=20;
   /* 진짜 로그인 토큰을 씁니다 */
   try{
     var _s = JSON.parse(localStorage.getItem('cg_sb') || 'null');
@@ -551,7 +569,7 @@ function doLogin(){
 function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
 function load(){
-  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price),refunds(amount,reason,created_at)&order=created_at.desc&limit=200',
+  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price),refunds(amount,reason,created_at)&order=created_at.desc&limit=1000',
     {headers:{apikey:KEY,Authorization:'Bearer '+token}})
   .then(r=>r.ok?r.json():Promise.reject(r.status))
   .then(rows=>{ORD=rows;stats();render();})
@@ -577,14 +595,53 @@ function stats(){
   $('cPrep').textContent=cp;$('cShip').textContent=cs;
 }
 
-function setS(s){filt=s;
+function setS(s){filt=s;page=1;
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
   render();}
 
+/* 검색어를 바꾸면 첫 쪽부터 다시 봅니다 */
+let _qT=null;
+function setQ(v){ oq=String(v||'').trim().toLowerCase(); page=1;
+  clearTimeout(_qT); _qT=setTimeout(render,180); }
+function goPage(n){ page=n; render();
+  const l=$('list'); if(l) l.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+function match(o){
+  if(!oq) return true;
+  const hay=[o.order_no,o.buyer_name,o.buyer_phone,o.buyer_email,o.tracking_no,
+    o.addr1,o.addr2,(o.order_items||[]).map(i=>i.product_name).join(' ')]
+    .join(' ').toLowerCase();
+  /* 전화번호는 - 를 지우고도 찾을 수 있게 */
+  return hay.indexOf(oq)>=0
+    || hay.replace(/[^0-9a-z가-힣]/g,'').indexOf(oq.replace(/[^0-9a-z가-힣]/g,''))>=0;
+}
+
+function pager(total){
+  const last=Math.max(1,Math.ceil(total/PER));
+  if(last<=1){ $('pager').innerHTML=''; return; }
+  let from=Math.max(1,page-2), to=Math.min(last,from+4); from=Math.max(1,to-4);
+  let h='<button class="pg" onclick="goPage('+Math.max(1,page-1)+')"'+(page<=1?' disabled':'')+'>이전</button>';
+  if(from>1) h+='<button class="pg" onclick="goPage(1)">1</button>'+(from>2?'<span class="pgd">…</span>':'');
+  for(let i=from;i<=to;i++) h+='<button class="pg'+(i===page?' on':'')+'" onclick="goPage('+i+')">'+i+'</button>';
+  if(to<last) h+=(to<last-1?'<span class="pgd">…</span>':'')
+    +'<button class="pg" onclick="goPage('+last+')">'+last+'</button>';
+  h+='<button class="pg" onclick="goPage('+Math.min(last,page+1)+')"'+(page>=last?' disabled':'')+'>다음</button>';
+  $('pager').innerHTML=h;
+}
+
 function render(){
-  const rows=ORD.filter(o=>filt==='all'||o.status===filt);
-  if(!rows.length){$('list').innerHTML='<div class="empty">주문 내역이 없습니다.</div>';return;}
-  $('list').innerHTML=rows.map(o=>{
+  const rows=ORD.filter(o=>(filt==='all'||o.status===filt)&&match(o));
+  const last=Math.max(1,Math.ceil(rows.length/PER));
+  if(page>last) page=last;
+  $('oCnt').textContent = rows.length
+    ? rows.length+'건'+(rows.length>PER?' · '+page+'/'+last+'쪽':'')
+    : '';
+  if(!rows.length){
+    $('list').innerHTML='<div class="empty">'
+      +(oq?'\u2018'+esc(oq)+'\u2019 로 찾은 주문이 없습니다.':'주문 내역이 없습니다.')+'</div>';
+    $('pager').innerHTML=''; return;
+  }
+  $('list').innerHTML=rows.slice((page-1)*PER,page*PER).map(o=>{
     const its=(o.order_items||[]).map(i=>esc(i.product_name)+' × '+i.qty).join(', ');
     const durl='order-detail.html?no='+encodeURIComponent(o.order_no);
     return '<div class="o"><div class="o-h">'
@@ -626,6 +683,7 @@ function render(){
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
       +'</div></div>';
   }).join('');
+  pager(rows.length);
 }
 
 function save(id){
