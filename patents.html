@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<!-- ChewGumi Patents v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>특허 검색 | CHEWGUMI</title>
+<script src="assets/tok.js"></script>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --pink-lt:#FFE4E6;
+  --ok:#2AA060; --bad:#C0395C; --warn:#E9A23B;
+  --gray:#797979; --ink:#17171c; --line:rgba(255,255,255,.85);
+  --sp-s:clamp(0.75rem,0.7rem+0.24vw,1rem);
+  --sp-m:clamp(1.3rem,1.1rem+0.5vw,1.9rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,
+    "Apple SD Gothic Neo",sans-serif;
+  color:var(--ink);font-size:clamp(0.94rem,0.9rem+0.2vw,1rem);line-height:1.65;
+  min-height:100svh;
+  padding:var(--sp-m) var(--sp-s) calc(4rem + env(safe-area-inset-bottom));
+  background:radial-gradient(900px 520px at 12% -8%,rgba(255,71,117,.11),transparent 60%),
+    linear-gradient(180deg,#FFF9FB,#FDF3F5 45%,#FFFAF6);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:16px}
+@media(min-width:1024px){button,input,select,textarea{font-size:14.5px}}
+.wrap{max-width:900px;margin:0 auto}
+
+.top{margin-bottom:var(--sp-m);display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.35rem,1.2rem+0.7vw,1.9rem);font-weight:800;letter-spacing:-.04em}
+.top .s{margin-top:3px;color:var(--gray);font-size:13px}
+.top a{margin-left:auto;font-size:12.5px;color:var(--gray)}
+
+.panel{
+  background:rgba(255,255,255,.68);border:1px solid var(--line);border-radius:22px;
+  padding:var(--sp-m);margin-bottom:var(--sp-s);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 12px 30px rgba(0,0,0,.07);
+}
+.panel h2{
+  font-size:10.5px;letter-spacing:1.8px;color:var(--gray);font-weight:700;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:9px;
+  border-bottom:1px solid rgba(0,0,0,.055);display:flex;align-items:center;gap:8px;
+}
+.panel h2 .n{margin-left:auto;font-size:11px;letter-spacing:0;color:var(--main);
+  background:rgba(216,37,88,.09);padding:2px 9px;border-radius:999px}
+
+/* 검색 */
+.sbox{display:flex;gap:8px;flex-wrap:wrap}
+.sbox input{
+  flex:1;min-width:200px;min-height:48px;padding:0 16px;
+  border:1px solid rgba(0,0,0,.1);border-radius:14px;background:#fff;
+}
+.sbox input:focus{outline:2px solid var(--main);outline-offset:-1px}
+.sbox select{
+  min-height:48px;padding:0 12px;border-radius:14px;
+  border:1px solid rgba(0,0,0,.1);background:#fff;
+}
+.btn{
+  min-height:48px;padding:0 22px;border:0;border-radius:999px;cursor:pointer;
+  font-size:14px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn.sub{background:rgba(255,255,255,.9);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:12.5px}
+
+/* 빠른 검색 */
+.quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.quick button{
+  min-height:36px;padding:0 14px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(0,0,0,.1);background:#fff;color:#555;
+  font-size:12.5px;font-weight:600;font-family:inherit;
+}
+.quick button:hover{background:var(--pink-lt);color:var(--main);border-color:#FFBDCC}
+
+/* 어디서 찾나 */
+.where{
+  display:grid;gap:9px;
+  grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));
+  margin-top:14px;
+}
+.where a{
+  display:flex;flex-direction:column;gap:3px;
+  padding:14px 16px;border-radius:14px;
+  background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.07);
+  transition:transform .16s, box-shadow .16s;
+}
+.where a:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(216,37,88,.11);
+  border-color:#FFBDCC;
+}
+.where a b{font-size:13.5px;font-weight:700;letter-spacing:-.02em}
+.where a span{font-size:11.5px;color:var(--gray);line-height:1.55;word-break:keep-all}
+
+/* 목록 */
+.row{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px 0;border-bottom:1px solid rgba(0,0,0,.055);
+}
+.row:last-child{border-bottom:0}
+.row .i{flex:1;min-width:0}
+.row .i b{
+  display:block;font-size:14px;font-weight:700;letter-spacing:-.02em;
+  line-height:1.5;word-break:keep-all;
+}
+.row .i span{display:block;font-size:11.5px;color:var(--gray);margin-top:3px}
+.row .i .memo{
+  font-size:12.5px;color:#555;margin-top:7px;padding:8px 11px;
+  border-radius:9px;background:rgba(0,0,0,.03);line-height:1.7;
+}
+.tag{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:999px;flex:none}
+.tag.w{background:rgba(233,162,59,.16);color:#8A6015}
+.tag.o{background:rgba(42,160,96,.13);color:#1B6B3F}
+.tag.x{background:rgba(0,0,0,.06);color:#666}
+
+.empty{padding:38px 20px;text-align:center;font-size:13.5px;color:var(--gray)}
+.msg{margin-top:11px;font-size:13px;min-height:20px;color:var(--gray)}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.hint{
+  font-size:12.5px;color:var(--gray);line-height:1.85;
+  padding:14px 16px;border-radius:14px;background:rgba(255,244,247,.7);
+  margin-top:13px;word-break:keep-all;
+}
+.hint b{color:var(--main)}
+.hint ol{margin:9px 0 0;padding-left:17px}
+.hint code{
+  background:rgba(0,0,0,.06);padding:1px 6px;border-radius:4px;
+  font-family:ui-monospace,monospace;font-size:11.5px;
+}
+
+/* 입력 상자 */
+.dim{
+  position:fixed;inset:0;z-index:9500;
+  display:flex;align-items:center;justify-content:center;padding:18px;
+  background:rgba(20,10,14,.42);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.dlg{
+  width:min(94vw,420px);max-height:88vh;overflow-y:auto;
+  padding:26px 24px 22px;border-radius:22px;
+  background:rgba(255,255,255,.98);border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 20px 50px rgba(0,0,0,.22);
+}
+.dlg h3{font-size:18px;font-weight:800;letter-spacing:-.03em;margin:0}
+.dlg label{display:block;font-size:12.5px;font-weight:600;color:#555;margin:14px 0 6px}
+.dlg input,.dlg textarea,.dlg select{
+  width:100%;min-height:46px;padding:11px 14px;border-radius:12px;
+  border:1px solid rgba(0,0,0,.1);background:#fff;color:var(--ink);
+}
+.dlg textarea{min-height:76px;resize:vertical;line-height:1.65}
+.dlg input:focus,.dlg textarea:focus{outline:2px solid var(--main);outline-offset:-1px}
+.dlg .b{display:flex;gap:9px;margin-top:22px}
+.dlg .b button{
+  flex:1;min-height:48px;border:0;border-radius:999px;
+  cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;
+}
+.dlg .b .ok{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff}
+.dlg .b .no{background:#fff;color:#555;border:1px solid rgba(0,0,0,.1)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>특허 검색</h1>
+      <div class="s">우리 제품과 겹치는 특허가 있는지 찾아봅니다</div>
+    </div>
+    <a href="console.html">← 관리자 홈</a>
+  </div>
+
+  <div class="panel">
+    <h2>찾기</h2>
+    <div class="sbox">
+      <select id="kind">
+        <option value="patent">특허 · 실용신안</option>
+        <option value="trademark">상표</option>
+        <option value="design">디자인</option>
+      </select>
+      <input id="q" placeholder="자일리톨 젤리" autocomplete="off">
+      <button class="btn" onclick="go()">키프리스에서 찾기</button>
+    </div>
+
+    <div class="quick" id="quick"></div>
+
+    <div class="hint">
+      <b>키프리스</b>는 특허청이 운영하는 무료 검색 서비스입니다.
+      가입 없이 바로 쓰실 수 있습니다.<br>
+      찾으신 것 중 눈여겨볼 것은 아래 <b>[기록해 두기]</b>로 남겨두세요.
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>어디서 찾나</h2>
+    <div class="where">
+      <a href="https://www.kipris.or.kr" target="_blank" rel="noopener">
+        <b>키프리스 (KIPRIS)</b>
+        <span>국내 특허·실용신안·상표·디자인 · 무료</span>
+      </a>
+      <a href="https://patents.google.com" target="_blank" rel="noopener">
+        <b>구글 특허</b>
+        <span>해외 특허까지 · 영어 검색이 편합니다</span>
+      </a>
+      <a href="https://www.patent.go.kr" target="_blank" rel="noopener">
+        <b>특허로</b>
+        <span>출원·등록 신청하는 곳</span>
+      </a>
+      <a href="https://www.kipo.go.kr" target="_blank" rel="noopener">
+        <b>특허청</b>
+        <span>제도 안내 · 상담</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>기록해 둔 것 <span class="n" id="cnt">—</span></h2>
+    <div id="list"><div class="empty">불러오는 중…</div></div>
+    <div class="btns">
+      <button class="btn" onclick="addOne()">기록해 두기</button>
+      <button class="btn sub sm" onclick="load()">새로 고침</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>알아두실 것</h2>
+    <div class="hint" style="margin-top:0">
+      <b>왜 찾아보나요</b><br>
+      남의 특허를 모르고 침해하면 판매 중지나 손해배상이 될 수 있습니다.
+      제품을 새로 만들거나 문구를 정하실 때 먼저 봐두시면 좋습니다.
+
+      <br><br><b>무엇을 찾아보면 좋은가</b>
+      <ol>
+        <li>자일리톨 · 젤리 · 구미 제조법</li>
+        <li>비타민 배합 · 서방형 방출</li>
+        <li>「듀잇」 「트래블잇」 같은 이름이 상표로 있는지</li>
+        <li>포장 · 용기 디자인</li>
+      </ol>
+
+      <br><b>상표는 특히 봐주세요</b><br>
+      남이 먼저 등록해 두면 <b>브랜드 이름을 못 씁니다.</b>
+      「듀잇」 「트래블잇」이 등록돼 있는지, 우리가 등록할 수 있는지
+      먼저 확인하시는 게 좋습니다.
+
+      <br><br><b>자동 검색을 붙이시려면</b><br>
+      공공데이터포털에서 <code>KIPRIS Plus</code> 키를 받으시면
+      화면 안에서 바로 결과를 볼 수 있습니다. 월 1,000회 무료입니다.<br>
+      <a href="https://www.data.go.kr/data/15065437/openapi.do" target="_blank"
+         rel="noopener" style="color:var(--main);font-weight:700">신청하러 가기 →</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/lite.js" defer></script>
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+
+const QUICK=[
+  ['자일리톨 젤리','patent'],
+  ['구미 제조방법','patent'],
+  ['비타민 젤리','patent'],
+  ['서방형 방출 캔디','patent'],
+  ['듀잇','trademark'],
+  ['트래블잇','trademark'],
+  ['츄구미','trademark'],
+  ['젤리 포장 용기','design']
+];
+
+const URLS={
+  patent:'https://www.kipris.or.kr/khome/search/searchResult.do?queryText=',
+  trademark:'https://www.kipris.or.kr/khome/search/searchResult.do?queryText=',
+  design:'https://www.kipris.or.kr/khome/search/searchResult.do?queryText='
+};
+
+function tok(){ return (window.cgTok ? cgTok() : ''); }
+function H(){ return {apikey:KEY,Authorization:'Bearer '+tok(),'Content-Type':'application/json'}; }
+function say(t,k){ const m=$('msg'); m.className='msg'+(k?' '+k:''); m.textContent=t; }
+
+function go(){
+  const q=$('q').value.trim();
+  if(!q){ $('q').focus(); return; }
+  const k=$('kind').value;
+  window.open(URLS[k]+encodeURIComponent(q), '_blank');
+}
+
+$('q').addEventListener('keydown', function(e){
+  if(e.key==='Enter') go();
+});
+
+$('quick').innerHTML = QUICK.map(function(x,i){
+  return '<button onclick="qk('+i+')">'+esc(x[0])+'</button>';
+}).join('');
+
+function qk(i){
+  $('q').value=QUICK[i][0];
+  $('kind').value=QUICK[i][1];
+  go();
+}
+
+/* ── 기록 ── */
+function load(){
+  fetch(SB+'/rest/v1/patents?select=*&order=created_at.desc&limit=100',{headers:H()})
+  .then(r=>r.ok?r.json():[])
+  .then(function(rows){
+    $('cnt').textContent=rows.length+'건';
+    $('list').innerHTML = rows.length ? rows.map(function(p){
+      const kn={patent:'특허',trademark:'상표',design:'디자인'}[p.kind]||p.kind;
+      return '<div class="row">'
+        +'<div class="i"><b>'+esc(p.title||'제목 없음')+'</b>'
+        +'<span>'+kn
+        +(p.app_no?' · 출원 '+esc(p.app_no):'')
+        +(p.owner?' · '+esc(p.owner):'')
+        +(p.app_date?' · '+esc(p.app_date):'')+'</span>'
+        +(p.note?'<div class="memo">'+esc(p.note)+'</div>':'')
+        +(p.link?'<span style="margin-top:6px"><a href="'+esc(p.link)
+          +'" target="_blank" rel="noopener" style="color:var(--main)">원문 보기 →</a></span>':'')
+        +'</div>'
+        +'<span class="tag '+(p.watch?'w':(p.status==='등록'?'o':'x'))+'">'
+        +(p.watch?'지켜보기':(p.status||'—'))+'</span>'
+        +'<button class="btn sub sm" onclick="del('+p.id+')">지우기</button>'
+        +'</div>';
+    }).join('') : '<div class="empty">아직 기록해 둔 것이 없습니다</div>';
+  })
+  .catch(function(){ $('list').innerHTML='<div class="empty">불러오지 못했습니다</div>'; });
+}
+
+function addOne(){
+  const old=document.getElementById('dim');
+  if(old) old.remove();
+
+  const d=document.createElement('div');
+  d.id='dim'; d.className='dim';
+  d.innerHTML='<div class="dlg"><h3>기록해 두기</h3>'
+    +'<label>종류</label>'
+    +'<select id="dKind"><option value="patent">특허 · 실용신안</option>'
+    +'<option value="trademark">상표</option><option value="design">디자인</option></select>'
+    +'<label>제목 · 명칭</label><input id="dTitle" placeholder="자일리톨 함유 젤리 조성물">'
+    +'<label>출원번호</label><input id="dApp" placeholder="10-2023-0012345">'
+    +'<label>출원인</label><input id="dOwner" placeholder="○○제약">'
+    +'<label>출원일</label><input id="dDate" placeholder="2023-01-15">'
+    +'<label>상태</label><input id="dStat" placeholder="등록 · 공개 · 거절">'
+    +'<label>원문 주소</label><input id="dLink" placeholder="https://…">'
+    +'<label>메모</label><textarea id="dNote" placeholder="우리 제품과 어떻게 다른지, 무엇을 조심할지"></textarea>'
+    +'<label style="display:flex;align-items:center;gap:8px;margin-top:16px">'
+    +'<input type="checkbox" id="dWatch" style="width:auto;min-height:auto">'
+    +'<span>지켜볼 것으로 표시</span></label>'
+    +'<div class="b"><button class="ok" id="dOk">저장</button>'
+    +'<button class="no" id="dNo">그만두기</button></div>'
+    +'<div class="msg" id="dMsg"></div></div>';
+  document.body.appendChild(d);
+
+  document.getElementById('dNo').onclick=function(){ d.remove(); };
+  d.onclick=function(e){ if(e.target===d) d.remove(); };
+  document.getElementById('dTitle').focus();
+
+  document.getElementById('dOk').onclick=function(){
+    const t=document.getElementById('dTitle').value.trim();
+    if(!t){ document.getElementById('dTitle').focus(); return; }
+    const m=document.getElementById('dMsg');
+    m.className='msg'; m.textContent='저장하는 중…';
+
+    fetch(SB+'/rest/v1/patents',{method:'POST',
+      headers:Object.assign({},H(),{Prefer:'return=minimal'}),
+      body:JSON.stringify({
+        kind:document.getElementById('dKind').value,
+        title:t,
+        app_no:document.getElementById('dApp').value.trim(),
+        owner:document.getElementById('dOwner').value.trim(),
+        app_date:document.getElementById('dDate').value.trim(),
+        status:document.getElementById('dStat').value.trim(),
+        link:document.getElementById('dLink').value.trim(),
+        note:document.getElementById('dNote').value.trim(),
+        watch:document.getElementById('dWatch').checked,
+        added_by:(window.cgSession&&cgSession()?cgSession().em:'')||''
+      })})
+    .then(function(r){
+      if(!r.ok){ m.className='msg bad'; m.textContent='저장하지 못했습니다.'; return; }
+      m.className='msg ok'; m.textContent='저장했습니다.';
+      setTimeout(function(){ d.remove(); load(); }, 700);
+    })
+    .catch(function(){ m.className='msg bad'; m.textContent='저장하지 못했습니다.'; });
+  };
+}
+
+function del(id){
+  if(!confirm('이 기록을 지웁니다. 계속할까요?')) return;
+  fetch(SB+'/rest/v1/patents?id=eq.'+id,{method:'DELETE',headers:H()})
+  .then(function(r){
+    if(r.ok){ say('지웠습니다.','ok'); load(); }
+    else say('지우지 못했습니다.','bad');
+  });
+}
+
+load();
+</script>
+</body>
+</html>
