@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<!-- ChewGumi Order Detail v1 · MedIT -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>주문 상세 | CHEWGUMI ADMIN</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<script src="assets/auth.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--main:#D82558;--main2:#E95073;--light:#FFE4E6;--ink:#000;--gray:#797979;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62);--ok:#1F9D6B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;
+  padding:26px 16px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
+.wrap{max-width:900px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top h1{font-family:'Poppins',sans-serif;font-size:24px}
+.top .s{font-size:11px;letter-spacing:3px;color:var(--gray)}
+.back{font-size:12.5px;color:var(--gray);text-decoration:underline;text-underline-offset:3px;
+  min-height:44px;display:inline-flex;align-items:center}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:14px;
+  backdrop-filter:blur(20px) saturate(120%);-webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9)}
+.panel h2{font-size:11px;letter-spacing:2.5px;color:var(--gray);font-weight:700;margin-bottom:14px}
+input,select,textarea{width:100%;padding:12px 14px;border-radius:13px;font-size:16px;font-family:inherit;
+  border:1px solid var(--line);background:rgba(255,255,255,.8)}
+label{display:block;font-size:11.5px;font-weight:700;color:var(--gray);margin:0 0 5px}
+.f{margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:13px 22px;border:0;border-radius:999px;font-size:13px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--main2),var(--main));box-shadow:0 8px 20px rgba(216,37,88,.3)}
+.btn.ghost{background:rgba(255,255,255,.85);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.mini{min-height:44px;padding:10px 15px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.8);font-size:12.5px;font-weight:700;color:var(--ink);
+  display:inline-flex;align-items:center;justify-content:center}
+.mini.rf{color:#C0395C;border-color:rgba(192,57,92,.35)}
+.mini.sh{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.msg{font-size:12.5px;color:var(--gray);margin-top:10px;min-height:17px}
+.msg.ok{color:var(--ok);font-weight:700}
+.msg.no{color:#C0395C;font-weight:700}
+/* 요약 */
+.sum{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.sum .no{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;letter-spacing:.5px}
+.sum .d{font-size:12px;color:var(--gray);margin-top:5px}
+.sum .amt{font-family:'Poppins',sans-serif;font-weight:800;font-size:26px;color:var(--main)}
+.st{font-size:10.5px;font-weight:700;letter-spacing:.5px;padding:5px 11px;border-radius:999px;color:#fff;
+  background:var(--gray);display:inline-block;vertical-align:2px}
+.st.paid{background:#1F9D6B}.st.preparing{background:#E0902B}.st.shipping{background:#2F7BD1}
+.st.delivered{background:#5B5B5B}.st.cancelled,.st.refunded{background:#C0395C}
+.st.pending{background:#9A9A9A}
+.badge{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+  background:rgba(216,37,88,.1);color:var(--main);margin-left:6px}
+/* 표 */
+.kv{display:grid;grid-template-columns:96px 1fr;gap:8px 12px;font-size:13.5px;line-height:1.55}
+.kv .k{color:var(--gray);font-size:12px;font-weight:700;padding-top:2px}
+.kv .v{word-break:break-all}
+.items{font-size:13.5px}
+.it{display:flex;justify-content:space-between;gap:10px;padding:11px 2px;border-bottom:1px solid rgba(0,0,0,.07)}
+.it:last-child{border-bottom:0}
+.it .q{color:var(--gray);font-size:12.5px}
+.tot{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(0,0,0,.16);font-size:13.5px}
+.tot div{display:flex;justify-content:space-between;padding:4px 0}
+.tot .big{font-weight:800;font-size:16px;color:var(--main);padding-top:8px}
+/* 이력 */
+.log{font-size:12.5px;line-height:1.6;padding:11px 2px;border-bottom:1px solid rgba(0,0,0,.07)}
+.log:last-child{border-bottom:0}
+.log b{font-size:13px}
+.log .t{color:var(--gray);font-size:11.5px}
+.empty{text-align:center;color:var(--gray);font-size:13px;padding:26px 0}
+.hide{display:none}
+@media(max-width:520px){
+  .g2{grid-template-columns:1fr}
+  .kv{grid-template-columns:80px 1fr}
+  .sum .amt{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div>
+      <div class="s">CHEWGUMI ADMIN</div>
+      <h1>주문 상세</h1>
+    </div>
+    <a class="back" href="orders.html">← 주문 목록</a>
+  </div>
+
+  <div id="gate" class="panel hide">
+    <h2>로그인이 필요합니다</h2>
+    <p class="msg">운영자 계정으로 로그인한 뒤 다시 열어 주세요.</p>
+    <div class="acts"><a class="btn" href="orders.html">주문 목록으로</a></div>
+  </div>
+
+  <div id="area">
+    <div class="panel" id="pSum"><div class="empty">불러오는 중…</div></div>
+
+    <div class="panel hide" id="pWho">
+      <h2>주문자 · 배송지</h2>
+      <div class="kv" id="who"></div>
+      <div class="acts">
+        <button class="mini" onclick="editAddr()">배송지 수정</button>
+        <button class="mini" onclick="copyAddr()">주소 복사</button>
+      </div>
+      <div class="msg" id="mWho"></div>
+    </div>
+
+    <div class="panel hide" id="pItems">
+      <h2>주문 상품</h2>
+      <div class="items" id="items"></div>
+      <div class="tot" id="tot"></div>
+    </div>
+
+    <div class="panel hide" id="pShip">
+      <h2>배송 처리</h2>
+      <div class="g2">
+        <div class="f"><label for="dCc">택배사</label><select id="dCc"></select></div>
+        <div class="f"><label for="dTn">운송장 번호</label><input id="dTn" inputmode="numeric" placeholder="- 없이 숫자만"></div>
+      </div>
+      <div class="f"><label for="dSt">주문 상태</label><select id="dSt"></select></div>
+      <div class="acts">
+        <button class="mini sh" onclick="doShip()">발송 처리 + 고객 알림</button>
+        <button class="mini" onclick="saveShip()">저장만 하기</button>
+        <button class="mini" onclick="doTrack()">배송 조회</button>
+      </div>
+      <div class="msg" id="mShip"></div>
+    </div>
+
+    <div class="panel hide" id="pPay">
+      <h2>결제 · 환불</h2>
+      <div class="kv" id="pay"></div>
+      <div class="acts" id="payActs"></div>
+      <div class="msg" id="mPay"></div>
+    </div>
+
+    <div class="panel hide" id="pLog">
+      <h2>처리 이력</h2>
+      <div id="logs"><div class="empty">불러오는 중…</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+const ST={pending:'미결제',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
+  delivered:'배송완료',cancelled:'취소',refunded:'환불'};
+const PAYNM={card:'카드',bank:'무통장입금',vbank:'가상계좌',trans:'계좌이체',
+  kakaopay:'카카오페이',naverpay:'네이버페이',payco:'페이코'};
+const COURIERS=[{c:'',n:'택배사 선택'},{c:'04',n:'CJ대한통운'},{c:'05',n:'한진택배'},
+  {c:'08',n:'롯데택배'},{c:'01',n:'우체국택배'},{c:'06',n:'로젠택배'},{c:'11',n:'일양로지스'},
+  {c:'46',n:'CU 편의점'},{c:'23',n:'경동택배'}];
+
+const $=id=>document.getElementById(id);
+const won=v=>Number(v||0).toLocaleString('ko-KR');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const when=t=>t?new Date(t).toLocaleString('ko-KR'):'-';
+
+const NO=new URLSearchParams(location.search).get('no')||'';
+let token=null, O=null, PAY=null;
+
+function tok(){
+  try{
+    var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+    if(!s||!s.t) return '';
+    var ex=s.exp?s.exp*1000:(s.e||0);
+    if(ex && Date.now()>ex) return '';
+    return s.t;
+  }catch(e){ return ''; }
+}
+function say(id,t,kind){ const e=$(id); if(!e) return;
+  e.textContent=t||''; e.className='msg'+(kind?' '+kind:''); }
+
+/* ── 서버 부르기 ─────────────────────────────── */
+function rest(path){
+  return fetch(SB+'/rest/v1/'+path,{headers:{apikey:KEY,Authorization:'Bearer '+token}})
+    .then(r=>r.ok?r.json():Promise.reject(r.status));
+}
+function fn(name,payload){
+  return fetch(SB+'/functions/v1/'+name,{method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify(payload)})
+    .then(r=>r.json().then(d=>({ok:r.ok,d:d||{}})));
+}
+
+/* ── 불러오기 ───────────────────────────────── */
+function boot(){
+  token=tok();
+  if(!token && window.CGAuth && CGAuth.isIn()){
+    return CGAuth.token().then(function(t){ token=t||''; boot2(); });
+  }
+  boot2();
+}
+function boot2(){
+  if(!token){ $('area').classList.add('hide'); $('gate').classList.remove('hide'); return; }
+  if(!NO){ $('pSum').innerHTML='<div class="empty">주문번호가 없습니다. 주문 목록에서 다시 열어 주세요.</div>'; return; }
+  load();
+}
+function load(){
+  rest('orders?select=*,order_items(product_id,product_name,qty,unit_price),refunds(amount,reason,created_at)'
+    +'&order_no=eq.'+encodeURIComponent(NO)+'&limit=1')
+  .then(rows=>{
+    O=(rows||[])[0];
+    if(!O){ $('pSum').innerHTML='<div class="empty">주문 '+esc(NO)+' 을(를) 찾지 못했습니다.</div>'; return; }
+    return rest('payments?select=*&order_no=eq.'+encodeURIComponent(NO)+'&order=created_at.desc&limit=1')
+      .then(p=>{ PAY=(p||[])[0]||null; })
+      .catch(()=>{ PAY=null; })
+      .then(draw);
+  })
+  .catch(s=>{
+    $('pSum').innerHTML='<div class="empty">'+(s===401
+      ?'로그인이 만료되었습니다. 다시 로그인해 주세요.'
+      :'불러오지 못했습니다. 운영자 계정인지 확인해 주세요.')+'</div>';
+  });
+}
+
+/* ── 그리기 ─────────────────────────────────── */
+function draw(){
+  if(!O) return;
+  ['pWho','pItems','pShip','pPay','pLog'].forEach(id=>$(id).classList.remove('hide'));
+
+  /* 요약 */
+  const left=(O.pay_amount||0)-(O.refund_amount||0);
+  $('pSum').innerHTML='<div class="sum">'
+    +'<div><div class="no">'+esc(O.order_no)+' <span class="st '+O.status+'">'+(ST[O.status]||O.status)+'</span>'
+      +(O.is_test?'<span class="badge">테스트</span>':'')+'</div>'
+      +'<div class="d">주문 '+when(O.created_at)+(O.paid_at?' · 결제 '+when(O.paid_at):'')+'</div></div>'
+    +'<div style="text-align:right"><div class="amt">₩'+won(O.pay_amount)+'</div>'
+      +(O.refund_amount>0?'<div class="d" style="color:#C0395C;font-weight:700">환불 ₩'+won(O.refund_amount)
+        +' · 잔액 ₩'+won(left)+'</div>':'')
+      +'</div></div>';
+
+  /* 주문자 · 배송지 */
+  $('who').innerHTML=
+     row('주문자',esc(O.buyer_name)+' · '+esc(O.buyer_phone))
+    +(O.buyer_email?row('이메일',esc(O.buyer_email)):'')
+    +row('주소',(O.zipcode?'['+esc(O.zipcode)+'] ':'')+esc(O.addr1)+' '+esc(O.addr2||''))
+    +(O.memo?row('배송 메모',esc(O.memo)):'')
+    +(O.depositor?row('입금자명',esc(O.depositor)):'')
+    +row('회원 여부',O.user_id?'회원':'비회원');
+
+  /* 상품 */
+  const its=O.order_items||[];
+  $('items').innerHTML=its.length
+    ? its.map(i=>'<div class="it"><div>'+esc(i.product_name)
+        +'<div class="q">상품번호 '+esc(i.product_id)+' · '+won(i.unit_price)+'원 × '+i.qty+'</div></div>'
+        +'<div><b>₩'+won((i.unit_price||0)*(i.qty||0))+'</b></div></div>').join('')
+    : '<div class="empty">상품 정보가 없습니다.</div>';
+  $('tot').innerHTML=
+     '<div><span>상품 금액</span><span>₩'+won(O.goods_amount)+'</span></div>'
+    +'<div><span>배송비</span><span>₩'+won(O.ship_fee)+'</span></div>'
+    +(O.discount_amount>0?'<div><span>할인'+(O.coupon_code?' ('+esc(O.coupon_code)+')':'')
+      +'</span><span>-₩'+won(O.discount_amount)+'</span></div>':'')
+    +'<div class="big"><span>결제 금액</span><span>₩'+won(O.pay_amount)+'</span></div>';
+
+  /* 배송 처리 */
+  $('dCc').innerHTML=COURIERS.map(c=>'<option value="'+c.c+'"'
+    +(c.c===(O.courier_code||'')?' selected':'')+'>'+c.n+'</option>').join('');
+  $('dSt').innerHTML=Object.keys(ST).map(k=>'<option value="'+k+'"'
+    +(k===O.status?' selected':'')+'>'+ST[k]+'</option>').join('');
+  $('dTn').value=O.tracking_no||'';
+  say('mShip', O.track_status
+    ? '배송 상태: '+O.track_status+(O.track_checked_at?' ('+when(O.track_checked_at)+' 확인)':'')
+    : (O.tracking_no?'운송장이 등록돼 있습니다.':''));
+
+  /* 결제 · 환불 */
+  $('pay').innerHTML=
+     row('결제수단',esc(PAYNM[O.pay_method]||O.pay_method||'-'))
+    +row('결제상태',esc(O.pay_status||(O.paid_at?'결제완료':'미결제')))
+    +(PAY&&PAY.approve_no?row('승인번호',esc(PAY.approve_no)):'')
+    +(PAY&&PAY.card_name?row('카드',esc(PAY.card_name)+' '+esc(PAY.card_no||'')
+      +(PAY.quota&&Number(PAY.quota)>0?' · '+PAY.quota+'개월':'')):'')
+    +(PAY&&PAY.vbank_no?row('가상계좌',esc(PAY.bank_name||'')+' '+esc(PAY.vbank_no)
+      +(PAY.vbank_holder?' ('+esc(PAY.vbank_holder)+')':'')):'')
+    +(PAY&&PAY.pg_tid?row('거래번호',esc(PAY.pg_tid)):'')
+    +(O.cash_receipt_no?row('현금영수증',esc(O.cash_receipt_no)):'')
+    +(O.refund_amount>0?row('환불','₩'+won(O.refund_amount)+' · '+when(O.refunded_at)
+      +(O.refund_reason?'<br>사유: '+esc(O.refund_reason):'')):'')
+    +(O.cancel_reason?row('취소 사유',esc(O.cancel_reason)):'');
+
+  const canRefund=['paid','preparing','shipping','delivered'].includes(O.status)&&left>0;
+  const canCancel=['pending','paid','preparing'].includes(O.status);
+  const canCash=['paid','preparing','shipping','delivered'].includes(O.status)
+    &&!O.cash_receipt_no&&['bank','vbank','trans'].includes(O.pay_method||'');
+  $('payActs').innerHTML=
+     (canRefund?'<button class="mini rf" onclick="doRefund()">환불하기</button>':'')
+    +(canCancel?'<button class="mini rf" onclick="doCancel()">주문 취소</button>':'')
+    +(canCash?'<button class="mini" onclick="doCash()">현금영수증 발급</button>':'')
+    +(O.pay_method==='card'&&O.status!=='cancelled'
+      ?'<button class="mini" onclick="cardRcpt()">카드 영수증</button>':'')
+    +(O.cash_receipt_url?'<a class="mini" href="'+esc(O.cash_receipt_url)
+      +'" target="_blank" rel="noopener">영수증 보기</a>':'');
+
+  loadLogs();
+}
+function row(k,v){ return '<div class="k">'+k+'</div><div class="v">'+v+'</div>'; }
+
+function loadLogs(){
+  fn('order-edit',{action:'logs',orderId:NO}).then(({ok,d})=>{
+    if(!ok||!d.ok){ $('logs').innerHTML='<div class="empty">이력을 불러오지 못했습니다.</div>'; return; }
+    const A={cancel:'주문취소',address:'배송지변경',shipping:'운송장수정',refund:'환불',ship:'발송처리'};
+    const rows=d.logs||[];
+    $('logs').innerHTML=rows.length
+      ? rows.map(l=>'<div class="log"><b>'+(A[l.action]||esc(l.action))+'</b>'
+          +' <span class="t">'+when(l.created_at)+' · '+esc(l.actor||'-')+'</span>'
+          +(l.before_val?'<br>이전: '+esc(l.before_val):'')
+          +(l.after_val?'<br>변경: '+esc(l.after_val):'')
+          +(l.detail?'<br>'+esc(l.detail):'')+'</div>').join('')
+      : '<div class="empty">기록이 없습니다.</div>';
+  }).catch(()=>{ $('logs').innerHTML='<div class="empty">이력을 불러오지 못했습니다.</div>'; });
+}
+
+/* ── 배송 ───────────────────────────────────── */
+function saveShip(){
+  const cc=$('dCc').value;
+  const body={status:$('dSt').value,courier_code:cc,
+    courier:(COURIERS.find(c=>c.c===cc)||{}).n||'',tracking_no:$('dTn').value.trim()};
+  say('mShip','저장하는 중…');
+  fetch(SB+'/rest/v1/orders?id=eq.'+O.id,{method:'PATCH',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(body)})
+  .then(r=>{ if(r.ok){ say('mShip','저장했습니다. (고객 알림은 보내지 않았습니다)','ok'); load(); }
+    else say('mShip',r.status===401?'로그인이 만료되었습니다.':'저장 권한이 없습니다.','no'); })
+  .catch(()=>say('mShip','네트워크 오류가 발생했습니다.','no'));
+}
+function doShip(){
+  const cc=$('dCc').value, tn=$('dTn').value.trim();
+  if(!tn) return say('mShip','운송장 번호를 입력해 주세요.','no');
+  if(!confirm('발송 처리하고 고객에게 알림을 보냅니다.\n\n주문 '+NO+'\n운송장 '+tn+'\n\n진행할까요?')) return;
+  say('mShip','발송 처리 중…');
+  fn('order',{action:'ship',orderId:NO,courierCode:cc,
+    courier:(COURIERS.find(c=>c.c===cc)||{}).n||'택배',trackingNo:tn})
+  .then(({ok,d})=>{ if(ok&&d.ok){ say('mShip','발송 처리했습니다. 고객에게 안내가 나갔습니다.','ok'); load(); }
+    else say('mShip',d.error||'처리에 실패했습니다.','no'); })
+  .catch(()=>say('mShip','네트워크 오류가 발생했습니다.','no'));
+}
+function doTrack(){
+  say('mShip','조회 중…');
+  fn('order',{action:'track',orderId:NO}).then(({ok,d})=>{
+    if(!ok||d.error) return say('mShip',d.error||'배송 조회에 실패했습니다.','no');
+    const lines=(d.details||[]).map(x=>'· '+(x.timeString||'')+' '+(x.where||'')+' '+(x.kind||'')).join('\n');
+    alert('배송 상태: '+(d.last||'-')+(d.complete?' (배송완료)':'')+'\n\n'+lines);
+    load();
+  }).catch(()=>say('mShip','네트워크 오류가 발생했습니다.','no'));
+}
+
+/* ── 주문자 · 배송지 ─────────────────────────── */
+function editAddr(){
+  const v={};
+  const ask=[['buyer_name','받는 분',O.buyer_name],['buyer_phone','연락처',O.buyer_phone],
+    ['zipcode','우편번호',O.zipcode],['addr1','주소',O.addr1],['addr2','상세주소',O.addr2],
+    ['memo','배송 메모',O.memo]];
+  for(const [k,n,cur] of ask){
+    const r=prompt(n,cur||'');
+    if(r===null) return;
+    v[k]=r.trim();
+  }
+  if(!v.buyer_name||!v.buyer_phone) return say('mWho','받는 분과 연락처는 비울 수 없습니다.','no');
+  say('mWho','변경 중…');
+  fn('order-edit',Object.assign({action:'editAddress',orderId:NO},v)).then(({ok,d})=>{
+    if(ok&&d.ok){ say('mWho','배송지를 변경했습니다.','ok'); load(); }
+    else say('mWho',d.error||'변경에 실패했습니다.','no');
+  }).catch(()=>say('mWho','네트워크 오류가 발생했습니다.','no'));
+}
+function copyAddr(){
+  const t=O.buyer_name+' '+O.buyer_phone+'\n['+(O.zipcode||'')+'] '+(O.addr1||'')+' '+(O.addr2||'');
+  const done=()=>say('mWho','주소를 복사했습니다.','ok');
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done,()=>prompt('복사해 주세요',t));
+  else prompt('복사해 주세요',t);
+}
+
+/* ── 결제 · 환불 ─────────────────────────────── */
+function doCancel(){
+  const r=prompt('주문 '+NO+' 취소\n취소 사유를 입력해 주세요.','고객 요청');
+  if(r===null) return;
+  if(!confirm('정말 취소할까요?\n재고·적립금·쿠폰이 원상 복구되고 고객에게 안내가 나갑니다.')) return;
+  say('mPay','취소 처리 중…');
+  fn('order-edit',{action:'cancel',orderId:NO,reason:r}).then(({ok,d})=>{
+    if(ok&&d.ok){ say('mPay','주문을 취소했습니다.','ok'); load(); }
+    else say('mPay',d.error||'취소에 실패했습니다.','no');
+  }).catch(()=>say('mPay','네트워크 오류가 발생했습니다.','no'));
+}
+function doRefund(){
+  say('mPay','환불 가능 금액을 확인하는 중…');
+  fn('refund',{action:'info',order_no:NO}).then(({d})=>{
+    if(!d.ok) return say('mPay',d.error||'불러오지 못했습니다.','no');
+    if(!d.can) return say('mPay',d.why||'환불할 수 없습니다.','no');
+    const amtRaw=prompt('환불 처리\n\n결제 '+won(d.pay_amount)+'원'
+      +(d.refunded?'\n이미 환불 '+won(d.refunded)+'원':'')
+      +'\n환불 가능 '+won(d.left)+'원\n\n환불할 금액을 넣어 주세요.',String(d.left));
+    if(amtRaw===null) return say('mPay','');
+    const amt=Number(String(amtRaw).replace(/[^0-9]/g,''));
+    if(!amt||amt<=0) return say('mPay','금액이 올바르지 않습니다.','no');
+    if(amt>d.left) return say('mPay','환불 가능 금액은 '+won(d.left)+'원입니다.','no');
+    const reason=prompt('환불 사유를 적어 주세요.\n(고객 안내에 들어갑니다)','고객 요청');
+    if(reason===null) return say('mPay','');
+    let extra={};
+    if(d.need_account){
+      const bn=prompt('환불 계좌 — 은행명 (예: 국민은행)'); if(!bn) return say('mPay','');
+      const an=prompt('계좌번호 (- 없이)'); if(!an) return say('mPay','');
+      const hd=prompt('예금주'); if(!hd) return say('mPay','');
+      extra={bank:true,bank_code:bn,bank_no:an,bank_holder:hd};
+    }
+    const full=amt>=d.left;
+    if(!confirm(won(amt)+'원을 '+(full?'전액':'부분')+' 환불합니다.\n\n'
+      +(full?'· 주문이 취소됩니다\n· 재고가 되돌아갑니다\n':'')
+      +'· 고객에게 안내가 나갑니다\n\n계속할까요?')) return say('mPay','');
+    say('mPay','환불 처리 중…');
+    fn('refund',Object.assign({action:'refund',order_no:NO,amount:amt,reason:reason},extra))
+    .then(({d:r})=>{
+      if(!r.ok) return say('mPay',r.error||'환불하지 못했습니다.','no');
+      say('mPay',r.msg||'환불했습니다.','ok'); load();
+    }).catch(()=>say('mPay','환불하지 못했습니다.','no'));
+  }).catch(()=>say('mPay','불러오지 못했습니다.','no'));
+}
+function doCash(){
+  const num=prompt('현금영수증 발급 번호\n(개인: 휴대폰번호 / 사업자: 사업자등록번호)');
+  if(!num) return;
+  const biz=confirm('사업자 지출증빙으로 발급할까요?\n[확인] 지출증빙  /  [취소] 소득공제');
+  say('mPay','발급 중…');
+  fn('order',{action:'cashReceipt',orderId:NO,registrationNumber:num,type:biz?'business':'person'})
+  .then(({ok,d})=>{ if(ok&&d.ok){ say('mPay','현금영수증을 발급했습니다.','ok'); load(); }
+    else say('mPay',d.error||'발급에 실패했습니다.','no'); })
+  .catch(()=>say('mPay','네트워크 오류가 발생했습니다.','no'));
+}
+function cardRcpt(){
+  if(!PAY) return say('mPay','결제 기록을 찾지 못했습니다.','no');
+  alert('카드 매출전표\n─────────────────\n'
+    +'주문번호   '+NO+'\n'
+    +'승인번호   '+(PAY.approve_no||'-')+'\n'
+    +'카드사     '+(PAY.card_name||'-')+'\n'
+    +'카드번호   '+(PAY.card_no||'-')+'\n'
+    +'금액       '+won(PAY.amount)+'원\n'
+    +'승인일시   '+when(PAY.paid_at)+'\n'
+    +'거래번호   '+(PAY.pg_tid||'-')+'\n'
+    +'─────────────────\n\n'
+    +'정식 매출전표는 이지페이 가맹점 관리자\n(office.easypay.co.kr) 에서 출력하실 수 있습니다.');
+}
+
+boot();
+</script>
+<script src="assets/lite.js" defer></script>
+<script src="assets/nav.js" defer></script>
+</body>
+</html>
