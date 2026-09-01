@@ -1923,7 +1923,7 @@ function openDetail(card){
   window._curCard = card;
   try {
     var _rn = card.dataset.no || '';
-    if (_rn && window.loadDetailReviews) loadDetailReviews(_rn);
+    if (_rn && window.cgLoadReviews) cgLoadReviews(_rn);
     if (window.resetDetailTab) resetDetailTab();
     var _dd = document.getElementById('dDetail');
     if (_dd) _dd.classList.remove('hide');
@@ -9326,6 +9326,39 @@ body, input, select, textarea, button,
 </script>
 
 <script>
+/* ══════════════════════════════════════════════
+   후기를 가져오는 곳을 한 군데로 모읍니다.
+   전에는 팝업 하나 열 때 세 곳에서 따로 불렀습니다.
+     loadDetailReviews  product_reviews?product_id=eq.N&limit=60
+     cgLoadReviews      rpc/reviews_for(N, 40)
+     cgRevLoad          rpc/reviews_for(N, 200)
+   같은 자료를 세 번 받아 오고, 화면도 두 벌이 그려졌습니다.
+   이제 rpc/reviews_for(N, 200) 를 한 번만 부르고 결과를 나눠 씁니다.
+   ══════════════════════════════════════════════ */
+(function(){
+  var SBr2='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var Kr2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var cache = {};   /* 상품번호 → Promise */
+
+  window.cgRevFetch = function(no, fresh){
+    var k = String(Number(no) || 0);
+    if (k === '0') return Promise.resolve([]);
+    if (fresh) delete cache[k];
+    if (cache[k]) return cache[k];
+    cache[k] = fetch(SBr2 + '/rest/v1/rpc/reviews_for', {
+      method:'POST',
+      headers:{ apikey:Kr2, Authorization:'Bearer '+Kr2, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_no: Number(no), p_limit: 200 })
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){ return rows || []; })
+    .catch(function(){ delete cache[k]; return []; });
+    return cache[k];
+  };
+})();
+</script>
+
+<script>
 /* 상품 팝업 — 리뷰 표시 · 이미지 끌어서 보기 */
 (function(){
   var SBd='https://psynvpuedzjvytsgdhgg.supabase.co';
@@ -9333,14 +9366,16 @@ body, input, select, textarea, button,
   function esc(s){ return String(s==null?'':s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  /* 예전 이름을 부르는 곳이 남아 있어도 새 경로로 흘러가게 둡니다.
+     따로 부르지 않으므로 통신은 한 번뿐입니다. */
   window.loadDetailReviews = function(no){
+    if (window.cgLoadReviews) return window.cgLoadReviews(no);
+  };
+  window._loadDetailReviewsOld = function(no){
     var box = document.getElementById('dRevList');
     if (!box) return;
     box.innerHTML = '<p style="font-size:12.5px;color:var(--gray)">불러오는 중…</p>';
-    fetch(SBd + '/rest/v1/product_reviews?select=author,body,rating,image_url,created_at'
-      + '&visible=eq.true&product_id=eq.' + no + '&order=created_at.desc&limit=60',
-      { headers:{ apikey:Kd, Authorization:'Bearer '+Kd } })
-    .then(function(r){ return r.ok ? r.json() : []; })
+    (window.cgRevFetch ? cgRevFetch(no) : Promise.resolve([]))
     .then(function(rows){
       if (!rows.length) {
         box.innerHTML = '<p style="font-size:12.5px;color:var(--gray)">첫 후기를 남겨주세요.</p>';
@@ -12288,6 +12323,51 @@ body.drawer-on{
   .detail #dRevList{ display:none !important }
 }
 
+/* ══════════════════════════════════════════════
+   후기 표 — 사진 칸
+   ══════════════════════════════════════════════ */
+.rev-table table{ margin-top:2px !important }
+.rev-table th:nth-child(1),
+.rev-table td:nth-child(1){ width:48px !important }
+.rev-table th:nth-child(2),
+.rev-table td:nth-child(2){
+  width:66px !important;
+  padding:6px 4px !important;
+  text-align:center !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+.rev-table th:nth-child(3),
+.rev-table td:nth-child(3){
+  width:auto !important;
+  text-align:left !important;
+  padding-left:12px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.rev-table th:nth-child(4),
+.rev-table td:nth-child(4){ width:92px !important; text-align:center !important }
+.rev-table th:nth-child(5),
+.rev-table td:nth-child(5){ width:100px !important; text-align:center !important }
+.rev-table th:nth-child(6),
+.rev-table td:nth-child(6){ width:88px !important; text-align:center !important }
+
+.rt-th{
+  width:52px; height:52px;
+  object-fit:cover;
+  border-radius:9px;
+  display:block;
+  margin:0 auto;
+  background:#FFF3F6;
+  box-shadow:0 1px 4px rgba(0,0,0,.09);
+  transition:transform .16s;
+}
+.rev-table tbody tr:hover .rt-th{ transform:scale(1.06) }
+.rt-nothumb{ color:#d6d6dc; font-size:13px }
+td.c-th.no::after{ content:'—'; color:#d6d6dc; font-size:13px }
+
 /* 인스타그램 띠 */
 .ig-band{
   margin-top:32px;
@@ -12904,13 +12984,8 @@ body.drawer-on{
     var list = document.getElementById('dRevList');
     if (list) list.innerHTML = '<div class="d-rev-empty">후기를 불러오는 중…</div>';
 
-    fetch(SB + '/rest/v1/rpc/reviews_for', {
-      method: 'POST',
-      headers: { apikey: K, Authorization: 'Bearer ' + K, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_no: Number(no), p_limit: 40 })
-    })
-    .then(function(r){ return r.ok ? r.json() : []; })
-    .then(function(rows){ draw(rows || [], no); })
+    cgRevFetch(no)
+    .then(function(rows){ draw((rows || []).slice(0, 40), no); })
     .catch(function(){
       if (list) list.innerHTML = '<div class="d-rev-empty">불러오지 못했습니다.</div>';
       doing = '';
@@ -13664,12 +13739,7 @@ window.cgClearCart = function(){
 
   function load(no){
     NO = no;
-    return fetch(SB2 + '/rest/v1/rpc/reviews_for', {
-      method:'POST',
-      headers:{ apikey:K2, Authorization:'Bearer '+K2, 'Content-Type':'application/json' },
-      body: JSON.stringify({ p_no: Number(no), p_limit: 200 })
-    })
-    .then(function(r){ return r.ok ? r.json() : []; })
+    return cgRevFetch(no)
     .then(function(rows){
       ROWS = rows || [];
       PAGE = 1;
@@ -13696,13 +13766,12 @@ window.cgClearCart = function(){
     t.id = 'cgRevTable';
     t.className = 'rev-table';
 
+    /* 머리글(REVIEW · 총 N건)은 바로 위 요약줄과 겹쳐서 넣지 않습니다.
+       예전에는 'REVIEW 4.8 33개' 와 'REVIEW 총 33건' 이 나란히 두 번 나왔습니다. */
     t.innerHTML =
-      '<div class="rt-head">'
-      + '<b>REVIEW</b>'
-      + '<span>총 ' + total + '건</span>'
-      + '</div>'
-      + '<table><thead><tr>'
+      '<table><thead><tr>'
       + '<th class="c-no">번호</th>'
+      + '<th class="c-th">사진</th>'
       + '<th class="c-ti">제목</th>'
       + '<th class="c-wr">작성자</th>'
       + '<th class="c-dt">작성일</th>'
@@ -13710,18 +13779,24 @@ window.cgClearCart = function(){
       + '</tr></thead><tbody>'
       + page.map(function(r, i){
           var n = total - from - i;
-          var hasImg = r.image_url ? '<i class="rt-img">사진</i>' : '';
+          var thumb = r.image_url
+            ? '<img class="rt-th" src="' + esc2(r.image_url) + '" alt="후기 사진"'
+              + ' loading="lazy" referrerpolicy="no-referrer"'
+              + ' onerror="this.parentNode.classList.add(\'no\');this.remove()">'
+            : '<span class="rt-nothumb">—</span>';
           return '<tr onclick="cgRevOpen(' + r.id + ')">'
             + '<td class="c-no">' + n + '</td>'
-            + '<td class="c-ti">' + esc2(cut(r.body, 34)) + hasImg + '</td>'
+            + '<td class="c-th">' + thumb + '</td>'
+            + '<td class="c-ti">' + esc2(cut(r.body, 30)) + '</td>'
             + '<td class="c-wr">' + esc2(r.author) + '</td>'
-            + '<td class="c-dt">' + ymd(r.created_at) + '</td>'
+            + '<td class="c-dt">' + ymd(r.written_at || r.created_at) + '</td>'
             + '<td class="c-st"><span class="rt-star">'
               + '★'.repeat(r.rating) + '</span></td>'
             + '</tr>'
-            + '<tr class="rt-full" id="rf' + r.id + '"><td colspan="5">'
+            + '<tr class="rt-full" id="rf' + r.id + '"><td colspan="6">'
             + (r.image_url
-                ? '<img src="' + esc2(r.image_url) + '" alt="" referrerpolicy="origin"'
+                ? '<img src="' + esc2(r.image_url) + '" alt="후기 사진" loading="lazy"'
+                  + ' referrerpolicy="no-referrer"'
                   + ' onerror="this.style.display=\'none\'">'
                 : '')
             + '<p>' + esc2(r.body) + '</p>'
