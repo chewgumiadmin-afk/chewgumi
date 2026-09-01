@@ -1683,12 +1683,24 @@ button[onclick*="addCart"]:active, .acts .cart:active{
   }
   var LINE = lineOf(no);
   var LINE_NM = {travel:'Travel-it',doit:'Dew-it',triple:'Triple-it'}[LINE]||'';
-  var off = 0, PAGE = 10, total = 0;
+  var off = 0, PAGE = 10, total = 0, AVG = '5.0', PHOTO = 0;
+
+  /* 평균 별점·사진 수는 요약표에서 (카드 바깥에 쓰는 값과 같습니다) */
+  function loadSummary(){
+    return fetch(SB+'/rest/v1/review_product_summary?select=avg_rating,photo_count&product_id=eq.'+no,
+      {headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+    .then(function(r){ return r.ok?r.json():[]; })
+    .then(function(rows){
+      var d=(rows||[])[0];
+      if(d){ if(d.avg_rating!=null) AVG=Number(d.avg_rating).toFixed(1);
+             PHOTO=d.photo_count||0; }
+    }).catch(function(){});
+  }
 
   window.rvLoad = function(){
     if(!no) return;
     fetch(SB+'/rest/v1/product_reviews?select=*&'+(LINE?('line=eq.'+LINE):('product_id=eq.'+no))
-      +'&visible=eq.true&order=written_at.desc&limit='+PAGE+'&offset='+off,
+      +'&visible=eq.true&order=image_url.desc.nullslast,written_at.desc&limit='+PAGE+'&offset='+off,
       {headers:{apikey:KEY,Authorization:'Bearer '+KEY,Prefer:'count=exact'}})
     .then(function(r){
       var cr=r.headers.get('content-range')||'';
@@ -1702,8 +1714,9 @@ button[onclick*="addCart"]:active, .acts .cart:active{
         var sum=document.getElementById('rvSummary');
         if(sum && total>0){
           sum.innerHTML=
-            '<div class="rv-score"><b>5.0</b><span class="rv-stars-lg">★★★★★</span></div>'
-            +'<div class="rv-cnt">'+(total>=999?'999+':total)+'개의 후기</div>'
+            '<div class="rv-score"><b>'+AVG+'</b><span class="rv-stars-lg">★★★★★</span></div>'
+            +'<div class="rv-cnt">'+(total>=999?'999+':total)+'개의 후기'
+              +(PHOTO?' · 사진 '+PHOTO+'장':'')+'</div>'
             +'<div class="rv-line">'+(LINE_NM?LINE_NM+' 전체 후기':'')+'</div>';
           sum.style.display='';
         }
@@ -1714,7 +1727,7 @@ button[onclick*="addCart"]:active, .acts .cart:active{
         }
         box.innerHTML='';
         document.getElementById('rvCount').textContent='('+(total>=999?'999+':total)+')';
-        document.getElementById('rvStars').innerHTML='<b>★★★★★</b> 5.0 · '
+        document.getElementById('rvStars').innerHTML='<b>★★★★★</b> '+AVG+' · '
           +(LINE_NM?LINE_NM+' ':'')+'후기 '+(total>999?'999+':total)+'건';
       }
       rows.forEach(function(v){
@@ -1727,7 +1740,8 @@ button[onclick*="addCart"]:active, .acts .cart:active{
           +(v.source?'<span class="src">'+esc(v.source)+'</span>':'')
           +'</div>'
           +'<div class="rv-body">'+esc(v.body)+'</div>'
-          +(v.image_url?'<img class="rv-img" src="'+esc(v.image_url)+'" alt="후기 사진" loading="lazy">':'');
+          +(v.image_url?'<img class="rv-img" src="'+esc(v.image_url)+'" alt="후기 사진" loading="lazy"'
+            +' referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">':'');
         box.appendChild(d);
       });
       off += rows.length;
@@ -1738,9 +1752,10 @@ button[onclick*="addCart"]:active, .acts .cart:active{
         '<div class="rv-empty">후기를 불러오지 못했습니다.</div>';
     });
   };
+  function start(){ loadSummary().then(window.rvLoad); }
   if(document.readyState==='loading')
-    document.addEventListener('DOMContentLoaded', window.rvLoad);
-  else window.rvLoad();
+    document.addEventListener('DOMContentLoaded', start);
+  else start();
 })();
 </script>
 <script src="assets/pwa.js" defer></script>

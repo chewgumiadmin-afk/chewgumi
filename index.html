@@ -12863,16 +12863,23 @@ body.drawer-on{
       return;
     }
 
-    var sum = rows.reduce(function(s, r){ return s + (Number(r.rating) || 0); }, 0);
-    var avg = (sum / rows.length).toFixed(1);
+    /* 개수·평균은 카드 바깥에 쓰는 것과 같은 값(라인 전체 요약)을 씁니다.
+       예전에는 여기서 rows.length 를 그대로 써서, 바깥은 33건인데
+       안에서는 불러온 20건만 나오던 문제가 있었습니다. */
+    var S = (window._revByProduct || {})[String(no)] || {};
+    var total = S.n || rows.length;
+    var avg = S.a != null ? Number(S.a).toFixed(1)
+      : (rows.reduce(function(s, r){ return s + (Number(r.rating) || 0); }, 0) / rows.length).toFixed(1);
     if (avgEl) avgEl.textContent = avg;
-    if (nEl) nEl.textContent = rows.length + '개';
-    if (tabN) tabN.textContent = rows.length;
+    if (nEl) nEl.textContent = total + '개';
+    if (tabN) tabN.textContent = total;
 
     /* 다른 구성의 후기가 섞였는지 */
     var mine = rows.filter(function(r){ return r.same; }).length;
     var note = (mine === 0)
       ? '<div class="d-rev-note">같은 제품의 다른 구성 후기도 함께 보여드립니다.</div>' : '';
+    if (total > rows.length)
+      note += '<div class="d-rev-note">후기 ' + total + '건 가운데 최근 ' + rows.length + '건입니다.</div>';
 
     list.innerHTML = note + rows.map(function(r){
       var img = r.image_url
@@ -12900,7 +12907,7 @@ body.drawer-on{
     fetch(SB + '/rest/v1/rpc/reviews_for', {
       method: 'POST',
       headers: { apikey: K, Authorization: 'Bearer ' + K, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_no: Number(no), p_limit: 20 })
+      body: JSON.stringify({ p_no: Number(no), p_limit: 40 })
     })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){ draw(rows || [], no); })
