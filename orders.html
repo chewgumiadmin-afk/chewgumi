@@ -614,7 +614,6 @@ function render(){
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no&&['bank','vbank','trans'].includes(o.pay_method||'')
         ?'<button class="mini" onclick="openCash(\''+o.order_no+'\')">현금영수증</button>':'')
       +((o.pay_method==='card'&&o.status!=='cancelled')?'<button class="mini" onclick="cardRcpt(\''+o.order_no+'\')">카드 영수증</button>':'')
-      +((['paid','preparing','shipping','delivered'].includes(o.status))?'<button class="mini" onclick="openRefund(\''+o.order_no+'\')">환불</button>':'')
       +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증 보기</a>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
@@ -1524,7 +1523,11 @@ sync();
   if (window.cgUI) return;
 
   window.cgUI = {
+    /* onOk 콜백과 .then() 두 가지 모두 됩니다.
+       editAddr 가 .then() 으로 부르는데 예전에는 아무것도 돌려주지 않아
+       '배송지수정' 이 눌리지 않았습니다. */
     form: function(title, fields, onOk){
+      return new Promise(function(resolve){
       var old = document.getElementById('cgFormDim');
       if (old) old.remove();
 
@@ -1545,8 +1548,8 @@ sync();
         + '</div></div>';
       document.body.appendChild(dim);
 
-      document.getElementById('cgfNo').onclick = function(){ dim.remove(); };
-      dim.onclick = function(e){ if (e.target === dim) dim.remove(); };
+      document.getElementById('cgfNo').onclick = function(){ dim.remove(); resolve(null); };
+      dim.onclick = function(e){ if (e.target === dim){ dim.remove(); resolve(null); } };
       document.getElementById('cgfOk').onclick = function(){
         var out = {};
         fields.forEach(function(f, i){
@@ -1554,9 +1557,11 @@ sync();
         });
         dim.remove();
         if (typeof onOk === 'function') onOk(out);
+        resolve(out);
       };
       var first = document.getElementById('cgf0');
       if (first) first.focus();
+      });
     },
 
     list: function(title, rows){

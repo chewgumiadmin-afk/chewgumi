@@ -364,7 +364,7 @@ function onEmailInput(){
   if(e!==vEmail){ vSent=false; vDone=false; vEmail=e;
     $('vBox').classList.remove('on','done');
     const re=document.querySelector('.vre'); if(re) re.style.display='';
-    if(vTimer){clearInterval(vTimer);vTimer=null;} }
+    if(vTimer){clearTimeout(vTimer);vTimer=null;} }
   check();
 }
 
@@ -427,20 +427,31 @@ function tryVerify(email,pw){
     return false;
   }).catch(()=>false);
 }
+/* 인증 대기 — 5초마다 60번 로그인을 시도하면 Supabase 인증 한도(분당)에 걸립니다.
+   간격을 5 → 10 → 20 → 30초로 늘려 5분 동안 20번만 확인합니다. (이슈 ⑮) */
 function startPoll(email){
-  if(vTimer) clearInterval(vTimer);
+  if(vTimer){ clearTimeout(vTimer); vTimer=null; }
   let n=0;
-  vTimer=setInterval(()=>{
-    n++; if(n>60||vDone){clearInterval(vTimer);vTimer=null;return;}
-    tryVerify(email,$('pw1').value).then(ok=>{ if(ok){vDone=true;clearInterval(vTimer);vTimer=null;
-      markVerified('이메일 인증이 완료되었습니다.');} });
-  },5000);
+  const gap=()=> n<3 ? 5000 : n<6 ? 10000 : n<11 ? 20000 : 30000;
+  const tick=()=>{
+    if(vDone) return;
+    n++;
+    if(n>20){ vTimer=null;
+      $('vTxt').innerHTML='자동 확인을 멈췄습니다. 메일함(스팸함 포함)의 링크를 누르신 뒤 <b>다시 확인</b>을 눌러 주세요.';
+      return; }
+    tryVerify(email,$('pw1').value).then(ok=>{
+      if(ok){ vDone=true; if(vTimer){clearTimeout(vTimer);vTimer=null;}
+        markVerified('이메일 인증이 완료되었습니다.'); return; }
+      if(!vDone) vTimer=setTimeout(tick,gap());
+    });
+  };
+  vTimer=setTimeout(tick,5000);
 }
 function recheck(){
   const email=$('email').value.trim();
   $('vTxt').textContent='확인 중…';
   tryVerify(email,$('pw1').value).then(ok=>{
-    if(ok){ vDone=true; if(vTimer){clearInterval(vTimer);vTimer=null;} markVerified('이메일 인증이 완료되었습니다.'); }
+    if(ok){ vDone=true; if(vTimer){clearTimeout(vTimer);vTimer=null;} markVerified('이메일 인증이 완료되었습니다.'); }
     else $('vTxt').innerHTML='아직 인증되지 않았습니다. 메일함(스팸함 포함)의 링크를 눌러주신 뒤 다시 확인해 주세요.';
   });
 }
