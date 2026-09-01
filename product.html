@@ -1838,19 +1838,50 @@ window.cgImgFail = function(el){
     el.src = el.dataset.fb;
   };
 
-    function show(imgs){
+  /* 상세 이미지가 길 때는 앞부분만 펼치고 나머지는 '더 보기' 로 둡니다.
+     개입 상품(18~21)은 레몬민트 20장 + 그레이프 20장 = 40장이라
+     폰에서 다 내려받는 데 한참 걸렸습니다. 지우는 것이 아니라
+     한 번 눌러서 펼치는 것이라 사진은 하나도 빠지지 않습니다. */
+  var FOLD = 12;
+
+  function imgTag(u, i){
+    return '<img class="pd-img" src="' + u + '" alt="상품 상세 ' + (i+1) + '"'
+      + ' loading="' + (i<2 ? 'eager' : 'lazy') + '"'
+      + (i<1 ? ' fetchpriority="high"' : '')
+      + ' decoding="async"'
+      + ' onerror="cgImgFail(this)">';
+  }
+
+  function show(imgs){
     if(!imgs || !imgs.length) return;
     var wrap=document.getElementById('pDetailWrap');
     var box=document.getElementById('pDetailImgs');
     if(!wrap||!box) return;
-    box.innerHTML=imgs.map(function(u,i){
-      return '<img class="pd-img" src="' + u + '" alt="상품 상세 ' + (i+1) + '"'
-        + ' loading="' + (i<2 ? 'eager' : 'lazy') + '"'
-        + (i<1 ? ' fetchpriority="high"' : '')
-        + ' decoding="async"'
-        + ' onerror="cgImgFail(this)">';
-    }).join('');
+
+    if (imgs.length <= FOLD){
+      box.innerHTML = imgs.map(imgTag).join('');
+      wrap.style.display='';
+      return;
+    }
+
+    box.innerHTML =
+      imgs.slice(0, FOLD).map(imgTag).join('')
+      + '<div class="pd-rest" id="pdRest" hidden></div>'
+      + '<button type="button" class="pd-more" id="pdMore">'
+      +   '상세 이미지 더 보기 <b>(' + (imgs.length - FOLD) + '장)</b>'
+      + '</button>';
     wrap.style.display='';
+
+    var btn = document.getElementById('pdMore');
+    var rest = document.getElementById('pdRest');
+    if (!btn || !rest) return;
+    btn.addEventListener('click', function(){
+      rest.innerHTML = imgs.slice(FOLD).map(function(u,i){
+        return imgTag(u, i + FOLD);
+      }).join('');
+      rest.hidden = false;
+      btn.remove();
+    }, { once:true });
   }
 
   /* 1순위 · 저장소 파일(원래 이미지) → 2순위 · DB 목록 → 3순위 · 드라이브 */
@@ -1911,6 +1942,23 @@ select::-ms-expand{ display:none !important }
 /* 값 영역에 취소선이 번지지 않게 */
 .buy, .buy *, .opt, .opt *{ text-decoration:none }
 .price .origin{ text-decoration:line-through }
+</style>
+<style>
+/* 상세 이미지 '더 보기' */
+.pd-more{
+  display:block; width:100%; max-width:520px; margin:16px auto 4px;
+  padding:16px 20px; min-height:52px;
+  border:1px solid rgba(216,37,88,.28); border-radius:999px;
+  background:rgba(255,255,255,.9); color:#D82558;
+  font-family:inherit; font-size:14px; font-weight:700; cursor:pointer;
+  box-shadow:0 4px 14px rgba(216,37,88,.09);
+  transition:background .16s, transform .16s;
+}
+.pd-more b{ font-weight:700; color:#8a7a80; margin-left:2px }
+.pd-more:hover{ background:#FFF0F4; transform:translateY(-1px) }
+.pd-more:active{ transform:none }
+.pd-rest{ display:block }
+.pd-rest[hidden]{ display:none }
 </style>
 <style>
 /* 헤더 로고 — 메인과 같은 이미지 로고 */

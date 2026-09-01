@@ -152,7 +152,8 @@ function cgMyId(){
 }
 </script>
 <link rel="stylesheet" href="assets/qa-tool.css">
-<script src="assets/tok.js"></script>   <!-- QA: 세션 저장을 cgSaveSession 한 곳으로 -->
+<script src="assets/tok.js"></script>
+<script src="assets/pw.js"></script>   <!-- QA: 세션 저장을 cgSaveSession 한 곳으로 -->
 <script src="assets/qa-tool.js" defer></script>
 </head>
 <body>
@@ -185,8 +186,8 @@ function cgMyId(){
       </div>
 
       <label class="f">비밀번호 <em class="req">*</em></label>
-      <input id="pw1" type="password" placeholder="6자 이상" autocomplete="new-password" oninput="check()">
-      <div class="hint" id="hPw1">6자 이상 입력해 주세요.</div>
+      <input id="pw1" type="password" placeholder="8자 이상" autocomplete="new-password" oninput="check()">
+      <div class="hint" id="hPw1">8자 이상 · 영문·숫자·기호 중 2가지 이상</div>
 
       <label class="f">비밀번호 확인 <em class="req">*</em></label>
       <input id="pw2" type="password" placeholder="비밀번호를 한 번 더 입력" autocomplete="new-password" oninput="check()">
@@ -374,7 +375,8 @@ function sendVerify(){
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
     $('hEmail').textContent='올바른 이메일을 입력해 주세요.'; $('hEmail').className='hint bad'; return; }
   const pw=$('pw1').value;
-  if(pw.length<6){ $('hPw1').textContent='비밀번호를 먼저 입력해 주세요 (6자 이상).';
+  const pwR=window.cgPw ? cgPw.check(pw,email,$('phone')?$('phone').value:'') : {ok:pw.length>=8,msg:'8자 이상 입력해 주세요.'};
+  if(!pwR.ok){ $('hPw1').textContent=pwR.msg;
     $('hPw1').className='hint bad'; $('pw1').focus(); return; }
 
   $('vBtn').disabled=true; $('vBtn').textContent='발송 중…';
@@ -496,8 +498,10 @@ function check(){
     : '가입하신 이메일 주소가 로그인 아이디가 됩니다.';
   $('hEmail').className = 'hint' + (email ? (okEmail?' good':' bad') : '');
 
-  const okPw = p1.length>=6;
-  $('hPw1').textContent = p1 ? (okPw?'사용 가능합니다.':'6자 이상 입력해 주세요.') : '6자 이상 입력해 주세요.';
+  const pwR = window.cgPw ? cgPw.check(p1, email, phone)
+    : { ok:p1.length>=8, msg:'8자 이상 입력해 주세요.', level:1 };
+  const okPw = pwR.ok;
+  $('hPw1').textContent = p1 ? pwR.msg : (window.cgPw?cgPw.hint:'8자 이상 입력해 주세요.');
   $('hPw1').className='hint'+(p1?(okPw?' good':' bad'):'');
 
   const okPw2 = !!p2 && p1===p2;

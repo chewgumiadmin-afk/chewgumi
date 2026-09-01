@@ -913,6 +913,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <script src="assets/navauth.js" defer></script>
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
+<script src="assets/pw.js"></script>
 </head>
 <body>
 <h1 class="sr-only">ChewGumi 츄구미 — 한입에 건강을 더하다</h1>
@@ -1574,7 +1575,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
       <div id="wAuth">
         <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:var(--gray); margin-bottom:10px;">COMMUNITY LOGIN</div>
         <input id="wEmail" type="email" placeholder="이메일" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
-        <input id="wPw" type="password" placeholder="비밀번호 (6자 이상)" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;">
+        <input id="wPw" type="password" placeholder="비밀번호 (8자 이상)" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;">
         <div style="display:flex;gap:8px;">
           <button onclick="sbLogin()" style="flex:1;padding:11px 0;border:0;border-radius:999px;font-weight:700;color:#fff;background:linear-gradient(135deg,#E95073,#D82558);cursor:pointer;">로그인</button>
           <button onclick="sbSignup()" style="flex:1;padding:11px 0;border-radius:999px;font-weight:700;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);cursor:pointer;">회원가입</button>
@@ -2184,7 +2185,9 @@ function sbSyncWriteUI(){
 function sbMsg(t){ document.getElementById('wMsg').textContent = t; }
 function sbSignup(){
   const email = document.getElementById('wEmail').value.trim(), pw = document.getElementById('wPw').value;
-  if (!email || pw.length < 6) return sbMsg('이메일과 6자 이상 비밀번호를 입력해 주세요.');
+  if (!email) return sbMsg('이메일을 입력해 주세요.');
+  var pwR = window.cgPw ? cgPw.check(pw, email) : { ok: pw.length >= 8, msg:'비밀번호를 8자 이상 입력해 주세요.' };
+  if (!pwR.ok) return sbMsg(pwR.msg);
   fetch(SB_URL + '/auth/v1/signup', { method:'POST', headers:{ apikey: SB_KEY, 'Content-Type':'application/json' },
     body: JSON.stringify({ email, password: pw }) })
     .then(r => r.json())

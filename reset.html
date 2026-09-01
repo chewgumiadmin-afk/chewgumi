@@ -60,6 +60,7 @@ button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 <link rel="stylesheet" href="assets/popup.css">
 <script src="assets/auth.js"></script>
 <link rel="stylesheet" href="assets/admin-ui.css">
+<script src="assets/pw.js"></script>
 </head>
 <body>
 <div class="logo">CHEW GUMI</div>
@@ -68,7 +69,7 @@ button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
   <p class="d" id="desc">새로 사용하실 비밀번호를 입력해 주세요.</p>
   <div id="form">
     <label>새 비밀번호</label>
-    <input id="p1" type="password" placeholder="6자 이상" autocomplete="new-password">
+    <input id="p1" type="password" placeholder="8자 이상" autocomplete="new-password">
     <label>새 비밀번호 확인</label>
     <input id="p2" type="password" placeholder="한 번 더 입력" autocomplete="new-password">
     <button id="go" onclick="doReset()">비밀번호 변경</button>
@@ -98,7 +99,8 @@ if(!token){
 function doReset(){
   const a=$('p1').value, b=$('p2').value, m=$('msg');
   m.className='msg';
-  if(a.length<6) { m.className='msg err'; return m.textContent='비밀번호는 6자 이상이어야 합니다.'; }
+  var pwR = window.cgPw ? cgPw.check(a) : { ok:a.length>=8, msg:'비밀번호는 8자 이상이어야 합니다.' };
+  if(!pwR.ok) { m.className='msg err'; return m.textContent=pwR.msg; }
   if(a!==b){ m.className='msg err'; return m.textContent='두 비밀번호가 일치하지 않습니다.'; }
   $('go').disabled=true; m.textContent='변경하는 중…';
   fetch(SB_URL+'/auth/v1/user',{method:'PUT',
