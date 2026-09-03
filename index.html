@@ -5416,12 +5416,18 @@ img.p-illust{
 /* ── 로고 원본 축소 (431px → 표시 크기에 맞춤) ── */
 header .logo img{ image-rendering:auto }
 
-/* ── 누르기 작은 버튼 키우기 ── */
+/* ── 누르기 작은 버튼 키우기 ──
+   display 에 !important 를 걸면 navauth.js 가 넣는 inline display:none 을
+   이겨버립니다. 그래서 로그인했는데도 LOGIN 과 LOGOUT 이 함께 보였습니다.
+   숨긴 것은 그대로 숨기고, 보이는 것만 키웁니다. */
 .util a, .util button, .head-top .util a{
   min-height:38px !important;
-  display:inline-flex !important;
   align-items:center !important;
   padding:0 8px !important;
+}
+.util a:not([style*="display: none"]):not([style*="display:none"]),
+.util button:not([style*="display: none"]):not([style*="display:none"]){
+  display:inline-flex;
 }
 @media(max-width:640px){
   .util a, .util button{ min-height:36px !important; padding:0 6px !important }

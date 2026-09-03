@@ -118,10 +118,13 @@ def run(base, pages, auth=None):
 
             # 로그인/로그아웃 동시 노출
             both = page.evaluate("""() => {
+              /* 서랍(drawer)은 화면 밖으로 밀어 두는 방식이라 display 로는
+                 안 걸립니다. 실제로 화면 안에 있는지까지 봅니다. */
               const vis = el => { const r = el.getBoundingClientRect();
                 const s = getComputedStyle(el);
                 return r.width > 0 && r.height > 0 && s.display !== 'none' &&
-                       s.visibility !== 'hidden' && r.top < innerHeight * 3; };
+                       s.visibility !== 'hidden' && Number(s.opacity) > 0.05 &&
+                       r.right > 0 && r.left < innerWidth && r.top < innerHeight * 3; };
               const txt = el => (el.textContent || '').trim().toUpperCase();
               const inNav = el => !!el.closest(
                 'nav,header,footer,.util,.d-auth,.m-nav,.nav,.menu,.drawer,' +
@@ -145,7 +148,8 @@ def run(base, pages, auth=None):
                   const vis = el => { const r = el.getBoundingClientRect();
                     const s = getComputedStyle(el);
                     return r.width > 0 && r.height > 0 && s.display !== 'none' &&
-                           s.visibility !== 'hidden'; };
+                           s.visibility !== 'hidden' && Number(s.opacity) > 0.05 &&
+                           r.right > 0 && r.left < innerWidth; };
                   /* 문장 속 링크는 메뉴가 아닙니다.
                      머리글·메뉴·서랍·바닥글 안에 있는 것만 셉니다. */
                   const inNav = el => !!el.closest(
