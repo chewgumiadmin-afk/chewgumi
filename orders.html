@@ -1554,15 +1554,27 @@ sync();
   var SB2='https://psynvpuedzjvytsgdhgg.supabase.co';
   var K2='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 
+
+  /* 로그인 토큰 — payments 는 운영자만 읽을 수 있습니다 (issue #109) */
+  function tok(){
+    try{
+      var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!s||!s.t) return '';
+      var ex = s.exp ? s.exp*1000 : (s.e||0);
+      if (ex && Date.now() > ex) return '';
+      return s.t;
+    }catch(e){ return ''; }
+  }
+
   window.cardRcpt = function(no){
     fetch(SB2 + '/rest/v1/payments?select=pg_tid,approve_no,card_name,card_no,amount,paid_at'
       + '&order_no=eq.' + encodeURIComponent(no) + '&status=eq.paid&limit=1', {
-      headers:{ apikey:K2, Authorization:'Bearer ' + K2 }
+      headers:{ apikey:K2, Authorization:'Bearer ' + (tok() || K2) }
     })
     .then(function(r){ return r.ok ? r.json() : []; })
     .then(function(rows){
       var p = (rows || [])[0];
-      if (!p) { alert('결제 기록을 찾지 못했습니다.'); return; }
+      if (!p) { alert('결제 기록을 찾지 못했습니다. 운영자 계정으로 로그인했는지 확인해 주세요.'); return; }
       var t = p.paid_at ? new Date(p.paid_at).toLocaleString('ko-KR') : '-';
       alert('카드 매출전표\n'
         + '─────────────────\n'
