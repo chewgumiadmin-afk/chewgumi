@@ -260,9 +260,15 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 /* 로그인 유지 (2026-09-03) */
 .li-keep{display:flex;align-items:center;gap:9px;min-height:44px;margin:2px 0 10px;
   cursor:pointer;user-select:none;font-size:13px}
-.li-keep input{width:18px;height:18px;margin:0;accent-color:#D82558;cursor:pointer;flex:none}
+.li-keep input[type="checkbox"]{
+  /* .selfbox input 의 min-height:50px !important 를 물려받아
+     체크박스가 거대한 네모로 보이던 것을 막습니다 */
+  width:19px !important; height:19px !important; min-height:19px !important;
+  padding:0 !important; margin:0 !important; border-radius:5px !important;
+  flex:none; accent-color:#D82558; cursor:pointer; font-size:inherit !important;
+}
 .li-keep em{font-style:normal;color:#797979;font-size:12px}
-.li-hint{margin-top:10px;font-size:11.5px;color:#9a9aa2;line-height:1.7}
+.li-hint{margin:-4px 0 12px 28px;font-size:11.5px;color:#9a9aa2;line-height:1.6}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -297,15 +303,11 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
         onkeydown="if(event.key==='Enter')doLogin()">
       <label class="li-keep">
         <input type="checkbox" id="liKeep">
-        <span>로그인 유지 <em>7일</em></span>
+        <span>로그인 유지 <em>7일 동안</em></span>
       </label>
+      <div class="li-hint" id="liKeepHint">공용 컴퓨터에서는 체크하지 마세요.</div>
       <button class="li-btn" onclick="doLogin()">LOGIN — 로그인</button>
       <div class="li-msg" id="liMsg"></div>
-      <div class="li-hint" id="liKeepHint">
-        <b>체크하면</b> 7일 동안 로그인이 유지됩니다.<br>
-        <b>체크하지 않으면</b> 브라우저를 닫을 때 로그아웃됩니다.
-        (브라우저를 켜 두는 동안에는 계속 유지됩니다)<br>
-        공용 컴퓨터에서는 체크하지 마세요.</div>
     </div>
     <div class="or"><span>또는</span></div>
     <div class="sso">
