@@ -2567,7 +2567,7 @@ setHead();
       <button id="cgbotSpk" class="cg-ic" onclick="cgbotSpeakToggle()" aria-label="음성 답변 켜기" title="음성 답변">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg>
       </button>
-      <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/jelly-dot.png" alt="" width="24" height="24" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
+      <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="logo.png" alt="" class="send-logo" onerror="this.onerror=null;this.src='assets/logo-rainbow.png'"></button>
   </div>
 </div>
 <script>
@@ -12552,16 +12552,25 @@ td.c-th.no::after{ content:'—'; color:#d6d6dc; font-size:13px }
 
 /* 보내기 단추 — 츄구미 젤리 아이콘 (2026-09-03) */
 .cgbot-ft #cgbotBtn{
-  width:42px;height:42px;min-width:42px;padding:0;border:0;border-radius:50%;
+  width:46px;height:46px;min-width:46px;padding:0;border:0;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
   background:rgba(255,255,255,.92);
-  border:1px solid rgba(216,37,88,.22);
-  box-shadow:0 4px 12px rgba(216,37,88,.16);
-  font-size:17px;color:#fff;line-height:1;transition:transform .15s,filter .15s;
+  border:1px solid rgba(216,37,88,.2);
+  box-shadow:0 8px 22px rgba(216,37,88,.18);
+  font-size:17px;line-height:1;transition:transform .15s,filter .15s;
 }
 .cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
 .cgbot-ft #cgbotBtn:active{ transform:none }
-.cgbot-ft #cgbotBtn img{ display:block;width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)) }
+.cgbot-ft #cgbotBtn .send-logo{
+  width:34px !important;height:34px !important;object-fit:contain !important;
+  display:block !important;pointer-events:none !important }
+.cgbot-ft #cgbotBtn.busy .send-logo{ animation:cg-think 1.1s ease-in-out infinite }
+@keyframes cg-think{
+  0%,100%{ transform:scale(1) rotate(0) }
+  35%    { transform:scale(1.1) rotate(-7deg) }
+  70%    { transform:scale(1.04) rotate(6deg) }
+}
+@media (prefers-reduced-motion:reduce){ .cgbot-ft #cgbotBtn.busy .send-logo{ animation:none } }
 .cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
 /* 대화 지우기 */
 .cgbot-hd .cgbot-clr{

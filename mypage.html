@@ -175,7 +175,11 @@ window.myId = myId;
 <div class="wrap">
   <h1>My Page</h1>
 
-  <div class="panel" id="login">
+  <div class="panel" id="chk">
+    <div class="chk-in"><span class="chk-dot"></span>로그인 상태를 확인하고 있습니다…</div>
+  </div>
+
+  <div class="panel hide" id="login">
       <div class="nick-card" id="nickCard" style="display:none">
         <div class="lb">MY COLOR</div>
         <div class="nick-name"><span class="nick-dot" id="nickDot"></span>
@@ -884,6 +888,14 @@ body:not(.logged) #area{ display:none !important }
 @media (max-width:768px){
   input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
 }
+
+/* 확인 중 — 로그인 화면이 잠깐 보였다 사라지던 것을 없앱니다 (2026-09-03) */
+#chk .chk-in{display:flex;align-items:center;gap:10px;justify-content:center;
+  padding:26px 0;font-size:13px;color:var(--gray)}
+#chk .chk-dot{width:14px;height:14px;border-radius:50%;flex:none;
+  border:2px solid rgba(216,37,88,.25);border-top-color:#D82558;
+  animation:chkspin .7s linear infinite}
+@keyframes chkspin{to{transform:rotate(360deg)}}
 </style>
 
 <script>
@@ -957,9 +969,12 @@ body:not(.logged) #area{ display:none !important }
 
   function inBox(){ return document.getElementById('login'); }
   function myBox(){ return document.getElementById('area'); }
+  function chkBox(){ return document.getElementById('chk'); }
+  function hideChk(){ var c = chkBox(); if (c) c.classList.add('hide'); }
 
   /* 로그인 안 한 모습 */
   function asGuest(){
+    hideChk();
     var l = inBox(), a = myBox();
     if (l) l.classList.remove('hide');
     if (a) a.classList.add('hide');
@@ -970,6 +985,7 @@ body:not(.logged) #area{ display:none !important }
 
   /* 로그인한 모습 */
   function asUser(s){
+    hideChk();
     var l = inBox(), a = myBox();
     if (l) l.classList.add('hide');
     if (a) a.classList.remove('hide');
@@ -1003,6 +1019,12 @@ body:not(.logged) #area{ display:none !important }
   function run(){
     var s = ses();
     if (!s) { asGuest(); return; }
+
+    /* 저장된 로그인이 있으면 확인을 기다리지 않고 먼저 내 화면을 엽니다.
+       전에는 서버 확인이 끝날 때까지 로그인 화면이 보여서,
+       로그인을 했는데도 로그인 창이 한 번 더 뜨는 것처럼 보였습니다.
+       확인이 실패하면 그때 로그인 화면으로 되돌립니다. */
+    asUser(s);
 
     /* 확인하기 전에 먼저 토큰을 늘려 봅니다.
        전에는 죽은 토큰으로 그대로 물어보고 401 이 오면 로그아웃시켜서,

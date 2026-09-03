@@ -100,6 +100,7 @@ qa_guides
 qa_reports
 qa_runs
 qa_to_ops
+refund_quote
 refunds
 report_research
 report_votes

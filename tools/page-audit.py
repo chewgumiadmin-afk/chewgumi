@@ -92,10 +92,15 @@ def audit(name):
 def main():
     rows = [r for r in (audit(n) for n in SHOP) if r]
 
+    # login 은 원래부터 자체 글래스 디자인입니다 (대표님 요청으로 되돌림)
+    SKIP_DESIGN = {'login'}
+
     print('■ 디자인 — 메인과 같은 색을 쓰는가')
     print('%-16s %-8s %s' % ('화면', '브랜드색', '다른 디자인 색'))
     print('-' * 62)
     for r in rows:
+        if r['name'] in SKIP_DESIGN:
+            continue
         if r['brand'] and not r['foreign']:
             continue
         print('%-16s %-8s %s' % (r['name'],
@@ -133,7 +138,7 @@ def main():
 
     print()
     print('─' * 62)
-    nd = sum(1 for r in rows if not r['brand'] or r['foreign'])
+    nd = sum(1 for r in rows if r['name'] not in SKIP_DESIGN and (not r['brand'] or r['foreign']))
     ns = sum(1 for r in rows if not all(r['scripts'].values()))
     print('화면 %d개 · 디자인 어긋남 %d · 세션 빠짐 %d · 동작 문제 %d'
           % (len(rows), nd, ns, bad))

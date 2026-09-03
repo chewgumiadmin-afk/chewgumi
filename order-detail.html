@@ -489,14 +489,50 @@ function doCancel(){
     else say('mPay',d.error||'취소에 실패했습니다.','no');
   }).catch(()=>say('mPay','네트워크 오류가 발생했습니다.','no'));
 }
+/* 환불 사유 — 공식몰 규정(chewgumi.com/shopinfo/guide.html)에 맞춥니다.
+   조건부 무료배송 5만원 · 배송비 2,500원 · 단순변심은 왕복 5,000원 고객 부담 */
+const RSN = [
+  ['change', '단순 변심 (고객 사정)'],
+  ['defect', '상품 하자 · 불량'],
+  ['wrong',  '오배송 (다른 상품이 감)'],
+  ['lost',   '배송 중 분실'],
+];
+
 function doRefund(){
   say('mPay','환불 가능 금액을 확인하는 중…');
   fn('refund',{action:'info',order_no:NO}).then(({d})=>{
     if(!d.ok) return say('mPay',d.error||'불러오지 못했습니다.','no');
     if(!d.can) return say('mPay',d.why||'환불할 수 없습니다.','no');
-    const amtRaw=prompt('환불 처리\n\n결제 '+won(d.pay_amount)+'원'
-      +(d.refunded?'\n이미 환불 '+won(d.refunded)+'원':'')
-      +'\n환불 가능 '+won(d.left)+'원\n\n환불할 금액을 넣어 주세요.',String(d.left));
+
+    /* 사유를 먼저 고릅니다 — 사유에 따라 배송비 차감이 달라집니다 */
+    const pick = prompt('환불 사유를 골라 주세요.\n\n'
+      + RSN.map((r,i)=>(i+1)+'. '+r[1]).join('\n')
+      + '\n\n번호를 넣어 주세요.', '1');
+    if(pick===null) return say('mPay','');
+    const idx = Number(String(pick).replace(/\D/g,'')) - 1;
+    if(!(idx>=0 && idx<RSN.length)) return say('mPay','사유를 다시 골라 주세요.','no');
+    const rk = RSN[idx][0], rn = RSN[idx][1];
+
+    say('mPay','환불 금액을 계산하는 중…');
+    return fetch(SB+'/rest/v1/rpc/refund_quote',{method:'POST',
+      headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({p_no:NO,p_reason:rk})})
+    .then(r=>r.json())
+    .then(q=>{
+      if(!q||!q.ok) return say('mPay','금액을 계산하지 못했습니다.','no');
+      afterQuote(d, q, rk, rn);
+    });
+  }).catch(()=>say('mPay','불러오지 못했습니다.','no'));
+}
+
+function afterQuote(d, q, rk, rn){
+    const amtRaw=prompt('환불 처리 — ' + rn + '\n\n'
+      + '결제 ' + won(q.pay_amount) + '원'
+      + (q.refunded ? '\n이미 환불 ' + won(q.refunded) + '원' : '')
+      + '\n환불 가능 ' + won(q.left) + '원'
+      + (q.deduct ? '\n차감 ' + won(q.deduct) + '원  (' + q.note + ')' : '\n' + q.note)
+      + '\n\n권장 환불액 ' + won(q.refund) + '원'
+      + '\n\n금액을 확인하고 필요하면 고쳐 주세요.', String(q.refund));
     if(amtRaw===null) return say('mPay','');
     const amt=Number(String(amtRaw).replace(/[^0-9]/g,''));
     if(!amt||amt<=0) return say('mPay','금액이 올바르지 않습니다.','no');
@@ -515,12 +551,12 @@ function doRefund(){
       +(full?'· 주문이 취소됩니다\n· 재고가 되돌아갑니다\n':'')
       +'· 고객에게 안내가 나갑니다\n\n계속할까요?')) return say('mPay','');
     say('mPay','환불 처리 중…');
-    fn('refund',Object.assign({action:'refund',order_no:NO,amount:amt,reason:reason},extra))
+    fn('refund',Object.assign({action:'refund',order_no:NO,amount:amt,
+      reason:rn+' · '+reason, reason_type:rk},extra))
     .then(({d:r})=>{
       if(!r.ok) return say('mPay',r.error||'환불하지 못했습니다.','no');
       say('mPay',r.msg||'환불했습니다.','ok'); load();
     }).catch(()=>say('mPay','환불하지 못했습니다.','no'));
-  }).catch(()=>say('mPay','불러오지 못했습니다.','no'));
 }
 /* 이 단추는 토스페이먼츠 API 를 부르고 있었습니다. 저희는 이지페이라 늘 실패했습니다. */
 function doCash(){
