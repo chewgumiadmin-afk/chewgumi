@@ -92,8 +92,10 @@ def audit(name):
 def main():
     rows = [r for r in (audit(n) for n in SHOP) if r]
 
-    # login 은 원래부터 자체 글래스 디자인입니다 (대표님 요청으로 되돌림)
-    SKIP_DESIGN = {'login'}
+    # 원래부터 자체 디자인인 화면들 (대표님 요청으로 되돌림)
+    #   login              자체 글래스
+    #   qna·review·notice  게시판 전용 — 젤리 스킨을 씌웠더니 목록이 깨져서 원복
+    SKIP_DESIGN = {'login', 'qna', 'review', 'notice'}
 
     print('■ 디자인 — 메인과 같은 색을 쓰는가')
     print('%-16s %-8s %s' % ('화면', '브랜드색', '다른 디자인 색'))
