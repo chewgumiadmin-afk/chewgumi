@@ -135,6 +135,34 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 <script src="assets/qa-tool.js" defer></script>
 <script src="assets/auth.js"></script>
 
+
+<style>
+/* 상단 메뉴 띠 — 홈과 같은 흰 유리로 (2026-09-03, #94)
+   index.html 에만 있던 규칙을 그대로 옮깁니다.
+   메뉴 띠와 그 안의 글자·드롭다운만 건드립니다.
+   목록·표·카드는 손대지 않습니다. */
+.glass-bar, header .glass-bar{
+  background:rgba(255,255,255,.72) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(130%) !important;
+  backdrop-filter:blur(22px) saturate(130%) !important;
+  box-shadow:0 8px 26px rgba(216,37,88,.10),
+             inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+.glass-bar > li > a{ color:#17171c !important; font-weight:600 !important }
+.glass-bar > li:hover > a{
+  background:rgba(255,189,204,.34) !important;
+  color:#D82558 !important;
+  box-shadow:none !important;
+}
+.glass-bar > li > a::before{ content:none !important }
+.glass-bar .sub{
+  background:rgba(255,255,255,.94) !important;
+  border:1px solid rgba(255,255,255,.9) !important;
+  color:#17171c !important;
+}
+.glass-bar .sub a{ color:#3a3035 !important }
+</style>
 </head>
 <body>
 
