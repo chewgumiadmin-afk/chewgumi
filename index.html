@@ -13506,12 +13506,15 @@ window.cgClearCart = function(){
     .catch(function(){});
   }
 
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', load);
-  else load();
-  setTimeout(load, 900);
+  /* DOMContentLoaded 와 setTimeout(900) 이 각각 불러 두 번 받고 있었습니다. */
+  var _done = false;
+  function loadOnce(){ if (_done) return; _done = true; return load(); }
 
-  window.cgLoadFilms = load;
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', loadOnce);
+  else loadOnce();
+
+  window.cgLoadFilms = function(){ _done = false; return loadOnce(); };
 })();
 </script>
 
@@ -13744,15 +13747,28 @@ window.cgClearCart = function(){
     };
   });
 
+  /* 전에는 DOMContentLoaded · setTimeout(1200) · pageshow 가 각각 load 를 불러
+     한 화면에서 재고를 세 번씩 받아 왔습니다. 한 번만 받도록 묶습니다. */
+  var _busy = null, _at = 0;
+  function loadOnce(force){
+    var now = Date.now();
+    if (!force && _busy) return _busy;                 /* 이미 받는 중 */
+    if (!force && now - _at < 30000) return Promise.resolve();  /* 30초 안엔 다시 안 받음 */
+    _at = now;
+    _busy = load().then(function(r){ _busy = null; return r; },
+                        function(e){ _busy = null; });
+    return _busy;
+  }
+
   if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', load);
-  else load();
-  setTimeout(load, 1200);
+    document.addEventListener('DOMContentLoaded', function(){ loadOnce(); });
+  else loadOnce();
   setTimeout(mark, 2500);
-  window.addEventListener('pageshow', load);
+  /* 뒤로 돌아왔을 때만 다시 받습니다 (캐시에서 살아난 화면) */
+  window.addEventListener('pageshow', function(e){ if (e.persisted) loadOnce(true); });
 
   window.cgStock = STOCK;
-  window.cgLoadStock = load;
+  window.cgLoadStock = function(){ return loadOnce(true); };
 })();
 </script>
 
