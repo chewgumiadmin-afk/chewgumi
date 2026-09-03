@@ -406,15 +406,30 @@ function doShip(){
   say('mShip','발송 처리 중…');
   fn('order',{action:'ship',orderId:NO,courierCode:cc,
     courier:(COURIERS.find(c=>c.c===cc)||{}).n||'택배',trackingNo:tn})
-  .then(({ok,d})=>{ if(ok&&d.ok){
-      say('mShip', d.notify_why
-        ? '발송 처리했습니다. 다만 고객 알림은 나가지 않았습니다 — '+d.notify_why
-        : '발송 처리했습니다.', d.notify_why ? 'no' : 'ok');
-      load(); }
-    else say('mShip',d.error||'처리에 실패했습니다.','no'); })
+  .then(({ok,d})=>{
+    if(!ok||!d.ok) return say('mShip',d.error||'처리에 실패했습니다.','no');
+    say('mShip', d.notify_why
+      ? '발송 처리했습니다. 다만 고객 알림은 나가지 않았습니다 — '+d.notify_why
+      : '발송 처리했습니다.', d.notify_why ? 'no' : 'ok');
+    return escrowShip(cc, tn).then(()=>load());
+  })
   .catch(()=>say('mShip','네트워크 오류가 발생했습니다.','no'));
 }
 /* order 함수에는 track 이 없습니다. 실제 조회는 tracking 함수가 합니다. */
+/* 에스크로 배송등록 — 가상계좌(22)·계좌이체(21) 결제는 이걸 보내야
+   KICC 가 정산해 줍니다. 보내지 않으면 대금이 묶입니다. */
+function escrowShip(cc, tn){
+  if(!PAY || !PAY.pg_tid) return Promise.resolve();
+  if(['21','22'].indexOf(String(PAY.method)) < 0) return Promise.resolve();
+  return fn('pay',{action:'escrow-ship',tid:PAY.pg_tid,courier_code:cc,tracking_no:tn})
+    .then(({d})=>{
+      if(d&&d.ok) say('mShip','발송 처리 + 에스크로 배송등록까지 마쳤습니다.','ok');
+      else say('mShip','발송은 됐지만 에스크로 배송등록에 실패했습니다 — '
+        +((d&&(d.msg||d.error))||'이지페이 확인 필요')+' (정산이 늦어질 수 있습니다)','no');
+    })
+    .catch(()=>say('mShip','발송은 됐지만 에스크로 배송등록을 보내지 못했습니다.','no'));
+}
+
 function doTrack(){
   say('mShip','조회 중…');
   fn('tracking',{action:'trace',orderNo:NO}).then(({d})=>{

@@ -1202,9 +1202,13 @@ sync();
     var el = document.getElementById('st' + id);
     var no = '';
     try {
-      var box = el.closest('.o-row') || el.closest('.order')
+      /* 주문 카드는 <div class="o"> 입니다. 예전 목록에 '.o' 가 빠져 있어
+         주문번호를 못 찾고 조용히 넘어가고 있었습니다. */
+      var box = el.closest('.o') || el.closest('.o-row') || el.closest('.order')
              || el.closest('li') || el.closest('tr') || el.parentElement.parentElement;
-      no = (box.textContent.match(/\d{8}-\d{4,7}/) || [])[0] || '';
+      var noEl = box && box.querySelector('.o-no');
+      no = (noEl ? noEl.textContent.trim() : '')
+        || (box.textContent.match(/[A-Z0-9]{0,4}\d{8}-\d{4,7}/) || [])[0] || '';
     } catch(e){}
     if (!no) { LAST[id] = status; return; }
 
@@ -1500,9 +1504,13 @@ sync();
 
     /* 주문번호 · 택배사 찾기 */
     var el = document.getElementById('st' + id);
-    var box = el && (el.closest('.o-row') || el.closest('.order')
+    /* 같은 이유로 여기도 '.o' 가 빠져 있어 에스크로 배송등록이 한 번도
+       나가지 않았습니다. KICC 는 배송등록이 있어야 정산합니다. */
+    var box = el && (el.closest('.o') || el.closest('.o-row') || el.closest('.order')
       || el.closest('li') || el.closest('tr'));
-    var no = box && (box.textContent.match(/\d{8}-\d{4,7}/) || [])[0];
+    var noEl = box && box.querySelector('.o-no');
+    var no = (noEl ? noEl.textContent.trim() : '')
+      || (box && (box.textContent.match(/[A-Z0-9]{0,4}\d{8}-\d{4,7}/) || [])[0]);
     if (!no) return;
 
     var cc = document.getElementById('cc' + id);

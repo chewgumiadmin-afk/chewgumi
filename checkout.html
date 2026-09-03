@@ -171,13 +171,11 @@ textarea{resize:vertical;min-height:70px}
           <div class="ptabs">
             <button class="on" id="ptBank" onclick="setPay('bank')">무통장입금</button>
             <button id="ptCard" onclick="setPay('card')">카드 · 간편결제 <em>신용카드 · 네이버페이</em></button>
-        <!-- QA: 가상계좌는 화면만 있고 실제로는 무통장입금 주문이 만들어졌습니다.
-             (뒤쪽에서 setPay 를 덮어쓰는 스크립트가 window.payType 만 바꾸고,
-              주문을 만드는 안쪽 payType 은 'bank' 로 남습니다)
-             에스크로·가상계좌 발급이 실제로 붙으면 아래 CG_VBANK_READY 를 true 로 바꾸고,
-             payType 전달과 vDepositor 저장까지 함께 고쳐 주세요. (UX-RULES R13)
-             가상계좌는 카드 결제창(이지페이) 안에서 이미 고를 수 있습니다. -->
-        <button id="ptVbank" onclick="setPay('vbank')" style="display:none">가상계좌 <em>에스크로 적용</em></button>
+        <!-- 2026-09-03 다시 열었습니다.
+             운영 암복호화 키가 적용되어 입금통보 서명 검증이 동작하고(pay 함수 notify),
+             에스크로(escrow_on=on)도 켜져 있습니다.
+             아래 setPay 를 덮어쓰던 스크립트를 없애 payType 이 제대로 전달됩니다. -->
+        <button id="ptVbank" onclick="setPay('vbank')">가상계좌 <em>에스크로 적용</em></button>
           </div>
           <div id="bankPane">
             <div class="bankbox" id="bankBox">계좌 정보를 불러오는 중…</div>
@@ -413,16 +411,35 @@ async function quote(){
 }
 function applyCoupon(){ quote(); }
 
-/* 가상계좌·에스크로가 실제로 붙으면 true 로 바꿉니다 (탭이 다시 보입니다) */
-window.CG_VBANK_READY = false;
+/* 가상계좌 — 운영 키·에스크로가 적용되어 열려 있습니다 */
+window.CG_VBANK_READY = true;
 let payType='bank';
+/* 결제수단 탭은 여기 한 곳에서만 정합니다.
+   전에는 아래쪽에서 setPay 를 한 번 더 덮어썼는데, 그 함수가 window.payType 만
+   바꾸는 바람에 가상계좌를 골라도 주문은 무통장입금으로 만들어졌습니다. */
 function setPay(t){
-  payType=t;
-  $('ptBank').classList.toggle('on',t==='bank');
-  $('ptCard').classList.toggle('on',t==='card');
-  $('bankPane').style.display = t==='bank' ? 'block':'none';
-  $('cardPane').style.display = t==='card' ? 'block':'none';
-  $('payBtn').textContent = t==='bank' ? '주문하기 (무통장입금)' : '카드·계좌이체·가상계좌로 결제하기';
+  if (t === 'vbank' && window.CG_VBANK_READY !== true) t = 'card';
+  payType = t;
+  window.payType = t;
+
+  ['ptBank','ptCard','ptVbank'].forEach(function(id){
+    var b = $(id); if (b) b.classList.remove('on');
+  });
+  ['bankPane','cardPane','vbankPane'].forEach(function(id){
+    var pn = $(id); if (pn) pn.style.display = 'none';
+  });
+
+  var map = { bank:['ptBank','bankPane'], card:['ptCard','cardPane'], vbank:['ptVbank','vbankPane'] };
+  var m = map[t] || map.bank;
+  var b = $(m[0]); if (b) b.classList.add('on');
+  var pn = $(m[1]); if (pn) pn.style.display = 'block';
+
+  $('payBtn').textContent =
+      t === 'bank'  ? '주문하기 (무통장입금)'
+    : t === 'vbank' ? '가상계좌 발급받기'
+    :                 '카드·계좌이체·간편결제로 결제하기';
+
+  try{ if (typeof quote === 'function') quote(); }catch(e){}
 }
 let BANK={};
 /* 주요 은행·페이 앱 (Android intent / iOS scheme) */
@@ -648,6 +665,27 @@ $('payBtn').addEventListener('click',async()=>{
   }
 
   $('msg').textContent='';
+
+  /* 가상계좌 — 이지페이에 22(가상계좌)로 등록하면 에스크로가 붙습니다.
+     입금자명(vDepositor)도 함께 보냅니다. 전에는 어디에도 저장되지 않았습니다. */
+  if(payType==='vbank'){
+    const nmv = CART.length
+      ? (CART[0].name + (CART.length>1 ? (' 외 '+(CART.length-1)+'건') : ''))
+      : '츄구미 상품';
+    try{ sessionStorage.setItem('cg_pay_order', od.orderNo); }catch(e){}
+    const doneV = await openEasypay({
+      amount: od.amount, goodsName: nmv, orderNo: od.orderNo,
+      buyer: buyer.name, email: buyer.email, phone: buyer.phone,
+      method:'22',
+      depositor: ($('vDepositor') ? $('vDepositor').value.trim() : ''),
+      items: CART.map(function(it){
+        return { name: it.name, qty: it.qty, price: it.price };
+      })
+    });
+    if(!doneV){ $('payBtn').disabled=false; }
+    return;
+  }
+
   if(payType==='card'){
     /* 이지페이 결제창 — 장바구니는 결제가 끝난 뒤에 비웁니다 */
     if(window.CG_PAY_MALL !== true){
@@ -1058,7 +1096,9 @@ function checkRequired(){
         email: opt.email || '',
         phone: opt.phone || '',
         method: opt.method || '00',
-        mobile: mobile
+        mobile: mobile,
+        items: opt.items || [],
+        memo: opt.depositor || ''
       })
     })
     .then(function(r){ return r.json(); })
@@ -1294,36 +1334,9 @@ select::-ms-expand{ display:none !important }
 </script>
 
 <script>
-/* ══════════════════════════════════════════════
-   가상계좌 · 에스크로 — 암복호화 키 등록 후 열림
-   ══════════════════════════════════════════════ */
-(function(){
-  var _old = window.setPay;
-
-  window.setPay = function(t){
-    ['ptBank','ptCard','ptVbank'].forEach(function(id){
-      var b = document.getElementById(id);
-      if (b) b.classList.remove('on');
-    });
-    ['bankPane','cardPane','vbankPane'].forEach(function(id){
-      var p = document.getElementById(id);
-      if (p) p.style.display = 'none';
-    });
-
-    var map = { bank:['ptBank','bankPane'], card:['ptCard','cardPane'], vbank:['ptVbank','vbankPane'] };
-    var m = map[t] || map.bank;
-    var b = document.getElementById(m[0]);
-    var p = document.getElementById(m[1]);
-    if (b) b.classList.add('on');
-    if (p) p.style.display = '';
-
-    try{ window.payType = t; }catch(e){}
-    if (typeof _old === 'function' && t !== 'vbank') {
-      try{ _old(t); }catch(e){}
-    }
-    try{ if (typeof quote === 'function') quote(); }catch(e){}
-  };
-})();
+/* 결제수단 탭 처리는 위쪽 setPay 한 곳으로 합쳤습니다.
+   여기 있던 덮어쓰기가 안쪽 payType 을 바꾸지 못해
+   가상계좌를 골라도 무통장입금 주문이 만들어지고 있었습니다. */
 </script>
 
 <script>
