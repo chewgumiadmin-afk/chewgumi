@@ -14,13 +14,38 @@
   }
 
   /* '로그인 유지'를 고르지 않았으면 브라우저를 닫을 때 끝냅니다.
-     sessionStorage 는 탭/브라우저를 닫으면 사라지므로 그것으로 판별합니다. */
+     sessionStorage 는 탭마다 따로라, 그것만 보면 새 탭을 열었을 뿐인데도
+     로그아웃돼 버렸습니다. 그래서 살아 있는 탭이 남긴 맥박(cg_beat)을 함께 봅니다.
+     맥박이 최근이면 브라우저는 아직 열려 있는 것이므로 유지합니다. */
+  var BEAT = 'cg_beat';
+  var BEAT_MS = 90 * 1000;
+
+  function beat() {
+    try { localStorage.setItem(BEAT, String(Date.now())); } catch (e) {}
+  }
+
   function keptOff() {
     try {
       if (localStorage.getItem('cg_keep_off') !== '1') return false;
-      return sessionStorage.getItem('cg_alive') !== '1';
+      if (sessionStorage.getItem('cg_alive') === '1') return false;
+      /* 다른 탭이 아직 뛰고 있으면 브라우저를 닫은 게 아닙니다 */
+      var last = Number(localStorage.getItem(BEAT) || 0);
+      if (last && Date.now() - last < BEAT_MS) {
+        try { sessionStorage.setItem('cg_alive', '1'); } catch (e) {}
+        return false;
+      }
+      return true;
     } catch (e) { return false; }
   }
+
+  /* 이 탭이 살아 있다는 표시를 남깁니다 */
+  beat();
+  try {
+    setInterval(beat, 30 * 1000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) beat();
+    });
+  } catch (e) {}
 
   function alive(s) {
     if (!s || !s.t) return false;
