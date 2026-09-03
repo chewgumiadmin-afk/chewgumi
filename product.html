@@ -732,7 +732,7 @@ loadWish();
   <div class="cgbot-ft">
     <input id="cgbotIn" placeholder="메시지를 입력하세요"
       onkeydown="if(event.key==='Enter')cgbotSend()">
-    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/logo-rainbow.png" alt="" width="22" height="22" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
+    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><g fill="#fff"><circle cx="12" cy="4.6" r="3"/><circle cx="7.4" cy="3.4" r="1.7"/><circle cx="16.6" cy="3.4" r="1.7"/><rect x="8.1" y="7.2" width="7.8" height="10.4" rx="3.6"/><circle cx="5.6" cy="10.4" r="2.2"/><circle cx="18.4" cy="10.4" r="2.2"/><circle cx="9.2" cy="19.4" r="2.1"/><circle cx="14.8" cy="19.4" r="2.1"/></g><g fill="#D82558"><circle cx="10.7" cy="4.3" r=".55"/><circle cx="13.3" cy="4.3" r=".55"/></g></svg></button>
   </div>
 </div>
 <script>
@@ -2109,7 +2109,7 @@ body[data-soon="1"] select{
 }
 .cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
 .cgbot-ft #cgbotBtn:active{ transform:none }
-.cgbot-ft #cgbotBtn img{ display:block;width:22px;height:22px;object-fit:contain }
+.cgbot-ft #cgbotBtn svg{ display:block;width:21px;height:21px }
 .cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
 /* 대화 지우기 */
 .cgbot-hd .cgbot-clr{

@@ -27,7 +27,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-:root { --ink:#1d1d1f; --gray:#86868b; --line:#e8e8ed; --alt:#f5f5f7; --blue:#0071e3; }
+:root { --ink:#17171c; --gray:#797979; --line:rgba(0,0,0,.08); --alt:#FDF3F5; --blue:#D82558;
+        --main:#D82558; --main2:#E95073; --light:#FFE4E6; }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
 body { font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
   color:var(--ink); background:var(--alt); font-size:14px; letter-spacing:-0.01em; min-height:100vh; }
@@ -68,7 +69,7 @@ header { position:sticky; top:0; z-index:50; background:rgba(251,251,253,.78);
   background:radial-gradient(ellipse at 40% 35%, rgba(255,255,255,.9), rgba(255,255,255,0) 70%);
   opacity:0; transform:rotate(-14deg); transition:opacity .25s ease; pointer-events:none; }
 .glass-bar > li:hover > a::before { opacity:.9; }
-.sub { display:none; position:absolute; top:calc(100% + 10px); left:-6px; background:rgba(22,22,24,.66); color:#f5f5f7;
+.sub { display:none; position:absolute; top:calc(100% + 10px); left:-6px; background:rgba(255,255,255,.86); color:var(--ink); backdrop-filter:blur(18px) saturate(120%); -webkit-backdrop-filter:blur(18px) saturate(120%); box-shadow:0 12px 30px rgba(0,0,0,.1);
   backdrop-filter:blur(22px) saturate(120%); -webkit-backdrop-filter:blur(22px) saturate(120%);
   border:1px solid rgba(255,255,255,.16); min-width:190px; padding:10px 8px; border-radius:20px;
   box-shadow:0 18px 44px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.14); z-index:60; }
@@ -132,6 +133,68 @@ h1 { font-size:clamp(26px,4vw,38px); font-weight:700; letter-spacing:-0.02em; te
 <script src="assets/navauth.js" defer></script>
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
+<script src="assets/auth.js"></script>
+
+<style>
+/* ══════════════════════════════════════════════
+   메인과 같은 젤리 톤으로 맞춥니다 (2026-09-03)
+   이 화면들은 애플풍 회색 팔레트로
+   따로 만들어져 있어 홈과 전혀 다른 화면처럼 보였습니다.
+   변수만 덮어써서 구조는 그대로 두고 색만 맞춥니다.
+   ══════════════════════════════════════════════ */
+:root{
+  --ink:#17171c;
+  --gray:#797979;
+  --line:rgba(0,0,0,.08);
+  --alt:#FDF3F5;
+  --blue:#D82558;
+  --main:#D82558;
+  --main2:#E95073;
+  --light:#FFE4E6;
+}
+body{
+  background:
+    radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4) !important;
+  background-attachment:fixed;
+}
+/* 로고 — 홈과 같은 분홍 글자 */
+.logo{ font-family:'Poppins','Montserrat',sans-serif !important; color:var(--main) !important }
+
+/* 탭 — 검은 알약에서 젤리 그라데이션으로 */
+.tabs a{
+  border-radius:999px !important;
+  border:1px solid var(--line) !important;
+  background:rgba(255,255,255,.72) !important;
+  color:var(--gray) !important;
+}
+.tabs a.on{
+  background:linear-gradient(135deg,var(--main2),var(--main)) !important;
+  color:#fff !important; border-color:transparent !important;
+  box-shadow:0 6px 16px rgba(216,37,88,.24) !important;
+}
+/* 카드·패널 — 글래스 */
+.card,.item,.post,.panel,.box,.list > li{
+  background:rgba(255,255,255,.62) !important;
+  border:1px solid rgba(255,255,255,.85) !important;
+  border-radius:20px !important;
+  backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 12px 30px rgba(0,0,0,.07), inset 0 1px 0 rgba(255,255,255,.9);
+}
+/* 단추 */
+button,.btn{ font-family:inherit }
+.btn,.more-btn{
+  border-radius:999px !important;
+  background:linear-gradient(135deg,var(--main2),var(--main)) !important;
+  color:#fff !important; border:0 !important;
+  box-shadow:0 8px 20px rgba(216,37,88,.3) !important;
+}
+/* 손가락으로 누를 수 있는 크기 (UX-RULES R3) */
+.tabs a,.btn,.more-btn{ min-height:44px; display:inline-flex; align-items:center; justify-content:center }
+/* 입력칸 — 폰에서 화면이 확대되지 않게 (UX-RULES R15) */
+input,select,textarea{ font-size:16px !important }
+</style>
 </head>
 <body>
 
@@ -252,7 +315,7 @@ document.addEventListener('click', e => {
           + '<div class="i-head" onclick="this.parentElement.classList.toggle(\'open\')">'
           + '<span class="i-title">' + badge + esc(r.title) + '</span>'
           + '<span class="i-meta">' + esc(r.meta) + '</span></div>'
-          + '<div class="i-body">' + esc(r.content) + (r.source_url ? '<br><a href="' + esc(r.source_url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);text-decoration:none;color:#1d1d1f;">' + esc(r.source || 'LINK') + '에서 보기 →</a>' : '') + '</div></div>';
+          + '<div class="i-body">' + esc(r.content) + (r.source_url ? '<br><a href="' + esc(r.source_url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);text-decoration:none;color:var(--main);">' + esc(r.source || 'LINK') + '에서 보기 →</a>' : '') + '</div></div>';
       }).join('');
     })
     .catch(function(){}); /* 실패 시 기존 내용 유지 */
@@ -319,7 +382,7 @@ document.addEventListener('click', e => {
 }
 .cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
 .cgbot-ft #cgbotBtn:active{ transform:none }
-.cgbot-ft #cgbotBtn img{ display:block;width:22px;height:22px;object-fit:contain }
+.cgbot-ft #cgbotBtn svg{ display:block;width:21px;height:21px }
 .cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
 /* 대화 지우기 */
 .cgbot-hd .cgbot-clr{
@@ -344,7 +407,7 @@ document.addEventListener('click', e => {
   <div class="cgbot-ft">
     <input id="cgbotIn" placeholder="메시지를 입력하세요"
       onkeydown="if(event.key==='Enter')cgbotSend()">
-    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/logo-rainbow.png" alt="" width="22" height="22" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
+    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><g fill="#fff"><circle cx="12" cy="4.6" r="3"/><circle cx="7.4" cy="3.4" r="1.7"/><circle cx="16.6" cy="3.4" r="1.7"/><rect x="8.1" y="7.2" width="7.8" height="10.4" rx="3.6"/><circle cx="5.6" cy="10.4" r="2.2"/><circle cx="18.4" cy="10.4" r="2.2"/><circle cx="9.2" cy="19.4" r="2.1"/><circle cx="14.8" cy="19.4" r="2.1"/></g><g fill="#D82558"><circle cx="10.7" cy="4.3" r=".55"/><circle cx="13.3" cy="4.3" r=".55"/></g></svg></button>
   </div>
 </div>
 <script>
