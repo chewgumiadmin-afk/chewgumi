@@ -578,7 +578,22 @@ function sync(){
     });
   }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';c24Status();bankLoad();ntLoad();setTimeout(pushSync,600);load();}}
+  if(on){
+    $('who').textContent=who+' 님으로 로그인 중입니다.';
+    /* sync() 는 로그인·토큰갱신·화면복귀 때마다 불립니다.
+       전에는 그때마다 계좌·카페24·알림 설정을 다시 받아 와
+       한 화면에서 같은 주소를 두 번씩 부르고 있었습니다.
+       한 번만 받도록 묶습니다. */
+    if(!window._cgAdminInit){
+      window._cgAdminInit = true;
+      c24Status(); bankLoad(); ntLoad();
+      setTimeout(pushSync,600);
+    }
+    if(!window._cgOrdersLoaded){
+      window._cgOrdersLoaded = true;
+      load();
+    }
+  }}
 
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
@@ -1341,14 +1356,18 @@ sync();
     if (ar) ar.classList.remove('hide');
     var w = document.getElementById('who');
     if (w) w.textContent = s.em || s.u || '';
-    try{ if (typeof load === 'function') load(); }catch(e){}
+    /* 이미 목록을 받아 왔으면 다시 받지 않습니다 */
+    if (!window._cgOrdersLoaded) {
+      window._cgOrdersLoaded = true;
+      try{ if (typeof load === 'function') load(); }catch(e){}
+    }
   }
 
   function check(){
     var s = tok();
     if (!s) return;
     /* 관리자인지 확인한 뒤 들어갑니다 */
-    fetch(SB2+'/rest/v1/rpc/my_role',{method:'POST',
+    return fetch(SB2+'/rest/v1/rpc/my_role',{method:'POST',
       headers:{apikey:K2,Authorization:'Bearer '+s.t,'Content-Type':'application/json'},body:'{}'})
     .then(function(r){ return r.ok?r.json():'guest'; })
     .then(function(v){
@@ -1358,11 +1377,22 @@ sync();
     .catch(function(){});
   }
 
+  /* 전에는 DOMContentLoaded · setTimeout(500) · pageshow 가 각각 check 를 불러
+     my_role 을 3~6번, 그때마다 enter() 가 load() 를 이어 불러
+     주문목록까지 5번씩 받아 왔습니다. 한 번만 돌도록 묶습니다. */
+  var _busy = false, _done = false;
+  function checkOnce(force){
+    if (_busy) return;
+    if (_done && !force) return;
+    _busy = true;
+    Promise.resolve(check()).finally(function(){ _busy = false; _done = true; });
+  }
+
   if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', check);
-  else check();
-  setTimeout(check, 500);
-  window.addEventListener('pageshow', check);
+    document.addEventListener('DOMContentLoaded', function(){ checkOnce(); });
+  else checkOnce();
+  /* 뒤로 돌아왔을 때(캐시에서 살아난 화면)만 다시 확인합니다 */
+  window.addEventListener('pageshow', function(e){ if (e.persisted) checkOnce(true); });
 })();
 </script>
 
