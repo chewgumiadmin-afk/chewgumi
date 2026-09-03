@@ -25,6 +25,7 @@
   function load() {
     var t = token();
     if (!t) return Promise.resolve(null);
+    if (window.cgMyPages) return cgMyPages();
     return fetch(SB + '/rest/v1/rpc/my_pages', {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },

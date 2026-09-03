@@ -73,12 +73,16 @@
 
     /* 내 권한과 화면 권한을 함께 조회 */
     Promise.all([
-      fetch(SB + '/rest/v1/rpc/my_role', {
-        method: 'POST',
-        headers: { apikey: KEY, Authorization: 'Bearer ' + t,
-          'Content-Type': 'application/json' },
-        body: '{}'
-      }).then(function (r) { return r.ok ? r.json() : 'guest'; }),
+      /* 권한은 assets/role.js 가 한 번만 받아 나눠 줍니다.
+         전에는 guard·adminbar·pagelist·화면이 각자 물어봐서
+         한 화면에서 my_role 이 네 번씩 나갔습니다. */
+      (window.cgMyRole ? cgMyRole()
+        : fetch(SB + '/rest/v1/rpc/my_role', {
+            method: 'POST',
+            headers: { apikey: KEY, Authorization: 'Bearer ' + t,
+              'Content-Type': 'application/json' },
+            body: '{}'
+          }).then(function (r) { return r.ok ? r.json() : 'guest'; })),
       fetch(SB + '/rest/v1/page_access?select=roles,label&page=eq.' + page,
         { headers: { apikey: KEY, Authorization: 'Bearer ' + t } })
         .then(function (r) { return r.ok ? r.json() : []; })

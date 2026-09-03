@@ -82,15 +82,18 @@
     /* 대표님이 「고객처럼 보기」를 켜두셨으면 아예 안 띄웁니다 */
     try { if (localStorage.getItem(OFF) === '1') return; } catch (e) {}
 
-    fetch(SB + '/rest/v1/rpc/my_role', {
-      method: 'POST',
-      headers: {
-        apikey: KEY,
-        Authorization: 'Bearer ' + t,
-        'Content-Type': 'application/json'
-      },
-      body: '{}'
-    })
+    /* role.js 가 이미 받아 뒀으면 그걸 씁니다 */
+    (window.cgMyRole ? cgMyRole().then(function (v) { return { ok: true, _v: v,
+        json: function () { return Promise.resolve(v); }, status: 200 }; })
+      : fetch(SB + '/rest/v1/rpc/my_role', {
+          method: 'POST',
+          headers: {
+            apikey: KEY,
+            Authorization: 'Bearer ' + t,
+            'Content-Type': 'application/json'
+          },
+          body: '{}'
+        }))
       .then(function (r) {
         if (r.status === 401 || r.status === 403) {
           try { localStorage.removeItem('cg_sb'); } catch (e) {}
