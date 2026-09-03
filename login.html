@@ -511,9 +511,24 @@ function cgAfterLogin(d, em, m){
   .then(function(r){ return r.ok ? r.json() : 'guest'; })
   .then(function(role){
     try{
-      var st=JSON.parse(localStorage.getItem('cg_sb')||'{}');
+      /* 권한만 덧붙이려던 코드였는데, 그 사이 다른 탭이 세션을 지워 버리면
+         빈 객체에 role 만 얹혀 {"role":"qa"} 같은 껍데기가 남았습니다.
+         토큰이 없으니 다음 화면에서 곧바로 '로그인이 필요합니다' 가 떴습니다.
+         없어졌으면 방금 받은 토큰으로 다시 세웁니다. */
+      var st=JSON.parse(localStorage.getItem('cg_sb')||'null');
+      if(!st || !st.t){
+        st = {
+          t: d.access_token,
+          r: d.refresh_token || '',
+          e: Date.now() + ((d.expires_in || 3600) * 1000),
+          exp: Math.floor(Date.now()/1000) + (d.expires_in || 3600),
+          u: String(em||'').split('@')[0],
+          em: em || ''
+        };
+      }
       st.role = role || 'guest';
       localStorage.setItem('cg_sb', JSON.stringify(st));
+      sessionStorage.setItem('cg_alive','1');
     }catch(e){}
 
     /* 원래 가려던 화면이 있으면 그리로 */
