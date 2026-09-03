@@ -1,0 +1,2984 @@
+{
+ "pages": {
+  "about.html": {
+   "links": [
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "join.html",
+    "mypage.html",
+    "notice.html",
+    "privacy.html",
+    "review.html",
+    "terms.html",
+    "tracking.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cgbotSend",
+    "cgbotToggle",
+    "el",
+    "esc",
+    "quick"
+   ],
+   "onclick": [
+    "cgbotSend",
+    "cgbotToggle"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [],
+   "size": 38086
+  },
+  "access.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "H",
+    "apply",
+    "ask",
+    "call",
+    "cancel",
+    "drawLogs",
+    "drawPages",
+    "fill",
+    "load",
+    "say",
+    "toggle",
+    "tok"
+   ],
+   "onclick": [
+    "apply",
+    "ask",
+    "cancel",
+    "fill",
+    "toggle"
+   ],
+   "fns": [
+    "access-admin"
+   ],
+   "tables": [],
+   "size": 11945
+  },
+  "admin.html": {
+   "links": [
+    "boards.html",
+    "console.html",
+    "members.html",
+    "orders.html",
+    "posts.html",
+    "stock.html",
+    "subs-admin.html"
+   ],
+   "defines": [],
+   "onclick": [],
+   "fns": [],
+   "tables": [],
+   "size": 3603
+  },
+  "boards.html": {
+   "links": [
+    "admin.html",
+    "faq.html",
+    "members.html",
+    "message.html",
+    "notice.html",
+    "qna.html",
+    "review.html"
+   ],
+   "defines": [
+    "addBoard",
+    "doLogin",
+    "doLogout",
+    "load",
+    "render",
+    "sync",
+    "toggleVis"
+   ],
+   "onclick": [
+    "addBoard",
+    "doLogin",
+    "doLogout",
+    "toggleVis"
+   ],
+   "fns": [],
+   "tables": [
+    "board_stats",
+    "boards"
+   ],
+   "size": 11609
+  },
+  "bot.html": {
+   "links": [
+    "hub.html"
+   ],
+   "defines": [
+    "H",
+    "add",
+    "call",
+    "fill",
+    "grow",
+    "hello",
+    "send",
+    "tok",
+    "waiting",
+    "when"
+   ],
+   "onclick": [
+    "fill",
+    "send"
+   ],
+   "fns": [
+    "role-bot"
+   ],
+   "tables": [],
+   "size": 9687
+  },
+  "cafe24.html": {
+   "links": [
+    "console.html",
+    "integrations.html"
+   ],
+   "defines": [
+    "alimtalk",
+    "alimtalkOn",
+    "bankSync",
+    "copyOut",
+    "dash",
+    "diagnose",
+    "doLogin",
+    "doLogout",
+    "doSync",
+    "receipts",
+    "reviews",
+    "runRaw",
+    "sales",
+    "setEp",
+    "show",
+    "smsInfo",
+    "status",
+    "stockSync",
+    "sync",
+    "unpaid"
+   ],
+   "onclick": [
+    "alimtalk",
+    "alimtalkOn",
+    "bankSync",
+    "copyOut",
+    "dash",
+    "diagnose",
+    "doLogin",
+    "doLogout",
+    "doSync",
+    "receipts",
+    "reviews",
+    "runRaw",
+    "sales",
+    "setEp",
+    "smsInfo",
+    "stockSync",
+    "unpaid"
+   ],
+   "fns": [
+    "cafe24"
+   ],
+   "tables": [],
+   "size": 20468
+  },
+  "campaign.html": {
+   "links": [
+    "console.html",
+    "members.html",
+    "message.html"
+   ],
+   "defines": [
+    "check",
+    "compose",
+    "copyBody",
+    "doLogin",
+    "doLogout",
+    "enter",
+    "exportList",
+    "init",
+    "loadHist",
+    "loadProducts",
+    "loadStatus",
+    "pick",
+    "recount",
+    "send",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "compose",
+    "copyBody",
+    "doLogin",
+    "doLogout",
+    "exportList",
+    "send"
+   ],
+   "fns": [
+    "campaign"
+   ],
+   "tables": [
+    "products",
+    "rpc"
+   ],
+   "size": 21755
+  },
+  "cart.html": {
+   "links": [
+    "about.html",
+    "checkout.html",
+    "detail.html",
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "mypage.html",
+    "privacy.html",
+    "product.html",
+    "terms.html",
+    "wish.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cartImg",
+    "cgClose",
+    "cgModal",
+    "cgbotSend",
+    "cgbotToggle",
+    "chg",
+    "del",
+    "delSelected",
+    "el",
+    "esc",
+    "matchNo",
+    "prodHref",
+    "quick",
+    "render",
+    "selKeys",
+    "sumUp",
+    "toggleAll"
+   ],
+   "onclick": [
+    "cgbotSend",
+    "cgbotToggle",
+    "chg",
+    "del",
+    "delSelected",
+    "if"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [],
+   "size": 33427
+  },
+  "channels.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "adj",
+    "importOrder",
+    "loadAll",
+    "loadChannels",
+    "loadOrders",
+    "loadStock",
+    "say",
+    "say2",
+    "syncNaver",
+    "tok"
+   ],
+   "onclick": [
+    "adj",
+    "importOrder",
+    "loadAll",
+    "syncNaver"
+   ],
+   "fns": [
+    "naver-review"
+   ],
+   "tables": [
+    "channel_orders",
+    "channels",
+    "rpc"
+   ],
+   "size": 15570
+  },
+  "checkout.html": {
+   "links": [
+    "basket.html",
+    "cart.html",
+    "detail.html",
+    "index.html",
+    "mypage.html"
+   ],
+   "defines": [
+    "applyCoupon",
+    "authH",
+    "backup",
+    "bankCode",
+    "bankUsed",
+    "cgBadItems",
+    "cgGoPay",
+    "cgItemId",
+    "cgMarkOrdered",
+    "cgOrderMail",
+    "cgRetry",
+    "cgStockOk",
+    "checkRequired",
+    "chgQty",
+    "copyAcc",
+    "empty",
+    "fillProfile",
+    "findAddr",
+    "forget",
+    "hide",
+    "init",
+    "isMobile",
+    "items",
+    "loadBank",
+    "loadCoupons",
+    "markBank",
+    "matchId",
+    "matchNo",
+    "onBack",
+    "openBankPick",
+    "openEasypay",
+    "quote",
+    "redrawCart",
+    "remember",
+    "returned",
+    "rmItem",
+    "saveCart",
+    "setPay",
+    "tossLink",
+    "watchOpen",
+    "wrap"
+   ],
+   "onclick": [
+    "cgRetry",
+    "chgQty",
+    "copyAcc",
+    "findAddr",
+    "openBankPick",
+    "rmItem",
+    "setPay"
+   ],
+   "fns": [
+    "bank",
+    "coupon",
+    "order",
+    "order-mail",
+    "pay"
+   ],
+   "tables": [
+    "products",
+    "profiles",
+    "rpc",
+    "stock_view"
+   ],
+   "size": 62759
+  },
+  "console.html": {
+   "links": [
+    "cafe24.html",
+    "campaign.html",
+    "dev.html",
+    "export-ai.html",
+    "github.html",
+    "grievance.html",
+    "help.html",
+    "integrations.html",
+    "issue.html",
+    "members.html",
+    "orders.html",
+    "posts.html",
+    "reports-admin.html",
+    "stock.html",
+    "subs-admin.html"
+   ],
+   "defines": [
+    "ask",
+    "boot",
+    "bub",
+    "clearChat",
+    "doLogin",
+    "doLogout",
+    "grow",
+    "hlLoad",
+    "pshCall",
+    "pshTest",
+    "pshToggle",
+    "pshUI",
+    "sync"
+   ],
+   "onclick": [
+    "ask",
+    "clearChat",
+    "doLogin",
+    "doLogout",
+    "pshTest",
+    "pshToggle"
+   ],
+   "fns": [
+    "admin-chat",
+    "help",
+    "push"
+   ],
+   "tables": [],
+   "size": 27093
+  },
+  "dev.html": {
+   "links": [
+    "about.html",
+    "admin.html",
+    "boards.html",
+    "cafe24.html",
+    "campaign.html",
+    "cart.html",
+    "checkout.html",
+    "console.html",
+    "d.html",
+    "export-ai.html",
+    "exports.html",
+    "faq.html",
+    "grievance.html",
+    "guide.html",
+    "index.html",
+    "integrations.html",
+    "issue.html",
+    "join.html",
+    "login.html",
+    "members.html",
+    "message.html",
+    "mypage.html",
+    "notice.html",
+    "orders.html",
+    "posts.html",
+    "preview.html",
+    "privacy.html",
+    "product.html",
+    "qa.html",
+    "qna.html",
+    "reset.html",
+    "review.html",
+    "status.html",
+    "stock.html",
+    "subs-admin.html",
+    "subscribe.html",
+    "terms.html",
+    "tracking.html",
+    "wish.html"
+   ],
+   "defines": [
+    "boot",
+    "call",
+    "clearShot",
+    "closeCm",
+    "delDraft",
+    "deploy",
+    "devCheck",
+    "discard",
+    "doLogin",
+    "doLogout",
+    "draft",
+    "finish",
+    "init",
+    "isCall",
+    "isFix",
+    "isInit",
+    "isLoad",
+    "isSave",
+    "isSt",
+    "isTest",
+    "loadCommits",
+    "loadHist",
+    "loadModels",
+    "loadPrev",
+    "lookFor",
+    "onPathChange",
+    "openCm",
+    "openPrev",
+    "paint",
+    "pickDraft",
+    "pickShot",
+    "prevUrl",
+    "preview",
+    "pvApply",
+    "pvBoot",
+    "refine",
+    "refreshModels",
+    "revert",
+    "setEx",
+    "setModel",
+    "setW",
+    "siteBase",
+    "start",
+    "sync",
+    "syncCare",
+    "watchBuild"
+   ],
+   "onclick": [
+    "clearShot",
+    "closeCm",
+    "delDraft",
+    "deploy",
+    "devCheck",
+    "discard",
+    "doLogin",
+    "doLogout",
+    "draft",
+    "if",
+    "isFix",
+    "isSave",
+    "isSt",
+    "isTest",
+    "loadCommits",
+    "openCm",
+    "openPrev",
+    "pickDraft",
+    "preview",
+    "refine",
+    "refreshModels",
+    "revert",
+    "setEx",
+    "setW"
+   ],
+   "fns": [
+    "ai-models",
+    "dev-agent",
+    "dev-check",
+    "issue"
+   ],
+   "tables": [
+    "rpc"
+   ],
+   "size": 67103
+  },
+  "drive.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "add",
+    "del",
+    "load",
+    "pickId",
+    "preview",
+    "say",
+    "tok"
+   ],
+   "onclick": [
+    "add",
+    "del",
+    "preview"
+   ],
+   "fns": [],
+   "tables": [
+    "drive_assets"
+   ],
+   "size": 14613
+  },
+  "export-ai.html": {
+   "links": [
+    "console.html",
+    "exports.html",
+    "index.html"
+   ],
+   "defines": [
+    "addBuyer",
+    "call",
+    "check",
+    "checkAI",
+    "clearOut",
+    "copyOut",
+    "doLogin",
+    "doLogout",
+    "doneTask",
+    "downloadOut",
+    "enter",
+    "fillBuyer",
+    "generate",
+    "loadBuyers",
+    "loadTasks",
+    "setLabels",
+    "setStatus",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "addBuyer",
+    "clearOut",
+    "copyOut",
+    "doLogin",
+    "doLogout",
+    "doneTask",
+    "downloadOut",
+    "generate"
+   ],
+   "fns": [
+    "export-ai"
+   ],
+   "tables": [
+    "buyers",
+    "export_tasks",
+    "rpc"
+   ],
+   "size": 20847
+  },
+  "exports.html": {
+   "links": [
+    "admin.html",
+    "index.html",
+    "orders.html"
+   ],
+   "defines": [
+    "closeLog",
+    "doLogin",
+    "doLogout",
+    "load",
+    "openLog",
+    "render",
+    "saveItem",
+    "saveLog",
+    "stats",
+    "sync",
+    "toggleLogs"
+   ],
+   "onclick": [
+    "closeLog",
+    "doLogin",
+    "doLogout",
+    "if",
+    "openLog",
+    "saveItem",
+    "saveLog",
+    "toggleLogs"
+   ],
+   "fns": [],
+   "tables": [
+    "cert_items",
+    "cert_logs"
+   ],
+   "size": 15201
+  },
+  "faq.html": {
+   "links": [
+    "about.html",
+    "cart.html",
+    "guide.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "mypage.html",
+    "privacy.html",
+    "qna.html",
+    "terms.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cgbotSend",
+    "cgbotToggle",
+    "el",
+    "esc",
+    "quick",
+    "render",
+    "setCat"
+   ],
+   "onclick": [
+    "cgbotSend",
+    "cgbotToggle",
+    "setCat"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [],
+   "size": 21871
+  },
+  "fixlog.html": {
+   "links": [
+    "about.html",
+    "cart.html",
+    "checkout.html",
+    "console.html",
+    "index.html",
+    "notice.html",
+    "product.html",
+    "review.html",
+    "shop.html"
+   ],
+   "defines": [
+    "copyForm",
+    "draw",
+    "formText",
+    "load",
+    "mark",
+    "say",
+    "sendMail",
+    "submitIssue",
+    "tok"
+   ],
+   "onclick": [
+    "copyForm",
+    "mark",
+    "sendMail",
+    "submitIssue"
+   ],
+   "fns": [
+    "issue-flow",
+    "issue-mail"
+   ],
+   "tables": [
+    "fix_log"
+   ],
+   "size": 16167
+  },
+  "github.html": {
+   "links": [
+    "console.html",
+    "d.html",
+    "dev.html"
+   ],
+   "defines": [
+    "closeIssue",
+    "comment",
+    "doLogin",
+    "doLogout",
+    "fileHist",
+    "files",
+    "load",
+    "newIssue",
+    "peek",
+    "rebuild",
+    "restore",
+    "summary",
+    "sync"
+   ],
+   "onclick": [
+    "closeIssue",
+    "comment",
+    "doLogin",
+    "doLogout",
+    "fileHist",
+    "load",
+    "newIssue",
+    "peek",
+    "rebuild",
+    "restore",
+    "summary"
+   ],
+   "fns": [
+    "github"
+   ],
+   "tables": [],
+   "size": 17703
+  },
+  "grievance.html": {
+   "links": [
+    "console.html",
+    "exports.html"
+   ],
+   "defines": [
+    "check",
+    "copyOut",
+    "ctx",
+    "doLogin",
+    "doLogout",
+    "downloadOut",
+    "draft",
+    "enter",
+    "loadList",
+    "mark",
+    "pick",
+    "saveItem",
+    "showDraft",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "copyOut",
+    "doLogin",
+    "doLogout",
+    "downloadOut",
+    "draft",
+    "mark",
+    "pick",
+    "saveItem",
+    "showDraft"
+   ],
+   "fns": [
+    "grievance"
+   ],
+   "tables": [
+    "rpc"
+   ],
+   "size": 18875
+  },
+  "guide.html": {
+   "links": [
+    "about.html",
+    "cart.html",
+    "faq.html",
+    "index.html",
+    "privacy.html",
+    "qna.html",
+    "terms.html"
+   ],
+   "defines": [],
+   "onclick": [],
+   "fns": [],
+   "tables": [],
+   "size": 11957
+  },
+  "help.html": {
+   "links": [
+    "dev.html"
+   ],
+   "defines": [
+    "ask",
+    "boot",
+    "bub",
+    "clearChat",
+    "doLogin",
+    "doLogout",
+    "grow",
+    "loadMine",
+    "render",
+    "sendReq",
+    "sync"
+   ],
+   "onclick": [
+    "ask",
+    "clearChat",
+    "doLogin",
+    "doLogout",
+    "sendReq"
+   ],
+   "fns": [
+    "help"
+   ],
+   "tables": [],
+   "size": 16278
+  },
+  "hub.html": {
+   "links": [
+    "boards.html",
+    "cafe24.html",
+    "campaign.html",
+    "console.html",
+    "dev.html",
+    "export-ai.html",
+    "exports.html",
+    "github.html",
+    "grievance.html",
+    "help.html",
+    "index.html",
+    "integrations.html",
+    "issue.html",
+    "members.html",
+    "message.html",
+    "orders.html",
+    "posts.html",
+    "preview.html",
+    "qa.html",
+    "reports-admin.html",
+    "review-import.html",
+    "stock.html",
+    "subs-admin.html"
+   ],
+   "defines": [
+    "card",
+    "doLogin",
+    "doLogout",
+    "draw",
+    "ico",
+    "load",
+    "paint",
+    "qaUrl",
+    "run",
+    "sync",
+    "toggleQA",
+    "tok"
+   ],
+   "onclick": [
+    "doLogin",
+    "doLogout",
+    "toggleQA"
+   ],
+   "fns": [
+    "admin-chat"
+   ],
+   "tables": [
+    "rpc"
+   ],
+   "size": 15723
+  },
+  "index.html": {
+   "links": [
+    "about.html",
+    "cart.html",
+    "checkout.html",
+    "console.html",
+    "detail.html",
+    "faq.html",
+    "guide.html",
+    "join.html",
+    "login.html",
+    "mypage.html",
+    "notice.html",
+    "orders.html",
+    "privacy.html",
+    "product.html",
+    "qna.html",
+    "reports.html",
+    "review.html",
+    "subscribe.html",
+    "terms.html",
+    "tracking.html",
+    "wish.html"
+   ],
+   "defines": [
+    "_loadDetailReviewsOld",
+    "add",
+    "addKakao",
+    "addToCart",
+    "anyOpen",
+    "applyOpt",
+    "arMove",
+    "arrows",
+    "askRestock",
+    "build",
+    "buyNowDirect",
+    "bye",
+    "cartDel",
+    "cartImg",
+    "cartQty",
+    "cgAnyLayerOpen",
+    "cgCanAdd",
+    "cgCardImg",
+    "cgCardName",
+    "cgCheckStock",
+    "cgClearCart",
+    "cgImgByName",
+    "cgImgByNo",
+    "cgLoadUsd",
+    "cgPushNo",
+    "cgPushYes",
+    "cgRevFetch",
+    "cgRevOpen",
+    "cgRevPage",
+    "cgUnlockIfIdle",
+    "cgUpdUsd",
+    "cgbotClear",
+    "cgbotMic",
+    "cgbotSend",
+    "cgbotSpeak",
+    "cgbotSpeakToggle",
+    "cgbotToggle",
+    "check",
+    "chgQty",
+    "clean",
+    "close",
+    "closeBoardLayer",
+    "closeCart",
+    "closeDetail",
+    "closePopup",
+    "collect",
+    "cut",
+    "dim",
+    "drag",
+    "draw",
+    "el",
+    "esc",
+    "esc2",
+    "fallback",
+    "fill",
+    "filmClose",
+    "filmSubmit",
+    "filterLine",
+    "findOptIndex",
+    "findProduct",
+    "fix",
+    "fold",
+    "free",
+    "go",
+    "goBoard",
+    "goProductPage",
+    "goTab",
+    "grab",
+    "gtag",
+    "heroGo",
+    "l",
+    "later",
+    "load",
+    "loadDetailReviews",
+    "lock",
+    "make",
+    "mark",
+    "matchNo",
+    "mine",
+    "mk",
+    "move",
+    "next",
+    "now",
+    "nums",
+    "openBoardLayer",
+    "openCart",
+    "openDetail",
+    "openDetailImgs",
+    "opened",
+    "orderCard",
+    "pages",
+    "pick",
+    "play",
+    "pop",
+    "probe",
+    "productUrl",
+    "put",
+    "quick",
+    "ready",
+    "release",
+    "renderBoard",
+    "renderCart",
+    "renderQty",
+    "reset",
+    "resetDetailTab",
+    "restart",
+    "run",
+    "saveCart",
+    "say",
+    "sbFetchBoard",
+    "sbLogin",
+    "sbMsg",
+    "sbPost",
+    "sbSetSession",
+    "sbSignup",
+    "sbSyncWriteUI",
+    "set",
+    "setLang",
+    "setOf",
+    "setRevCount",
+    "setup",
+    "show",
+    "showAll",
+    "skip",
+    "smartstoreUrl",
+    "stars",
+    "start",
+    "step",
+    "stop",
+    "sync",
+    "toast",
+    "toggleDetailImgs",
+    "toggleDrawer",
+    "toggleWrite",
+    "tok",
+    "tryOrder",
+    "ufClose",
+    "ufLike",
+    "ufOpen",
+    "ufPlay",
+    "ufView",
+    "unlock",
+    "upd",
+    "watch",
+    "wide",
+    "won",
+    "ymd"
+   ],
+   "onclick": [
+    "addToCart",
+    "cartDel",
+    "cartQty",
+    "cgClearCart",
+    "cgPushNo",
+    "cgPushYes",
+    "cgRevOpen",
+    "cgRevPage",
+    "cgbotClear",
+    "cgbotMic",
+    "cgbotSend",
+    "cgbotSpeakToggle",
+    "cgbotToggle",
+    "chgQty",
+    "closeBoardLayer",
+    "closeCart",
+    "closeDetail",
+    "closePopup",
+    "filmClose",
+    "filmSubmit",
+    "filterLine",
+    "if",
+    "openBoardLayer",
+    "openCart",
+    "openDetail",
+    "renderBoard",
+    "sbLogin",
+    "sbPost",
+    "sbSignup",
+    "setLang",
+    "toggleDrawer",
+    "toggleWrite",
+    "ufClose",
+    "ufLike",
+    "ufOpen"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [
+    "posts",
+    "product_reviews",
+    "products",
+    "reports",
+    "review_product_summary",
+    "review_total_summary",
+    "rpc",
+    "stock_view",
+    "user_films"
+   ],
+   "size": 516919
+  },
+  "integrations.html": {
+   "links": [
+    "console.html",
+    "orders.html"
+   ],
+   "defines": [
+    "bankLoad",
+    "bankSave",
+    "bankSync",
+    "c24Status",
+    "c24Sync",
+    "doLogin",
+    "doLogout",
+    "init",
+    "loadModels",
+    "loadSvcs",
+    "row",
+    "setModel",
+    "sync"
+   ],
+   "onclick": [
+    "bankSave",
+    "bankSync",
+    "c24Sync",
+    "doLogin",
+    "doLogout",
+    "loadModels"
+   ],
+   "fns": [],
+   "tables": [
+    "shop_settings"
+   ],
+   "size": 14895
+  },
+  "issue.html": {
+   "links": [],
+   "defines": [
+    "addBtn",
+    "addComment",
+    "askComment",
+    "askStatus",
+    "closeAsk",
+    "load",
+    "pickStatus",
+    "render",
+    "reset",
+    "sendComment",
+    "setStatus",
+    "setTab",
+    "submitIssue",
+    "tick"
+   ],
+   "onclick": [
+    "addComment",
+    "closeAsk",
+    "if",
+    "pickStatus",
+    "reset",
+    "sendComment",
+    "setStatus",
+    "setTab",
+    "submitIssue"
+   ],
+   "fns": [
+    "issue"
+   ],
+   "tables": [
+    "issue_comments",
+    "issues"
+   ],
+   "size": 20521
+  },
+  "join.html": {
+   "links": [
+    "index.html",
+    "login.html",
+    "mypage.html",
+    "privacy.html",
+    "terms.html"
+   ],
+   "defines": [
+    "autoLogin",
+    "cgMyId",
+    "check",
+    "findAddr",
+    "finish",
+    "logConsents",
+    "markVerified",
+    "onEmailInput",
+    "recheck",
+    "resetVerify",
+    "saveProfile",
+    "saveSession",
+    "sendVerify",
+    "signup",
+    "sso",
+    "startPoll",
+    "stashPending",
+    "syncMkt",
+    "toggleAll",
+    "tryVerify"
+   ],
+   "onclick": [
+    "findAddr",
+    "recheck",
+    "resetVerify",
+    "sendVerify",
+    "signup",
+    "sso"
+   ],
+   "fns": [
+    "naver"
+   ],
+   "tables": [
+    "consents",
+    "profiles"
+   ],
+   "size": 35024
+  },
+  "keys.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "load",
+    "save",
+    "say",
+    "tok"
+   ],
+   "onclick": [
+    "save"
+   ],
+   "fns": [],
+   "tables": [
+    "app_secrets",
+    "rpc"
+   ],
+   "size": 12140
+  },
+  "lab.html": {
+   "links": [
+    "console.html",
+    "login.html"
+   ],
+   "defines": [
+    "H",
+    "archiveProject",
+    "closeMo",
+    "dday",
+    "draw",
+    "dueTxt",
+    "kpi",
+    "kpiBox",
+    "load",
+    "openProject",
+    "openTask",
+    "saveProject",
+    "saveTask",
+    "toggleTask"
+   ],
+   "onclick": [
+    "archiveProject",
+    "closeMo",
+    "if",
+    "openProject",
+    "openTask",
+    "saveProject",
+    "saveTask",
+    "toggleTask"
+   ],
+   "fns": [],
+   "tables": [
+    "dev_projects",
+    "dev_tasks"
+   ],
+   "size": 15352
+  },
+  "login.html": {
+   "links": [
+    "cart.html",
+    "console.html",
+    "hub.html",
+    "index.html",
+    "join.html",
+    "mypage.html",
+    "reset.html"
+   ],
+   "defines": [
+    "cgAfterLogin",
+    "cgOut",
+    "doLogin",
+    "goLogin",
+    "sendReset",
+    "sso",
+    "toggleReset",
+    "tok"
+   ],
+   "onclick": [
+    "cgOut",
+    "doLogin",
+    "sendReset",
+    "sso",
+    "toggleReset"
+   ],
+   "fns": [
+    "naver"
+   ],
+   "tables": [
+    "rpc"
+   ],
+   "size": 26163
+  },
+  "manage.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "H",
+    "addB",
+    "banner",
+    "call",
+    "chOff",
+    "channel",
+    "close",
+    "coupon",
+    "delB",
+    "delR",
+    "delRep",
+    "editB",
+    "editM",
+    "esc2",
+    "expire",
+    "form",
+    "hide",
+    "member",
+    "report",
+    "rest",
+    "review",
+    "revoke",
+    "say",
+    "tok",
+    "wd",
+    "when"
+   ],
+   "onclick": [
+    "addB",
+    "chOff",
+    "delB",
+    "delR",
+    "delRep",
+    "editB",
+    "editM",
+    "expire",
+    "hide",
+    "revoke",
+    "wd"
+   ],
+   "fns": [
+    "manage"
+   ],
+   "tables": [
+    "product_reviews"
+   ],
+   "size": 21055
+  },
+  "members.html": {
+   "links": [
+    "admin.html",
+    "index.html",
+    "orders.html"
+   ],
+   "defines": [
+    "check",
+    "doLogin",
+    "doLogout",
+    "enter",
+    "exportCsv",
+    "render",
+    "resetF",
+    "search",
+    "stats",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "doLogin",
+    "doLogout",
+    "exportCsv",
+    "resetF",
+    "search"
+   ],
+   "fns": [],
+   "tables": [
+    "member_stats",
+    "rpc"
+   ],
+   "size": 19524
+  },
+  "message.html": {
+   "links": [
+    "admin.html",
+    "members.html",
+    "orders.html"
+   ],
+   "defines": [
+    "doLogin",
+    "doLogout",
+    "loadLogs",
+    "loadTpls",
+    "saveTpl",
+    "sync"
+   ],
+   "onclick": [
+    "doLogin",
+    "doLogout",
+    "saveTpl"
+   ],
+   "fns": [],
+   "tables": [
+    "msg_templates",
+    "notifications"
+   ],
+   "size": 14831
+  },
+  "mypage.html": {
+   "links": [
+    "cart.html",
+    "checkout.html",
+    "index.html",
+    "join.html",
+    "login.html"
+   ],
+   "defines": [
+    "asGuest",
+    "asUser",
+    "cgEditInfo",
+    "cgMyCancel",
+    "cgMyEdit",
+    "cgOut",
+    "cgShowInfo",
+    "doLogin",
+    "doLogout",
+    "e2",
+    "editOrder",
+    "eoQty",
+    "esc3",
+    "filled",
+    "findAddr",
+    "flushPending",
+    "hh",
+    "inBox",
+    "issueWelcome",
+    "loadCoupons",
+    "loadOrders",
+    "loadProfile",
+    "mark",
+    "myBox",
+    "myCancel",
+    "myId",
+    "recount",
+    "run",
+    "save",
+    "saveProfile",
+    "say",
+    "ses",
+    "show",
+    "showConsents",
+    "showView",
+    "sso",
+    "sync",
+    "tk",
+    "w2",
+    "withdraw",
+    "won"
+   ],
+   "onclick": [
+    "cgEditInfo",
+    "cgMyCancel",
+    "cgMyEdit",
+    "doLogin",
+    "doLogout",
+    "eoQty",
+    "findAddr",
+    "saveProfile",
+    "showConsents",
+    "sso",
+    "withdraw"
+   ],
+   "fns": [
+    "account",
+    "coupon",
+    "naver"
+   ],
+   "tables": [
+    "consents",
+    "orders",
+    "profiles",
+    "rpc"
+   ],
+   "size": 53671
+  },
+  "notice.html": {
+   "links": [
+    "cart.html",
+    "console.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "posts.html",
+    "qna.html",
+    "review.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cgbotSend",
+    "cgbotToggle",
+    "el",
+    "esc",
+    "quick"
+   ],
+   "onclick": [
+    "cgLogout",
+    "cgbotSend",
+    "cgbotToggle"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [
+    "posts"
+   ],
+   "size": 23865
+  },
+  "ops.html": {
+   "links": [],
+   "defines": [
+    "closeChat",
+    "drawAssets",
+    "drawReports",
+    "esc",
+    "load",
+    "loadAssets",
+    "loadReports",
+    "loadUsage",
+    "mailDigest",
+    "openChat",
+    "say",
+    "sendChat",
+    "submitReport",
+    "won"
+   ],
+   "onclick": [
+    "closeChat",
+    "mailDigest",
+    "openChat",
+    "sendChat",
+    "submitReport"
+   ],
+   "fns": [
+    "ai-usage",
+    "ops-digest"
+   ],
+   "tables": [
+    "ops_assets",
+    "ops_chats",
+    "ops_reports",
+    "rpc"
+   ],
+   "size": 23242
+  },
+  "order-detail.html": {
+   "links": [
+    "orders.html"
+   ],
+   "defines": [
+    "boot",
+    "boot2",
+    "cardRcpt",
+    "copyAddr",
+    "dismissReq",
+    "doCancel",
+    "doCash",
+    "doRefund",
+    "doShip",
+    "doTrack",
+    "draw",
+    "editAddr",
+    "fn",
+    "load",
+    "loadLogs",
+    "rest",
+    "row",
+    "saveShip",
+    "say",
+    "tok"
+   ],
+   "onclick": [
+    "cardRcpt",
+    "copyAddr",
+    "dismissReq",
+    "doCancel",
+    "doCash",
+    "doRefund",
+    "doShip",
+    "doTrack",
+    "editAddr",
+    "saveShip"
+   ],
+   "fns": [],
+   "tables": [
+    "orders"
+   ],
+   "size": 23000
+  },
+  "order-lookup.html": {
+   "links": [
+    "checkout.html",
+    "faq.html",
+    "index.html",
+    "mypage.html",
+    "tracking.html"
+   ],
+   "defines": [
+    "cancelOrder",
+    "cgOpenEdit",
+    "draw",
+    "find",
+    "say"
+   ],
+   "onclick": [
+    "cancelOrder",
+    "find"
+   ],
+   "fns": [],
+   "tables": [
+    "rpc"
+   ],
+   "size": 16194
+  },
+  "orders.html": {
+   "links": [
+    "admin.html",
+    "index.html",
+    "order-detail.html"
+   ],
+   "defines": [
+    "bAsk",
+    "bCancel",
+    "bFill",
+    "bRun",
+    "bankLoad",
+    "bankSave",
+    "bankSync",
+    "c24Call",
+    "c24List",
+    "c24Ship",
+    "c24Status",
+    "c24Sync",
+    "call",
+    "callEdit",
+    "cardRcpt",
+    "cgNotify",
+    "cgRemember",
+    "check",
+    "closeRefund",
+    "doCancel",
+    "doLogin",
+    "doLogout",
+    "doRefund",
+    "editAddr",
+    "el",
+    "enter",
+    "esc2",
+    "goPage",
+    "kkoPop",
+    "kkoReady",
+    "kkoSend",
+    "load",
+    "match",
+    "ntCall",
+    "ntLoad",
+    "ntSave",
+    "ntTest",
+    "omsg",
+    "openCash",
+    "openRefund",
+    "orderNo",
+    "pager",
+    "payInfo",
+    "pushCall",
+    "pushSync",
+    "pushTest",
+    "pushToggle",
+    "render",
+    "save",
+    "say",
+    "setQ",
+    "setS",
+    "ship",
+    "showLogs",
+    "stats",
+    "sync",
+    "toast",
+    "tok",
+    "track",
+    "won2"
+   ],
+   "onclick": [
+    "bAsk",
+    "bCancel",
+    "bFill",
+    "bRun",
+    "bankSave",
+    "bankSync",
+    "c24List",
+    "c24Ship",
+    "c24Sync",
+    "cardRcpt",
+    "closeRefund",
+    "doCancel",
+    "doLogin",
+    "doLogout",
+    "doRefund",
+    "editAddr",
+    "goPage",
+    "if",
+    "kkoSend",
+    "ntSave",
+    "ntTest",
+    "openCash",
+    "openRefund",
+    "pushTest",
+    "pushToggle",
+    "save",
+    "setS",
+    "ship",
+    "showLogs",
+    "track"
+   ],
+   "fns": [
+    "cafe24",
+    "notify",
+    "order",
+    "order-bot",
+    "order-edit",
+    "order-notify",
+    "pay",
+    "push",
+    "refund",
+    "ship-mail",
+    "tracking"
+   ],
+   "tables": [
+    "orders",
+    "payments",
+    "rpc",
+    "shop_settings"
+   ],
+   "size": 72613
+  },
+  "patents.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "H",
+    "addOne",
+    "del",
+    "go",
+    "load",
+    "qk",
+    "say",
+    "tok"
+   ],
+   "onclick": [
+    "addOne",
+    "del",
+    "go",
+    "load",
+    "qk"
+   ],
+   "fns": [],
+   "tables": [
+    "patents"
+   ],
+   "size": 15497
+  },
+  "pay-return.html": {
+   "links": [
+    "index.html",
+    "join.html",
+    "mypage.html",
+    "order-lookup.html",
+    "tracking.html"
+   ],
+   "defines": [
+    "fill",
+    "no",
+    "param",
+    "rows",
+    "show"
+   ],
+   "onclick": [],
+   "fns": [
+    "pay"
+   ],
+   "tables": [],
+   "size": 11600
+  },
+  "posts.html": {
+   "links": [
+    "admin.html",
+    "boards.html",
+    "index.html"
+   ],
+   "defines": [
+    "answer",
+    "check",
+    "closeEdit",
+    "del",
+    "doLogin",
+    "doLogout",
+    "edit",
+    "enter",
+    "load",
+    "loadBoards",
+    "newPost",
+    "notice",
+    "patch",
+    "purge",
+    "restore",
+    "savePost",
+    "setAns",
+    "setDel",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "closeEdit",
+    "del",
+    "doLogin",
+    "doLogout",
+    "load",
+    "newPost",
+    "notice",
+    "purge",
+    "restore",
+    "savePost",
+    "setAns",
+    "setDel"
+   ],
+   "fns": [],
+   "tables": [
+    "boards",
+    "posts",
+    "rpc"
+   ],
+   "size": 20778
+  },
+  "preview.html": {
+   "links": [
+    "about.html",
+    "cafe24.html",
+    "cart.html",
+    "checkout.html",
+    "console.html",
+    "dev.html",
+    "faq.html",
+    "github.html",
+    "guide.html",
+    "help.html",
+    "index.html",
+    "issue.html",
+    "join.html",
+    "login.html",
+    "mypage.html",
+    "notice.html",
+    "orders.html",
+    "product.html",
+    "qna.html",
+    "reports-admin.html",
+    "reports.html",
+    "review.html",
+    "stock.html",
+    "subs-admin.html",
+    "subscribe.html",
+    "tracking.html",
+    "wish.html"
+   ],
+   "defines": [
+    "cnt",
+    "go",
+    "reload",
+    "setDev"
+   ],
+   "onclick": [
+    "reload"
+   ],
+   "fns": [],
+   "tables": [],
+   "size": 11431
+  },
+  "privacy.html": {
+   "links": [
+    "about.html",
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "terms.html"
+   ],
+   "defines": [],
+   "onclick": [],
+   "fns": [],
+   "tables": [],
+   "size": 15955
+  },
+  "product.html": {
+   "links": [
+    "about.html",
+    "cart.html",
+    "checkout.html",
+    "detail.html",
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "mypage.html",
+    "privacy.html",
+    "qna.html",
+    "terms.html",
+    "wish.html"
+   ],
+   "defines": [
+    "add",
+    "addCart",
+    "addKakao",
+    "buyNow",
+    "cDel",
+    "cQty",
+    "cartCount",
+    "cgClose",
+    "cgImgFail",
+    "cgModal",
+    "cgbotSend",
+    "cgbotToggle",
+    "checkDetail",
+    "chg",
+    "closeCart",
+    "collect",
+    "detailUrl",
+    "el",
+    "esc",
+    "findOne",
+    "getCart",
+    "imgTag",
+    "imgUrl",
+    "info",
+    "lineOf",
+    "loadProducts",
+    "loadSummary",
+    "loadWish",
+    "matchNo",
+    "openCart",
+    "paintWish",
+    "pick",
+    "quick",
+    "render",
+    "renderCart",
+    "run",
+    "rvLoad",
+    "setCart",
+    "setOf",
+    "shareKakao",
+    "shareLink",
+    "show",
+    "start",
+    "step",
+    "syncCartBadge",
+    "toggleWish",
+    "total"
+   ],
+   "onclick": [
+    "addCart",
+    "cDel",
+    "cQty",
+    "cgbotSend",
+    "cgbotToggle",
+    "chg",
+    "closeCart",
+    "if",
+    "openCart",
+    "rvLoad",
+    "shareKakao",
+    "shareLink",
+    "toggleWish"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [
+    "drive_assets",
+    "product_reviews",
+    "products",
+    "review_product_summary",
+    "shop_settings",
+    "wishes"
+   ],
+   "size": 85185
+  },
+  "products.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "ask",
+    "call",
+    "clearMain",
+    "clearPlan",
+    "closeEdit",
+    "delDetail",
+    "drawDetails",
+    "drawMain",
+    "edit",
+    "load",
+    "loadLogs",
+    "newProduct",
+    "save",
+    "say",
+    "shrink",
+    "tok",
+    "upDetail",
+    "upMain",
+    "upload"
+   ],
+   "onclick": [
+    "ask",
+    "clearMain",
+    "clearPlan",
+    "closeEdit",
+    "delDetail",
+    "edit",
+    "load",
+    "newProduct",
+    "save"
+   ],
+   "fns": [
+    "product-admin"
+   ],
+   "tables": [],
+   "size": 19975
+  },
+  "qa-lab.html": {
+   "links": [
+    "cart.html",
+    "checkout.html",
+    "console.html",
+    "guide.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "manage.html",
+    "mypage.html",
+    "notice.html",
+    "order-lookup.html",
+    "orders.html",
+    "qna.html",
+    "review.html",
+    "stock.html",
+    "tracking.html"
+   ],
+   "defines": [
+    "H",
+    "log",
+    "newRun",
+    "note",
+    "open2",
+    "paint",
+    "save",
+    "say",
+    "stamp",
+    "stopRec",
+    "tok"
+   ],
+   "onclick": [],
+   "fns": [],
+   "tables": [
+    "qa_events"
+   ],
+   "size": 13684
+  },
+  "qa-run.html": {
+   "links": [
+    "checkout.html",
+    "index.html",
+    "orders.html"
+   ],
+   "defines": [
+    "draw",
+    "log",
+    "mark",
+    "reset",
+    "save",
+    "say",
+    "send"
+   ],
+   "onclick": [
+    "mark",
+    "reset",
+    "send"
+   ],
+   "fns": [],
+   "tables": [
+    "qa_runs"
+   ],
+   "size": 10196
+  },
+  "qa-tool.html": {
+   "links": [
+    "console.html",
+    "index.html"
+   ],
+   "defines": [
+    "H",
+    "closeDetail",
+    "copyOne",
+    "load",
+    "openRun",
+    "say",
+    "startQA",
+    "stopQA",
+    "tok",
+    "when"
+   ],
+   "onclick": [
+    "closeDetail",
+    "copyOne",
+    "load",
+    "openRun",
+    "startQA",
+    "stopQA"
+   ],
+   "fns": [],
+   "tables": [
+    "qa_events"
+   ],
+   "size": 10971
+  },
+  "qna.html": {
+   "links": [
+    "cart.html",
+    "console.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "notice.html",
+    "posts.html",
+    "review.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cgbotSend",
+    "cgbotToggle",
+    "el",
+    "esc",
+    "quick"
+   ],
+   "onclick": [
+    "cgLogout",
+    "cgbotSend",
+    "cgbotToggle"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [
+    "posts"
+   ],
+   "size": 25152
+  },
+  "reports-admin.html": {
+   "links": [
+    "console.html",
+    "reports.html"
+   ],
+   "defines": [
+    "analyze",
+    "check",
+    "copyRes",
+    "doLogin",
+    "doLogout",
+    "downRes",
+    "enter",
+    "load",
+    "reply",
+    "resHist",
+    "research",
+    "setSt",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "analyze",
+    "copyRes",
+    "doLogin",
+    "doLogout",
+    "downRes",
+    "reply",
+    "research",
+    "setSt"
+   ],
+   "fns": [
+    "report"
+   ],
+   "tables": [
+    "rpc"
+   ],
+   "size": 17973
+  },
+  "reports.html": {
+   "links": [
+    "about.html",
+    "faq.html",
+    "index.html",
+    "privacy.html",
+    "qna.html",
+    "review.html"
+   ],
+   "defines": [
+    "dropFile",
+    "fp",
+    "load",
+    "pickFile",
+    "reset",
+    "setSort",
+    "submit",
+    "uploadFilm",
+    "vote"
+   ],
+   "onclick": [
+    "dropFile",
+    "reset",
+    "setSort",
+    "submit",
+    "vote"
+   ],
+   "fns": [
+    "report"
+   ],
+   "tables": [
+    "user_films"
+   ],
+   "size": 22848
+  },
+  "reset.html": {
+   "links": [
+    "login.html"
+   ],
+   "defines": [
+    "doReset"
+   ],
+   "onclick": [
+    "doReset"
+   ],
+   "fns": [],
+   "tables": [],
+   "size": 6067
+  },
+  "review-import.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "call",
+    "checkApi",
+    "doImport",
+    "fillSample",
+    "loadList",
+    "loadStat",
+    "saveKeys",
+    "say",
+    "syncApi",
+    "tok"
+   ],
+   "onclick": [
+    "checkApi",
+    "doImport",
+    "fillSample",
+    "loadList",
+    "saveKeys",
+    "syncApi"
+   ],
+   "fns": [
+    "naver-review"
+   ],
+   "tables": [
+    "app_secrets",
+    "product_reviews",
+    "rpc"
+   ],
+   "size": 15449
+  },
+  "review-write.html": {
+   "links": [
+    "index.html"
+   ],
+   "defines": [
+    "call",
+    "cnt",
+    "draw",
+    "load",
+    "say",
+    "send",
+    "setStar"
+   ],
+   "onclick": [
+    "send",
+    "setStar"
+   ],
+   "fns": [
+    "review-ask"
+   ],
+   "tables": [],
+   "size": 10015
+  },
+  "review.html": {
+   "links": [
+    "cart.html",
+    "console.html",
+    "index.html",
+    "join.html",
+    "login.html",
+    "notice.html",
+    "posts.html",
+    "qna.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cgbotSend",
+    "cgbotToggle",
+    "el",
+    "esc",
+    "quick"
+   ],
+   "onclick": [
+    "cgLogout",
+    "cgbotSend",
+    "cgbotToggle"
+   ],
+   "fns": [
+    "chat"
+   ],
+   "tables": [
+    "posts"
+   ],
+   "size": 24880
+  },
+  "reviews-admin.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "H",
+    "call",
+    "judge",
+    "loadDrafts",
+    "loadTargets",
+    "pickAll",
+    "say",
+    "send",
+    "tok",
+    "when"
+   ],
+   "onclick": [
+    "judge",
+    "pickAll",
+    "send"
+   ],
+   "fns": [
+    "review-ask"
+   ],
+   "tables": [],
+   "size": 11200
+  },
+  "shop.html": {
+   "links": [
+    "cart.html",
+    "index.html",
+    "product.html",
+    "review.html"
+   ],
+   "defines": [
+    "draw",
+    "load"
+   ],
+   "onclick": [],
+   "fns": [],
+   "tables": [
+    "products"
+   ],
+   "size": 13267
+  },
+  "sns.html": {
+   "links": [
+    "console.html"
+   ],
+   "defines": [
+    "add",
+    "chanOf",
+    "del",
+    "draw",
+    "load",
+    "loadChannels",
+    "onChan",
+    "pickId",
+    "preview",
+    "ratioClass",
+    "say",
+    "tok"
+   ],
+   "onclick": [
+    "add",
+    "del",
+    "preview"
+   ],
+   "fns": [],
+   "tables": [
+    "sns_channels",
+    "user_films"
+   ],
+   "size": 13326
+  },
+  "status.html": {
+   "links": [
+    "campaign.html",
+    "checkout.html",
+    "console.html",
+    "dev.html",
+    "export-ai.html",
+    "grievance.html",
+    "integrations.html",
+    "tracking.html"
+   ],
+   "defines": [
+    "copy",
+    "render",
+    "save",
+    "shareKakao",
+    "shareMail",
+    "summary",
+    "toggle"
+   ],
+   "onclick": [
+    "shareKakao",
+    "shareMail"
+   ],
+   "fns": [],
+   "tables": [],
+   "size": 14900
+  },
+  "stock.html": {
+   "links": [
+    "console.html",
+    "index.html",
+    "orders.html"
+   ],
+   "defines": [
+    "adj",
+    "check",
+    "doLogin",
+    "doLogout",
+    "enter",
+    "exportCsv",
+    "fillSold",
+    "load",
+    "render",
+    "setStock",
+    "stats",
+    "sync",
+    "toggleActive",
+    "tok"
+   ],
+   "onclick": [
+    "adj",
+    "doLogin",
+    "doLogout",
+    "exportCsv",
+    "fillSold",
+    "setStock",
+    "toggleActive"
+   ],
+   "fns": [],
+   "tables": [
+    "products",
+    "rpc"
+   ],
+   "size": 19006
+  },
+  "subs-admin.html": {
+   "links": [
+    "console.html",
+    "orders.html",
+    "subscribe.html"
+   ],
+   "defines": [
+    "auditDetail",
+    "check",
+    "doLogin",
+    "doLogout",
+    "enter",
+    "load",
+    "loadAudit",
+    "loadPlans",
+    "planDel",
+    "planEdit",
+    "planForm",
+    "planNew",
+    "planRestore",
+    "planToggle",
+    "quickSave",
+    "render",
+    "setSt",
+    "ship",
+    "stats",
+    "sync",
+    "tok"
+   ],
+   "onclick": [
+    "auditDetail",
+    "doLogin",
+    "doLogout",
+    "loadPlans",
+    "planDel",
+    "planEdit",
+    "planNew",
+    "planRestore",
+    "planToggle",
+    "quickSave",
+    "setSt",
+    "ship"
+   ],
+   "fns": [
+    "subscribe"
+   ],
+   "tables": [
+    "rpc"
+   ],
+   "size": 29010
+  },
+  "subscribe.html": {
+   "links": [
+    "about.html",
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "mypage.html",
+    "privacy.html",
+    "review.html",
+    "terms.html"
+   ],
+   "defines": [
+    "apply",
+    "closeForm",
+    "fillMe",
+    "hd",
+    "load",
+    "pick"
+   ],
+   "onclick": [
+    "apply",
+    "closeForm",
+    "pick"
+   ],
+   "fns": [
+    "subscribe"
+   ],
+   "tables": [
+    "profiles"
+   ],
+   "size": 22065
+  },
+  "tasks.html": {
+   "links": [
+    "checkout.html",
+    "console.html",
+    "grievance.html",
+    "orders.html",
+    "subs-admin.html"
+   ],
+   "defines": [
+    "render",
+    "save",
+    "toggle"
+   ],
+   "onclick": [],
+   "fns": [
+    "cafe24"
+   ],
+   "tables": [],
+   "size": 17277
+  },
+  "terms.html": {
+   "links": [
+    "about.html",
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "privacy.html"
+   ],
+   "defines": [],
+   "onclick": [],
+   "fns": [],
+   "tables": [],
+   "size": 16966
+  },
+  "tracking.html": {
+   "links": [
+    "faq.html",
+    "index.html",
+    "mypage.html",
+    "qna.html"
+   ],
+   "defines": [
+    "add",
+    "addKakao",
+    "cgbotSend",
+    "cgbotToggle",
+    "el",
+    "esc",
+    "quick",
+    "setTab",
+    "track"
+   ],
+   "onclick": [
+    "cgbotSend",
+    "cgbotToggle",
+    "setTab",
+    "track"
+   ],
+   "fns": [
+    "chat",
+    "tracking"
+   ],
+   "tables": [],
+   "size": 22831
+  },
+  "wish.html": {
+   "links": [
+    "about.html",
+    "cart.html",
+    "faq.html",
+    "guide.html",
+    "index.html",
+    "join.html",
+    "privacy.html",
+    "product.html",
+    "terms.html"
+   ],
+   "defines": [
+    "cgClose",
+    "cgModal",
+    "load",
+    "rm",
+    "shell"
+   ],
+   "onclick": [
+    "if",
+    "rm"
+   ],
+   "fns": [],
+   "tables": [
+    "wishes"
+   ],
+   "size": 17722
+  }
+ },
+ "flows": {
+  "구매자 · 주문": {
+   "ok": 7,
+   "total": 10,
+   "pct": 70,
+   "rows": [
+    {
+     "step": "상품 보기",
+     "ok": true,
+     "where": [
+      "index.html",
+      "shop.html"
+     ]
+    },
+    {
+     "step": "상품 상세",
+     "ok": true,
+     "where": [
+      "product.html"
+     ]
+    },
+    {
+     "step": "장바구니 담기",
+     "ok": false,
+     "where": []
+    },
+    {
+     "step": "장바구니",
+     "ok": true,
+     "where": [
+      "cart.html"
+     ]
+    },
+    {
+     "step": "주문서로",
+     "ok": true,
+     "where": [
+      "cart.html"
+     ]
+    },
+    {
+     "step": "주문서",
+     "ok": true,
+     "where": [
+      "checkout.html"
+     ]
+    },
+    {
+     "step": "주문 생성",
+     "ok": false,
+     "where": []
+    },
+    {
+     "step": "결제 요청",
+     "ok": false,
+     "where": []
+    },
+    {
+     "step": "결제 복귀",
+     "ok": true,
+     "where": [
+      "pay-return.html"
+     ]
+    },
+    {
+     "step": "완료 후 이동",
+     "ok": true,
+     "where": [
+      "pay-return.html"
+     ]
+    }
+   ]
+  },
+  "구매자 · 주문조회 · 취소 · 환불": {
+   "ok": 6,
+   "total": 8,
+   "pct": 75,
+   "rows": [
+    {
+     "step": "주문 조회(회원)",
+     "ok": true,
+     "where": [
+      "mypage.html"
+     ]
+    },
+    {
+     "step": "주문 조회(비회원)",
+     "ok": true,
+     "where": [
+      "order-lookup.html"
+     ]
+    },
+    {
+     "step": "주문 상세 보기",
+     "ok": false,
+     "where": []
+    },
+    {
+     "step": "취소 요청(회원)",
+     "ok": true,
+     "where": [
+      "mypage.html"
+     ]
+    },
+    {
+     "step": "취소 요청(비회원)",
+     "ok": true,
+     "where": [
+      "order-lookup.html"
+     ]
+    },
+    {
+     "step": "취소 API 호출",
+     "ok": false,
+     "where": []
+    },
+    {
+     "step": "환불 요청",
+     "ok": true,
+     "where": [
+      "mypage.html",
+      "order-lookup.html"
+     ]
+    },
+    {
+     "step": "배송 조회 연결",
+     "ok": true,
+     "where": [
+      "order-lookup.html"
+     ]
+    }
+   ]
+  },
+  "관리자 · 주문 → 배송": {
+   "ok": 9,
+   "total": 9,
+   "pct": 100,
+   "rows": [
+    {
+     "step": "주문 목록",
+     "ok": true,
+     "where": [
+      "orders.html"
+     ]
+    },
+    {
+     "step": "목록 → 상세 링크",
+     "ok": true,
+     "where": [
+      "orders.html"
+     ]
+    },
+    {
+     "step": "주문 상세",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "택배사 선택",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "송장 등록",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "발송 API",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "고객 알림",
+     "ok": true,
+     "where": [
+      "order-detail.html",
+      "orders.html"
+     ]
+    },
+    {
+     "step": "배송 추적",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "배송완료 처리",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    }
+   ]
+  },
+  "관리자 · 취소 · 환불": {
+   "ok": 5,
+   "total": 6,
+   "pct": 83,
+   "rows": [
+    {
+     "step": "주문 상세",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "취소 처리",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "환불 가능조회",
+     "ok": false,
+     "where": []
+    },
+    {
+     "step": "환불 실행",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "현금영수증",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    },
+    {
+     "step": "처리 이력",
+     "ok": true,
+     "where": [
+      "order-detail.html"
+     ]
+    }
+   ]
+  }
+ }
+}

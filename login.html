@@ -251,6 +251,13 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
   font-size:13px;font-weight:600;min-height:42px;
 }
 .already .acts .out:hover{ color:#C0395C }
+
+/* 로그인 유지 (2026-09-03) */
+.li-keep{display:flex;align-items:center;gap:9px;min-height:44px;margin:2px 0 10px;
+  cursor:pointer;user-select:none;font-size:13px}
+.li-keep input{width:18px;height:18px;margin:0;accent-color:#D82558;cursor:pointer;flex:none}
+.li-keep em{font-style:normal;color:#797979;font-size:12px}
+.li-hint{margin-top:10px;font-size:11.5px;color:#9a9aa2;line-height:1.7}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -282,8 +289,14 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
         onkeydown="if(event.key==='Enter')document.getElementById('liPw').focus()">
       <input id="liPw" type="password" placeholder="비밀번호" autocomplete="current-password"
         onkeydown="if(event.key==='Enter')doLogin()">
+      <label class="li-keep">
+        <input type="checkbox" id="liKeep">
+        <span>로그인 유지 <em>7일 동안</em></span>
+      </label>
       <button class="li-btn" onclick="doLogin()">LOGIN — 로그인</button>
       <div class="li-msg" id="liMsg"></div>
+      <div class="li-hint" id="liKeepHint">체크하지 않으면 브라우저를 닫을 때 로그아웃됩니다.<br>
+        공용 컴퓨터에서는 체크하지 마세요.</div>
     </div>
     <div class="or"><span>또는</span></div>
     <div class="sso">
@@ -434,6 +447,27 @@ document.addEventListener('click', e => {
 <script>
 /* 로그인 성공 뒤 — 토큰을 저장하고 권한에 맞는 화면으로 */
 function cgAfterLogin(d, em, m){
+  /* '로그인 유지'를 안 고르면 브라우저를 닫을 때 사라지도록
+     세션 저장소에 표시를 남깁니다. */
+  var keepEl = document.getElementById('liKeep');
+  var keep = !!(keepEl && keepEl.checked);
+  var days = 7;
+  try{
+    if(keep) localStorage.removeItem('cg_keep_off');
+    else localStorage.setItem('cg_keep_off','1');
+    sessionStorage.setItem('cg_alive','1');
+  }catch(e){}
+
+  /* 계정에도 남깁니다 (기기를 바꿔도 따라오도록) */
+  try{
+    fetch(((typeof SB_URL!=='undefined')?SB_URL:SB)+'/rest/v1/rpc/set_keep_login',{
+      method:'POST',
+      headers:{apikey:((typeof SB_KEY!=='undefined')?SB_KEY:KEY),
+        Authorization:'Bearer '+d.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify({p_keep:keep, p_days:days})
+    }).catch(function(){});
+  }catch(e){}
+
   try{
     localStorage.setItem('cg_sb', JSON.stringify({
       t: d.access_token,

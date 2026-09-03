@@ -2567,7 +2567,7 @@ setHead();
       <button id="cgbotSpk" class="cg-ic" onclick="cgbotSpeakToggle()" aria-label="음성 답변 켜기" title="음성 답변">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg>
       </button>
-      <button id="cgbotBtn" onclick="cgbotSend()">전송</button>
+      <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/logo-rainbow.png" alt="" width="22" height="22" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
   </div>
 </div>
 <script>
@@ -12549,6 +12549,26 @@ td.c-th.no::after{ content:'—'; color:#d6d6dc; font-size:13px }
   .uf-dim{ padding:14px }
   .uf-close{ top:-42px; width:34px; height:34px }
 }
+
+/* 보내기 단추 — 츄구미 젤리 아이콘 (2026-09-03) */
+.cgbot-ft #cgbotBtn{
+  width:42px;height:42px;min-width:42px;padding:0;border:0;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  box-shadow:0 4px 12px rgba(216,37,88,.28);
+  font-size:17px;color:#fff;line-height:1;transition:transform .15s,filter .15s;
+}
+.cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
+.cgbot-ft #cgbotBtn:active{ transform:none }
+.cgbot-ft #cgbotBtn img{ display:block;width:22px;height:22px;object-fit:contain }
+.cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
+/* 대화 지우기 */
+.cgbot-hd .cgbot-clr{
+  margin-left:auto;margin-right:6px;padding:5px 10px;border:1px solid rgba(255,255,255,.45);
+  border-radius:999px;background:transparent;color:inherit;
+  font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;opacity:.85
+}
+.cgbot-hd .cgbot-clr:hover{ opacity:1;background:rgba(255,255,255,.16) }
 </style>
 <script>
 /* 스크롤이 시작되면 무거운 효과를 끄고, 멈추면 되돌립니다 */

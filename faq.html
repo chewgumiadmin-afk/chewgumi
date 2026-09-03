@@ -247,6 +247,7 @@ render();
 <div class="cgbot-win" id="cgbotWin">
   <div class="cgbot-hd">
     <div><b>츄구미 상담</b><small>궁금한 점을 물어보세요</small></div>
+    <button class="cgbot-clr" onclick="cgbotClear()" aria-label="대화 지우기" title="대화 지우기">지우기</button>
     <button onclick="cgbotToggle()" aria-label="닫기">&times;</button>
   </div>
   <div class="cgbot-body" id="cgbotBody"></div>
@@ -254,7 +255,7 @@ render();
   <div class="cgbot-ft">
     <input id="cgbotIn" placeholder="메시지를 입력하세요"
       onkeydown="if(event.key==='Enter')cgbotSend()">
-    <button id="cgbotBtn" onclick="cgbotSend()">전송</button>
+    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/logo-rainbow.png" alt="" width="22" height="22" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
   </div>
 </div>
 <script>
@@ -310,6 +311,26 @@ render();
       setTimeout(function(){el('cgbotIn').focus();},80);
     }
   };
+
+  /* 대화 지우기 — index 에만 있던 것을 모든 화면에 넣습니다 */
+  window.cgbotClear=function(){
+    if(!confirm('지금까지의 대화를 지울까요?')) return;
+    try{ hist = []; }catch(e){}
+    try{ started = false; }catch(e){}
+    var b=document.getElementById('cgbotBody');
+    if(b) b.innerHTML='';
+    try{
+      sessionStorage.removeItem('cgbot_sid');
+      localStorage.removeItem('cgbot_hist');
+    }catch(e){}
+    if(b){
+      var d=document.createElement('div');
+      d.className='cgbot-msg bot';
+      d.textContent='대화를 지웠습니다. 무엇을 도와드릴까요?';
+      b.appendChild(d);
+    }
+  };
+
   window.cgbotSend=function(){
     var v=el('cgbotIn').value.trim(); if(!v) return;
     el('cgbotIn').value=''; add('me',v);
@@ -388,6 +409,26 @@ render();
     text-underline-offset:3px;min-height:36px;display:inline-flex;align-items:center}
   .cs-hr{font-size:11.5px;color:var(--gray,#7a7a82)}
   @media(max-width:640px){.cs-line{gap:6px;flex-direction:column}}
+
+/* 보내기 단추 — 츄구미 젤리 아이콘 (2026-09-03) */
+.cgbot-ft #cgbotBtn{
+  width:42px;height:42px;min-width:42px;padding:0;border:0;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  background:linear-gradient(135deg,#E95073,#D82558);
+  box-shadow:0 4px 12px rgba(216,37,88,.28);
+  font-size:17px;color:#fff;line-height:1;transition:transform .15s,filter .15s;
+}
+.cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
+.cgbot-ft #cgbotBtn:active{ transform:none }
+.cgbot-ft #cgbotBtn img{ display:block;width:22px;height:22px;object-fit:contain }
+.cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
+/* 대화 지우기 */
+.cgbot-hd .cgbot-clr{
+  margin-left:auto;margin-right:6px;padding:5px 10px;border:1px solid rgba(255,255,255,.45);
+  border-radius:999px;background:transparent;color:inherit;
+  font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;opacity:.85
+}
+.cgbot-hd .cgbot-clr:hover{ opacity:1;background:rgba(255,255,255,.16) }
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>

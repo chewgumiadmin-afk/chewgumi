@@ -13,8 +13,24 @@
     catch (e) { return null; }
   }
 
+  /* '로그인 유지'를 고르지 않았으면 브라우저를 닫을 때 끝냅니다.
+     sessionStorage 는 탭/브라우저를 닫으면 사라지므로 그것으로 판별합니다. */
+  function keptOff() {
+    try {
+      if (localStorage.getItem('cg_keep_off') !== '1') return false;
+      return sessionStorage.getItem('cg_alive') !== '1';
+    } catch (e) { return false; }
+  }
+
   function alive(s) {
     if (!s || !s.t) return false;
+    if (keptOff()) {
+      try {
+        localStorage.removeItem('cg_sb');
+        localStorage.removeItem('cg_keep_off');
+      } catch (e) {}
+      return false;
+    }
     var ms = 0;
     if (s.exp) ms = Number(s.exp) * 1000;
     else if (s.e) ms = Number(s.e);
@@ -46,7 +62,10 @@
       em: email || ''
     };
     if (role) o.role = role;
-    try { localStorage.setItem('cg_sb', JSON.stringify(o)); } catch (e) {}
+    try {
+      localStorage.setItem('cg_sb', JSON.stringify(o));
+      sessionStorage.setItem('cg_alive', '1');
+    } catch (e) {}
     return o;
   };
 
@@ -55,6 +74,8 @@
     try {
       localStorage.removeItem('cg_sb');
       localStorage.removeItem('cg_user');
+      localStorage.removeItem('cg_keep_off');
+      sessionStorage.removeItem('cg_alive');
     } catch (e) {}
   };
 

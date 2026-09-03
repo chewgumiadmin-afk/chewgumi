@@ -39,6 +39,7 @@ export_docs
 export_tasks
 film_likes
 fix_log
+get_keep_login
 grievances
 guest_cancel
 guest_change_qty
@@ -105,6 +106,7 @@ report_votes
 reports
 restock_asks
 restore_products
+return_request
 review_asks
 review_by_line
 review_drafts
@@ -113,9 +115,11 @@ review_product_summary
 review_stats
 review_stats_product
 review_summary
+review_token_for
 review_total_summary
 reviews_for
 set_issue_no
+set_keep_login
 shop_settings
 snap_products
 sns_channels
