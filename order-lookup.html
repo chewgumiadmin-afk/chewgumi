@@ -362,6 +362,9 @@ function draw(o){
             ? '<span class="oa-done">'+(o.return_req_kind==='exchange'?'교환':'반품')+' 신청 접수됨</span>'
             : '<button type="button" class="warn" data-no="'+esc(o.order_no)+'"'
               + ' onclick="cgOA.ret(this)">반품 · 교환 신청</button>') : '')
+      +(o.status==='delivered' && !o.return_req_at
+        ? '<button type="button" data-no="'+esc(o.order_no)+'"'
+          + ' onclick="cgOA.review(this)">후기 쓰고 적립금 받기</button>' : '')
       +'<a href="index.html">쇼핑 계속하기</a></div>';
 
   $('resBox').classList.remove('hide');

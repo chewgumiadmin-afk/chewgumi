@@ -84,6 +84,12 @@
       }
     }
 
+    /* 배송이 끝났으면 후기 쓰기 */
+    if (st === 'delivered' && !o.return_req_at) {
+      h += '<button type="button" class="oa rev" data-no="' + esc(no) + '"'
+        +  ' onclick="cgOA.review(this)">후기 쓰고 적립금 받기</button>';
+    }
+
     return h ? '<div class="oa-row">' + h + '</div>' : '';
   }
 
@@ -150,7 +156,37 @@
     alert('주문 취소를 열 수 없습니다. 고객센터로 연락 주세요.');
   }
 
-  window.cgOA = { acts: acts, ret: ret, edit: edit, cancel: cancel };
+  /* ── 후기 쓰기 ──────────────────────────────── */
+  function review(el) {
+    var no = (el && el.dataset && el.dataset.no) || '';
+    if (!no) { alert('주문번호를 찾지 못했습니다.'); return; }
+    var key = (window.cgOAKey && window.cgOAKey()) || '';
+
+    el.disabled = true;
+    var was = el.textContent;
+    el.textContent = '여는 중…';
+
+    fetch(SB + '/rest/v1/rpc/review_token_for', {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ p_no: no, p_key: key })
+    })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d || !d.ok || !d.token) {
+        alert((d && d.msg) || '후기 화면을 열지 못했습니다.');
+        el.disabled = false; el.textContent = was;
+        return;
+      }
+      location.href = 'review-write.html?t=' + encodeURIComponent(d.token);
+    })
+    .catch(function () {
+      alert('후기 화면을 열지 못했습니다.');
+      el.disabled = false; el.textContent = was;
+    });
+  }
+
+  window.cgOA = { acts: acts, ret: ret, edit: edit, cancel: cancel, review: review };
 
   /* 단추 모양 */
   var css = document.createElement('style');
@@ -163,6 +199,7 @@
     '.oa-go{background:linear-gradient(135deg,#E95073,#D82558);color:#fff;border-color:transparent;' +
       'box-shadow:0 6px 16px rgba(216,37,88,.24)}' +
     '.oa.warn{color:#C0395C;border-color:rgba(192,57,92,.3)}' +
+    '.oa.rev{color:#1F9D6B;border-color:rgba(31,157,107,.35);background:rgba(31,157,107,.07)}' +
     '.oa:disabled{opacity:.5;cursor:default}' +
     '.oa-done{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;' +
       'font-size:12.5px;font-weight:700;color:#1F9D6B}';
