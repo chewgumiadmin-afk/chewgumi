@@ -1,3 +1,9 @@
+/* hidden 속성이 CSS display 에 지지 않도록 (#111)
+   각 화면 인라인 CSS 의 .admbar{display:flex} 가 [hidden] 을 이겨서
+   로그인하지 않은 손님에게도 관리자 바가 그대로 보였습니다. */
+#admBar[hidden],
+.admbar[hidden]{ display:none !important }
+
 /* 관리자 작은 단추 */
 .adm-fab{
   position:fixed;
