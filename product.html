@@ -2164,10 +2164,14 @@ body[data-soon="1"] select{
     .catch(function(){});
   }
 
+  /* 전에는 DOMContentLoaded 와 setTimeout 이 각각 불러
+     상품 정보를 두 번 받아 왔습니다. 한 번만 부르도록 잠급니다. */
+  var _ran = false;
+  function runOnce(){ if (_ran) return; _ran = true; run(); }
+
   if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', run);
-  else run();
-  setTimeout(run, 700);
+    document.addEventListener('DOMContentLoaded', runOnce);
+  else runOnce();
 })();
 </script>
 </body>
