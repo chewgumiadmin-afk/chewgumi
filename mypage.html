@@ -527,14 +527,22 @@ function loadCoupons(){
   }).catch(()=>{$('cplist').innerHTML='<div class="empty">불러오지 못했습니다.</div>';});
 }
 function issueWelcome(){
-  /* 가입 축하 쿠폰 발급 — 화면당 한 번이면 충분합니다.
-     이 함수가 끝에 loadCoupons() 를 또 부르기 때문에
-     여러 번 돌면 쿠폰 API 를 다섯 번까지 부르고 있었습니다. */
+  /* 가입 축하 쿠폰 발급.
+     이 함수가 끝에 loadCoupons() 를 또 부르기 때문에 쿠폰 API 가
+     한 번에 두 번 나갑니다. 이미 받으신 분은 발급을 건너뛰고
+     목록만 받습니다. (화면당 한 번 · 사람당 한 번) */
   if(window._cgWelcome) return;
   window._cgWelcome = 1;
+
+  var done = false;
+  try { done = localStorage.getItem('cg_welcome_done') === '1'; } catch(e){}
+  if (done) { loadCoupons(); return; }
+
   fetch(SB+'/functions/v1/coupon',{method:'POST',
     headers:{...H(),'Content-Type':'application/json'},body:JSON.stringify({action:'issueWelcome'})})
-  .then(()=>loadCoupons()).catch(()=>{});
+  .then(function(){ try{ localStorage.setItem('cg_welcome_done','1'); }catch(e){} })
+  .then(()=>loadCoupons())
+  .catch(()=>{ loadCoupons(); });
 }
 function loadOrders(){
   fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty)&order=created_at.desc',{headers:H()})
@@ -638,9 +646,11 @@ sync();
       c.style.display='';
     }).catch(function(){});
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',show);
-  else show();
-  setTimeout(show,900);
+  /* DOMContentLoaded 와 setTimeout(900) 이 각각 불러 두 번 받고 있었습니다 */
+  var _nickDone=false;
+  function showOnce(){ if(_nickDone) return; _nickDone=true; show(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',showOnce);
+  else showOnce();
 })();
 </script>
 <style>
@@ -1092,6 +1102,7 @@ body:not(.logged) #area{ display:none !important }
   }
 
   window.cgOut = function(){
+    try{ localStorage.removeItem('cg_welcome_done'); }catch(e){}
     if (window.cgClearSession) cgClearSession();
     else {
       try{
@@ -1102,13 +1113,27 @@ body:not(.logged) #area{ display:none !important }
     location.href = 'index.html';
   };
 
+  /* 전에는 DOMContentLoaded · setTimeout(600) · pageshow 가 각각 run 을 불러
+     세션 확인(profiles?select=id)이 세 번씩 나갔습니다. */
+  var _runBusy = false, _runAt = 0;
+  function runOnce(force){
+    var now = Date.now();
+    if (_runBusy) return;
+    if (!force && _runAt && now - _runAt < 20000) return;
+    _runBusy = true; _runAt = now;
+    try { run(); } finally {
+      setTimeout(function(){ _runBusy = false; }, 1200);
+    }
+  }
+
   if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', run);
-  else run();
-  setTimeout(run, 600);
-  window.addEventListener('pageshow', run);
+    document.addEventListener('DOMContentLoaded', function(){ runOnce(); });
+  else runOnce();
+  /* 뒤로 돌아왔을 때(캐시에서 살아난 화면)만 다시 확인합니다 */
+  window.addEventListener('pageshow', function(e){ if (e.persisted) runOnce(true); });
+  /* 로그인 상태가 바뀌면 즉시 다시 */
   window.addEventListener('storage', function(e){
-    if (e.key === 'cg_sb') run();
+    if (e.key === 'cg_sb') runOnce(true);
   });
 })();
 </script>
