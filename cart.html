@@ -289,14 +289,51 @@ function del(i){ CART.splice(i, 1); save(); render(); }
 
 function selKeys(){ return [...document.querySelectorAll('.pick:checked')].map(c => +c.dataset.i); }
 function toggleAll(el){ document.querySelectorAll('.pick').forEach(c => c.checked = el.checked); sumUp(); }
+
+/* 배송비·합계는 서버가 계산합니다 — 주문서(checkout)와 한 곳에서만 정해지도록 */
+const CG_SB  = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+const CG_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+let shipSeq = 0;
+async function quoteShip(items, goods){
+  const seq = ++shipSeq;
+  const el  = id => document.getElementById(id);
+  const body = (items || []).map(i => ({ id: i.id, qty: i.qty })).filter(x => x.id);
+  if (!body.length){
+    if (el('sShip')) el('sShip').textContent = '0원';
+    if (el('sPay'))  el('sPay').textContent  = won(0);
+    return;
+  }
+  try{
+    const r = await fetch(CG_SB + '/functions/v1/coupon', {
+      method:'POST',
+      headers:{ apikey:CG_KEY, Authorization:'Bearer ' + CG_KEY,
+                'Content-Type':'application/json' },
+      body: JSON.stringify({ action:'quote', items: body, coupon:'' })
+    });
+    const q = await r.json();
+    if (seq !== shipSeq) return;          /* 그 사이 수량이 바뀌었으면 버립니다 */
+    if (!r.ok) throw new Error('quote');
+    const ship = Number(q.ship || 0);
+    if (el('sShip')) el('sShip').textContent = ship === 0 ? '무료' : won(ship);
+    if (el('sPay'))  el('sPay').textContent  = won(Number(q.total != null ? q.total : goods + ship));
+  }catch(e){
+    if (seq !== shipSeq) return;
+    /* 못 물어봤을 때 틀린 숫자를 보여 주느니 주문서로 넘깁니다 */
+    if (el('sShip')) el('sShip').textContent = '주문서에서 계산';
+    if (el('sPay'))  el('sPay').textContent  = won(goods) + ' + 배송비';
+  }
+}
 function sumUp(){
   const sel = selKeys();
   const items = sel.length ? sel.map(i => CART[i]) : [];
   const goods = items.reduce((s,i)=>s+i.price*i.qty,0);
   const el = id => document.getElementById(id);
   if (el('sGoods')) el('sGoods').textContent = won(goods);
-  if (el('sShip'))  el('sShip').textContent  = '0원';
+  /* 배송비 — 주문서와 같은 셈법(coupon quote)에 물어봅니다.
+     전에는 '0원' 이 박혀 있어 장바구니와 주문서 금액이 2,500원 달랐습니다. */
+  if (el('sShip'))  el('sShip').textContent  = '계산 중…';
   if (el('sPay'))   el('sPay').textContent   = won(goods);
+  quoteShip(items, goods);
   if (el('selN'))   el('selN').textContent   = sel.length;
   const all = document.getElementById('allChk');
   if (all) all.checked = CART.length > 0 && sel.length === CART.length;
