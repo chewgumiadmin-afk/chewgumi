@@ -52,6 +52,8 @@ REST = re.compile(r'/rest/v1/(?:rpc/)?([a-zA-Z0-9_]+)')
 RPC = re.compile(r'/rest/v1/rpc/([a-zA-Z0-9_]+)')
 HREF = re.compile(r'href\s*=\s*"([^"#?]+\.html)')
 LOCHREF = re.compile(r"location\.href\s*=\s*['\"]([^'\"#?]+\.html)")
+# JS 문자열로 조립하는 주소는 링크가 아닙니다 ('+SITE+'console.html 같은 것)
+BUILT = re.compile(r"[+'\"]|\$\{|https?://")
 SRC = re.compile(r'<script[^>]+src\s*=\s*"([^"]+\.js)"')
 
 
@@ -116,7 +118,8 @@ def main():
             continue
         r = scan(p)
         dead_fn = sorted(f for f in r['handlers'] if f not in r['defined'])
-        dead_link = [l for l in r['links'] if os.path.basename(l) not in have]
+        dead_link = [l for l in r['links']
+                     if not BUILT.search(l) and os.path.basename(l) not in have]
         dead_edge = [e for e in r['edge'] if deployed and e not in deployed]
         dead_tbl = [t for t in r['rest'] if tables and t not in tables]
         dead_rpc = [t for t in r['rpc'] if tables and t not in tables]
