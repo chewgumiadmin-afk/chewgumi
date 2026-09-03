@@ -39,6 +39,8 @@
   function role() {
     var t = token();
     if (!t) return Promise.resolve('guest');
+    /* assets/role.js 가 한 번만 받아 나눠 줍니다 */
+    if (window.cgMyRole) return cgMyRole();
     return fetch(SB + '/rest/v1/rpc/my_role', {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },

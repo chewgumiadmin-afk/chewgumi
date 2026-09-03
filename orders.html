@@ -1368,9 +1368,11 @@ sync();
     var s = tok();
     if (!s) return;
     /* 관리자인지 확인한 뒤 들어갑니다 */
-    return fetch(SB2+'/rest/v1/rpc/my_role',{method:'POST',
-      headers:{apikey:K2,Authorization:'Bearer '+s.t,'Content-Type':'application/json'},body:'{}'})
-    .then(function(r){ return r.ok?r.json():'guest'; })
+    /* assets/role.js 가 한 번만 받아 나눠 줍니다 */
+    return (window.cgMyRole ? cgMyRole()
+      : fetch(SB2+'/rest/v1/rpc/my_role',{method:'POST',
+          headers:{apikey:K2,Authorization:'Bearer '+s.t,'Content-Type':'application/json'},body:'{}'})
+        .then(function(r){ return r.ok?r.json():'guest'; }))
     .then(function(v){
       var role = String(v||'guest').replace(/"/g,'');
       if (role && role !== 'guest') enter(s);
