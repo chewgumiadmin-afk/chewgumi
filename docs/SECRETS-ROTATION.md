@@ -15,6 +15,7 @@
 |---|---|---|---|---|
 | 1 | **이지페이 상점관리 비밀번호**<br>`chewgumi01` / `1234****` | office.easypay.co.kr → 비밀번호 변경 | (사람만 씀) | ☐ |
 | 2 | **Gmail 계정 비밀번호**<br>`2026G****` | myaccount.google.com → 보안 | (사람만 씀) | ☐ |
+| 2-1 | **Gmail 앱 비밀번호**<br>`jyko ****` (chewgumiadmin@) | myaccount.google.com/apppasswords<br>기존 것 삭제 후 새로 만들기 | `smtp_pass` (제가 넣습니다) | ☐ |
 | 3 | **GitHub 토큰**<br>`github_pat_11CLCPC****` | github.com/settings/tokens | `app_secrets.GITHUB_TOKEN` | ☐ |
 | 4 | **Supabase 관리 토큰**<br>`sbp_eea415****` | supabase.com/dashboard/account/tokens | (작업 끝나면 삭제) | ☐ |
 | 5 | **Cloudflare API 토큰**<br>`cfut_S6v8VN****` | dash.cloudflare.com/profile/api-tokens | (작업 끝나면 삭제) | ☐ |
