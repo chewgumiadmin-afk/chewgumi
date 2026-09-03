@@ -559,3 +559,125 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | 23 | 관리자 화면 전체 | — |
 | 24 | 속도 | — |
 | 25 | 처음 온 손님 | — |
+
+---
+
+# 열린 이슈 46건 — 전체 목록
+
+> 2026-09-03 기준. `회차` 는 위 테스트 순서와 물린 곳입니다.
+
+
+## 🔴 오픈을 막는 것 — 대표님만 하실 수 있습니다 (4)
+
+이 넷이 풀려야 오픈할 수 있습니다. **#104 하나가 #73 을 함께 해결합니다.**
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#104](https://github.com/chewgumiadmin-afk/chewgumi/issues/104) | 도메인·호스팅 이전 — Cloudflare 네임서버 변경만 남음 | 16회차 |
+| [#73](https://github.com/chewgumiadmin-afk/chewgumi/issues/73) | [개발자][신현정] 주문 확인 메일이 안 감 — 호출 누락 + Resend 도메인 미등록 | 16회차 |
+| [#103](https://github.com/chewgumiadmin-afk/chewgumi/issues/103) | 이지페이 회신 대기 — 미결 5건 (메일 발송 완료 2026-09-03) | 7회차 |
+| [#99](https://github.com/chewgumiadmin-afk/chewgumi/issues/99) | 네이버 로그인 · 커머스 API 미연동 | — |
+
+## 🟡 대표님 답 한 줄이면 제가 처리합니다 (7)
+
+결정만 주시면 반나절 안에 끝납니다.
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#91](https://github.com/chewgumiadmin-afk/chewgumi/issues/91) | [대표][윤소호] 오픈 전 결정 필요 — 머리 메뉴 통일 · 장바구니에서 밖으로 나가는 단추 | 22회차 |
+| [#22](https://github.com/chewgumiadmin-afk/chewgumi/issues/22) | [대표님 확인] 가격·개수 구성 정리 (오픈 전) | — |
+| [#106](https://github.com/chewgumiadmin-afk/chewgumi/issues/106) | 후기 사진 — 트래블잇이 33건 중 2장뿐 · 그 2장은 듀잇 사진 | 6회차 |
+| [#83](https://github.com/chewgumiadmin-afk/chewgumi/issues/83) | [대표][윤소호] 마케팅 수신 동의 — 무엇에 쓸지 정해주세요 | — |
+| [#58](https://github.com/chewgumiadmin-afk/chewgumi/issues/58) | [개발자][신현정] 노션 후기 반영 — 트래블잇 33건 완료 · 듀잇은 확인 필요 | — |
+| [#6](https://github.com/chewgumiadmin-afk/chewgumi/issues/6) | [결정 요청] AI 상담봇 — Claude vs ChatGPT 중 선택 | — |
+| [#93](https://github.com/chewgumiadmin-afk/chewgumi/issues/93) | [대표][윤소호] 특허·상표 검색 화면 — 브랜드 이름부터 확인해 주세요 | — |
+
+## 🟢 제가 지금 바로 할 수 있습니다 (8)
+
+순서대로 진행하겠습니다.
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#102](https://github.com/chewgumiadmin-afk/chewgumi/issues/102) | 동작이 비어 있는 곳 · 중복 호출을 기계가 잡게 하기 | — |
+| [#100](https://github.com/chewgumiadmin-afk/chewgumi/issues/100) | 주문 챗봇 — 2회 주문 등 반복 상황 동작 검증 | 18회차 |
+| [#98](https://github.com/chewgumiadmin-afk/chewgumi/issues/98) | 카카오 채널 등 고객센터 연결처를 설정으로 관리 | 19회차 |
+| [#101](https://github.com/chewgumiadmin-afk/chewgumi/issues/101) | tracking.html 배송조회 동선 전면 검토 | 9회차 |
+| [#49](https://github.com/chewgumiadmin-afk/chewgumi/issues/49) | [개발자][신현정] STORE REVIEWS — 링크만 있어 고객이 떠납니다 | 20회차 |
+| [#50](https://github.com/chewgumiadmin-afk/chewgumi/issues/50) | [개발자][신현정] USER FILMS — 실제 고객 사진·영상 받기 | 20회차 |
+| [#96](https://github.com/chewgumiadmin-afk/chewgumi/issues/96) | console — 관리자 배송 동선을 한 화면에서 (택배 API 연동) | 8회차 |
+| [#107](https://github.com/chewgumiadmin-afk/chewgumi/issues/107) | 솔라피 문자 API 미연동 — 후기 자동 요청이 안 나감 | 9회차 |
+
+## 🔵 오래된 QA 이슈 — 확인 후 닫아야 합니다 (6)
+
+8월 기록입니다. **대부분 이미 고쳐졌을 것**으로 봅니다. 하나씩 확인해 닫겠습니다.
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#87](https://github.com/chewgumiadmin-afk/chewgumi/issues/87) | [개발자][신현정] 화면 28개 코드 점검 — 버그 4건 발견·수정 | — |
+| [#88](https://github.com/chewgumiadmin-afk/chewgumi/issues/88) | [개발자][신현정] QA 도구에 화면 녹화 · 서랍 메뉴 로그인 버튼 수정 | — |
+| [#89](https://github.com/chewgumiadmin-afk/chewgumi/issues/89) | [개발자][신현정] QA 기록 반영 — ufView·ufPlay 없음 · 로그인 비밀번호 | — |
+| [#90](https://github.com/chewgumiadmin-afk/chewgumi/issues/90) | [개발자][신현정] 구매 동선 QA — 영어권 브라우저 홈 멈춤 · 상세 이미지 30장 · 로고 경로 | — |
+| [#92](https://github.com/chewgumiadmin-afk/chewgumi/issues/92) | [개발자][신현정] 로그인·가입 동선 QA — 가입 세션에 만료·갱신 토큰 없음 · Supabase  | — |
+| [#94](https://github.com/chewgumiadmin-afk/chewgumi/issues/94) | bug report / 0901 | — |
+
+## ⚪ 오픈 이후 · 채널 확장 (12)
+
+오픈하고 나서 해도 되는 것들입니다.
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#38](https://github.com/chewgumiadmin-afk/chewgumi/issues/38) | [제안][신현정] ① 카페24 API 연동 — 승인만 하면 됩니다 | — |
+| [#51](https://github.com/chewgumiadmin-afk/chewgumi/issues/51) | [개발자][신현정] 인스타그램 API 연동 — 비즈니스 계정 확인됨 | — |
+| [#13](https://github.com/chewgumiadmin-afk/chewgumi/issues/13) | [재요청] 카카오 비즈 앱 전환 — 절차 안내 (2026년 최신) | — |
+| [#16](https://github.com/chewgumiadmin-afk/chewgumi/issues/16) | [대표님 처리] 카카오톡 스토어 · 선물하기 입점 안내 | — |
+| [#17](https://github.com/chewgumiadmin-afk/chewgumi/issues/17) | [자료] 선물하기 입점용 브랜드·회사·상품 소개서 초안 | — |
+| [#77](https://github.com/chewgumiadmin-afk/chewgumi/issues/77) | [대표][윤소호] Meta 비즈니스 인증 — 사업자등록증 제출 (2~7일) | — |
+| [#78](https://github.com/chewgumiadmin-afk/chewgumi/issues/78) | [대표][윤소호] Oracle 무료 서버 가입 — 청구 국가가 미국으로 잡힘 (나중에) | — |
+| [#15](https://github.com/chewgumiadmin-afk/chewgumi/issues/15) | [대표님 처리] 결제 연동 · 채널 API 신청 안내 | — |
+| [#18](https://github.com/chewgumiadmin-afk/chewgumi/issues/18) | [대표님 처리] AI 기능 사용료 계정 발급 안내 (오픈 전까지) | — |
+| [#21](https://github.com/chewgumiadmin-afk/chewgumi/issues/21) | [안내] 대표님이 직접 고치는 방법 · 버그 리포트 요청 | — |
+| [#7](https://github.com/chewgumiadmin-afk/chewgumi/issues/7) | [요청] 자동 운영 구축 — 주문 알림 자동 수신 + AI 봇 관리자 연결 | — |
+| [#110](https://github.com/chewgumiadmin-afk/chewgumi/issues/110) | 오픈까지 남은 것 — 전체 정리 (2026-09-03) | — |
+
+## 💡 제안 — 나중에 논의 (6)
+
+업무 자동화 제안입니다. 급하지 않습니다.
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#40](https://github.com/chewgumiadmin-afk/chewgumi/issues/40) | [제안][신현정] ③ 사진 분석 + 장소 마케팅 기록 | — |
+| [#41](https://github.com/chewgumiadmin-afk/chewgumi/issues/41) | [제안][신현정] ④ 법인카드 지출 자동 분류 | — |
+| [#42](https://github.com/chewgumiadmin-afk/chewgumi/issues/42) | [제안][신현정] ⑤ 이미지 제작 — CEO가 직접 조금씩 고치기 | — |
+| [#43](https://github.com/chewgumiadmin-afk/chewgumi/issues/43) | [제안][신현정] ⑥ 거래처 자동 응대 — 다이식품 등 | — |
+| [#44](https://github.com/chewgumiadmin-afk/chewgumi/issues/44) | [제안][신현정] ⑦ 메디잇 배합 데이터 교환 창구 | — |
+| [#45](https://github.com/chewgumiadmin-afk/chewgumi/issues/45) | [제안][신현정] ⑧ 매출 분석 · 마케팅 채널 | — |
+
+## 기타 (3)
+
+| 이슈 | 내용 | 회차 |
+|---|---|---|
+| [#86](https://github.com/chewgumiadmin-afk/chewgumi/issues/86) | [대표][윤소호] 오늘 할 일 — 가입·인증 일곱 가지 (2026-08-27) | — |
+| [#95](https://github.com/chewgumiadmin-afk/chewgumi/issues/95) | 마이페이지 메뉴가 여러 곳에 겹쳐 보임 — 캡처 필요 | 4회차 |
+| [#108](https://github.com/chewgumiadmin-afk/chewgumi/issues/108) | 작업 원칙 — 디자인은 손대기 전에 확인받기 (UX-RULES R16) | 5회차 |
+
+---
+
+## 닫힌 것 (오늘)
+
+| 이슈 | 내용 |
+|---|---|
+| [#97](https://github.com/chewgumiadmin-afk/chewgumi/issues/97) | 환불 정책 — 공식몰 규정대로 자동계산 구현 |
+| [#105](https://github.com/chewgumiadmin-afk/chewgumi/issues/105) | QA 비밀번호 노출 — 확인 결과 RLS 가 이미 막고 있었음 |
+| [#109](https://github.com/chewgumiadmin-afk/chewgumi/issues/109) | 카드 매출전표 조회에 로그인 토큰 사용 |
+
+## 이슈에 없지만 오늘 고친 것
+
+| 무엇 | 어떻게 찾았나 |
+|---|---|
+| 가입 시 이름·전화·주소가 저장 안 됨 (400) | 브라우저로 실제 가입 |
+| **약관 동의 기록이 0건** (403) | 위와 같음 · 전자상거래법 보관 대상 |
+| 관리자 화면 404/405 (`/undefined/rest/v1/…`) | 브라우저 통신 감시 |
+| 마이페이지 네이버 단추가 503 으로 직행 | 로그인 4종 실제 확인 |
+| 중복 호출 3건 (재고 3회·영상 2회·상품 2회) | 브라우저 요청 카운트 |
+| 마이페이지에 로그인 창이 한 번 더 뜨던 것 | 대표님 신고 |
+
