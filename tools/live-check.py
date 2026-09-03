@@ -30,8 +30,25 @@ UNSAFE = re.compile(
     re.I)
 
 
-def run(base, pages):
+SB = 'https://psynvpuedzjvytsgdhgg.supabase.co'
+KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk'
+
+
+def login(email, pw):
+    """검사 계정으로 토큰을 받아 옵니다. 브라우저에 심어 로그인 상태로 검사합니다."""
+    import json as _j, urllib.request as _u
+    r = _u.Request(SB + '/auth/v1/token?grant_type=password', method='POST',
+                   data=_j.dumps({'email': email, 'password': pw}).encode(),
+                   headers={'apikey': KEY, 'Content-Type': 'application/json'})
+    d = _j.loads(_u.urlopen(r).read())
+    if not d.get('access_token'):
+        raise RuntimeError('로그인 실패')
+    return d
+
+
+def run(base, pages, auth=None):
     from playwright.sync_api import sync_playwright
+    import json as _j
 
     report = []
     with sync_playwright() as p:
@@ -41,6 +58,17 @@ def run(base, pages):
             name = path.split('?')[0]
             ctx = browser.new_context(ignore_https_errors=True,
                                       viewport={'width': 1280, 'height': 900})
+            if auth:
+                # 화면이 열리기 전에 세션을 심습니다 (사이트가 쓰는 것과 같은 모양)
+                sess = {'t': auth['access_token'], 'r': auth.get('refresh_token', ''),
+                        'e': 0, 'exp': 0, 'u': 'qa-bot', 'em': auth['user']['email']}
+                import time as _t
+                sess['e'] = int((_t.time() + auth.get('expires_in', 3600)) * 1000)
+                sess['exp'] = int(_t.time() + auth.get('expires_in', 3600))
+                ctx.add_init_script(
+                    "try{localStorage.setItem('cg_sb', %s);"
+                    "sessionStorage.setItem('cg_alive','1');}catch(e){}"
+                    % _j.dumps(_j.dumps(sess)))
             page = ctx.new_page()
 
             errors, bad_res, calls = [], [], {}
@@ -95,7 +123,10 @@ def run(base, pages):
                 return r.width > 0 && r.height > 0 && s.display !== 'none' &&
                        s.visibility !== 'hidden' && r.top < innerHeight * 3; };
               const txt = el => (el.textContent || '').trim().toUpperCase();
-              const as = [...document.querySelectorAll('a,button')].filter(vis);
+              const inNav = el => !!el.closest(
+                'nav,header,footer,.util,.d-auth,.m-nav,.nav,.menu,.drawer,' +
+                '.links,.gnb,.lnb,.u-menu,.nav-auth,.ft-auth,.tabs');
+              const as = [...document.querySelectorAll('a,button')].filter(e => vis(e) && inNav(e));
               const inn = as.filter(e => /^(LOGIN|로그인)$/.test(txt(e))).length;
               const out = as.filter(e => /^(LOGOUT|로그아웃)$/.test(txt(e))).length;
               const my  = as.filter(e => /^(MY PAGE|MY|마이페이지)$/.test(txt(e))).length;
@@ -115,8 +146,14 @@ def run(base, pages):
                     const s = getComputedStyle(el);
                     return r.width > 0 && r.height > 0 && s.display !== 'none' &&
                            s.visibility !== 'hidden'; };
+                  /* 문장 속 링크는 메뉴가 아닙니다.
+                     머리글·메뉴·서랍·바닥글 안에 있는 것만 셉니다. */
+                  const inNav = el => !!el.closest(
+                    'nav,header,footer,.util,.d-auth,.m-nav,.nav,.menu,.drawer,' +
+                    '.links,.gnb,.lnb,.u-menu,.nav-auth,.ft-auth,.tabs');
                   return [...document.querySelectorAll('a')].filter(e =>
-                    vis(e) && /^(MY PAGE|MY|마이페이지)$/.test((e.textContent||'').trim().toUpperCase())
+                    vis(e) && inNav(e) &&
+                    /^(MY PAGE|MY|마이페이지)$/.test((e.textContent||'').trim().toUpperCase())
                   ).length;
                 }""")
                 if c > 1:
@@ -165,15 +202,28 @@ def run(base, pages):
 
 
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    skip = set()
+    for flag, n in (('--base', 1), ('--login', 2)):
+        if flag in sys.argv:
+            i = sys.argv.index(flag)
+            skip.update(range(i, i + n + 1))
+    args = [a for j, a in enumerate(sys.argv) if j >= 1 and j not in skip
+            and not a.startswith('--')]
     base = BASE
     if '--base' in sys.argv:
         base = sys.argv[sys.argv.index('--base') + 1]
     pages = args or PAGES
 
+    auth = None
+    if '--login' in sys.argv:
+        i = sys.argv.index('--login')
+        email, pw = sys.argv[i + 1], sys.argv[i + 2]
+        auth = login(email, pw)
+        print('로그인함:', email)
+
     print('브라우저로 실제 눌러봅니다 —', base)
     print()
-    rep = run(base, pages)
+    rep = run(base, pages, auth)
 
     print()
     print('=' * 62)

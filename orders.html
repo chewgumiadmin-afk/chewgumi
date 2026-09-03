@@ -547,6 +547,11 @@ label:has(> input[type=checkbox]){
 <script>
 const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+/* SB_URL·SB_KEY 는 아래쪽(1095줄)에서 정의되는데 805·834·901·922줄이
+   그보다 먼저 쓰고 있어서 주소가 https://shop.chewgumi.com/undefined/... 로
+   나가 404·405 가 났습니다. 여기서 미리 정합니다. */
+window.SB_URL = SB;
+window.SB_KEY = KEY;
 const ST={pending:'미결제',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
   delivered:'배송완료',cancelled:'취소',refunded:'환불'};
 let token=null,who='',filt='all',ORD=[];
@@ -1093,7 +1098,8 @@ function kkoPop(no,d){
   wrap.onclick=function(e){ if(e.target===wrap) wrap.remove(); };
 }
 /* SB_URL · SB_KEY 가 없어 오류가 나던 것 — 여기서 정합니다 */
-  var SB_URL = (typeof SB !== 'undefined') ? SB : 'https://psynvpuedzjvytsgdhgg.supabase.co';
+  var SB_URL = (typeof SB !== 'undefined') ? SB
+             : (window.SB_URL || 'https://psynvpuedzjvytsgdhgg.supabase.co');
   var SB_KEY = (typeof KEY !== 'undefined') ? KEY : 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
   const FN_EDIT = SB_URL + '/functions/v1/order-edit';
 function omsg(t){ const e=$('msg')||$('omsg'); if(e) e.textContent=t; else alert(t); }
