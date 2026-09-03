@@ -266,6 +266,10 @@ const SSO_BASE='https://psynvpuedzjvytsgdhgg.supabase.co';
 /* 소셜 로그인 (Supabase OAuth) */
 /* 네이버 Edge Function 이 배포되면 true 로 (#99) */
 window.CG_NAVER_READY = false;
+/* 카카오 비즈 앱 전환 전까지 막습니다 (#13).
+   설정·연결은 정상인데 account_email 권한이 없어
+   로그인 화면까지 갔다가 조용히 실패합니다. 가입자 0명. */
+window.CG_KAKAO_READY = false;
 
 function sso(provider){
   var m=document.getElementById('ssoMsg');
@@ -278,6 +282,13 @@ function sso(provider){
      아직 커머스 API 키가 없어 503 입니다(#99).
      login·join 에는 차단 장치가 있는데 여기만 빠져 있어서,
      마이페이지에서 누르면 그대로 오류 화면으로 갔습니다. */
+  if(provider==='kakao' && window.CG_KAKAO_READY !== true){
+    if(m){m.className='sso-msg bad';
+      m.innerHTML='카카오 로그인은 <b>준비 중</b>입니다.<br>'
+        +'구글 또는 이메일로 로그인해 주세요.';}
+    return;
+  }
+
   if(provider==='naver'){
     if(window.CG_NAVER_READY !== true){
       if(m){m.className='sso-msg bad';
