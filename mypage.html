@@ -264,6 +264,9 @@ window.myId = myId;
 const SSO_BASE='https://psynvpuedzjvytsgdhgg.supabase.co';
 
 /* 소셜 로그인 (Supabase OAuth) */
+/* 네이버 Edge Function 이 배포되면 true 로 (#99) */
+window.CG_NAVER_READY = false;
+
 function sso(provider){
   var m=document.getElementById('ssoMsg');
   var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
@@ -271,8 +274,17 @@ function sso(provider){
   var key=(typeof SB_KEY!=='undefined')?SB_KEY:KEY;
   var back=location.origin+location.pathname.replace(/[^/]*$/,'mypage.html');
 
-  /* 네이버는 자체 서버(Edge Function)로 처리 */
+  /* 네이버는 자체 서버(Edge Function)로 처리 —
+     아직 커머스 API 키가 없어 503 입니다(#99).
+     login·join 에는 차단 장치가 있는데 여기만 빠져 있어서,
+     마이페이지에서 누르면 그대로 오류 화면으로 갔습니다. */
   if(provider==='naver'){
+    if(window.CG_NAVER_READY !== true){
+      if(m){m.className='sso-msg bad';
+        m.innerHTML='네이버 로그인은 <b>준비 중</b>입니다.<br>'
+          +'구글·카카오 또는 이메일로 로그인해 주세요.';}
+      return;
+    }
     if(m){m.className='sso-msg';m.textContent='네이버로 이동합니다…';}
     location.href=base+'/functions/v1/naver?redirect_to='+encodeURIComponent(back);
     return;
