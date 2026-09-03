@@ -81,7 +81,17 @@ label{display:block;font-size:11.5px;font-weight:700;color:var(--gray);margin:0 
 .log b{font-size:13px}
 .log .t{color:var(--gray);font-size:11.5px}
 .empty{text-align:center;color:var(--gray);font-size:13px;padding:26px 0}
+.reqbar{background:rgba(224,144,43,.12);border:1px solid rgba(224,144,43,.35);
+  color:#8a5a10;border-radius:16px;padding:14px 18px;margin-bottom:14px;font-size:13px;line-height:1.6}
+.reqbar b{color:#C0395C}
+.reqbar .acts{margin-top:8px}
 .hide{display:none}
+.panel.creq{
+  background:linear-gradient(135deg,rgba(255,235,240,.95),rgba(255,224,232,.9));
+  border-color:rgba(192,57,92,.3);
+  box-shadow:0 12px 30px rgba(192,57,92,.14),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.panel.creq h2{color:#C0395C;letter-spacing:1.4px;font-size:12.5px}
 @media(max-width:520px){
   .g2{grid-template-columns:1fr}
   .kv{grid-template-columns:80px 1fr}
@@ -107,6 +117,16 @@ label{display:block;font-size:11.5px;font-weight:700;color:var(--gray);margin:0 
   </div>
 
   <div id="area">
+    <div class="panel creq hide" id="pReq">
+      <h2>고객이 취소를 요청했습니다</h2>
+      <div class="kv" id="req"></div>
+      <div class="acts">
+        <button class="mini rf" onclick="doRefund()">환불하고 취소하기</button>
+        <button class="mini" onclick="dismissReq()">요청 물리기</button>
+      </div>
+      <div class="msg" id="mReq"></div>
+    </div>
+
     <div class="panel" id="pSum"><div class="empty">불러오는 중…</div></div>
 
     <div class="panel hide" id="pWho">
@@ -233,6 +253,22 @@ function draw(){
   if(!O) return;
   ['pWho','pItems','pShip','pPay','pLog'].forEach(id=>$(id).classList.remove('hide'));
 
+  /* 고객이 낸 취소 요청 — 전에는 memo 문자열에만 남아 아무 화면에도 안 떴습니다 */
+  if(O.cancel_req_at){
+    $('pReq').classList.remove('hide');
+    const left0=(O.pay_amount||0)-(O.refund_amount||0);
+    $('req').innerHTML=
+       row('요청 시각', when(O.cancel_req_at))
+      +row('요청한 분', esc(O.cancel_req_by||'고객'))
+      +row('사유', esc(O.cancel_req_note||'고객 요청'))
+      +row('돌려드릴 금액', '₩'+won(left0)
+          +(O.status==='shipping'||O.status==='delivered'
+            ?' <b style="color:#C0395C">— 이미 발송된 주문입니다. 반품으로 처리하세요.</b>':''));
+    say('mReq','');
+  } else {
+    $('pReq').classList.add('hide');
+  }
+
   /* 요약 */
   const left=(O.pay_amount||0)-(O.refund_amount||0);
   $('pSum').innerHTML='<div class="sum">'
@@ -292,6 +328,22 @@ function draw(){
       +(O.refund_reason?'<br>사유: '+esc(O.refund_reason):'')):'')
     +(O.cancel_reason?row('취소 사유',esc(O.cancel_reason)):'');
 
+  /* 고객이 취소·반품을 요청했으면 맨 위에 띄웁니다 */
+  const req = O.cancel_req_at
+    ? {t:'취소', at:O.cancel_req_at, note:O.cancel_req_note, act:'cancel'}
+    : (O.return_req_at && !O.return_done_at
+        ? {t:(O.return_req_kind==='exchange'?'교환':'반품'), at:O.return_req_at,
+           note:O.return_req_note, act:'return'} : null);
+  const reqBar = req
+    ? '<div class="reqbar">고객이 <b>'+req.t+'을(를) 요청</b>했습니다 · '+when(req.at)
+      +(req.note?'<br>사유: '+esc(req.note):'')
+      +'<div class="acts">'
+      +(req.act==='return'
+        ? '<button class="mini" onclick="doneReturn()">처리 완료로 표시</button>' : '')
+      +'</div></div>'
+    : '';
+  $('pSum').insertAdjacentHTML('afterend', reqBar);
+
   const canRefund=['paid','preparing','shipping','delivered'].includes(O.status)&&left>0;
   const canCancel=['pending','paid','preparing'].includes(O.status);
   const canCash=['paid','preparing','shipping','delivered'].includes(O.status)
@@ -308,6 +360,16 @@ function draw(){
   loadLogs();
 }
 function row(k,v){ return '<div class="k">'+k+'</div><div class="v">'+v+'</div>'; }
+
+/* 반품·교환을 다 처리했다고 표시합니다 (환불은 아래 결제·환불에서 따로) */
+function doneReturn(){
+  if(!confirm('반품·교환 처리를 끝냈다고 표시합니다.\n\n환불이 필요하면 아래 [환불하기]로 따로 진행해 주세요.')) return;
+  fetch(SB+'/rest/v1/orders?id=eq.'+O.id,{method:'PATCH',
+    headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify({return_done_at:new Date().toISOString()})})
+  .then(r=>{ if(r.ok) load(); else alert('표시하지 못했습니다.'); })
+  .catch(()=>alert('네트워크 오류가 발생했습니다.'));
+}
 
 function loadLogs(){
   fn('order-edit',{action:'logs',orderId:NO}).then(({ok,d})=>{
@@ -344,16 +406,24 @@ function doShip(){
   say('mShip','발송 처리 중…');
   fn('order',{action:'ship',orderId:NO,courierCode:cc,
     courier:(COURIERS.find(c=>c.c===cc)||{}).n||'택배',trackingNo:tn})
-  .then(({ok,d})=>{ if(ok&&d.ok){ say('mShip','발송 처리했습니다. 고객에게 안내가 나갔습니다.','ok'); load(); }
+  .then(({ok,d})=>{ if(ok&&d.ok){
+      say('mShip', d.notify_why
+        ? '발송 처리했습니다. 다만 고객 알림은 나가지 않았습니다 — '+d.notify_why
+        : '발송 처리했습니다.', d.notify_why ? 'no' : 'ok');
+      load(); }
     else say('mShip',d.error||'처리에 실패했습니다.','no'); })
   .catch(()=>say('mShip','네트워크 오류가 발생했습니다.','no'));
 }
+/* order 함수에는 track 이 없습니다. 실제 조회는 tracking 함수가 합니다. */
 function doTrack(){
   say('mShip','조회 중…');
-  fn('order',{action:'track',orderId:NO}).then(({ok,d})=>{
-    if(!ok||d.error) return say('mShip',d.error||'배송 조회에 실패했습니다.','no');
-    const lines=(d.details||[]).map(x=>'· '+(x.timeString||'')+' '+(x.where||'')+' '+(x.kind||'')).join('\n');
-    alert('배송 상태: '+(d.last||'-')+(d.complete?' (배송완료)':'')+'\n\n'+lines);
+  fn('tracking',{action:'trace',orderNo:NO}).then(({d})=>{
+    if(d.error) return say('mShip',d.error,'no');
+    if(d.notYet) return say('mShip',d.message||'아직 운송장이 등록되지 않았습니다.');
+    const lines=(d.steps||[]).map(x=>'· '+(x.time||'')+' '+(x.where||'')+' '+(x.kind||'')).join('\n');
+    say('mShip','배송 상태: '+(d.levelName||'-')+(d.complete?' · 배송완료':''),'ok');
+    alert('배송 상태: '+(d.levelName||'-')+(d.complete?' (배송완료)':'')
+      +'\n'+(d.company||'')+' '+(d.invoice||'')+'\n\n'+lines);
     load();
   }).catch(()=>say('mShip','네트워크 오류가 발생했습니다.','no'));
 }
@@ -381,6 +451,16 @@ function copyAddr(){
   const done=()=>say('mWho','주소를 복사했습니다.','ok');
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done,()=>prompt('복사해 주세요',t));
   else prompt('복사해 주세요',t);
+}
+
+function dismissReq(){
+  const note=prompt('취소 요청을 물립니다.\n고객과 어떻게 이야기되었는지 적어 주세요.','고객이 취소를 철회함');
+  if(note===null) return;
+  say('mReq','처리 중…');
+  fn('refund',{action:'dismiss',order_no:NO,note:note}).then(({d})=>{
+    if(d.ok){ say('mReq',d.msg||'요청을 물렸습니다.','ok'); load(); }
+    else say('mReq',d.error||'처리하지 못했습니다.','no');
+  }).catch(()=>say('mReq','네트워크 오류가 발생했습니다.','no'));
 }
 
 /* ── 결제 · 환불 ─────────────────────────────── */
@@ -427,15 +507,10 @@ function doRefund(){
     }).catch(()=>say('mPay','환불하지 못했습니다.','no'));
   }).catch(()=>say('mPay','불러오지 못했습니다.','no'));
 }
+/* 이 단추는 토스페이먼츠 API 를 부르고 있었습니다. 저희는 이지페이라 늘 실패했습니다. */
 function doCash(){
-  const num=prompt('현금영수증 발급 번호\n(개인: 휴대폰번호 / 사업자: 사업자등록번호)');
-  if(!num) return;
-  const biz=confirm('사업자 지출증빙으로 발급할까요?\n[확인] 지출증빙  /  [취소] 소득공제');
-  say('mPay','발급 중…');
-  fn('order',{action:'cashReceipt',orderId:NO,registrationNumber:num,type:biz?'business':'person'})
-  .then(({ok,d})=>{ if(ok&&d.ok){ say('mPay','현금영수증을 발급했습니다.','ok'); load(); }
-    else say('mPay',d.error||'발급에 실패했습니다.','no'); })
-  .catch(()=>say('mPay','네트워크 오류가 발생했습니다.','no'));
+  say('mPay','현금영수증은 이지페이 가맹점 관리자에서 발급합니다. '
+    +'office.easypay.co.kr → 거래조회 → 현금영수증');
 }
 function cardRcpt(){
   if(!PAY) return say('mPay','결제 기록을 찾지 못했습니다.','no');

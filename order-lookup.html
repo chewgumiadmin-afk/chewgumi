@@ -224,6 +224,7 @@ dd{margin:0;word-break:keep-all}
 <script src="assets/ordedit.js" defer></script>
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
+<script src="assets/orderacts.js" defer></script>
 </head>
 <body>
 
@@ -356,6 +357,11 @@ function draw(o){
       +(['pending','paid','preparing'].includes(o.status)
         ? '<button type="button" onclick=\"cgOpenEdit()\">주문 수정</button>'
           + '<button type="button" class="warn" onclick="cancelOrder()">주문 취소</button>' : '')
+      +(['shipping','delivered'].includes(o.status)
+        ? (o.return_req_at
+            ? '<span class="oa-done">'+(o.return_req_kind==='exchange'?'교환':'반품')+' 신청 접수됨</span>'
+            : '<button type="button" class="warn" data-no="'+esc(o.order_no)+'"'
+              + ' onclick="cgOA.ret(this)">반품 · 교환 신청</button>') : '')
       +'<a href="index.html">쇼핑 계속하기</a></div>';
 
   $('resBox').classList.remove('hide');
@@ -421,6 +427,14 @@ function cancelOrder(){
   })
   .catch(function(){ alert('취소하지 못했습니다.'); });
 }
+</script>
+<script>
+/* 비회원은 주문자명(또는 전화 뒤 4자리)으로 본인 확인을 합니다 */
+window.cgOAKey = function(){
+  var el = document.getElementById('name') || document.getElementById('key');
+  return el ? el.value.trim() : '';
+};
+window.cgOAReload = function(){ if(typeof find==='function') find(); };
 </script>
 </body>
 </html>

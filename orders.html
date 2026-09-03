@@ -60,12 +60,28 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .o-open:hover,.o-open:focus-visible{background:rgba(216,37,88,.06)}
 .o-open .o-no{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(216,37,88,.35)}
 .mini.de{display:inline-flex;align-items:center}
+.tabs .todo.hot{background:linear-gradient(135deg,#3FA76F,#1F9D6B);color:#fff;border-color:transparent}
+.tabs [data-s="returnreq"].hot{background:linear-gradient(135deg,#E0902B,#C87A18);color:#fff;border-color:transparent}
+.creq-bar.ret{background:rgba(224,144,43,.12);border-color:rgba(224,144,43,.35);color:#8a5a10}
 /* 찾기 · 쪽 나눔 */
 .ofind{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
 .ofind input{margin:0;flex:1;min-width:0;font-size:16px}
 .ocnt{font-size:11.5px;color:var(--gray);white-space:nowrap;font-weight:600}
 .opager{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:14px}
 .opager:empty{margin:0}
+/* 고객 취소 요청 */
+.tabs .creq b{font-size:11px;margin-left:2px}
+.tabs .creq.hot{background:#C0395C !important;color:#fff !important;border-color:transparent !important}
+.o.hasreq{outline:2px solid rgba(192,57,92,.35);outline-offset:-2px}
+.creq-bar{
+  background:linear-gradient(135deg,#FFEBF0,#FFE0E8);
+  border:1px solid rgba(192,57,92,.28);
+  border-radius:12px;padding:11px 13px;margin:0 0 12px;
+  font-size:12.5px;line-height:1.6;color:#8A2140;
+}
+.creq-bar b{color:#C0395C}
+.creq-bar a{color:#C0395C;font-weight:700;text-decoration:underline;text-underline-offset:3px;
+  display:inline-block;min-height:32px;line-height:32px}
 .pg{min-width:38px;min-height:38px;padding:0 11px;border-radius:11px;border:1px solid var(--line);
   background:rgba(255,255,255,.72);font-size:12.5px;font-weight:700;color:var(--gray)}
 .pg.on{background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;border-color:transparent}
@@ -427,6 +443,9 @@ label:has(> input[type=checkbox]){
         <button data-s="shipping" onclick="setS('shipping')">배송중</button>
         <button data-s="delivered" onclick="setS('delivered')">배송완료</button>
         <button data-s="pending" onclick="setS('pending')">미결제</button>
+        <button data-s="cancelreq" class="creq" onclick="setS('cancelreq')">취소요청 <b id="creqN"></b></button>
+        <button data-s="returnreq" class="creq" onclick="setS('returnreq')">반품·교환 <b id="rreqN"></b></button>
+        <button data-s="todo" class="todo" onclick="setS('todo')">오늘 보낼 것 <b id="todoN"></b></button>
       </div>
       <div class="panel" style="margin-bottom:16px">
       <h2>알림 · 카카오톡 채널</h2>
@@ -630,9 +649,30 @@ function pager(total){
 }
 
 function render(){
-  const rows=ORD.filter(o=>(filt==='all'||o.status===filt)&&match(o));
+  const rows=ORD.filter(o=>(
+      filt==='all' ? true
+    : filt==='cancelreq' ? !!o.cancel_req_at
+    : filt==='returnreq' ? (!!o.return_req_at && !o.return_done_at)
+    /* 오늘 보낼 것 — 결제가 끝났고 아직 송장이 없는 주문.
+       취소·반품을 요청한 건은 먼저 처리해야 하므로 뺍니다. */
+    : filt==='todo' ? (['paid','preparing'].includes(o.status)
+                       && !o.tracking_no && !o.cancel_req_at)
+    : o.status===filt) && match(o));
   const last=Math.max(1,Math.ceil(rows.length/PER));
   if(page>last) page=last;
+  const nreq = ORD.filter(o=>o.cancel_req_at).length;
+  const bn=$('creqN'); if(bn) bn.textContent = nreq ? nreq : '';
+  const bt=document.querySelector('.tabs .creq'); if(bt) bt.classList.toggle('hot', nreq>0);
+
+  const nret = ORD.filter(o=>o.return_req_at && !o.return_done_at).length;
+  const rn=$('rreqN'); if(rn) rn.textContent = nret ? nret : '';
+  const rt=document.querySelector('.tabs [data-s="returnreq"]');
+  if(rt) rt.classList.toggle('hot', nret>0);
+
+  const ntodo = ORD.filter(o=>['paid','preparing'].includes(o.status)
+    && !o.tracking_no && !o.cancel_req_at).length;
+  const tn=$('todoN'); if(tn) tn.textContent = ntodo ? ntodo : '';
+  const tt=document.querySelector('.tabs .todo'); if(tt) tt.classList.toggle('hot', ntodo>0);
   $('oCnt').textContent = rows.length
     ? rows.length+'건'+(rows.length>PER?' · '+page+'/'+last+'쪽':'')
     : '';
@@ -644,7 +684,19 @@ function render(){
   $('list').innerHTML=rows.slice((page-1)*PER,page*PER).map(o=>{
     const its=(o.order_items||[]).map(i=>esc(i.product_name)+' × '+i.qty).join(', ');
     const durl='order-detail.html?no='+encodeURIComponent(o.order_no);
-    return '<div class="o"><div class="o-h">'
+    const creq = o.cancel_req_at
+      ? '<div class="creq-bar">고객이 <b>취소를 요청</b>했습니다 · '
+        + new Date(o.cancel_req_at).toLocaleString('ko-KR')
+        + (o.cancel_req_note?'<br>사유: '+esc(o.cancel_req_note):'')
+        + ' <a href="'+durl+'">처리하기 →</a></div>'
+      : (o.return_req_at && !o.return_done_at
+        ? '<div class="creq-bar ret">고객이 <b>'
+          + (o.return_req_kind==='exchange'?'교환':'반품')+'을 요청</b>했습니다 · '
+          + new Date(o.return_req_at).toLocaleString('ko-KR')
+          + (o.return_req_note?'<br>사유: '+esc(o.return_req_note):'')
+          + ' <a href="'+durl+'">처리하기 →</a></div>'
+        : '');
+    return '<div class="o'+((o.cancel_req_at||(o.return_req_at&&!o.return_done_at))?' hasreq':'')+'">'+creq+'<div class="o-h">'
       +'<a class="o-open" href="'+durl+'" title="주문 상세 보기">'
       +'<span class="o-no">'+esc(o.order_no)+'</span> '
       +'<span class="st '+o.status+'">'+(ST[o.status]||o.status)+'</span><br>'
@@ -714,25 +766,39 @@ function ship(no,id){
   if(!confirm('발송 처리하고 고객에게 알림을 보냅니다. 진행할까요?'))return;
   call({action:'ship',orderId:no,courierCode:cc,
     courier:(COURIERS.find(c=>c.c===cc)||{}).n||'택배',trackingNo:tn})
-  .then(({ok,d})=>{if(ok&&d.ok){alert('발송 처리되었습니다.');load();}else alert(d.error||'처리에 실패했습니다.');})
+  .then(({ok,d})=>{
+    if(ok&&d.ok){
+      alert('발송 처리했습니다.'
+        + (d.notified===false || d.notify_why
+            ? '\n\n⚠ 고객 알림은 나가지 않았습니다.\n' + (d.notify_why||'문자·메일이 아직 설정되지 않았습니다.')
+              + '\n주문 상세에서 운송장을 직접 안내해 주세요.'
+            : ''));
+      load();
+    } else alert(d.error||'처리에 실패했습니다.');})
   .catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
+/* 배송조회 — 전에는 order 함수의 'track' 을 불렀는데 그런 기능이 없어
+   늘 '알 수 없는 요청' 으로 끝났습니다. 실제 조회는 tracking 함수가 합니다. */
 function track(no){
-  call({action:'track',orderId:no}).then(({ok,d})=>{
-    if(!ok)return alert(d.error||'배송 조회에 실패했습니다.');
-    const lines=(d.details||[]).map(x=>'· '+(x.timeString||'')+' '+(x.where||'')+' '+(x.kind||'')).join('\n');
-    alert('배송 상태: '+(d.last||'-')+(d.complete?' (배송완료)':'')+'\n\n'+lines);
+  fetch(SB+'/functions/v1/tracking',{method:'POST',
+    headers:{'Content-Type':'application/json',apikey:KEY,Authorization:'Bearer '+token},
+    body:JSON.stringify({action:'trace',orderNo:no})})
+  .then(r=>r.json()).then(d=>{
+    if(d.error) return alert(d.error);
+    if(d.notYet) return alert(d.message||'아직 운송장이 등록되지 않았습니다.');
+    const lines=(d.steps||[]).map(x=>'· '+(x.time||'')+' '+(x.where||'')+' '+(x.kind||'')).join('\n');
+    alert('배송 상태: '+(d.levelName||'-')+(d.complete?' (배송완료)':'')
+      +'\n'+(d.company||'')+' '+(d.invoice||'')+'\n\n'+lines);
     load();
   }).catch(()=>alert('네트워크 오류가 발생했습니다.'));
 }
+/* 현금영수증 — 이 단추는 토스페이먼츠 API 를 부르고 있었습니다.
+   저희 결제사는 이지페이(KICC)라 늘 실패했습니다.
+   이지페이는 결제할 때 함께 발급하므로, 뒤늦은 발급은 가맹점 관리자에서 합니다. */
 function openCash(no){
-  const num=prompt('현금영수증 발급 번호를 입력하세요.\n(개인: 휴대폰번호 / 사업자: 사업자등록번호)');
-  if(!num)return;
-  const biz=confirm('사업자 지출증빙으로 발급할까요?\n[확인] 지출증빙  /  [취소] 소득공제');
-  call({action:'cashReceipt',orderId:no,registrationNumber:num,type:biz?'business':'person'})
-  .then(({ok,d})=>{if(ok&&d.ok){alert('현금영수증이 발급되었습니다.');load();}
-    else alert(d.error||'발급에 실패했습니다.');})
-  .catch(()=>alert('네트워크 오류가 발생했습니다.'));
+  alert('현금영수증은 이지페이 가맹점 관리자에서 발급합니다.\n\n'
+    +'office.easypay.co.kr → 거래조회 → 해당 거래 → 현금영수증\n\n'
+    +'주문번호: '+no);
 }
 let rOrder=null;
 function bankLoad(){

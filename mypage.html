@@ -161,6 +161,7 @@ window.myId = myId;
 <script src="assets/ordedit.js" defer></script>
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
+<script src="assets/orderacts.js" defer></script>
 </head>
 <body>
 <div class="topbar">마이페이지</div>
@@ -520,11 +521,12 @@ function loadOrders(){
         +'<span class="o-d">'+new Date(o.created_at).toLocaleDateString('ko-KR')+'</span></div>'
         +'<div class="o-amt">₩'+won(o.pay_amount)+'</div></div>'
         +'<div class="o-b">'+its
-      +(['pending','paid','preparing'].includes(o.status)
-        ? '<div class="o-act">'
-          + '<button type="button" data-no="' + o.order_no + '" onclick="cgMyEdit(this)">주문 수정</button>'
-          + '<button type="button" class="warn" data-no="' + o.order_no + '" onclick="cgMyCancel(this)">주문 취소</button>'
-          + '</div>' : '')
+      +(window.cgOA ? cgOA.acts(o)
+        : (['pending','paid','preparing'].includes(o.status)
+          ? '<div class="o-act">'
+            + '<button type="button" data-no="' + o.order_no + '" onclick="cgMyEdit(this)">주문 수정</button>'
+            + '<button type="button" class="warn" data-no="' + o.order_no + '" onclick="cgMyCancel(this)">주문 취소</button>'
+            + '</div>' : ''))
         +(o.tracking_no?'<br>운송장: '+esc(o.courier)+' '+esc(o.tracking_no):'')
         +(o.track_status?' · '+esc(o.track_status):'')
         +(o.refund_amount>0?'<br>환불 ₩'+won(o.refund_amount):'')
@@ -1233,6 +1235,10 @@ body:not(.logged) #area{ display:none !important }
 </script>
 
 <script>
+/* 반품·교환 뒤 목록을 다시 그립니다 */
+window.cgOAReload = function(){ if(typeof loadOrders==='function') loadOrders(); };
+window.cgOAKey = function(){ return ''; };   /* 회원은 로그인 토큰으로 확인합니다 */
+
 /* 주문 수정 · 취소 열기 */
 function cgMyEdit(el){
   var no = (el && el.dataset && el.dataset.no) || '';
