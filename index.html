@@ -875,7 +875,17 @@ footer { background:linear-gradient(180deg, var(--alt), #ECECF1); padding:56px 0
     if(!t) return;
     var payload=JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));
     var em=(payload && payload.email) ? payload.email : '';
-    localStorage.setItem('cg_sb',JSON.stringify({t:t,u:em.split('@')[0]||'member'}));
+    /* 갱신토큰까지 함께 저장합니다. 전에는 t·u 만 저장해서
+       1시간 뒤 토큰이 죽으면 연장할 방법이 없었습니다. */
+    if(window.cgSaveSession){
+      cgSaveSession({access_token:t, refresh_token:hp.get('refresh_token')||'',
+        expires_in:Number(hp.get('expires_in'))||3600}, em);
+    }else{
+      localStorage.setItem('cg_sb',JSON.stringify({t:t,
+        r:hp.get('refresh_token')||'',
+        e:Date.now()+3600000, exp:Math.floor(Date.now()/1000)+3600,
+        u:em.split('@')[0]||'member', em:em}));
+    }
     history.replaceState(null,'',location.pathname+location.search);
     if(typeof sync==='function') sync();
   }catch(e){}
@@ -914,6 +924,7 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
 <script src="assets/pw.js"></script>
+<script src="assets/auth.js"></script>
 </head>
 <body>
 <h1 class="sr-only">ChewGumi 츄구미 — 한입에 건강을 더하다</h1>
@@ -2192,7 +2203,7 @@ function sbSignup(){
     body: JSON.stringify({ email, password: pw }) })
     .then(r => r.json())
     .then(d => {
-      if (d.access_token) { sbSetSession(d.access_token, email); sbMsg('가입 완료! 이제 글을 쓸 수 있습니다.'); }
+      if (d.access_token) { window._sbAuth = d; sbSetSession(d.access_token, email); sbMsg('가입 완료! 이제 글을 쓸 수 있습니다.'); }
       else if (d.id || (d.user && d.user.id)) sbMsg('가입 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 로그인해 주세요.');
       else sbMsg(d.msg || d.error_description || '가입에 실패했습니다. 이미 가입된 이메일일 수 있어요.');
     }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
@@ -2204,13 +2215,18 @@ function sbLogin(){
     body: JSON.stringify({ email, password: pw }) })
     .then(r => r.json())
     .then(d => {
-      if (d.access_token) { sbSetSession(d.access_token, email); sbMsg(''); }
+      if (d.access_token) { window._sbAuth = d; sbSetSession(d.access_token, email); sbMsg(''); }
       else sbMsg('로그인 실패: 이메일·비밀번호를 확인하거나, 가입 메일 인증을 먼저 완료해 주세요.');
     }).catch(() => sbMsg('네트워크 오류가 발생했습니다.'));
 }
 function sbSetSession(t, email){
   sbToken = t; sbUser = email.split('@')[0];
-  try { localStorage.setItem('cg_sb', JSON.stringify({ t: sbToken, u: sbUser })); } catch(e){}
+  try {
+    /* 갱신토큰이 있으면 함께 저장해야 로그인이 유지됩니다 */
+    if (window.cgSaveSession && window._sbAuth && window._sbAuth.access_token)
+      cgSaveSession(window._sbAuth, email);
+    else localStorage.setItem('cg_sb', JSON.stringify({ t: sbToken, u: sbUser }));
+  } catch(e){}
   sbSyncWriteUI();
 }
 function sbPost(){

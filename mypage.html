@@ -162,6 +162,7 @@ window.myId = myId;
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
 <script src="assets/orderacts.js" defer></script>
+<script src="assets/auth.js"></script>
 </head>
 <body>
 <div class="topbar">마이페이지</div>
@@ -321,7 +322,14 @@ function doLogin(){
     body:JSON.stringify({email,password:pw})})
   .then(r=>r.json()).then(d=>{
     if(d.access_token){token=d.access_token;who=email.split('@')[0];
-      try{localStorage.setItem('cg_sb',JSON.stringify({t:token,u:who}));}catch(e){}
+      try{
+        /* 갱신토큰까지 저장 — 없으면 1시간 뒤 로그인 화면이 다시 뜹니다 */
+        if(window.cgSaveSession) cgSaveSession(d, email);
+        else localStorage.setItem('cg_sb',JSON.stringify({t:token,
+          r:d.refresh_token||'', e:Date.now()+((d.expires_in||3600)*1000),
+          exp:Math.floor(Date.now()/1000)+(d.expires_in||3600),
+          u:who, em:email}));
+      }catch(e){}
       $('lmsg').textContent='';sync();}
     else $('lmsg').textContent='로그인 실패: 이메일·비밀번호를 확인하거나 가입 메일 인증을 완료해 주세요.';
   }).catch(()=>$('lmsg').textContent='네트워크 오류가 발생했습니다.');
@@ -545,7 +553,17 @@ function loadOrders(){
     if(!t) return;
     var payload=JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));
     var em=(payload && payload.email) ? payload.email : '';
-    localStorage.setItem('cg_sb',JSON.stringify({t:t,u:em.split('@')[0]||'member'}));
+    /* 갱신토큰까지 함께 저장합니다. 전에는 t·u 만 저장해서
+       1시간 뒤 토큰이 죽으면 연장할 방법이 없었습니다. */
+    if(window.cgSaveSession){
+      cgSaveSession({access_token:t, refresh_token:hp.get('refresh_token')||'',
+        expires_in:Number(hp.get('expires_in'))||3600}, em);
+    }else{
+      localStorage.setItem('cg_sb',JSON.stringify({t:t,
+        r:hp.get('refresh_token')||'',
+        e:Date.now()+3600000, exp:Math.floor(Date.now()/1000)+3600,
+        u:em.split('@')[0]||'member', em:em}));
+    }
     history.replaceState(null,'',location.pathname+location.search);
     if(typeof sync==='function') sync();
   }catch(e){}
@@ -985,22 +1003,32 @@ body:not(.logged) #area{ display:none !important }
     var s = ses();
     if (!s) { asGuest(); return; }
 
-    /* 토큰이 살아 있는지 서버에 한 번 물어봅니다 */
-    fetch(SB2 + '/rest/v1/profiles?select=id&limit=1', {
-      headers:{ apikey:K2, Authorization:'Bearer ' + s.t }
+    /* 확인하기 전에 먼저 토큰을 늘려 봅니다.
+       전에는 죽은 토큰으로 그대로 물어보고 401 이 오면 로그아웃시켜서,
+       한 시간만 지나면 로그인했는데도 로그인 화면이 다시 떴습니다. */
+    var pre = (window.cgKeepAlive ? cgKeepAlive()
+             : (window.CGAuth && CGAuth.token ? CGAuth.token()
+             : Promise.resolve(s.t)));
+
+    pre.then(function(tk){
+      var s2 = ses() || s;
+      var use = tk || s2.t;
+
+      return fetch(SB2 + '/rest/v1/profiles?select=id&limit=1', {
+        headers:{ apikey:K2, Authorization:'Bearer ' + use }
+      })
+      .then(function(r){
+        if (r.status === 401 || r.status === 403) {
+          /* 갱신까지 해봤는데도 거부 = 진짜 만료 */
+          if (window.cgClearSession) cgClearSession();
+          else { try{ localStorage.removeItem('cg_sb'); }catch(e){} }
+          asGuest();
+          return;
+        }
+        asUser(s2);
+      });
     })
-    .then(function(r){
-      if (r.status === 401 || r.status === 403) {
-        if (window.cgClearSession) cgClearSession();
-        else { try{ localStorage.removeItem('cg_sb'); }catch(e){} }
-        asGuest();
-        return;
-      }
-      asUser(s);
-      /* 원래 있던 불러오기도 실행합니다 */
-      /* sync 는 asUser 가 대신합니다 */
-    })
-    .catch(function(){ asUser(s); });
+    .catch(function(){ asUser(ses() || s); });
   }
 
   window.cgOut = function(){
