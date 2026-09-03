@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!-- ChewGumi · Supabase 메일 서식 복사 화면 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>메일 서식 복사 | CHEWGUMI ADMIN</title>
+<script src="assets/guard.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<script src="assets/tok.js"></script>
+<script src="assets/auth.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<style>
+:root{--main:#D82558;--main2:#E95073;--ink:#17171c;--gray:#797979;
+  --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62);--ok:#1F9D6B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);
+  min-height:100vh;padding:24px 14px 70px;
+  background:radial-gradient(900px 500px at 12% -5%,rgba(236,94,134,.14),transparent 60%),
+    linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:760px;margin:0 auto}
+h1{font-size:22px;margin-bottom:6px}
+.sub{font-size:12px;color:var(--gray);margin-bottom:20px;line-height:1.7}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:20px;
+  padding:18px;margin-bottom:14px;backdrop-filter:blur(20px) saturate(120%);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  box-shadow:0 10px 26px rgba(0,0,0,.06)}
+.panel h2{font-size:14px;margin-bottom:4px}
+.panel .d{font-size:11.5px;color:var(--gray);line-height:1.7;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.cp{min-height:46px;padding:12px 20px;border:0;border-radius:999px;
+  background:linear-gradient(135deg,var(--main2),var(--main));color:#fff;
+  font-size:13px;font-weight:700;box-shadow:0 6px 16px rgba(216,37,88,.26)}
+.cp.g{background:rgba(255,255,255,.86);color:var(--ink);
+  border:1px solid rgba(0,0,0,.1);box-shadow:none}
+.cp.ok{background:linear-gradient(135deg,#3FA76F,var(--ok))}
+pre{background:rgba(255,255,255,.78);border:1px solid rgba(0,0,0,.07);
+  border-radius:12px;padding:12px;font-size:10.5px;line-height:1.55;
+  max-height:190px;overflow:auto;white-space:pre-wrap;word-break:break-all;
+  font-family:ui-monospace,Menlo,Consolas,monospace}
+.step{counter-reset:s;list-style:none}
+.step li{position:relative;padding:9px 0 9px 34px;font-size:13px;line-height:1.75;
+  border-bottom:1px solid rgba(0,0,0,.05)}
+.step li:last-child{border-bottom:0}
+.step li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:9px;
+  width:22px;height:22px;border-radius:50%;background:var(--main);color:#fff;
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.go{display:inline-flex;align-items:center;min-height:46px;padding:0 18px;
+  border-radius:999px;background:linear-gradient(135deg,var(--main2),var(--main));
+  color:#fff;font-size:13px;font-weight:700;text-decoration:none;
+  box-shadow:0 6px 16px rgba(216,37,88,.26)}
+.note{font-size:11.5px;color:var(--gray);line-height:1.8;margin-top:10px}
+.warn{background:rgba(224,144,43,.1);border:1px solid rgba(224,144,43,.3);
+  color:#8a5a10;border-radius:14px;padding:12px 14px;font-size:12px;line-height:1.75}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>메일 서식 복사</h1>
+  <p class="sub">Supabase 가입 확인·비밀번호 재설정 메일을 츄구미 서식으로 바꿉니다.<br>
+    단추를 눌러 복사한 뒤 Supabase 대시보드에 붙여넣으세요.</p>
+
+  <div class="panel">
+    <h2>어디에 넣나요</h2>
+    <p class="d">Supabase 대시보드 → Authentication → Emails → Templates</p>
+    <a class="go" href="https://supabase.com/dashboard/project/psynvpuedzjvytsgdhgg/auth/templates"
+       target="_blank" rel="noopener">대시보드 열기 →</a>
+    <ol class="step" style="margin-top:14px">
+      <li>왼쪽에서 <b>Confirm signup</b> 선택</li>
+      <li>아래 <b>제목 복사</b> → Subject heading 에 붙여넣기</li>
+      <li>아래 <b>본문 복사</b> → Message body 를 통째로 바꾸기</li>
+      <li><b>Save</b></li>
+      <li><b>Reset password</b> 도 같은 방법으로</li>
+    </ol>
+  </div>
+
+  <div class="panel">
+    <h2>① 회원가입 확인</h2>
+    <p class="d">로고 + 트래블잇·듀잇 사진이 들어갑니다.</p>
+    <div class="row">
+      <button class="cp" onclick="cp('s1',this)">제목 복사</button>
+      <button class="cp" onclick="cp('b1',this)">본문 복사</button>
+      <button class="cp g" onclick="tg('p1')">본문 보기</button>
+    </div>
+    <pre id="s1">[츄구미] 이메일 확인만 하면 가입이 끝납니다</pre>
+    <pre id="p1" style="display:none"></pre>
+  </div>
+
+  <div class="panel">
+    <h2>② 비밀번호 재설정</h2>
+    <p class="d">상품 사진은 뺐습니다. 비밀번호를 잃어버린 상황이라 광고처럼 보이면 거슬립니다.</p>
+    <div class="row">
+      <button class="cp" onclick="cp('s2',this)">제목 복사</button>
+      <button class="cp" onclick="cp('b2',this)">본문 복사</button>
+      <button class="cp g" onclick="tg('p2')">본문 보기</button>
+    </div>
+    <pre id="s2">[츄구미] 비밀번호를 새로 정해 주세요</pre>
+    <pre id="p2" style="display:none"></pre>
+  </div>
+
+  <div class="panel">
+    <h2>함께 확인할 것 — Site URL</h2>
+    <p class="d">이게 맞아야 메일 링크를 눌렀을 때 자사몰로 제대로 돌아옵니다.<br>
+      Authentication → URL Configuration</p>
+    <div class="row"><button class="cp g" onclick="cp('u1',this)">복사</button></div>
+    <pre id="u1">Site URL
+https://shop.chewgumi.com
+
+Redirect URLs
+https://shop.chewgumi.com/**
+https://shop.chewgumi.com/mypage.html
+https://shop.chewgumi.com/reset.html</pre>
+  </div>
+
+  <div class="panel">
+    <div class="warn">
+      <b>메일이 아예 안 나가는 상태입니다.</b><br>
+      Resend 도메인 인증(#104 네임서버)이 끝나기 전까지는 서식을 넣어도
+      메일이 발송되지 않습니다.<br><br>
+      급하면 <b>Gmail 로 임시 발송</b>할 수 있습니다 —
+      Project Settings → Authentication → SMTP Settings 에
+      smtp.gmail.com / 587 / chewgumi24@gmail.com / 앱 비밀번호.
+      이러면 가입 확인·비밀번호 재설정 메일은 오늘 바로 나갑니다.
+    </div>
+    <p class="note">앱 비밀번호는
+      <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener"
+         style="text-decoration:underline">myaccount.google.com/apppasswords</a>
+      에서 만듭니다. (2단계 인증이 켜져 있어야 메뉴가 보입니다)</p>
+  </div>
+</div>
+
+<script>
+/* 메일에서는 flex·background-image 가 안 먹습니다. table·img 로만 짰습니다. */
+var IMG = 'https://shop.chewgumi.com/';
+
+function shell(title, desc, btn, extra){
+  return ''
++'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FDF3F5;padding:32px 12px;font-family:\'Apple SD Gothic Neo\',\'Malgun Gothic\',sans-serif">\n'
++'<tr><td align="center">\n'
++'  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#ffffff;border-radius:22px;overflow:hidden;box-shadow:0 8px 28px rgba(216,37,88,.10)">\n'
++'    <tr><td align="center" style="padding:34px 28px 10px">\n'
++'      <img src="'+IMG+'logo.png" alt="ChewGumi" width="132" style="display:block;border:0;width:132px;height:auto">\n'
++'    </td></tr>\n'
++'    <tr><td align="center" style="padding:6px 28px 0">\n'
++'      <div style="font-size:20px;font-weight:800;color:#17171c;letter-spacing:-.3px">'+title+'</div>\n'
++'      <div style="font-size:14px;color:#797979;line-height:1.8;margin-top:12px">'+desc+'</div>\n'
++'    </td></tr>\n'
++'    <tr><td align="center" style="padding:24px 28px 6px">\n'
++'      <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:16px 44px;border-radius:999px;background:#D82558;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none">'+btn+'</a>\n'
++'    </td></tr>\n'
++'    <tr><td align="center" style="padding:4px 28px 22px">\n'
++'      <div style="font-size:11.5px;color:#a0a0a8;line-height:1.7">단추가 눌리지 않으면 아래 주소를 붙여 넣어 주세요<br>\n'
++'        <span style="color:#c0c0c8;word-break:break-all">{{ .ConfirmationURL }}</span></div>\n'
++'    </td></tr>\n'
++ extra
++'  </table>\n'
++'  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px">\n'
++'    <tr><td align="center" style="padding:18px 20px 6px">\n'
++'      <div style="font-size:11px;color:#a0a0a8;line-height:1.8">본인이 신청하지 않으셨다면 이 메일을 지워 주세요.<br>\n'
++'        ChewGumi · 서울 용산구 청파로47길 46 205호<br>chewgumi24@gmail.com · 010-5702-2430</div>\n'
++'    </td></tr>\n'
++'  </table>\n'
++'</td></tr>\n</table>';
+}
+
+var PRODUCTS = ''
++'    <tr><td style="padding:0 28px"><div style="height:1px;background:#f0e6ea"></div></td></tr>\n'
++'    <tr><td align="center" style="padding:22px 28px 6px">\n'
++'      <div style="font-size:12.5px;font-weight:700;color:#17171c;margin-bottom:14px">확인이 끝나면 바로 만나보실 수 있어요</div>\n'
++'    </td></tr>\n'
++'    <tr><td align="center" style="padding:0 22px 8px">\n'
++'      <table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>\n'
++'        <td width="50%" align="center" style="padding:0 5px">\n'
++'          <img src="'+IMG+'assets/banner-travel.png" alt="트래블잇" width="200" style="display:block;border:0;width:100%;max-width:200px;height:auto;border-radius:14px">\n'
++'          <div style="font-size:12px;color:#797979;margin-top:8px">트래블잇</div></td>\n'
++'        <td width="50%" align="center" style="padding:0 5px">\n'
++'          <img src="'+IMG+'assets/banner-dew.png" alt="듀잇" width="200" style="display:block;border:0;width:100%;max-width:200px;height:auto;border-radius:14px">\n'
++'          <div style="font-size:12px;color:#797979;margin-top:8px">듀잇</div></td>\n'
++'      </tr></table>\n'
++'    </td></tr>\n'
++'    <tr><td align="center" style="padding:18px 28px 30px">\n'
++'      <a href="'+IMG+'" style="font-size:12.5px;color:#D82558;text-decoration:underline">츄구미 둘러보기</a>\n'
++'    </td></tr>\n';
+
+var TAIL = '    <tr><td style="padding:0 0 24px"></td></tr>\n';
+
+var BODY = {
+  b1: shell('이메일만 확인하면 끝나요',
+            '츄구미에 오신 것을 환영합니다.<br>아래 단추를 눌러 이메일을 확인해 주세요.',
+            '이메일 확인하기', PRODUCTS),
+  b2: shell('비밀번호를 새로 정해 주세요',
+            '아래 단추를 누르면 새 비밀번호를 정하는 화면으로 갑니다.<br>이 링크는 1시간 뒤에 만료됩니다.',
+            '비밀번호 새로 정하기', TAIL)
+};
+
+document.getElementById('p1').textContent = BODY.b1;
+document.getElementById('p2').textContent = BODY.b2;
+
+function tg(id){
+  var e = document.getElementById(id);
+  e.style.display = (e.style.display === 'none') ? '' : 'none';
+}
+
+function cp(id, btn){
+  var t = BODY[id] || document.getElementById(id).textContent;
+  var done = function(){
+    var was = btn.textContent;
+    btn.textContent = '복사했습니다'; btn.classList.add('ok');
+    setTimeout(function(){ btn.textContent = was; btn.classList.remove('ok'); }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done, function(){ fallback(t); });
+  } else fallback(t);
+
+  function fallback(v){
+    var ta = document.createElement('textarea');
+    ta.value = v; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); }
+    catch(e){ alert('복사가 안 됩니다. 본문 보기를 눌러 직접 복사해 주세요.'); }
+    ta.remove();
+  }
+}
+</script>
+</body>
+</html>
