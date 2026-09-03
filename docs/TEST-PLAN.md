@@ -562,14 +562,14 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 
 ---
 
-# 열린 이슈 46건 — 전체 목록
+# 열린 이슈 45건 — 전체 목록
 
 > 2026-09-03 기준. `회차` 는 위 테스트 순서와 물린 곳입니다.
 
 
-## 🔴 오픈을 막는 것 — 대표님만 하실 수 있습니다 (4)
+## 🔴 오픈을 막는 것 — 대표님만 (4)
 
-이 넷이 풀려야 오픈할 수 있습니다. **#104 하나가 #73 을 함께 해결합니다.**
+이 넷이 풀려야 오픈합니다. **#104 하나가 #73 을 함께 해결합니다.**
 
 | 이슈 | 내용 | 회차 |
 |---|---|---|
@@ -578,7 +578,7 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | [#103](https://github.com/chewgumiadmin-afk/chewgumi/issues/103) | 이지페이 회신 대기 — 미결 5건 (메일 발송 완료 2026-09-03) | 7회차 |
 | [#99](https://github.com/chewgumiadmin-afk/chewgumi/issues/99) | 네이버 로그인 · 커머스 API 미연동 | — |
 
-## 🟡 대표님 답 한 줄이면 제가 처리합니다 (7)
+## 🟡 대표님 답 한 줄이면 제가 처리 (8)
 
 결정만 주시면 반나절 안에 끝납니다.
 
@@ -591,8 +591,9 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | [#58](https://github.com/chewgumiadmin-afk/chewgumi/issues/58) | [개발자][신현정] 노션 후기 반영 — 트래블잇 33건 완료 · 듀잇은 확인 필요 | — |
 | [#6](https://github.com/chewgumiadmin-afk/chewgumi/issues/6) | [결정 요청] AI 상담봇 — Claude vs ChatGPT 중 선택 | — |
 | [#93](https://github.com/chewgumiadmin-afk/chewgumi/issues/93) | [대표][윤소호] 특허·상표 검색 화면 — 브랜드 이름부터 확인해 주세요 | — |
+| [#86](https://github.com/chewgumiadmin-afk/chewgumi/issues/86) | [대표][윤소호] 오늘 할 일 — 가입·인증 일곱 가지 (2026-08-27) | — |
 
-## 🟢 제가 지금 바로 할 수 있습니다 (8)
+## 🟢 제가 지금 바로 (8)
 
 순서대로 진행하겠습니다.
 
@@ -607,9 +608,9 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | [#96](https://github.com/chewgumiadmin-afk/chewgumi/issues/96) | console — 관리자 배송 동선을 한 화면에서 (택배 API 연동) | 8회차 |
 | [#107](https://github.com/chewgumiadmin-afk/chewgumi/issues/107) | 솔라피 문자 API 미연동 — 후기 자동 요청이 안 나감 | 9회차 |
 
-## 🔵 오래된 QA 이슈 — 확인 후 닫아야 합니다 (6)
+## 🔵 오래된 QA — 확인 후 닫기 (6)
 
-8월 기록입니다. **대부분 이미 고쳐졌을 것**으로 봅니다. 하나씩 확인해 닫겠습니다.
+8월 기록입니다. **대부분 이미 고쳐졌을 것**으로 봅니다.
 
 | 이슈 | 내용 | 회차 |
 |---|---|---|
@@ -622,7 +623,7 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 
 ## ⚪ 오픈 이후 · 채널 확장 (12)
 
-오픈하고 나서 해도 되는 것들입니다.
+오픈하고 나서 해도 됩니다.
 
 | 이슈 | 내용 | 회차 |
 |---|---|---|
@@ -639,9 +640,9 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | [#7](https://github.com/chewgumiadmin-afk/chewgumi/issues/7) | [요청] 자동 운영 구축 — 주문 알림 자동 수신 + AI 봇 관리자 연결 | — |
 | [#110](https://github.com/chewgumiadmin-afk/chewgumi/issues/110) | 오픈까지 남은 것 — 전체 정리 (2026-09-03) | — |
 
-## 💡 제안 — 나중에 논의 (6)
+## 💡 제안 — 나중에 (6)
 
-업무 자동화 제안입니다. 급하지 않습니다.
+업무 자동화 제안입니다.
 
 | 이슈 | 내용 | 회차 |
 |---|---|---|
@@ -652,20 +653,21 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | [#44](https://github.com/chewgumiadmin-afk/chewgumi/issues/44) | [제안][신현정] ⑦ 메디잇 배합 데이터 교환 창구 | — |
 | [#45](https://github.com/chewgumiadmin-afk/chewgumi/issues/45) | [제안][신현정] ⑧ 매출 분석 · 마케팅 채널 | — |
 
-## 기타 (3)
+## 📄 문서·원칙 (1)
+
+작업 규칙입니다.
 
 | 이슈 | 내용 | 회차 |
 |---|---|---|
-| [#86](https://github.com/chewgumiadmin-afk/chewgumi/issues/86) | [대표][윤소호] 오늘 할 일 — 가입·인증 일곱 가지 (2026-08-27) | — |
-| [#95](https://github.com/chewgumiadmin-afk/chewgumi/issues/95) | 마이페이지 메뉴가 여러 곳에 겹쳐 보임 — 캡처 필요 | 4회차 |
 | [#108](https://github.com/chewgumiadmin-afk/chewgumi/issues/108) | 작업 원칙 — 디자인은 손대기 전에 확인받기 (UX-RULES R16) | 5회차 |
 
 ---
 
-## 닫힌 것 (오늘)
+## 오늘 닫은 것
 
 | 이슈 | 내용 |
 |---|---|
+| [#95](https://github.com/chewgumiadmin-afk/chewgumi/issues/95) | 마이페이지 메뉴 겹침 — `.util a{display:inline-flex !important}` 가 inline `display:none` 을 이기고 있었음 |
 | [#97](https://github.com/chewgumiadmin-afk/chewgumi/issues/97) | 환불 정책 — 공식몰 규정대로 자동계산 구현 |
 | [#105](https://github.com/chewgumiadmin-afk/chewgumi/issues/105) | QA 비밀번호 노출 — 확인 결과 RLS 가 이미 막고 있었음 |
 | [#109](https://github.com/chewgumiadmin-afk/chewgumi/issues/109) | 카드 매출전표 조회에 로그인 토큰 사용 |
@@ -680,4 +682,18 @@ https://shop.chewgumi.com 오른쪽 아래 상담 단추를 눌러 챗봇을 열
 | 마이페이지 네이버 단추가 503 으로 직행 | 로그인 4종 실제 확인 |
 | 중복 호출 3건 (재고 3회·영상 2회·상품 2회) | 브라우저 요청 카운트 |
 | 마이페이지에 로그인 창이 한 번 더 뜨던 것 | 대표님 신고 |
+| 게시판 원복 (`about` `qna` `review` `notice`) | 대표님 신고 |
+
+## 검사 도구
+
+```bash
+python3 tools/page-audit.py    # 디자인·세션·메뉴·동작      26개 화면
+python3 tools/flow-trace.py    # 끊긴 함수·링크·서버함수·DB표  66개 화면
+python3 tools/dead-action.py   # 눌러도 아무 일 없는 단추
+python3 tools/img-check.py     # 이미지 짝맞춤
+python3 tools/live-check.py    # 브라우저로 실제 눌러보기
+  --login qa-bot@chewgumi.com '...'   로그인 상태로도 검사
+```
+
+**2026-09-03 기준 다섯 개 모두 0건.**
 
