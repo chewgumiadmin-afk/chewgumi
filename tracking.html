@@ -98,6 +98,7 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
 <script src="assets/auth.js"></script>
+<script src="assets/orderacts.js" defer></script>
 </head>
 <body>
 <div class="topbar">배송 조회</div>
@@ -203,7 +204,7 @@ function track(){
   .then(r=>r.json().then(d=>({ok:r.ok,d})))
   .then(({ok,d})=>{
     $('go').disabled=false;
-    if(!ok||!d.ok){ $('msg').textContent=d.error||'조회에 실패했습니다.'; return; }
+    if(!ok||!d.ok){ helpBox(d.error||'조회에 실패했습니다.'); return; }
       if(d.notYet){
         $('msg').className='msg';
         $('msg').innerHTML='<b>'+esc(d.message||'준비 중입니다.')+'</b><br>'
@@ -238,8 +239,60 @@ function track(){
         bar.style.display='';
       }
       $('res').classList.add('on');
+      nextSteps(d);
     $('res').scrollIntoView({behavior:'smooth',block:'nearest'});
-  }).catch(()=>{ $('go').disabled=false; $('msg').textContent='네트워크 오류가 발생했습니다.'; });
+  }).catch(()=>{ $('go').disabled=false;
+    $('msg').textContent='네트워크 오류가 발생했습니다.'; helpBox('네트워크 오류'); });
+}
+
+/* ══════════════════════════════════════════════
+   조회 뒤 다음에 할 일을 안내합니다.
+   전에는 배송 상태만 보여주고 끝이라, 배송이 끝난 뒤
+   반품을 신청하거나 후기를 쓰려면 다른 화면을 찾아가야 했습니다.
+   ══════════════════════════════════════════════ */
+function nextSteps(d){
+  var box = document.getElementById('trkNext');
+  if(!box){
+    box = document.createElement('div');
+    box.id = 'trkNext'; box.className = 'trk-next';
+    $('res').appendChild(box);
+  }
+  var no = (tab==='order') ? $('orderNo').value.trim() : (d.orderNo || '');
+  var h = '';
+
+  if(d.complete){
+    h += '<div class="tn-t">물건은 잘 받으셨나요?</div>';
+    if(no){
+      h += '<button type="button" class="tn-b warn" data-no="'+esc(no)+'"'
+        +  ' onclick="cgOA.ret(this)">반품 · 교환 신청</button>'
+        +  '<button type="button" class="tn-b rev" data-no="'+esc(no)+'"'
+        +  ' onclick="cgOA.review(this)">후기 쓰고 적립금 받기</button>';
+    }
+    h += '<div class="tn-h">단순 변심은 받으신 날부터 7일 안에 신청하실 수 있습니다.</div>';
+  } else {
+    h += '<div class="tn-t">배송이 진행 중입니다</div>';
+  }
+  h += '<div class="tn-row">'
+    +  (no ? '<a class="tn-b" href="order-lookup.html?no='+encodeURIComponent(no)+'">주문 상세 보기</a>' : '')
+    +  '<a class="tn-b" href="'+csUrl()+'" target="_blank" rel="noopener">고객센터 문의</a>'
+    +  '</div>';
+  box.innerHTML = h;
+  box.style.display = '';
+}
+
+/* 조회가 안 될 때 — 막다른 길로 두지 않습니다 */
+function helpBox(why){
+  var m = $('msg');
+  if(!m) return;
+  m.innerHTML = esc(why) + '<div class="tn-row" style="margin-top:10px">'
+    + '<a class="tn-b" href="order-lookup.html">주문번호로 조회</a>'
+    + '<a class="tn-b" href="' + csUrl() + '" target="_blank" rel="noopener">고객센터 문의</a>'
+    + '</div>';
+}
+
+function csUrl(){
+  try{ if(window.CG_CS_URL) return window.CG_CS_URL; }catch(e){}
+  return 'https://pf.kakao.com/_lxjxjiX';
 }
 </script>
 
@@ -296,7 +349,7 @@ function track(){
   <div class="cgbot-ft">
     <input id="cgbotIn" placeholder="메시지를 입력하세요"
       onkeydown="if(event.key==='Enter')cgbotSend()">
-    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><g fill="#fff"><circle cx="12" cy="4.6" r="3"/><circle cx="7.4" cy="3.4" r="1.7"/><circle cx="16.6" cy="3.4" r="1.7"/><rect x="8.1" y="7.2" width="7.8" height="10.4" rx="3.6"/><circle cx="5.6" cy="10.4" r="2.2"/><circle cx="18.4" cy="10.4" r="2.2"/><circle cx="9.2" cy="19.4" r="2.1"/><circle cx="14.8" cy="19.4" r="2.1"/></g><g fill="#D82558"><circle cx="10.7" cy="4.3" r=".55"/><circle cx="13.3" cy="4.3" r=".55"/></g></svg></button>
+    <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/jelly-dot.png" alt="" width="24" height="24" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
   </div>
 </div>
 <script>
@@ -477,13 +530,14 @@ function track(){
 .cgbot-ft #cgbotBtn{
   width:42px;height:42px;min-width:42px;padding:0;border:0;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-  background:linear-gradient(135deg,#E95073,#D82558);
-  box-shadow:0 4px 12px rgba(216,37,88,.28);
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(216,37,88,.22);
+  box-shadow:0 4px 12px rgba(216,37,88,.16);
   font-size:17px;color:#fff;line-height:1;transition:transform .15s,filter .15s;
 }
 .cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
 .cgbot-ft #cgbotBtn:active{ transform:none }
-.cgbot-ft #cgbotBtn svg{ display:block;width:21px;height:21px }
+.cgbot-ft #cgbotBtn img{ display:block;width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)) }
 .cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
 /* 대화 지우기 */
 .cgbot-hd .cgbot-clr{
@@ -492,6 +546,19 @@ function track(){
   font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;opacity:.85
 }
 .cgbot-hd .cgbot-clr:hover{ opacity:1;background:rgba(255,255,255,.16) }
+
+/* 조회 뒤 다음 동선 (2026-09-03) */
+.trk-next{margin-top:18px;padding-top:16px;border-top:1px solid rgba(0,0,0,.08)}
+.trk-next .tn-t{font-size:13.5px;font-weight:700;margin-bottom:10px}
+.trk-next .tn-h{margin-top:10px;font-size:11.5px;color:var(--gray);line-height:1.7}
+.trk-next .tn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tn-b{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  padding:11px 16px;margin-right:8px;margin-bottom:8px;border-radius:999px;
+  font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;
+  border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.9);color:#17171c}
+.tn-b.warn{color:#C0395C;border-color:rgba(192,57,92,.3)}
+.tn-b.rev{color:#1F9D6B;border-color:rgba(31,157,107,.35);background:rgba(31,157,107,.07)}
+.tn-b:disabled{opacity:.5;cursor:default}
 </style>
 <script src="assets/lite.js" defer></script>
 <script src="assets/pwa.js" defer></script>

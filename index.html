@@ -2567,7 +2567,7 @@ setHead();
       <button id="cgbotSpk" class="cg-ic" onclick="cgbotSpeakToggle()" aria-label="음성 답변 켜기" title="음성 답변">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg>
       </button>
-      <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><g fill="#fff"><circle cx="12" cy="4.6" r="3"/><circle cx="7.4" cy="3.4" r="1.7"/><circle cx="16.6" cy="3.4" r="1.7"/><rect x="8.1" y="7.2" width="7.8" height="10.4" rx="3.6"/><circle cx="5.6" cy="10.4" r="2.2"/><circle cx="18.4" cy="10.4" r="2.2"/><circle cx="9.2" cy="19.4" r="2.1"/><circle cx="14.8" cy="19.4" r="2.1"/></g><g fill="#D82558"><circle cx="10.7" cy="4.3" r=".55"/><circle cx="13.3" cy="4.3" r=".55"/></g></svg></button>
+      <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="assets/jelly-dot.png" alt="" width="24" height="24" onerror="this.replaceWith(document.createTextNode('\u2191'))"></button>
   </div>
 </div>
 <script>
@@ -12554,13 +12554,14 @@ td.c-th.no::after{ content:'—'; color:#d6d6dc; font-size:13px }
 .cgbot-ft #cgbotBtn{
   width:42px;height:42px;min-width:42px;padding:0;border:0;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-  background:linear-gradient(135deg,#E95073,#D82558);
-  box-shadow:0 4px 12px rgba(216,37,88,.28);
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(216,37,88,.22);
+  box-shadow:0 4px 12px rgba(216,37,88,.16);
   font-size:17px;color:#fff;line-height:1;transition:transform .15s,filter .15s;
 }
 .cgbot-ft #cgbotBtn:hover{ transform:translateY(-1px);filter:brightness(1.06) }
 .cgbot-ft #cgbotBtn:active{ transform:none }
-.cgbot-ft #cgbotBtn svg{ display:block;width:21px;height:21px }
+.cgbot-ft #cgbotBtn img{ display:block;width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)) }
 .cgbot-ft #cgbotBtn:disabled{ opacity:.5;cursor:default;transform:none }
 /* 대화 지우기 */
 .cgbot-hd .cgbot-clr{
