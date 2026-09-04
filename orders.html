@@ -43,7 +43,12 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .msg{font-size:12px;color:var(--gray);margin-top:8px;min-height:16px}
 /* 통계 */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.stat{background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:16px;padding:16px}
+.stat{background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:16px;padding:16px;
+  display:block;width:100%;text-align:left;font-family:inherit;cursor:pointer;
+  transition:background .15s,transform .15s,box-shadow .15s}
+.stat:hover{background:rgba(255,255,255,.95);transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(216,37,88,.10)}
+.stat:active{transform:none}
 .stat .l{font-size:11.5px;color:var(--gray)}
 .stat .v{margin-top:6px;font-size:22px;font-weight:800;color:var(--main)}
 .stat .u{font-size:11px;color:var(--gray);margin-left:3px;font-weight:500}
@@ -410,10 +415,10 @@ label:has(> input[type=checkbox]){
     <div class="panel">
       <h2>매출 현황</h2>
       <div class="stats">
-        <div class="stat"><div class="l">오늘 결제</div><div class="v"><span id="tAmt">0</span><span class="u">원</span></div><div class="l"><span id="tCnt">0</span>건</div></div>
-        <div class="stat"><div class="l">이번 달 결제</div><div class="v"><span id="mAmt">0</span><span class="u">원</span></div><div class="l"><span id="mCnt">0</span>건</div></div>
-        <div class="stat"><div class="l">배송 준비</div><div class="v" id="cPrep">0</div><div class="l">건</div></div>
-        <div class="stat"><div class="l">배송 중</div><div class="v" id="cShip">0</div><div class="l">건</div></div>
+        <button class="stat" type="button" onclick="setS('paid')" aria-label="오늘 결제된 주문 보기"><div class="l">오늘 결제</div><div class="v"><span id="tAmt">0</span><span class="u">원</span></div><div class="l"><span id="tCnt">0</span>건</div></button>
+        <button class="stat" type="button" onclick="setS('all')" aria-label="이번 달 주문 보기"><div class="l">이번 달 결제</div><div class="v"><span id="mAmt">0</span><span class="u">원</span></div><div class="l"><span id="mCnt">0</span>건</div></button>
+        <button class="stat" type="button" onclick="setS('todo')" aria-label="보낼 주문 보기"><div class="l">배송 준비</div><div class="v"><span id="cPrep">0</span><span class="u">건</span></div><div class="l">눌러서 보기</div></button>
+        <button class="stat" type="button" onclick="setS('shipping')" aria-label="배송 중 주문 보기"><div class="l">배송 중</div><div class="v"><span id="cShip">0</span><span class="u">건</span></div><div class="l">눌러서 보기</div></button>
       </div>
     </div>
 
@@ -617,15 +622,20 @@ function load(){
 }
 
 function stats(){
-  const today=new Date().toISOString().slice(0,10);
-  const month=today.slice(0,7);
+  /* 한국 시간(KST) 기준으로 셉니다. toISOString() 은 UTC 라
+     그대로 쓰면 오전 9시에 하루가 바뀌어 아침 주문이 어제로 잡혔습니다. */
+  const KST = d => new Date(new Date(d).getTime() + 9*3600*1000)
+                     .toISOString().slice(0,10);
+  const today = KST(Date.now());
+  const month = today.slice(0,7);
   const paidL=['paid','preparing','shipping','delivered'];
   let ta=0,tc=0,ma=0,mc=0,cp=0,cs=0;
   ORD.forEach(o=>{
-    const d=(o.paid_at||o.created_at||'').slice(0,10);
+    const src=o.paid_at||o.created_at;
+    const d=src?KST(src):'';
     if(paidL.includes(o.status)){
-      if(d===today){ta+=o.pay_amount;tc++;}
-      if(d.slice(0,7)===month){ma+=o.pay_amount;mc++;}
+      if(d===today){ta+=Number(o.pay_amount)||0;tc++;}
+      if(d.slice(0,7)===month){ma+=Number(o.pay_amount)||0;mc++;}
     }
     if(o.status==='preparing'||o.status==='paid')cp++;
     if(o.status==='shipping')cs++;
