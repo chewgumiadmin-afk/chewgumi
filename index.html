@@ -2572,13 +2572,11 @@ setHead();
   <div class="cgbot-body" id="cgbotBody"></div>
   <div class="cgbot-note">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>
   <div class="cgbot-ft">
-    <button id="cgbotMic" class="cg-ic" onclick="cgbotMic()" aria-label="음성으로 말하기" title="음성으로 말하기">
+    <button id="cgVoiceBtn" class="cg-ic" type="button" title="꾹 눌러 말하기 · 짧게 눌러 음성답변">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M18 11a6 6 0 0 1-12 0M12 17v4M9 21h6"/></svg>
+        <span class="cg-spk" aria-hidden="true"></span>
       </button>
       <input id="cgbotIn" placeholder="말하거나 입력하세요" onkeydown="if(event.key==='Enter')cgbotSend()">
-      <button id="cgbotSpk" class="cg-ic" onclick="cgbotSpeakToggle()" aria-label="음성 답변 켜기" title="음성 답변">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg>
-      </button>
       <button id="cgbotBtn" onclick="cgbotSend()" aria-label="보내기" title="보내기"><img src="logo.png" alt="" class="send-logo" onerror="this.onerror=null;this.src='assets/logo-rainbow.png'"></button>
   </div>
 </div>
@@ -2728,7 +2726,7 @@ setHead();
     if(w.classList.contains('on')){
       if(!started){
         started=true;
-        add('bot','안녕하세요, 츄구미입니다.\n\n이런 것들을 도와드릴 수 있어요.\n\n· 상품·성분·배송·환불 안내\n· "트래블잇 3봉 주문할게요" 하시면 바로 담아드립니다\n· 아래 마이크를 누르면 말로 주문하실 수 있어요\n· 스피커를 켜면 답변을 읽어드립니다\n\n무엇을 도와드릴까요?');
+        add('bot','안녕하세요, 츄구미입니다.\n\n이런 것들을 도와드릴 수 있어요.\n\n· 상품·성분·배송·환불 안내\n· "트래블잇 3봉 주문할게요" 하시면 바로 담아드립니다\n· 마이크를 꾹 누른 채 말씀하시면 그대로 보내드립니다\n· 마이크를 짧게 누르면 답변을 읽어드립니다\n\n무엇을 도와드릴까요?');
         quick();
         fetch(SB+'/functions/v1/chat',{method:'POST',
           headers:{'Content-Type':'application/json',apikey:KEY},
@@ -3438,6 +3436,14 @@ section{padding:44px 0}
 @keyframes micPulse{0%{transform:scale(.9);opacity:.8}70%{transform:scale(1.35);opacity:0}100%{opacity:0}}
 .cgbot-ft input{flex:1;min-width:0}
 @media(max-width:400px){.cgbot-ft .cg-ic{width:36px;height:36px}}
+/* 통합 음성 버튼 (cgVoiceBtn) */
+.cgbot-ft .cg-ic{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+.cgbot-ft .cg-ic .cg-spk{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;
+  border-radius:50%;background:#22B573;border:2px solid #fff;display:none}
+.cgbot-ft .cg-ic.on .cg-spk{display:block}
+.cgbot-ft .cg-ic.cancel{background:#F1F2F4;border-color:rgba(0,0,0,.14)}
+.cgbot-ft .cg-ic.cancel svg{stroke:#9AA0A6}
+.cgbot-ft .cg-ic.cancel::after{display:none}
 
 @media(max-width:860px){
   
@@ -3473,17 +3479,38 @@ section{padding:44px 0}
 .lite .video-card video{display:none}
 </style>
 <script>
-/* ═══ 음성 입력·출력 ═══ */
+/* ═══ 음성 입력·출력 — cgVoiceBtn 통합 (1단계) ═══
+   꾹 누르는 동안 듣기 → 떼면 자동 전송 + 답변 자동 낭독
+   짧게 탭 = 음성답변 켜기·끄기 / 누른 채 위로 밀면 취소 / 무음 1.2초면 자동 종료 */
 (function(){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var rec = null, listening = false, speakOn = false;
+  var rec = null, listening = false, starting = false, speakOn = false;
+  var pressing = false, held = false, cancelled = false, startY = 0;
+  var silenceTimer = null, holdTimer = null, speakOnce = false;
+  var gotSpeech = false;
+  var HOLD_MS = 320, SILENCE_MS = 1200, CANCEL_PX = 60;
+
   try{ speakOn = localStorage.getItem('cg_tts')==='1'; }catch(e){}
 
   function el(id){ return document.getElementById(id); }
+  function btn(){ return el('cgVoiceBtn'); }
+  function ph(t){ var i = el('cgbotIn'); if(i) i.placeholder = t; }
+  function resetPh(){ ph('말하거나 입력하세요'); }
 
-  /* 음성 답변 읽어주기 */
+  function paint(){
+    var b = btn(); if(!b) return;
+    b.classList.toggle('on', speakOn && !listening);
+    b.classList.toggle('rec', listening && !cancelled);
+    b.classList.toggle('cancel', listening && cancelled);
+    b.setAttribute('aria-label', listening ? '듣는 중 — 손을 떼면 보냅니다'
+      : (speakOn ? '꾹 눌러 말하기 · 짧게 눌러 음성답변 끄기'
+                 : '꾹 눌러 말하기 · 짧게 눌러 음성답변 켜기'));
+  }
+
+  /* 답변 읽어주기 — 음성으로 물어본 경우에는 한 번만 자동으로 읽습니다 */
   window.cgbotSpeak = function(text){
-    if(!speakOn || !window.speechSynthesis) return;
+    var once = speakOnce; speakOnce = false;
+    if(!(speakOn || once) || !window.speechSynthesis) return;
     try{
       speechSynthesis.cancel();
       var t = String(text||'').replace(/https?:\/\/\S+/g,'링크').slice(0,300);
@@ -3492,64 +3519,142 @@ section{padding:44px 0}
       speechSynthesis.speak(u);
     }catch(e){}
   };
+
   window.cgbotSpeakToggle = function(){
     speakOn = !speakOn;
     try{ localStorage.setItem('cg_tts', speakOn?'1':'0'); }catch(e){}
-    var b = el('cgbotSpk');
-    if(b){ b.classList.toggle('on', speakOn);
-      b.setAttribute('aria-label', speakOn?'음성 답변 끄기':'음성 답변 켜기'); }
-    if(!speakOn && window.speechSynthesis) speechSynthesis.cancel();
+    if(!speakOn && window.speechSynthesis){ try{ speechSynthesis.cancel(); }catch(e){} }
+    ph(speakOn ? '음성 답변을 켰습니다' : '음성 답변을 껐습니다');
+    setTimeout(resetPh, 1600);
+    paint();
   };
 
-  /* 음성으로 말하기 */
-  window.cgbotMic = function(){
-    if(!SR){
-      alert('이 브라우저는 음성 입력을 지원하지 않습니다.\n크롬 또는 삼성 인터넷에서 이용해 주세요.');
-      return;
-    }
-    var b = el('cgbotMic');
-    if(listening){ try{ rec.stop(); }catch(e){} return; }
+  function clearSilence(){ if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer = null; } }
+  function bumpSilence(){ clearSilence();
+    silenceTimer = setTimeout(function(){ stopListen(false); }, SILENCE_MS); }
 
-    rec = new SR();
+  function startListen(){
+    if(listening || starting) return;
+    if(!SR) return;
+    /* 2단계(cgVoiceGuard) 연결 지점 — 비밀번호·카드번호 칸에서는 듣지 않습니다 */
+    if(typeof window.cgVoiceBlocked === 'function' && window.cgVoiceBlocked()) return;
+    cancelled = false; gotSpeech = false; starting = true;
+    try{ rec = new SR(); }catch(e){ starting = false; return; }
     rec.lang='ko-KR'; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
 
-    rec.onstart = function(){
-      listening = true;
-      if(b) b.classList.add('rec');
-      var i = el('cgbotIn');
-      if(i){ i.placeholder='듣고 있습니다…'; }
-    };
+    rec.onstart = function(){ starting = false; listening = true; paint(); ph('듣고 있습니다…'); bumpSilence(); };
     rec.onresult = function(e){
-      var t='';
+      var t = '';
       for(var k=0;k<e.results.length;k++) t += e.results[k][0].transcript;
-      var i = el('cgbotIn');
-      if(i) i.value = t;
-      if(e.results[e.results.length-1].isFinal){
-        setTimeout(function(){ if(window.cgbotSend) cgbotSend(); }, 260);
-      }
+      gotSpeech = true;
+      var i = el('cgbotIn'); if(i && !cancelled) i.value = t;
+      bumpSilence();
+      if(e.results[e.results.length-1].isFinal) stopListen(false);
     };
     rec.onerror = function(e){
-      listening=false;
-      if(b) b.classList.remove('rec');
-      var i = el('cgbotIn'); if(i) i.placeholder='말하거나 입력하세요';
-      if(e.error==='not-allowed')
+      clearSilence(); starting = false; listening = false; paint(); resetPh();
+      if(e && e.error === 'not-allowed')
         alert('마이크 사용이 차단되어 있습니다.\n브라우저 주소창의 자물쇠를 눌러 마이크를 허용해 주세요.');
     };
     rec.onend = function(){
-      listening=false;
-      if(b) b.classList.remove('rec');
-      var i = el('cgbotIn'); if(i) i.placeholder='말하거나 입력하세요';
+      clearSilence(); starting = false; listening = false; paint();
+      var i = el('cgbotIn');
+      if(cancelled){ if(i) i.value = ''; ph('취소했습니다'); setTimeout(resetPh, 1200); return; }
+      resetPh();
+      if(gotSpeech && i && i.value.replace(/\s/g,'')){
+        speakOnce = true;
+        setTimeout(function(){ speakOnce = false; }, 30000);
+        setTimeout(function(){ if(window.cgbotSend) cgbotSend(); }, 200);
+      }
     };
-    try{ rec.start(); }catch(e){}
-  };
+    try{ rec.start(); }catch(e){ starting = false; paint(); }
+  }
 
-  /* 초기 상태 반영 */
-  document.addEventListener('DOMContentLoaded', function(){
-    var b = el('cgbotSpk');
-    if(b) b.classList.toggle('on', speakOn);
-    if(!SR){ var m = el('cgbotMic'); if(m) m.style.display='none'; }
-  });
+  function stopListen(cancel){
+    if(cancel) cancelled = true;
+    clearSilence();
+    if(rec){ try{ rec.stop(); }catch(e){ try{ rec.abort(); }catch(e2){} } }
+    else { listening = false; starting = false; paint(); }
+  }
+  window.cgVoiceStop = function(){ stopListen(true); };
+
+  function yOf(ev){
+    if(ev.touches && ev.touches[0]) return ev.touches[0].clientY;
+    if(ev.changedTouches && ev.changedTouches[0]) return ev.changedTouches[0].clientY;
+    return ev.clientY || 0;
+  }
+  function onDown(ev){
+    var b = btn(); if(!b) return;
+    if(ev.pointerType === 'mouse' && ev.button !== 0) return;
+    pressing = true; held = false; cancelled = false; startY = yOf(ev);
+    if(holdTimer) clearTimeout(holdTimer);
+    holdTimer = setTimeout(function(){
+      if(!pressing) return;
+      held = true;
+      if(!SR){ alert('이 브라우저는 음성 입력을 지원하지 않습니다.\n크롬 또는 삼성 인터넷에서 이용해 주세요.'); return; }
+      startListen();
+    }, HOLD_MS);
+    try{ if(b.setPointerCapture && ev.pointerId != null) b.setPointerCapture(ev.pointerId); }catch(e){}
+  }
+  function onMove(ev){
+    if(!pressing || !held) return;
+    var was = cancelled;
+    cancelled = (startY - yOf(ev)) > CANCEL_PX;
+    if(cancelled !== was){ paint(); ph(cancelled ? '손을 떼면 취소됩니다' : '듣고 있습니다…'); }
+  }
+  function onUp(){
+    if(!pressing) return;
+    pressing = false;
+    if(holdTimer){ clearTimeout(holdTimer); holdTimer = null; }
+    if(held) stopListen(cancelled);
+    else window.cgbotSpeakToggle();
+    held = false;
+  }
+  function onAbort(){
+    pressing = false;
+    if(holdTimer){ clearTimeout(holdTimer); holdTimer = null; }
+    if(held) stopListen(true);
+    held = false;
+  }
+
+  function bind(){
+    var b = btn(); if(!b || b.__cgv) return; b.__cgv = 1;
+    b.style.touchAction = 'none';
+    if(window.PointerEvent){
+      b.addEventListener('pointerdown', onDown);
+      b.addEventListener('pointermove', onMove);
+      b.addEventListener('pointerup', onUp);
+      b.addEventListener('pointercancel', onAbort);
+    }else{
+      b.addEventListener('touchstart', function(e){ e.preventDefault(); onDown(e); }, false);
+      b.addEventListener('touchmove', onMove, false);
+      b.addEventListener('touchend', onUp, false);
+      b.addEventListener('touchcancel', onAbort, false);
+      b.addEventListener('mousedown', onDown);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+    b.addEventListener('click', function(e){ e.preventDefault(); });
+    b.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    /* 키보드 접근성 — 스페이스·엔터를 누르는 동안 듣습니다 */
+    b.addEventListener('keydown', function(e){
+      if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); if(SR) startListen(); }
+    });
+    b.addEventListener('keyup', function(e){
+      if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault();
+        if(listening || starting) stopListen(false); else window.cgbotSpeakToggle(); }
+    });
+    if(!SR) b.title = '음성 답변 켜기·끄기 (이 브라우저는 음성 입력을 지원하지 않습니다)';
+    paint();
+  }
+
+  /* 이전 이름 호환 */
+  window.cgbotMic = function(){ if(listening) stopListen(false); else startListen(); };
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
 })();
+
 </script>
 <script src="assets/pwa.js" defer></script>
 
