@@ -60,10 +60,11 @@
 .tabs a:active{transform:scale(.96) !important}
 
 /* ── 입력 ── */
+/* iOS는 입력칸 글자가 16px 미만이면 포커스 시 화면을 자동 확대한다 → 16px 고정 */
 input,select,textarea{
   min-height:var(--h-md);
   padding:0 14px;border-radius:14px !important;
-  font-size:var(--fs-md) !important;font-family:inherit}
+  font-size:16px !important;font-family:inherit}
 textarea{padding:12px 14px;min-height:80px;line-height:1.7}
 label{font-size:var(--fs-sm) !important;font-weight:600 !important}
 
