@@ -156,3 +156,11 @@ input::placeholder,textarea::placeholder{color:#b4b4bc}
 a:focus-visible,button:focus-visible,input:focus-visible,
 select:focus-visible,textarea:focus-visible{
   outline:2px solid var(--main2);outline-offset:2px}
+
+/* ── 폰에서 입력칸을 누르면 화면이 확 커지던 문제 (UX-RULES R15) ──
+   위 규칙이 !important 로 13.5px 을 못 박고 있어 화면마다 고쳐도 듣지 않습니다.
+   관리자 화면 24곳을 여기 한 곳에서 되돌립니다. */
+@media (max-width:640px){
+  input:not([type=checkbox]):not([type=radio]):not([type=hidden]),
+  select,textarea{ font-size:16px !important }
+}
