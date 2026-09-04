@@ -375,7 +375,8 @@ const SB='https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
-const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+function tok(){try{return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||KEY;}catch(e){return KEY;}}
+const H={apikey:KEY,Authorization:'Bearer '+tok(),'Content-Type':'application/json'};
 
 let ASSETS=[], REPORTS=[], CUR=null;
 
