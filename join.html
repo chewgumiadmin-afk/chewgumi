@@ -299,7 +299,7 @@ window.CG_NAVER_READY = false;
 /* 카카오 비즈 앱 전환 전까지 막습니다 (#13).
    설정·연결은 정상인데 account_email 권한이 없어
    로그인 화면까지 갔다가 조용히 실패합니다. 가입자 0명. */
-window.CG_KAKAO_READY = false;   /* 네이버 Edge Function 배포 후 true */
+window.CG_KAKAO_READY = true;   /* 네이버 Edge Function 배포 후 true */
 function sso(provider){
   var m=document.getElementById('ssoMsg');
   var NAME={google:'구글',kakao:'카카오',naver:'네이버'};
