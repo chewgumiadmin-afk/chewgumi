@@ -465,7 +465,7 @@ function sync(){
     });
   }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){ $('me').innerHTML='<b>'+esc(who)+'</b> 님'; boot(); setTimeout(pshUI,600); hlLoad(); }}
+  if(on){ $('me').innerHTML='<b>'+esc(who)+'</b> 님'; boot(); setTimeout(function(){try{if(typeof pshUI==='function')pshUI();if(typeof hlLoad==='function')hlLoad();}catch(e){}},600); }}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
