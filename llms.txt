@@ -1,0 +1,40 @@
+# 츄구미 ChewGumi
+
+> 물 없이 씹어 먹는 건강 젤리·캔디를 만들고 파는 한국 브랜드입니다. 자사몰 https://shop.chewgumi.com 에서 직접 판매합니다.
+
+이 파일은 사람이 아니라 AI 에이전트가 읽으라고 둔 요약본입니다.
+가격과 재고는 바뀔 수 있으니, 정확한 값은 아래 각 상품 페이지를 직접 확인해 주세요.
+(마지막 갱신 2026-09-04)
+
+## 트래블잇 Travel-it — 여행용 비타민 젤리
+
+- [[1봉] 트래블잇 Travel-it (40g)](https://shop.chewgumi.com/p/travel-1.html) — 3,500원. 여행의 모든 순간을 활기차게! 종합비타민·비타민C·마그네슘·타우린을 담은 감귤맛 젤리.
+- [[3봉] 트래블잇 Travel-it (40g)](https://shop.chewgumi.com/p/travel-3.html) — 9,900원 (정가 18,000원). 가볍게 시작하는 3봉 구성. 짧은 여행이나 첫 구매에 적당합니다.
+- [[5봉] 트래블잇 Travel-it (40g)](https://shop.chewgumi.com/p/travel-5.html) — 14,900원 (정가 30,000원). 가장 인기 있는 5봉 구성. 일주일 여행에 딱 맞습니다.
+- [[10봉] 트래블잇 Travel-it (40g)](https://shop.chewgumi.com/p/travel-10.html) — 27,900원 (정가 60,000원). 넉넉한 10봉 구성. 가족 여행이나 선물용으로 좋습니다.
+- [[20봉] 트래블잇 Travel-it (40g)](https://shop.chewgumi.com/p/travel-20.html) — 52,500원 (정가 120,000원). 가장 알뜰한 20봉 대용량 구성.
+
+## 듀잇 Dew-it — 구강 보습 캔디
+
+- [듀잇 레몬민트](https://shop.chewgumi.com/p/dew-lemon.html) — 19,900원 (정가 39,000원). 이슬(Dew)이 맺히듯, 입안을 촉촉하게 채우는 구강 보습 캔디. 글리세린이 수분막을 만들고 핀란드산 자일리톨 94%가 구강을 케어합니다. 상큼한 레몬과 시원한 페퍼민트가 만드는 오래가는 청량감. 무설탕 · 당류 0% · 한 알 4kcal · 35g · 국내 생산 HACCP 인증.
+- [듀잇 그레이프](https://shop.chewgumi.com/p/dew-grape.html) — 19,900원 (정가 39,000원). 이슬(Dew)이 맺히듯, 입안을 촉촉하게 채우는 구강 보습 캔디. 글리세린이 수분막을 만들고 핀란드산 자일리톨 93%가 구강을 케어합니다. 씹을수록 은은하게 퍼지는 달콤하고 깊은 리치 그레이프 맛. 무설탕 · 당류 0% · 한 알 4kcal · 35g · 국내 생산 HACCP 인증.
+- [듀잇 4개입](https://shop.chewgumi.com/p/dew-4.html) — 19,900원 (정가 39,000원). 가볍게 시작하는 4개입 구성.
+- [듀잇 6개입](https://shop.chewgumi.com/p/dew-6.html) — 27,900원 (정가 54,800원). 실속 있는 6개입 구성.
+- [듀잇 10개입](https://shop.chewgumi.com/p/dew-10.html) — 42,900원 (정가 84,200원). 넉넉한 10개입 구성.
+- [듀잇 20개입](https://shop.chewgumi.com/p/dew-20.html) — 81,000원 (정가 158,900원). 가장 알뜰한 20개입 대용량 구성.
+
+## 안내
+
+- [전체 상품](https://shop.chewgumi.com/shop.html)
+- [브랜드 소개](https://shop.chewgumi.com/about.html)
+- [이용안내 · 배송비](https://shop.chewgumi.com/guide.html)
+- [자주 묻는 질문](https://shop.chewgumi.com/faq.html)
+- [배송조회](https://shop.chewgumi.com/tracking.html)
+- [고객 후기](https://shop.chewgumi.com/review.html)
+- [이용약관](https://shop.chewgumi.com/terms.html)
+- [개인정보처리방침](https://shop.chewgumi.com/privacy.html)
+
+## 연락
+
+- 고객센터 chewgumi24@gmail.com
+- 사이트맵 https://shop.chewgumi.com/sitemap.xml
