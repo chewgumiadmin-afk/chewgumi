@@ -187,6 +187,12 @@ label:has(> input[type=checkbox]){
   .btn{ min-height:50px !important }
   .btns > .btn{ min-width:0 }
 }
+
+/* 폰에서 입력칸을 누르면 화면이 확대되던 문제 — UX-RULES R15 */
+@media (max-width:640px){
+  input:not([type=checkbox]):not([type=radio]):not([type=hidden]),
+  select,textarea{ font-size:16px !important }
+}
 </style>
 <link rel="stylesheet" href="assets/pagelist.css">
 <script src="assets/pagelist.js" defer></script>
