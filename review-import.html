@@ -297,7 +297,7 @@ function doImport(){
   $('impBtn').disabled=true;
   say('m1','넣는 중…');
   fetch(SB+'/rest/v1/rpc/import_reviews_text',{method:'POST',
-    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+    headers:{apikey:KEY,Authorization:'Bearer '+(tok()||KEY),'Content-Type':'application/json'},
     body:JSON.stringify({raw:raw,p_product_id:parseInt($('pid').value,10),p_source:$('src').value})})
   .then(r=>r.json())
   .then(d=>{
