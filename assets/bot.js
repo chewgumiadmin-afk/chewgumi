@@ -409,4 +409,92 @@
   else bind();
 })();
 
+/* ═══ 안전장치 cgVoiceGuard (2단계) ═══
+   비밀번호·카드번호 칸에 커서가 가면 마이크를 강제로 끄고 "여기는 직접 입력해 주세요" 라고 알립니다.
+   ⑤ 원칙 — 카드번호·비밀번호는 음성으로 받지 않습니다.
+   bot.js 안에 두었으므로 assets/bot.js 를 부르는 모든 화면에 자동으로 걸립니다. */
+(function(){
+  var MSG = '여기는 직접 입력해 주세요';
+  var toast = null, hideTimer = null, lastAt = 0;
 
+  /* 칸 이름·안내문에서 민감한 칸을 알아냅니다 (요소 자신의 속성만 봅니다) */
+  var EN = /(^|[^a-z])(cc-number|cc-csc|cc-exp|card|cardno|cardnum|ccnum|cvc|cvv|expiry|passwd|password|pwd|pin|jumin|ssn)/;
+  var KO = /(비밀번호|암호|카드\s*번호|카드번호|유효기간|주민등록번호|주민번호|보안코드)/;
+  var SAFE_TYPE = /^(email|tel|url|search|date|month|week|time|checkbox|radio|file|range|color|submit|button|hidden)$/;
+
+  function isSensitive(el){
+    if(!el || el.nodeType !== 1) return false;
+    var tag = (el.tagName || '').toLowerCase();
+    if(tag !== 'input' && tag !== 'textarea') return false;
+    var t = (el.getAttribute('type') || '').toLowerCase();
+    if(t === 'password') return true;
+
+    /* 확실한 신호 — 칸 이름·자동완성 속성 */
+    var strong = [el.getAttribute('name'), el.getAttribute('id'),
+                  el.getAttribute('autocomplete')].join(' ').toLowerCase();
+    if(EN.test(strong) || KO.test(strong)) return true;
+
+    /* 약한 신호 — 안내문구. 이메일·전화 같은 칸에서는 보지 않습니다
+       (예: "비밀번호를 재설정할 이메일" 칸까지 막히면 안 되므로) */
+    if(SAFE_TYPE.test(t)) return false;
+    var weak = [el.getAttribute('placeholder'), el.getAttribute('aria-label')]
+               .join(' ').toLowerCase();
+    return EN.test(weak) || KO.test(weak);
+  }
+
+  function focused(){
+    try{ return document.activeElement; }catch(e){ return null; }
+  }
+
+  function say(){
+    if(Date.now() - lastAt < 1500) return;   /* 너무 자주 뜨지 않게 */
+    lastAt = Date.now();
+
+    /* 봇 창이 열려 있으면 입력칸 안내문으로 알립니다 */
+    var i = document.getElementById('cgbotIn');
+    var win = document.getElementById('cgbotWin');
+    if(i && win && win.classList.contains('open')){
+      var old = i.placeholder;
+      i.placeholder = MSG;
+      setTimeout(function(){ try{ if(i.placeholder === MSG) i.placeholder = old || '말하거나 입력하세요'; }catch(e){} }, 2200);
+    }
+
+    /* 화면 아래쪽에 짧게 뜨는 알림 (bot.css 를 건드리지 않으려고 인라인으로 씁니다) */
+    if(!toast){
+      toast = document.createElement('div');
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      toast.style.cssText =
+        'position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:2147483000;' +
+        'max-width:min(88vw,320px);padding:10px 16px;border-radius:999px;' +
+        'background:rgba(24,24,27,.92);color:#fff;font-size:14px;line-height:1.4;' +
+        'text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.22);' +
+        'opacity:0;transition:opacity .18s ease;pointer-events:none;';
+      toast.textContent = MSG;
+      (document.body || document.documentElement).appendChild(toast);
+    }
+    toast.textContent = MSG;
+    toast.style.opacity = '1';
+    if(hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(function(){ if(toast) toast.style.opacity = '0'; }, 2200);
+  }
+
+  /* bot.js 의 startListen 이 매번 물어보는 자리 */
+  window.cgVoiceBlocked = function(){
+    if(!isSensitive(focused())) return false;
+    say();
+    return true;
+  };
+
+  /* 커서가 민감한 칸으로 들어오는 순간 듣던 것을 멈춥니다 */
+  function onFocus(e){
+    if(!isSensitive(e.target)) return;
+    try{ if(typeof window.cgVoiceStop === 'function') window.cgVoiceStop(); }catch(err){}
+    try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(err){}
+    say();
+  }
+
+  document.addEventListener('focusin', onFocus, true);
+  /* focusin 을 못 받는 옛 브라우저 대비 */
+  document.addEventListener('focus', onFocus, true);
+})();
