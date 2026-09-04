@@ -164,3 +164,15 @@ select:focus-visible,textarea:focus-visible{
   input:not([type=checkbox]):not([type=radio]):not([type=hidden]),
   select,textarea{ font-size:16px !important }
 }
+
+/* ── 작은 버튼을 큰 버튼과 같은 결로 ──
+   지금까지 .mini 에 배경이 없어 브라우저 기본 회색(#efefef)으로 나왔습니다. */
+.mini{
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(0,0,0,.08);
+  color:var(--ink,#1a1a1a);
+  cursor:pointer;
+  transition:background .15s,transform .15s}
+.mini:hover{ background:rgba(255,255,255,.95); transform:translateY(-1px) }
+.mini:active{ transform:none }
+.mini:disabled{ opacity:.45; cursor:default; transform:none }
