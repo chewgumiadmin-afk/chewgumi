@@ -835,7 +835,7 @@ function sync(){
     });
   }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();isInit();}}
+  if(on){$('who').textContent=who+' 님으로 로그인 중입니다.';init();setTimeout(function(){try{if(typeof isInit==='function')isInit();}catch(e){}},0);}}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
@@ -1323,9 +1323,7 @@ function delDraft(id, status){
 
   fetch('https://psynvpuedzjvytsgdhgg.supabase.co/rest/v1/rpc/delete_draft',{
     method:'POST',
-    headers:{apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
-      Authorization:'Bearer sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
-      'Content-Type':'application/json'},
+    headers:H(),
     body:JSON.stringify({p_id:id})
   }).then(function(r){ return r.json(); })
   .then(function(d){
