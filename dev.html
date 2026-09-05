@@ -1543,8 +1543,7 @@ function devCheck(){
   d.style.background='#7a7a82';
   fetch('https://psynvpuedzjvytsgdhgg.supabase.co/functions/v1/dev-check',{
     method:'POST',
-    headers:{apikey:'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk',
-      'Content-Type':'application/json'},body:'{}'})
+    headers:H(),body:'{}'})
   .then(function(r){ return r.json(); })
   .then(function(o){
     d.style.background = o.ok ? '#2AA060' : '#C0395C';
@@ -1711,7 +1710,7 @@ setTimeout(function(){
 
   function call(p){
     return fetch(F, { method:'POST',
-      headers:{ apikey:K, 'Content-Type':'application/json' },
+      headers: H(),
       body: JSON.stringify(p) }).then(function(r){ return r.json(); });
   }
 
