@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>전체상품 | CHEWGUMI</title>
+<link rel="canonical" href="https://shop.chewgumi.com/shop.html">
 <meta name="description" content="츄구미 전체 상품 — 무설탕 자일리톨 캔디 듀잇, 여행용 비타민 젤리 트래블잇">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -264,6 +265,28 @@ header{
 
   <div class="grid" id="grid"></div>
 
+  <!-- 상품 목록은 자바스크립트가 그리기 때문에 원본 HTML 에는 상품이 한 줄도 없습니다.
+       검색엔진과 AI 는 그래서 이 상점을 빈 페이지로 봤습니다.
+       아래는 사람에게도 쓸모 있고 크롤러도 따라갈 수 있는 진짜 링크 목록입니다. -->
+  <section class="ix">
+    <h2>전체 상품 목록</h2>
+    <ul>
+    <li class="ix-h">트래블잇 Travel-it</li>
+    <li><a href="p/travel-1.html">[1봉] 트래블잇 Travel-it (40g)</a> <span>₩3,500</span></li>
+    <li><a href="p/travel-3.html">[3봉] 트래블잇 Travel-it (40g)</a> <span>₩9,900</span></li>
+    <li><a href="p/travel-5.html">[5봉] 트래블잇 Travel-it (40g)</a> <span>₩14,900</span></li>
+    <li><a href="p/travel-10.html">[10봉] 트래블잇 Travel-it (40g)</a> <span>₩27,900</span></li>
+    <li><a href="p/travel-20.html">[20봉] 트래블잇 Travel-it (40g)</a> <span>₩52,500</span></li>
+    <li class="ix-h">듀잇 Dew-it</li>
+    <li><a href="p/dew-lemon.html">듀잇 레몬민트</a> <span>₩19,900</span></li>
+    <li><a href="p/dew-grape.html">듀잇 그레이프</a> <span>₩19,900</span></li>
+    <li><a href="p/dew-4.html">듀잇 4개입</a> <span>₩19,900</span></li>
+    <li><a href="p/dew-6.html">듀잇 6개입</a> <span>₩27,900</span></li>
+    <li><a href="p/dew-10.html">듀잇 10개입</a> <span>₩42,900</span></li>
+    <li><a href="p/dew-20.html">듀잇 20개입</a> <span>₩81,000</span></li>
+    </ul>
+  </section>
+
   <div class="foot">
     <a href="index.html">홈</a>
     <a href="review.html">후기</a>
@@ -371,6 +394,14 @@ load();
 @media (max-width:768px){
   input:not([type=checkbox]):not([type=radio]), select, textarea{ font-size:16px !important; }
 }
+.ix{margin:44px 0 8px;padding-top:26px;border-top:1px solid rgba(0,0,0,.08)}
+.ix h2{font-size:15px;margin:0 0 14px;color:#767676;font-weight:700}
+.ix ul{list-style:none;margin:0;padding:0;column-width:270px;column-gap:26px}
+.ix li{font-size:13px;line-height:2.1;break-inside:avoid}
+.ix li.ix-h{font-weight:800;color:#D82558;margin-top:10px}
+.ix li a{text-decoration:none;color:#333}
+.ix li a:hover{text-decoration:underline}
+.ix li span{color:#767676;margin-left:6px}
 </style>
 <script src="assets/drag-fab.js" defer></script>
 </body>
