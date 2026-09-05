@@ -586,9 +586,15 @@ function render(){
   const imgs = DETAIL_IMGS[no] || [];
   if (imgs.length) {
     wrap.style.display = 'block';
-    document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
-      '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
-      'onerror="cgImgFail(this)" onload="if(this.naturalWidth&lt;600)this.setAttribute(\'data-narrow\',1)">').join('');
+    /* 상세 이미지는 아래쪽 공통 렌더러가 '더 보기' 접기까지 함께 처리합니다.
+       여기서 직접 그리면 접기 단추가 사라집니다 (issues #6) */
+    if (window.cgShowDetail) {
+      window.cgShowDetail(imgs);
+    } else {
+      document.getElementById('pDetailImgs').innerHTML = imgs.map(u =>
+        '<img class="pd-img" src="' + u + '" alt="' + p.n + ' 상세 이미지" loading="lazy" ' +
+        'onerror="cgImgFail(this)" onload="if(this.naturalWidth&lt;600)this.setAttribute(\'data-narrow\',1)">').join('');
+    }
   } else {
     wrap.style.display = 'block';
     document.getElementById('pDetailImgs').innerHTML =
@@ -932,10 +938,12 @@ input, textarea, select{ font-size:16px !important }
 .soon-note b{display:block;font-size:15px;font-weight:800;color:var(--main);margin-bottom:5px}
 .soon-note span{font-size:13px;color:var(--gray);line-height:1.7}
 
-/* 상세 이미지 — 전부 펼쳐 보임 */
+/* 상세 이미지 — CSS 로 잘라내지 않습니다 (몇 장 보일지는 아래 스크립트가 정합니다) */
 #pDetailImgs{max-height:none !important;overflow:visible !important}
 #pDetailImgs::after{display:none !important}
-.pd-more{display:none !important}
+/* .pd-more 를 display:none !important 로 막고 있었습니다.
+   그래서 '상세 이미지 더 보기' 단추가 만들어져도 화면에 나오지 않았습니다 (issues #6).
+   단추 모양은 아래쪽 .pd-more 규칙이 담당합니다. */
 
 /* ══ 상세 이미지 — 화면 크기별로 완전히 나눔 ══
    PC 규칙과 모바일 규칙이 서로 건드리지 않도록
@@ -1736,8 +1744,14 @@ button[onclick*="addCart"]:active, .acts .cart:active{
       + ' onerror="cgImgFail(this)">';
   }
 
+  /* 지금까지 그린 장수. 더 적은 목록이 나중에 도착해도 덮어쓰지 않습니다.
+     예전에는 render() 쪽 상세 이미지가 나중에 실행되면서
+     40장짜리 DB 목록을 18장으로 덮어써 '더 보기' 단추가 사라졌습니다 (issues #6) */
+  var painted = 0;
+
   function show(imgs){
     if(!imgs || !imgs.length) return;
+    if (imgs.length <= painted) return;
     var wrap=document.getElementById('pDetailWrap');
     var box=document.getElementById('pDetailImgs');
     if(!wrap||!box) return;
@@ -1745,6 +1759,7 @@ button[onclick*="addCart"]:active, .acts .cart:active{
     if (imgs.length <= FOLD){
       box.innerHTML = imgs.map(imgTag).join('');
       wrap.style.display='';
+      painted = imgs.length;
       return;
     }
 
@@ -1766,7 +1781,12 @@ button[onclick*="addCart"]:active, .acts .cart:active{
       rest.hidden = false;
       btn.remove();
     }, { once:true });
+
+    painted = imgs.length;
   }
+
+  /* render() 쪽에서도 같은 렌더러를 쓰도록 공개합니다 (issues #6) */
+  window.cgShowDetail = show;
 
   /* 1순위 · 저장소 파일(원래 이미지) → 2순위 · DB 목록 → 3순위 · 드라이브 */
   var line = (+pno >= 11 && +pno <= 15) ? 'travel' : 'doit';
