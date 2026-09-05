@@ -326,6 +326,17 @@ label:has(> input[type=checkbox]){
   background:rgba(255,255,255,.8);font-size:12px;font-weight:600;
 }
 .bwhy{ font-size:12px;color:#797979;margin-top:4px }
+
+/* 근거 표 — 봇이 무엇을 보고 답했는지 주문번호별로 펼쳐 둡니다 */
+.brefcap{ font-size:11.5px;color:#797979;margin:13px 0 5px;line-height:1.6 }
+.brefwrap{ overflow-x:auto;-webkit-overflow-scrolling:touch }
+.bref{ border-collapse:collapse;width:100%;min-width:560px;font-size:12.5px;line-height:1.55 }
+.bref th,.bref td{ padding:7px 9px;text-align:left;white-space:nowrap;
+  border-bottom:1px solid rgba(0,0,0,.06) }
+.bref th{ font-size:11px;letter-spacing:.5px;color:#8A3350;font-weight:700 }
+.bref td.num{ text-align:right }
+.bref tr:last-child td{ border-bottom:0 }
+.brefx{ color:#B4243F;font-weight:600 }
 .bhint{
   font-size:12px;color:#797979;line-height:1.85;margin-top:12px;
   padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5);
@@ -1471,6 +1482,58 @@ sync();
 
   window.bFill=function(t){ el('bq').value=t; el('bq').focus(); };
 
+  /* ── 근거 표 ──
+     봇이 한 말이 아니라, 이 화면이 이미 받아 둔 주문 자료(ORD)를 그대로 씁니다.
+     직원이 답을 그대로 믿지 않고 주문번호별로 바로 대조할 수 있게 하려는 것입니다. */
+  var NO_RE=/\d{8}-\d{6}/g;
+  function ordOf(no){
+    try{
+      var list=(typeof ORD!=='undefined'&&ORD)?ORD:[];
+      for(var i=0;i<list.length;i++) if(list[i].order_no===no) return list[i];
+    }catch(e){}
+    return null;
+  }
+  function won3(n){ return Number(n||0).toLocaleString('ko-KR'); }
+  function stKr(v){
+    try{ if(typeof ST!=='undefined'&&ST[v]) return ST[v]; }catch(e){}
+    return String(v||'');
+  }
+  /* 처리 대상 주문번호 + 답변 글에 나온 주문번호를 합칩니다 (최대 20건) */
+  function refNos(jobs,note){
+    var seen={},out=[];
+    (jobs||[]).forEach(function(j){
+      var n=String(j&&j.order_no||''); if(n&&!seen[n]){ seen[n]=1; out.push(n); }
+    });
+    (String(note||'').match(NO_RE)||[]).forEach(function(n){
+      if(!seen[n]){ seen[n]=1; out.push(n); }
+    });
+    return out.slice(0,20);
+  }
+  function refTable(nos){
+    if(!nos.length) return '';
+    var body=nos.map(function(n){
+      var o=ordOf(n);
+      if(!o) return '<tr><td><b>'+esc2(n)+'</b></td>'
+        +'<td colspan="6" class="brefx">지금 주문 목록에 없는 번호입니다 — 직접 확인해 주세요</td></tr>';
+      var items=(o.order_items||[]).map(function(i){
+        return String(i.product_name||'')+'×'+String(i.qty||0); }).join(', ');
+      var ref=Number(o.refund_amount||0);
+      return '<tr><td><b>'+esc2(o.order_no)+'</b></td>'
+        +'<td>'+esc2(o.buyer_name||'')+'</td>'
+        +'<td>'+esc2(stKr(o.status))+'</td>'
+        +'<td class="num">'+won3(o.pay_amount)+'원'
+          +(ref?' <span class="brefx">(환불 '+won3(ref)+')</span>':'')+'</td>'
+        +'<td>'+(o.tracking_no?esc2(String(o.courier||'')+' '+o.tracking_no):'—')+'</td>'
+        +'<td>'+esc2(String(o.created_at||'').slice(0,10))+'</td>'
+        +'<td>'+esc2(items||'—')+'</td></tr>';
+    }).join('');
+    return '<div class="brefcap">근거 — 아래 주문을 보고 답했습니다. 주문 목록에 있는 값 그대로입니다.</div>'
+      +'<div class="brefwrap"><table class="bref"><thead><tr>'
+      +'<th>주문번호</th><th>주문자</th><th>상태</th><th>결제금액</th>'
+      +'<th>운송장</th><th>주문일</th><th>품목</th>'
+      +'</tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
+
   function call(p){
     return fetch(SB2+'/functions/v1/order-bot',{method:'POST',
       headers:{apikey:K2,Authorization:'Bearer '+tok(),'Content-Type':'application/json'},
@@ -1487,11 +1550,20 @@ sync();
       el('bBtn').disabled=false;
       if(!d.ok){ say(d.error||'답을 받지 못했습니다.','bad'); return; }
       JOBS=d.jobs||[];
+      var refs=refTable(refNos(JOBS,d.note));
+      /* 처리할 것이 없는 답(조회·요약)도 근거 표는 붙입니다 */
       if(!JOBS.length){
-        say(d.note||'처리할 것을 찾지 못했습니다.','ok');
+        if(d.note||refs){
+          say('답변입니다. 근거 표와 대조해 주세요.','ok');
+          el('bpv').innerHTML =
+            (d.note?'<div class="bnote">'+esc2(d.note)+'</div>':'') + refs
+            + '<div class="bx" style="margin-top:12px">'
+            + '<button class="mini" onclick="bCancel()">닫기</button></div>';
+          el('bpv').classList.remove('hide');
+        } else say('처리할 것을 찾지 못했습니다.','ok');
         return;
       }
-      say('아래처럼 처리할 수 있습니다. 확인하고 눌러주세요.');
+      say('아래대로 처리합니다. 근거 표와 대조한 뒤 눌러 주세요.');
       el('bpv').innerHTML =
         (d.note?'<div class="bnote">'+esc2(d.note)+'</div>':'')
         + JOBS.map(function(j){
@@ -1503,6 +1575,7 @@ sync();
             + (j.why?'<div class="bwhy">'+esc2(j.why)+'</div>':'')
             + '</div>';
         }).join('')
+        + refs
         + '<div class="bx" style="margin-top:12px">'
         + '<button class="btn ok" onclick="bRun()">이대로 처리</button>'
         + '<button class="mini" onclick="bCancel()">그만두기</button></div>';
