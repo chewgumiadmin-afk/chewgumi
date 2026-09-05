@@ -344,6 +344,122 @@
 })();
 
 
+/* ═══ 6단계 · 음성 엔진 지역 라우팅 (fix_log #20) ═══
+   한국·일본·중국·대만 또는 한국어 발화 → CLOVA
+   미주·유럽 또는 영어 발화 → ElevenLabs (Sarah)
+   열쇠가 없는 쪽은 브라우저 기본 음성으로 저절로 넘어갑니다.
+
+   언어 판별 순서
+   ① 손님이 화면에서 고른 언어 (localStorage cg_lang)
+   ⑤ 이번 발화·답변의 글자 — 한 대화 안에서도 말한 언어를 따라갑니다(화자별 엔진)
+   ② 서버가 보는 접속 국가 (voice 함수가 알려줍니다)
+   ③ 시간대  ④ 브라우저 언어
+   ※ 읽을 글이 없을 때(듣기 언어)는 ⑤ 가 없으니 ②③④ 순서 그대로입니다.
+   ※ GPS 는 쓰지 않습니다 — 위치 권한 팝업 없이 위 값만으로 충분합니다. */
+(function(){
+  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var route=null, asked=false, audio=null;
+
+  function pick(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
+
+  /* ⑤ 글자로 보는 언어 */
+  function ofText(t){
+    t=String(t||'');
+    if(/[ㄱ-ㆎ가-힣]/.test(t)) return 'ko';
+    if(/[぀-ヿ]/.test(t)) return 'ja';
+    if(/[一-鿿]/.test(t)) return 'zh';
+    if(/[A-Za-z]/.test(t)) return 'en';
+    return '';
+  }
+  /* ③ 시간대 */
+  function ofZone(){
+    try{
+      var z=(Intl.DateTimeFormat().resolvedOptions().timeZone||'');
+      if(z==='Asia/Seoul') return 'ko';
+      if(z==='Asia/Tokyo') return 'ja';
+      if(z==='Asia/Shanghai'||z==='Asia/Taipei'||z==='Asia/Hong_Kong') return 'zh';
+      if(z.indexOf('America/')===0||z.indexOf('Europe/')===0) return 'en';
+    }catch(e){}
+    return '';
+  }
+  /* ④ 브라우저 언어 */
+  function ofNav(){
+    var n=(navigator.language||'').toLowerCase();
+    if(n.indexOf('ko')===0) return 'ko';
+    if(n.indexOf('ja')===0) return 'ja';
+    if(n.indexOf('zh')===0) return 'zh';
+    if(n.indexOf('en')===0) return 'en';
+    return '';
+  }
+
+  /* 지금 이 손님의 언어 — text 를 주면 그 발화의 언어를 먼저 봅니다 */
+  window.cgVoiceLang = function(text){
+    return pick('cg_lang')                                   /* ① 손님이 고른 언어 */
+        || (text ? ofText(text) : '')                        /* ⑤ 이번 발화·답변의 언어 */
+        || (route && route.lang)                             /* ② 접속 국가 */
+        || ofZone() || ofNav() || 'ko';                      /* ③ 시간대 ④ 브라우저 */
+  };
+  /* 화면에서 언어를 고르면 여기로 알려 주세요 (예: cgVoiceSetLang('en')) */
+  window.cgVoiceSetLang = function(l){
+    try{ if(l) localStorage.setItem('cg_lang', String(l).slice(0,5)); }catch(e){}
+  };
+  window.cgVoiceBcp = function(l){
+    return l==='en' ? 'en-US' : l==='ja' ? 'ja-JP' : l==='zh' ? 'zh-CN' : 'ko-KR';
+  };
+  /* 소리 멈추기 — 안전장치(cgVoiceGuard)와 음성답변 끄기에서 부릅니다 */
+  window.cgVoiceAudioStop = function(){
+    try{ if(audio){ audio.pause(); audio.src=''; audio=null; } }catch(e){}
+  };
+
+  /* ② 접속 국가는 서버만 볼 수 있습니다. 한 방문에 한 번만 물어봅니다. */
+  function remember(r){
+    route=r;
+    try{ sessionStorage.setItem('cg_voice_route', JSON.stringify(r)); }catch(e){}
+  }
+  (function(){
+    try{ var c=sessionStorage.getItem('cg_voice_route');
+      if(c){ route=JSON.parse(c); return; } }catch(e){}
+    if(asked) return; asked=true;
+    try{
+      fetch(SB+'/functions/v1/voice',{method:'POST',
+        headers:{'Content-Type':'application/json',apikey:KEY},
+        body:JSON.stringify({op:'detect',lang:pick('cg_lang')||ofZone()||ofNav()})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if(d && d.ok) remember(d); })
+      .catch(function(){});
+    }catch(e){}
+  })();
+
+  /* 서버 엔진으로 읽어주기. 못 하면 false 를 돌려주고 화면이 브라우저 음성으로 대신합니다. */
+  window.cgVoiceServerSpeak = function(text, lang){
+    return new Promise(function(done){
+      var t=String(text||'').slice(0,300);
+      if(!t){ done(false); return; }
+      /* 열쇠가 하나도 없으면 굳이 서버를 부르지 않습니다 */
+      if(route && route.has && !route.has.clova && !route.has.eleven){ done(false); return; }
+      var to=setTimeout(function(){ done(false); }, 6000);
+      fetch(SB+'/functions/v1/voice',{method:'POST',
+        headers:{'Content-Type':'application/json',apikey:KEY},
+        body:JSON.stringify({op:'tts',text:t,lang:lang})})
+      .then(function(r){
+        var ct=(r.headers.get('content-type')||'');
+        if(!r.ok || ct.indexOf('audio')<0){ clearTimeout(to); done(false); return; }
+        return r.blob().then(function(b){
+          clearTimeout(to);
+          try{
+            window.cgVoiceAudioStop();
+            audio=new Audio(URL.createObjectURL(b));
+            audio.play();
+            done(true);
+          }catch(e){ done(false); }
+        });
+      })
+      .catch(function(){ clearTimeout(to); done(false); });
+    });
+  };
+})();
+
 /* ── 음성 입력 · 출력 ── */
 /* ═══ 음성 입력·출력 — cgVoiceBtn 통합 (1단계) ═══
    꾹 누르는 동안 듣기 → 떼면 자동 전송 + 답변 자동 낭독
@@ -373,23 +489,44 @@
                  : '꾹 눌러 말하기 · 짧게 눌러 음성답변 켜기'));
   }
 
-  /* 답변 읽어주기 — 음성으로 물어본 경우에는 한 번만 자동으로 읽습니다 */
+  /* 답변 읽어주기 — 음성으로 물어본 경우에는 한 번만 자동으로 읽습니다
+     6단계 · 답변 글자의 언어대로 엔진을 갈라 부릅니다 (한국어 CLOVA · 영어 ElevenLabs).
+     서버 엔진이 없거나 실패하면 브라우저 기본 음성으로 그대로 읽습니다. */
   window.cgbotSpeak = function(text){
     var once = speakOnce; speakOnce = false;
-    if(!(speakOn || once) || !window.speechSynthesis) return;
-    try{
-      speechSynthesis.cancel();
-      var t = String(text||'').replace(/https?:\/\/\S+/g,'링크').slice(0,300);
-      var u = new SpeechSynthesisUtterance(t);
-      u.lang='ko-KR'; u.rate=1.05; u.pitch=1.0;
-      speechSynthesis.speak(u);
-    }catch(e){}
+    if(!(speakOn || once)) return;
+    var t = String(text||'').replace(/https?:\/\/\S+/g,'링크').slice(0,300);
+    if(!t) return;
+    var lang = (typeof window.cgVoiceLang === 'function') ? window.cgVoiceLang(t) : 'ko';
+
+    function browserSpeak(){
+      if(!window.speechSynthesis) return;
+      try{
+        speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(t);
+        u.lang = (typeof window.cgVoiceBcp === 'function') ? window.cgVoiceBcp(lang) : 'ko-KR';
+        u.rate=1.05; u.pitch=1.0;
+        speechSynthesis.speak(u);
+      }catch(e){}
+    }
+
+    try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+    try{ if(typeof window.cgVoiceAudioStop === 'function') window.cgVoiceAudioStop(); }catch(e){}
+
+    if(typeof window.cgVoiceServerSpeak === 'function'){
+      window.cgVoiceServerSpeak(t, lang).then(function(ok){ if(!ok) browserSpeak(); });
+    } else {
+      browserSpeak();
+    }
   };
 
   window.cgbotSpeakToggle = function(){
     speakOn = !speakOn;
     try{ localStorage.setItem('cg_tts', speakOn?'1':'0'); }catch(e){}
-    if(!speakOn && window.speechSynthesis){ try{ speechSynthesis.cancel(); }catch(e){} }
+    if(!speakOn){
+      try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+      try{ if(typeof window.cgVoiceAudioStop === 'function') window.cgVoiceAudioStop(); }catch(e){}
+    }
     ph(speakOn ? '음성 답변을 켰습니다' : '음성 답변을 껐습니다');
     setTimeout(resetPh, 1600);
     paint();
@@ -406,7 +543,12 @@
     if(typeof window.cgVoiceBlocked === 'function' && window.cgVoiceBlocked()) return;
     cancelled = false; gotSpeech = false; starting = true;
     try{ rec = new SR(); }catch(e){ starting = false; return; }
-    rec.lang='ko-KR'; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
+    /* 6단계 · 듣기 언어도 지역을 따릅니다 (영어권은 en-US 가 훨씬 잘 잡힙니다) */
+    try{
+      rec.lang = (typeof window.cgVoiceBcp === 'function' && typeof window.cgVoiceLang === 'function')
+        ? window.cgVoiceBcp(window.cgVoiceLang()) : 'ko-KR';
+    }catch(e){ rec.lang='ko-KR'; }
+    rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
 
     rec.onstart = function(){ starting = false; listening = true; paint(); ph('듣고 있습니다…'); bumpSilence(); };
     rec.onresult = function(e){
@@ -603,6 +745,7 @@
     if(!isSensitive(e.target)) return;
     try{ if(typeof window.cgVoiceStop === 'function') window.cgVoiceStop(); }catch(err){}
     try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(err){}
+    try{ if(typeof window.cgVoiceAudioStop === 'function') window.cgVoiceAudioStop(); }catch(err){}
     say();
   }
 
