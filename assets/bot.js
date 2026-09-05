@@ -453,7 +453,7 @@
     /* 봇 창이 열려 있으면 입력칸 안내문으로 알립니다 */
     var i = document.getElementById('cgbotIn');
     var win = document.getElementById('cgbotWin');
-    if(i && win && win.classList.contains('open')){
+    if(i && win && win.classList.contains('on')){
       var old = i.placeholder;
       i.placeholder = MSG;
       setTimeout(function(){ try{ if(i.placeholder === MSG) i.placeholder = old || '말하거나 입력하세요'; }catch(e){} }, 2200);
