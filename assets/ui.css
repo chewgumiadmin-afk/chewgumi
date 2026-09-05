@@ -208,3 +208,72 @@ input[type="checkbox"]:disabled,input[type="radio"]:disabled{
   display:flex;align-items:center;gap:10px}
 .ch{align-items:flex-start}
 .ch input,.chk input{margin-top:1px}
+
+/* ══════════════════════════════════════════════════════════════
+   QA · 운영 화면 크기 통합 (issues #7)
+
+   qa-lab · qa-run · qa-tool · fixlog · reports-admin 다섯 화면이
+   공용 CSS 를 하나도 부르지 않고 각자 크기를 갖고 있었습니다.
+   실측하니 버튼 높이가 34·36·38·44·46·48·52px 일곱 가지,
+   버튼 글자가 11.5·12·12.5·13·13.5·14·14.5px 일곱 가지,
+   체크박스가 18px 과 20px 두 가지였습니다.
+
+   화면마다 고치지 않고 이 파일 한 곳에서 맞춥니다.
+   <body data-cgui="qa"> 를 단 화면에만 걸리므로 손님 화면에는
+   아무 영향이 없습니다.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 주요 동작 (52px) — 크게 눌러야 하는 판정 단추 ── */
+[data-cgui="qa"] .st-do button{
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  height:var(--h-lg) !important;min-height:var(--h-lg) !important;
+  padding:0 24px !important;font-size:var(--fs-lg) !important;
+  border-radius:var(--r-pill) !important;
+}
+
+/* ── 보조 동작 (44px) — 화면 기본 단추 ── */
+[data-cgui="qa"] .btn,
+[data-cgui="qa"] .b3 button,
+[data-cgui="qa"] .foot button,
+[data-cgui="qa"] .ask-btns button{
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  height:var(--h-md) !important;min-height:var(--h-md) !important;
+  padding:0 20px !important;font-size:var(--fs-md) !important;
+  border-radius:var(--r-pill) !important;
+}
+
+/* ── 작은 조작 (36px) — 칩·탭·작은 단추 ── */
+[data-cgui="qa"] .b,
+[data-cgui="qa"] .btn.sm,
+[data-cgui="qa"] .chips button,
+[data-cgui="qa"] .tabs button{
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  height:var(--h-sm) !important;min-height:var(--h-sm) !important;
+  padding:0 15px !important;font-size:var(--fs-sm) !important;
+  border-radius:var(--r-pill) !important;
+}
+
+/* ── 입력칸 (44px) ── */
+[data-cgui="qa"] input:not([type="checkbox"]):not([type="radio"]),
+[data-cgui="qa"] select{
+  min-height:var(--h-md) !important;
+  border-radius:14px !important;
+}
+[data-cgui="qa"] textarea{
+  min-height:80px !important;padding:12px 14px !important;
+  border-radius:14px !important;
+}
+
+/* ── 체크박스 · 라디오 (20px) ──
+   fixlog 가 18px 로 따로 두고 있어 화면마다 크기가 달랐습니다. */
+[data-cgui="qa"] input[type="checkbox"],
+[data-cgui="qa"] input[type="radio"]{
+  width:20px !important;height:20px !important;
+  min-width:20px !important;min-height:20px !important;
+  max-width:20px !important;max-height:20px !important;
+  flex:0 0 20px !important;
+}
+
+/* 폭을 꽉 채우던 단추는 그대로 둡니다 (모양이 아니라 배치라서) */
+[data-cgui="qa"] .btn.full,
+[data-cgui="qa"] .ask-opt button{ width:100% !important }
