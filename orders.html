@@ -26,6 +26,16 @@ body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--in
     linear-gradient(180deg,#FFF7FA,#FDF3F5 45%,#FFF9F4)}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer}
+/* ── UI 정리 (console.html 톤에 맞춤) ── */
+.hint-link{margin-left:6px;font-size:11px;font-weight:600;color:var(--main);
+  text-decoration:underline;text-underline-offset:2px}
+.actrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.actrow .mini{min-height:38px;padding:0 16px;border-radius:999px;font-size:12.5px;
+  font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.swrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.o-card{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.o-card:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.09)}
+.o-card:active{transform:translateY(0)}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--main2);outline-offset:3px;border-radius:8px}
 .wrap{max-width:1080px;margin:0 auto}
 .top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:20px}
@@ -131,8 +141,9 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 .o-act a.mini{display:inline-flex;align-items:center;text-decoration:none}
 
 .mini.kko{background:#FEE500 !important;color:#191600 !important;border-color:transparent !important}
-.ntsw{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;cursor:pointer}
-.ntsw input{width:19px;height:19px;accent-color:var(--main);cursor:pointer}
+.ntsw{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;cursor:pointer}
+.ntsw{padding:0 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid var(--line);transition:background .15s}
+.ntsw:has(input:checked){background:rgba(216,37,88,.08);border-color:rgba(216,37,88,.28)}
 .kko-pop{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
   padding:20px;background:rgba(20,10,14,.5);backdrop-filter:blur(6px)}
 .kko-box{max-width:440px;width:100%;background:#fff;border-radius:22px;padding:24px;
@@ -220,8 +231,8 @@ input,select{width:100%;padding:12px 14px;margin-bottom:9px;border-radius:13px;f
 /* 체크박스 */
 input[type=checkbox]{
   -webkit-appearance:none;appearance:none;
-  width:20px;height:20px;margin:0;flex:none;
-  border-radius:7px;
+  width:17px;height:17px;margin:0;flex:none;padding:0;
+  border-radius:6px;
   border:1.5px solid rgba(0,0,0,.16);
   background:rgba(255,255,255,.9);
   cursor:pointer;position:relative;
@@ -232,8 +243,8 @@ input[type=checkbox]:checked{
   border-color:transparent;
 }
 input[type=checkbox]:checked::after{
-  content:"";position:absolute;left:6.5px;top:2.5px;
-  width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;
+  content:"";position:absolute;left:5.5px;top:2px;
+  width:4px;height:8.5px;border:solid #fff;border-width:0 2px 2px 0;
   transform:rotate(43deg);
 }
 label:has(> input[type=checkbox]){
@@ -418,20 +429,20 @@ label:has(> input[type=checkbox]){
       <div class="stats">
         <button class="stat" type="button" onclick="setS('paid')" aria-label="오늘 결제된 주문 보기"><div class="l">오늘 결제</div><div class="v"><span id="tAmt">0</span><span class="u">원</span></div><div class="l"><span id="tCnt">0</span>건</div></button>
         <button class="stat" type="button" onclick="setS('all')" aria-label="이번 달 주문 보기"><div class="l">이번 달 결제</div><div class="v"><span id="mAmt">0</span><span class="u">원</span></div><div class="l"><span id="mCnt">0</span>건</div></button>
-        <button class="stat" type="button" onclick="setS('todo')" aria-label="보낼 주문 보기"><div class="l">배송 준비</div><div class="v"><span id="cPrep">0</span><span class="u">건</span></div><div class="l">눌러서 보기</div></button>
-        <button class="stat" type="button" onclick="setS('shipping')" aria-label="배송 중 주문 보기"><div class="l">배송 중</div><div class="v"><span id="cShip">0</span><span class="u">건</span></div><div class="l">눌러서 보기</div></button>
+        <button class="stat" type="button" onclick="setS('todo')" aria-label="보낼 주문 보기"><div class="l">배송 준비</div><div class="v"><span id="cPrep">0</span><span class="u">건</span></div><div class="l">자세히</div></button>
+        <button class="stat" type="button" onclick="setS('shipping')" aria-label="배송 중 주문 보기"><div class="l">배송 중</div><div class="v"><span id="cShip">0</span><span class="u">건</span></div><div class="l">자세히</div></button>
       </div>
     </div>
 
     <div class="panel">
-    <h2>말로 처리하기 <span class="tag-ai">AI</span></h2>
+    <h2>말로 처리 <span class="tag-ai">AI</span></h2>
     <input id="bq" placeholder="예) 20260820 주문 CJ대한통운 1234567890으로 발송 처리해줘" autocomplete="off">
     <div class="bx">
       <button class="mini" onclick="bFill('오늘 결제완료된 주문을 모두 배송준비로 바꿔줘')">배송준비로</button>
-      <button class="mini" onclick="bFill('발송할 주문 알려줘')">발송할 것 보기</button>
+      <button class="mini" onclick="bFill('발송할 주문 알려줘')">발송할 것</button>
     </div>
     <div class="bx" style="margin-top:10px">
-      <button class="btn" onclick="bAsk()" id="bBtn">어떻게 할지 보기</button>
+      <button class="btn" onclick="bAsk()" id="bBtn">처리 방법</button>
     </div>
     <div class="msg" id="bmsg"></div>
     <div class="bpv hide" id="bpv"></div>
@@ -454,6 +465,16 @@ label:has(> input[type=checkbox]){
         <button data-s="returnreq" class="creq" onclick="setS('returnreq')">반품·교환 <b id="rreqN"></b></button>
         <button data-s="todo" class="todo" onclick="setS('todo')">오늘 보낼 것 <b id="todoN"></b></button>
       </div>
+    <div class="ofind">
+      <input id="oq" type="search" placeholder="주문번호 · 이름 · 전화 · 상품명으로 찾기"
+             oninput="setQ(this.value)" autocomplete="off">
+      <span class="ocnt" id="oCnt"></span>
+    </div>
+    <div id="list"><div class="empty">불러오는 중…</div></div>
+    <div class="opager" id="pager"></div>
+    </div>
+
+    <!-- 설정 — 매일 쓰는 것이 아니므로 주문 목록 아래로 내렸습니다 (UX 정리) -->
       <div class="panel" style="margin-bottom:16px">
       <h2>알림 · 카카오톡 채널</h2>
       <div class="msg" id="ntMsg" style="margin-top:0">설정을 불러오는 중…</div>
@@ -462,27 +483,27 @@ label:has(> input[type=checkbox]){
           <input id="ntMail" type="email" placeholder="chewgumi24@gmail.com"></div>
         <div><label style="font-size:12px;font-weight:600">알림 받을 휴대폰 (문자)</label>
           <input id="ntPhone" placeholder="010-0000-0000"></div>
-        <div><label style="font-size:12px;font-weight:600">카카오톡 채널 주소</label>
+        <div><label style="font-size:12px;font-weight:600">카카오톡 채널 주소
+          <a class="hint-link" id="ntKkoLink" href="#" target="_blank" rel="noopener">채널 관리</a></label>
           <input id="ntKko" placeholder="https://pf.kakao.com/_xxxxx"></div>
         <div><label style="font-size:12px;font-weight:600">보내는 사람 (이메일)</label>
           <input id="ntFrom" placeholder="ChewGumi &lt;onboarding@resend.dev&gt;"></div>
       </div>
       <div class="push-row" id="pushRow">
-        <div class="pr-t"><b>휴대폰 알림 받기</b>
+        <div class="pr-t"><b>휴대폰 알림</b>
           <span id="pushMsg">주문이 들어오면 폰에 바로 알림이 뜹니다. 무료입니다.</span></div>
-        <button class="mini" id="pushBtn" onclick="pushToggle()">알림 켜기</button>
+        <button class="mini" id="pushBtn" onclick="pushToggle()">알림</button>
         <button class="mini" onclick="pushTest()">테스트</button>
       </div>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;align-items:center">
-        <label class="ntsw"><input type="checkbox" id="ntOn"> 주문 알림 켜기</label>
-        <label class="ntsw"><input type="checkbox" id="ntMailOn"> 이메일로 받기</label>
-        <label class="ntsw"><input type="checkbox" id="ntSmsOn"> 문자로 받기</label>
+      <div class="swrow">
+        <label class="ntsw"><input type="checkbox" id="ntOn"> 주문 알림</label>
+        <label class="ntsw"><input type="checkbox" id="ntMailOn"> 이메일</label>
+        <label class="ntsw"><input type="checkbox" id="ntSmsOn"> 문자</label>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center">
+      <div class="actrow">
         <button class="mini" onclick="ntSave()">저장</button>
         <button class="mini" onclick="ntTest('email')">이메일 테스트</button>
         <button class="mini" onclick="ntTest('sms')">문자 테스트</button>
-        <a class="mini kko" id="ntKkoLink" href="#" target="_blank" rel="noopener">채널 열기</a>
       </div>
       <div class="msg" id="ntRes"></div>
     </div>
@@ -497,29 +518,20 @@ label:has(> input[type=checkbox]){
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
         <button class="mini" onclick="bankSave()">저장</button>
-        <button class="mini" onclick="bankSync()">공식몰에서 가져오기</button>
+        <button class="mini" onclick="bankSync()">공식몰 계좌</button>
       </div>
     </div>
     <div class="panel" style="margin-bottom:16px">
       <h2>CAFE24 · 공식몰 주문</h2>
       <div id="c24Status" class="msg" style="margin-top:0">연동 상태 확인 중…</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
-        <button class="mini" onclick="c24Sync(30)">최근 30일 가져오기</button>
+      <div class="actrow">
+        <button class="mini" onclick="c24Sync(30)">최근 30일</button>
         <button class="mini" onclick="c24Sync(90)">최근 90일</button>
-        <button class="mini" onclick="c24List()">가져온 주문 보기</button>
-        <a class="mini" id="c24Auth" href="#" target="_blank" rel="noopener" style="display:none">카페24 연동하기</a>
+        <button class="mini" onclick="c24List()">가져온 주문</button>
+        <a class="mini" id="c24Auth" href="#" target="_blank" rel="noopener" style="display:none">카페24 연동</a>
       </div>
       <div id="c24List" style="margin-top:12px"></div>
     </div>
-    <div class="ofind">
-      <input id="oq" type="search" placeholder="주문번호 · 이름 · 전화 · 상품명으로 찾기"
-             oninput="setQ(this.value)" autocomplete="off">
-      <span class="ocnt" id="oCnt"></span>
-    </div>
-    <div id="list"><div class="empty">불러오는 중…</div></div>
-    <div class="opager" id="pager"></div>
-    </div>
-
     <div class="panel">
       <h2>계정</h2>
       <div class="msg" id="who" style="margin-top:0"></div>
@@ -721,16 +733,16 @@ function render(){
       ? '<div class="creq-bar">고객이 <b>취소를 요청</b>했습니다 · '
         + new Date(o.cancel_req_at).toLocaleString('ko-KR')
         + (o.cancel_req_note?'<br>사유: '+esc(o.cancel_req_note):'')
-        + ' <a href="'+durl+'">처리하기 →</a></div>'
+        + ' <a href="'+durl+'">처리 →</a></div>'
       : (o.return_req_at && !o.return_done_at
         ? '<div class="creq-bar ret">고객이 <b>'
           + (o.return_req_kind==='exchange'?'교환':'반품')+'을 요청</b>했습니다 · '
           + new Date(o.return_req_at).toLocaleString('ko-KR')
           + (o.return_req_note?'<br>사유: '+esc(o.return_req_note):'')
-          + ' <a href="'+durl+'">처리하기 →</a></div>'
+          + ' <a href="'+durl+'">처리 →</a></div>'
         : '');
-    return '<div class="o'+((o.cancel_req_at||(o.return_req_at&&!o.return_done_at))?' hasreq':'')+'">'+creq+'<div class="o-h">'
-      +'<a class="o-open" href="'+durl+'" title="주문 상세 보기">'
+    return '<div class="o o-card'+((o.cancel_req_at||(o.return_req_at&&!o.return_done_at))?' hasreq':'')+'">'+creq+'<div class="o-h">'
+      +'<a class="o-open" href="'+durl+'" title="주문 상세">'
       +'<span class="o-no">'+esc(o.order_no)+'</span> '
       +'<span class="st '+o.status+'">'+(ST[o.status]||o.status)+'</span><br>'
       +'<span class="o-d">'+new Date(o.created_at).toLocaleString('ko-KR')+'</span></a>'
@@ -763,7 +775,7 @@ function render(){
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&!o.cash_receipt_no&&['bank','vbank','trans'].includes(o.pay_method||'')
         ?'<button class="mini" onclick="openCash(\''+o.order_no+'\')">현금영수증</button>':'')
       +((o.pay_method==='card'&&o.status!=='cancelled')?'<button class="mini" onclick="cardRcpt(\''+o.order_no+'\')">카드 영수증</button>':'')
-      +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증 보기</a>':'')
+      +(o.cash_receipt_url?'<a class="mini" href="'+esc(o.cash_receipt_url)+'" target="_blank" rel="noopener">영수증</a>':'')
       +(['paid','preparing','shipping','delivered'].includes(o.status)&&(o.pay_amount-(o.refund_amount||0))>0
         ?'<button class="mini rf" onclick="openRefund(\''+o.order_no+'\','+(o.pay_amount-(o.refund_amount||0))+')">환불</button>':'')
       +'</div></div>';
@@ -870,19 +882,37 @@ function c24Call(p){
     headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},
     body:JSON.stringify(p)}).then(r=>r.json().then(d=>({ok:r.ok,d})));
 }
+/* 로그인 토큰이 준비되기 전에 물어보면 '운영자 권한이 필요합니다' 가 떴습니다.
+   토큰이 들어온 뒤에만 확인하고, 승인 창을 다녀오시면 저절로 다시 확인합니다. */
+let c24Timer=null;
 function c24Status(){
+  const s=$('c24Status'), a=$('c24Auth');
+  if(!s) return;
+  if(!token){ s.className='msg'; s.textContent='로그인 후 확인합니다.'; return; }
+  s.className='msg'; s.textContent='연동 상태를 확인하는 중…';
   c24Call({action:'status'}).then(({ok,d})=>{
-    const s=$('c24Status'), a=$('c24Auth');
-    if(!ok) { s.textContent='연동 상태를 확인하지 못했습니다.'; return; }
-    if(d.connected){
-      s.innerHTML='공식몰과 연동되어 있습니다. 가져온 주문 <b>'+(d.orderCount||0)+'건</b>';
-      a.style.display='none';
-    } else {
-      s.innerHTML='아직 연동되지 않았습니다. <b>[카페24 연동하기]</b>를 눌러 승인해 주세요.';
-      a.href=d.authUrl||FN_C24; a.style.display='inline-flex';
+    if(!ok){
+      s.className='msg bad';
+      s.textContent=(d&&d.error)||'연동 상태를 확인하지 못했습니다.';
+      return;
     }
-  }).catch(()=>{$('c24Status').textContent='연동 상태를 확인하지 못했습니다.';});
+    if(d.connected){
+      s.className='msg ok';
+      s.innerHTML='공식몰과 연동되어 있습니다 · 가져온 주문 <b>'+(d.orderCount||0)+'건</b>';
+      if(a) a.style.display='none';
+      if(c24Timer){ clearInterval(c24Timer); c24Timer=null; }
+    } else {
+      s.className='msg bad';
+      s.innerHTML='아직 연동되지 않았습니다. 아래 <b>[카페24 연동]</b>을 눌러 승인해 주세요.';
+      if(a){ a.href=d.authUrl||FN_C24; a.style.display='inline-flex'; }
+    }
+  }).catch(()=>{ s.className='msg bad'; s.textContent='연동 상태를 확인하지 못했습니다.'; });
 }
+/* 승인 창을 새 탭에서 다녀오시면, 돌아왔을 때 저절로 다시 확인합니다 */
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden && token && $('c24Auth') &&
+     $('c24Auth').style.display!=='none') c24Status();
+});
 function c24Sync(days){
   $('c24Status').textContent='공식몰 주문을 가져오는 중…';
   c24Call({action:'sync',days}).then(({ok,d})=>{
@@ -1474,7 +1504,7 @@ sync();
             + '</div>';
         }).join('')
         + '<div class="bx" style="margin-top:12px">'
-        + '<button class="btn ok" onclick="bRun()">이대로 처리하기</button>'
+        + '<button class="btn ok" onclick="bRun()">이대로 처리</button>'
         + '<button class="mini" onclick="bCancel()">그만두기</button></div>';
       el('bpv').classList.remove('hide');
     }).catch(function(){ el('bBtn').disabled=false; say('답을 받지 못했습니다.','bad'); });
