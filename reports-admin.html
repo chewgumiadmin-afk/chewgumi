@@ -139,6 +139,49 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
       <div class="stats" id="stats"><div class="msg">불러오는 중…</div></div>
     </div>
 
+    <!-- 손님 리포트를 담당자에게 알립니다 -->
+    <div class="panel">
+      <h2>알림 받을 사람</h2>
+      <div class="msg" style="margin-top:0">
+        손님이 리포트를 남기면 <b>보낸 사람과 내용</b>을 여기 등록된 담당자에게 보냅니다.
+        받을 방법이 여러 개면 한 사람을 여러 줄로 등록해도 됩니다.
+      </div>
+      <div class="msg" id="tgReady" style="margin-top:8px"></div>
+      <div id="tgList"><div class="empty" style="padding:18px 0">불러오는 중…</div></div>
+
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.07)">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--gray);font-weight:700;
+          margin-bottom:10px">담당자 추가 · 수정</div>
+        <input type="hidden" id="tgId">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          <div><label>이름</label><input id="tgName" placeholder="예: 신현정"></div>
+          <div><label>전화번호</label><input id="tgPhone" placeholder="010-0000-0000"></div>
+          <div><label>이메일 · 사이트 로그인 계정</label>
+            <input id="tgEmail" placeholder="name@example.com"></div>
+          <div><label>카카오 아이디</label><input id="tgKakao" placeholder="채널 친구 아이디"></div>
+        </div>
+        <label style="display:block;margin-top:12px">받을 방법</label>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin:7px 0 4px;font-size:13px">
+          <label style="display:inline-flex;align-items:center;gap:6px;width:auto">
+            <input type="checkbox" id="tgPush" checked> 브라우저 알림</label>
+          <label style="display:inline-flex;align-items:center;gap:6px;width:auto">
+            <input type="checkbox" id="tgMail" checked> 이메일</label>
+          <label style="display:inline-flex;align-items:center;gap:6px;width:auto">
+            <input type="checkbox" id="tgSms"> 문자</label>
+          <label style="display:inline-flex;align-items:center;gap:6px;width:auto">
+            <input type="checkbox" id="tgKk"> 카카오</label>
+        </div>
+        <div style="margin-top:8px"><label>메모</label>
+          <input id="tgMemo" placeholder="비워 두어도 됩니다"></div>
+        <div class="acts">
+          <button class="btn" onclick="tgSave()">저장</button>
+          <button class="mini" onclick="tgClear()">새로 쓰기</button>
+          <button class="mini" onclick="tgTest()">시험 발송</button>
+        </div>
+        <div class="msg" id="tgMsg"></div>
+      </div>
+    </div>
+
     <div class="panel">
       <h2>AI 리서치</h2>
       <div class="msg" style="margin-top:0">
@@ -223,7 +266,7 @@ function sync(){
     });
   }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){load();resHist();}}
+  if(on){load();resHist();tgLoad();}}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
@@ -330,6 +373,88 @@ function downRes(){
   a.download='츄구미_고객리서치_'+new Date().toISOString().slice(0,10)+'.txt';
   a.click(); URL.revokeObjectURL(a.href);
 }
+/* ── 알림 받을 사람 (report-fan 함수) ── */
+const FN2=SB+'/functions/v1/report-fan';
+const call2=p=>fetch(FN2,{method:'POST',headers:H(),body:JSON.stringify(p)})
+  .then(r=>r.json().then(d=>({ok:r.ok,d})));
+let tgItems=[];
+
+function tgLoad(){
+  call2({action:'targetList'}).then(({ok,d})=>{
+    if(!ok){$('tgList').innerHTML='<div class="empty">'+(d.error||'불러오지 못했습니다.')+'</div>';return;}
+    tgItems=d.items||[];
+    const rd=d.ready||{},dv=d.devices||{};
+    $('tgReady').innerHTML=
+      '지금 실제로 나가는 길 — 브라우저 알림 '+(rd.push?'준비됨':'키 없음')
+      +' · 이메일 '+(rd.email?'준비됨':'키 없음')
+      +'<br>문자와 카카오는 아직 발신 경로가 없습니다. 켜 두면 보낼 내용이 기록으로만 남고,'
+      +' 경로가 열리면 무엇이 밀렸는지 그대로 확인할 수 있습니다.';
+    if(!tgItems.length){
+      $('tgList').innerHTML='<div class="empty" style="padding:18px 0">아직 등록된 담당자가 없습니다.</div>';
+      return;}
+    $('tgList').innerHTML=tgItems.map(t=>{
+      const ch=[t.want_push?'브라우저':'',t.want_email?'이메일':'',
+        t.want_sms?'문자':'',t.want_kakao?'카카오':''].filter(Boolean).join(' · ')||'없음';
+      const n=dv[String(t.email||'').toLowerCase()]||0;
+      return '<div class="rp"><div class="rh">'
+        +'<span class="tt">'+esc(t.name)+'</span>'
+        +'<span class="kd">'+ch+'</span>'
+        +(t.enabled?'':'<span class="kd">꺼짐</span>')
+        +'</div><div class="rm" style="line-height:1.8">'
+        +(t.email?esc(t.email)+(t.want_push?' · 알림 받는 기기 '+n+'대':''):'')
+        +(t.phone?'<br>'+esc(t.phone):'')
+        +(t.kakao_id?'<br>카카오 '+esc(t.kakao_id):'')
+        +(t.memo?'<br>'+esc(t.memo):'')
+        +'</div><div class="acts">'
+        +'<button class="mini" onclick="tgEdit('+t.id+')">고치기</button>'
+        +'<button class="mini" onclick="tgDel('+t.id+')">지우기</button>'
+        +'</div></div>';
+    }).join('');
+  });
+}
+function tgEdit(id){
+  const t=tgItems.filter(x=>x.id===id)[0]; if(!t)return;
+  $('tgId').value=t.id;$('tgName').value=t.name||'';$('tgPhone').value=t.phone||'';
+  $('tgEmail').value=t.email||'';$('tgKakao').value=t.kakao_id||'';$('tgMemo').value=t.memo||'';
+  $('tgPush').checked=!!t.want_push;$('tgMail').checked=!!t.want_email;
+  $('tgSms').checked=!!t.want_sms;$('tgKk').checked=!!t.want_kakao;
+  $('tgMsg').className='msg';$('tgMsg').textContent='고치는 중입니다. 저장을 누르면 반영됩니다.';
+}
+function tgClear(){
+  ['tgId','tgName','tgPhone','tgEmail','tgKakao','tgMemo'].forEach(i=>$(i).value='');
+  $('tgPush').checked=true;$('tgMail').checked=true;
+  $('tgSms').checked=false;$('tgKk').checked=false;
+  $('tgMsg').className='msg';$('tgMsg').textContent='';
+}
+function tgSave(){
+  const t={id:$('tgId').value||null,name:$('tgName').value.trim(),
+    phone:$('tgPhone').value.trim(),email:$('tgEmail').value.trim(),
+    kakao_id:$('tgKakao').value.trim(),memo:$('tgMemo').value.trim(),
+    want_push:$('tgPush').checked,want_email:$('tgMail').checked,
+    want_sms:$('tgSms').checked,want_kakao:$('tgKk').checked};
+  if(!t.name){$('tgMsg').className='msg bad';$('tgMsg').textContent='이름을 적어주세요.';return;}
+  $('tgMsg').className='msg';$('tgMsg').textContent='저장하는 중…';
+  call2({action:'targetSave',target:t}).then(({ok,d})=>{
+    if(!ok){$('tgMsg').className='msg bad';$('tgMsg').textContent=d.error||'저장하지 못했습니다.';return;}
+    $('tgMsg').className='msg ok';$('tgMsg').textContent='저장했습니다.';tgClear();tgLoad();});
+}
+function tgDel(id){
+  if(!confirm('이 담당자를 지울까요?'))return;
+  call2({action:'targetDel',id:id}).then(({ok,d})=>{
+    if(!ok){$('tgMsg').className='msg bad';$('tgMsg').textContent=d.error||'지우지 못했습니다.';return;}
+    tgLoad();});
+}
+function tgTest(){
+  $('tgMsg').className='msg';$('tgMsg').textContent='시험 발송 중…';
+  call2({action:'targetTest'}).then(({ok,d})=>{
+    if(!ok){$('tgMsg').className='msg bad';$('tgMsg').textContent=d.error||'보내지 못했습니다.';return;}
+    $('tgMsg').className='msg ok';
+    $('tgMsg').textContent='담당자 '+(d.targets||0)+'명 · 브라우저 알림 '+(d.push||0)
+      +'건 · 이메일 '+(d.email||0)+'건 · 대기 기록 '+(d.queued||0)+'건'
+      +((d.why&&d.why.length)?' — '+d.why.join(' / '):'');
+  });
+}
+
 function resHist(){
   call({action:'researchList'}).then(({ok,d})=>{
     if(!ok||!d.items.length) return;
