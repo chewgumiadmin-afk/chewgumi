@@ -1,153 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/index.html</loc>
+    <loc>https://shop.chewgumi.com/index.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/about.html</loc>
+    <loc>https://shop.chewgumi.com/about.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/subscribe.html</loc>
+    <loc>https://shop.chewgumi.com/subscribe.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/reports.html</loc>
+    <loc>https://shop.chewgumi.com/reports.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/review.html</loc>
+    <loc>https://shop.chewgumi.com/review.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/notice.html</loc>
+    <loc>https://shop.chewgumi.com/notice.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/qna.html</loc>
+    <loc>https://shop.chewgumi.com/qna.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/faq.html</loc>
+    <loc>https://shop.chewgumi.com/faq.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/guide.html</loc>
+    <loc>https://shop.chewgumi.com/guide.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/tracking.html</loc>
+    <loc>https://shop.chewgumi.com/tracking.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/terms.html</loc>
+    <loc>https://shop.chewgumi.com/terms.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/privacy.html</loc>
+    <loc>https://shop.chewgumi.com/privacy.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/join.html</loc>
+    <loc>https://shop.chewgumi.com/join.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/login.html</loc>
+    <loc>https://shop.chewgumi.com/login.html</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=15</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/travel-1.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=11</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/travel-3.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=12</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/travel-5.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=13</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/travel-10.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=14</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/travel-20.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=16</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/dew-lemon.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=17</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/dew-grape.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=18</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/dew-4.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=19</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/dew-6.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=20</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/dew-10.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://chewgumiadmin-afk.github.io/chewgumi/product.html?no=21</loc>
-    <lastmod>2026-08-13</lastmod>
+    <loc>https://shop.chewgumi.com/p/dew-20.html</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://shop.chewgumi.com/shop.html</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 </urlset>
