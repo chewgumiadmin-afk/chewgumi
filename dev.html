@@ -681,9 +681,10 @@ select::-ms-expand{ display:none !important }
       <div class="msg" id="dmsg"></div>
 
       <div id="result" class="hide" style="margin-top:16px">
+        <div id="curHead" style="font-size:13px;font-weight:700;margin-bottom:8px"></div>
         <div class="sum" id="summary"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-          <button class="btn go" onclick="deploy(false)">사이트에 반영 (확정)</button>
+          <button class="btn go" id="deployBtn" onclick="deploy(false)">사이트에 반영 (확정)</button>
           <button class="btn ghost" onclick="preview()">미리보기 (확인)</button>
           <button class="btn ghost" onclick="discard()">취소</button>
       </div>
@@ -914,16 +915,8 @@ function init(){
   call({action:'history'}).then(function(res){
     if(!res.ok) return;
     var w=(res.d.items||[]).filter(function(x){ return x.status==='draft'; });
-    if(w.length && $('dmsg')){
-      $('dmsg').className='msg';
-      $('dmsg').innerHTML='반영을 기다리는 수정안이 '+w.length+'건 있습니다. '
-        +'<a href="#" onclick="pickDraft('+w[0].id+');return false;" '
-        +'style="color:var(--main);font-weight:700">가장 최근 것 열기</a>'
-        + (w.length>1
-          ? ' &nbsp;·&nbsp; <a href="#" onclick="deployAll();return false;" '
-            + 'style="color:var(--main);font-weight:700">'+w.length+'건 전부 반영</a>'
-          : '');
-    }
+    WAITING = w.slice().sort(function(a,b){ return a.id-b.id; });
+    drawWaiting();
   }).catch(function(){});
 }
 function loadModels(cur){
@@ -1191,6 +1184,51 @@ function deploy(skipAsk){
    ─ 순서는 만들어진 순서(id 오름차순)입니다. 새 파일이 그것을 부르는 파일보다 먼저 올라갑니다.
    ─ 하나라도 실패하면 거기서 멈추고 어느 것이 왜 실패했는지 보여줍니다. 남은 것은 건드리지 않습니다.
    ─ 되돌리기는 지금처럼 이력에서 한 건씩 하시면 됩니다. */
+
+/* ── 반영 대기 목록 ─────────────────────────────────────────────
+   예전에는 "N건 있습니다" 한 줄과 작은 글씨 링크뿐이었습니다.
+   어떤 파일이 기다리는지 보이지 않았고, [전부 반영]을 눌러도
+   진행 상황이 숨겨진 칸(#rmsg)에 쓰여 아무 반응이 없어 보였습니다.
+   그래서 화면을 새로 고치면 중간에 멈춰 버렸습니다. 그 두 가지를 고칩니다. */
+var WAITING = [];
+var DEPLOYING = false;
+
+function drawWaiting(){
+  var box=$('dmsg'); if(!box) return;
+  if(DEPLOYING) return;                     /* 반영 중에는 진행 표시를 덮지 않습니다 */
+  if(!WAITING.length){ box.className='msg'; box.textContent=''; return; }
+
+  var rows=WAITING.map(function(x){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;'
+      +'border-top:1px solid rgba(0,0,0,.06)">'
+      +'<span style="font-size:11px;color:#999;min-width:42px">#'+x.id+'</span>'
+      +'<code style="flex:1;font-size:12.5px;word-break:break-all">'+x.path+'</code>'
+      +'<button type="button" class="btn ghost" style="min-width:0;padding:4px 10px;font-size:12px" '
+      +'onclick="pickDraft('+x.id+')">열기</button></div>';
+  }).join('');
+
+  box.className='msg';
+  box.innerHTML=
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+    +'<b style="font-size:14px">반영을 기다리는 수정안 '+WAITING.length+'건</b>'
+    +'<button type="button" class="btn go" id="applyAllBtn" style="margin-left:auto;min-width:0;'
+    +'padding:9px 16px;font-size:13px" onclick="deployAll()">'+WAITING.length+'건 전부 반영</button>'
+    +'</div>'
+    +'<div style="margin-top:8px;max-height:220px;overflow:auto">'+rows+'</div>'
+    +'<div style="margin-top:8px;font-size:12px;color:#777">'
+    +'오래된 것부터(번호 순) 차례로 올라갑니다. 반영이 끝날 때까지 이 화면을 열어 두세요.</div>';
+}
+
+/* 반영 중에 창을 닫거나 새로 고치면 거기서 멈추므로 한 번 물어봅니다 */
+function guardLeave(e){ if(!DEPLOYING) return; e.preventDefault(); e.returnValue=''; return ''; }
+window.addEventListener('beforeunload', guardLeave);
+
+function showProgress(html, kind){
+  var box=$('dmsg'); if(!box) return;
+  box.className='msg'+(kind?' '+kind:'');
+  box.innerHTML=html;
+}
+
 function deployAll(){
   call({action:'history'}).then(function(res){
     if(!res.ok){ alert('목록을 불러오지 못했습니다.'); return; }
@@ -1202,28 +1240,45 @@ function deployAll(){
     if(!confirm('아래 '+list.length+'건을 오래된 것부터 차례로 반영합니다.\n\n'
       +names+'\n\n하나라도 실패하면 거기서 멈춥니다. 진행할까요?')) return;
 
-    var box=$('rmsg'); box.className='msg';
+    DEPLOYING = true;
     var done=0, fails=[];
 
-    function step(i){
-      if(i>=list.length){
-        box.className = fails.length ? 'msg bad' : 'msg ok';
-        box.textContent = fails.length
-          ? (done+'건 반영했고 '+fails[0].path+' 에서 멈췄습니다 — '+fails[0].why)
-          : (done+'건 모두 반영했습니다. 사이트에 보이기까지 1~2분 걸립니다.');
-        curId=null; loadHist();
-        if(window.loadCommits) loadCommits();
-        if(!fails.length) watchBuild('');
-        return;
+    function finish(){
+      DEPLOYING = false;
+      WAITING = WAITING.filter(function(x){
+        return !list.slice(0, done).some(function(y){ return y.id===x.id; });
+      });
+      curId=null; loadHist();
+      if(window.loadCommits) loadCommits();
+
+      if(fails.length){
+        showProgress('<b>'+done+'건 반영했고 '+fails[0].path+' 에서 멈췄습니다.</b><br>'
+          +'이유 — '+fails[0].why
+          +'<br><br>남은 '+WAITING.length+'건은 그대로 있습니다. 원인을 고친 뒤 다시 눌러 주세요.'
+          +(WAITING.length?' <button type="button" class="btn go" style="min-width:0;padding:7px 14px;'
+            +'font-size:13px;margin-left:6px" onclick="deployAll()">이어서 반영</button>':''), 'bad');
+      } else {
+        showProgress('<b>'+done+'건 모두 반영했습니다.</b> 사이트에 보이기까지 1~2분 걸립니다.', 'ok');
+        watchBuild('');
+        setTimeout(drawWaiting, 4000);
       }
+    }
+
+    function step(i){
+      if(i>=list.length){ finish(); return; }
       var it=list[i];
-      box.textContent='('+(i+1)+'/'+list.length+') '+it.path+' 반영 중…';
+      var pct = Math.round(i/list.length*100);
+      showProgress('<b>('+(i+1)+'/'+list.length+') '+it.path+' 반영 중…</b>'
+        +'<div style="margin-top:7px;height:7px;border-radius:4px;background:rgba(0,0,0,.08);overflow:hidden">'
+        +'<div style="height:100%;width:'+pct+'%;background:var(--main);transition:width .25s"></div></div>'
+        +'<div style="margin-top:6px;font-size:12px;color:#777">'
+        +'끝날 때까지 이 화면을 닫거나 새로 고치지 마세요.</div>');
       call({action:'deploy', id:it.id}).then(function(r){
-        if(!r.ok){ fails.push({path:it.path, why:(r.d&&r.d.error)||'알 수 없는 오류'}); step(list.length); return; }
+        if(!r.ok){ fails.push({path:it.path, why:(r.d&&r.d.error)||'알 수 없는 오류'}); finish(); return; }
         done++;
         setTimeout(function(){ step(i+1); }, 400);   /* GitHub API 를 몰아치지 않도록 */
       }).catch(function(){
-        fails.push({path:it.path, why:'통신 오류'}); step(list.length);
+        fails.push({path:it.path, why:'통신 오류'}); finish();
       });
     }
     step(0);
@@ -1352,9 +1407,12 @@ function pickDraft(id){
     curId=id;
     if($('path')) $('path').value=it.path;
     $('summary').textContent = it.summary || '요약이 없습니다.';
+    var head=$('curHead');
+    if(head) head.innerHTML='지금 고른 수정안 — <code>'+it.path+'</code> <span style="color:#999">(#'+it.id+')</span>';
+    var db=$('deployBtn');
+    if(db) db.textContent = it.path+' 사이트에 반영';
     $('result').classList.remove('hide');
-    $('dmsg').className='msg ok';
-    $('dmsg').textContent='대기 중인 수정안을 불러왔습니다. 확인하고 반영해 주세요.';
+    drawWaiting();
     $('result').scrollIntoView({behavior:'smooth', block:'center'});
   }).catch(function(){});
 }
