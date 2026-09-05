@@ -16,6 +16,7 @@
 (function(){
   if(window.__cgbotMounted) return;   /* 한 페이지에 두 번 실려도 하나만 */
   window.__cgbotMounted = true;
+  window.cgBotShared = true;   /* 표식 — 이 화면이 공용 봇을 쓰고 있다는 뜻 */
   var MARKUP = "<button class=\"cgbot-fab\" onclick=\"cgbotToggle()\" aria-label=\"상담 문의\">\n  <svg viewBox=\"0 0 24 24\"><path d=\"M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z\"/></svg>\n  <span class=\"dot\"></span>\n</button>\n<div class=\"cgbot-win\" id=\"cgbotWin\">\n  <div class=\"cgbot-hd\">\n    <div><b>츄구미 상담</b><small>상담 · 주문 · 음성으로 이용하세요</small></div>\n    <button class=\"cgbot-clr\" onclick=\"cgbotClear()\" aria-label=\"대화 지우기\" title=\"대화 지우기\">지우기</button>\n    <button onclick=\"cgbotToggle()\" aria-label=\"닫기\">&times;</button>\n  </div>\n  <div class=\"cgbot-body\" id=\"cgbotBody\"></div>\n  <div class=\"cgbot-note\">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>\n  <div class=\"cgbot-ft\">\n    <button id=\"cgVoiceBtn\" class=\"cg-ic\" type=\"button\" title=\"꾹 눌러 말하기 · 짧게 눌러 음성답변\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z\"/><path d=\"M18 11a6 6 0 0 1-12 0M12 17v4M9 21h6\"/></svg>\n        <span class=\"cg-spk\" aria-hidden=\"true\"></span>\n      </button>\n      <input id=\"cgbotIn\" placeholder=\"말하거나 입력하세요\" onkeydown=\"if(event.key==='Enter')cgbotSend()\">\n      <button id=\"cgbotBtn\" onclick=\"cgbotSend()\" aria-label=\"보내기\" title=\"보내기\"><img src=\"logo.png\" alt=\"\" class=\"send-logo\" onerror=\"this.onerror=null;this.src='assets/logo-rainbow.png'\"></button>\n  </div>\n</div>\n";
   function mount(){
     if(!document.body) return;
@@ -42,6 +43,14 @@
     return String((t && (t.em || t.u)) || ''); }catch(e){ return ''; } }
   function store(){ return who() ? localStorage : sessionStorage; }
   function hkey(){ var u=who(); return u ? 'cg_bot_hist_'+u : 'cg_bot_hist'; }
+  /* 로그아웃하면(=로그인 정보가 없으면) 이 기기에 남아 있던 '로그인용' 대화 기록을 지웁니다.
+     로그아웃 코드가 여러 화면에 흩어져 있어 한 곳에서만 정리하도록 했습니다. (issues #32)
+     비로그인 기록(sessionStorage)은 탭을 닫으면 저절로 사라지므로 그대로 둡니다. */
+  function sweepHist(){ try{ if(who()) return;
+    var ks=[]; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i);
+      if(k && k.indexOf('cg_bot_hist_')===0) ks.push(k); }
+    for(var j=0;j<ks.length;j++) localStorage.removeItem(ks[j]); }catch(e){} }
+  sweepHist();
   function saveHist(){ try{ store().setItem(hkey(), JSON.stringify(hist.slice(-HMAX))); }catch(e){} }
   function loadHist(){ try{ var v=JSON.parse(store().getItem(hkey())||'[]');
     return Array.isArray(v) ? v.slice(-HMAX) : []; }catch(e){ return []; } }
