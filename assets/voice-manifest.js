@@ -156,6 +156,9 @@
         say: ['카드로', '간편결제', '네이버페이'] },
       { id: 'read_account', label: '계좌번호 읽어주기', do: 'read',
         sel: ['#bkNoTx', '#bankBox'],
+        /* 계좌가 아직 안 왔을 때 안내문을 계좌번호처럼 읽어 주던 문제 (issues #35) */
+        needDigits: 4,
+        notReady: '아직 계좌번호가 나오지 않았습니다. 잠시 뒤 다시 말씀해 주세요.',
         say: ['계좌번호 읽', '계좌 불러', '계좌번호 알려', '어디로 입금'] },
       { id: 'copy_account', label: '계좌번호 복사',   do: 'call', fn: 'copyAcc',
         say: ['계좌번호 복사', '계좌 복사'] },
@@ -174,6 +177,11 @@
   };
 
   /* ── 도우미 ── */
+  /* 화면이 "아직 준비 안 됨" 을 알리는 말버릇들 — 이 글자는 읽어 주지 않습니다 (issues #35)
+     실제 본문에 같은 낱말이 섞여 있어도 막히지 않도록, 짧은 안내문일 때만 봅니다 (NOTREADY_MAX) */
+  var NOTREADY = /불러오는\s*중|불러오지|가져오는\s*중|로딩|loading|잠시만|준비\s*중|없습니다|비어\s*있|실패|오류|다시\s*시도|\.\.\.|…/i;
+  var NOTREADY_MAX = 60;
+
   function pageName(p) {
     if (p) return String(p);
     var f = (location.pathname || '').split('/').pop();
@@ -262,6 +270,21 @@
         var r = find(a);
         var txt = r ? String(r.textContent || '').replace(/\s+/g, ' ').trim() : '';
         if (!txt) return { ok: false, reason: 'missing', say: '아직 읽어 드릴 내용이 없습니다.' };
+
+        /* [1] 아직 불러오는 중이거나 실패 안내문이면 읽지 않습니다 (issues #35) */
+        if (txt.length <= NOTREADY_MAX && NOTREADY.test(txt)) {
+          return { ok: false, reason: 'notready',
+            say: a.notReady || '아직 준비되지 않았습니다. 잠시 뒤 다시 말씀해 주세요.' };
+        }
+        /* [2] 계좌번호처럼 숫자가 있어야 하는 것은 숫자를 확인합니다 (issues #35) */
+        if (a.needDigits) {
+          var digits = (txt.match(/\d/g) || []).length;
+          if (digits < a.needDigits) {
+            return { ok: false, reason: 'notready',
+              say: a.notReady || '아직 준비되지 않았습니다. 잠시 뒤 다시 말씀해 주세요.' };
+          }
+        }
+
         /* 숫자는 또박또박 읽히도록 사이를 띄웁니다 */
         var spoken = txt.replace(/\d{2,}/g, function (n) { return n.split('').join(' '); });
         if (typeof window.cgbotSpeak === 'function') window.cgbotSpeak(spoken);
