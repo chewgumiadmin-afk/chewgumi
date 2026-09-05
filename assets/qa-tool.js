@@ -79,6 +79,41 @@
          + String(s % 60).padStart(2, '0');
   }
 
+  /* ── 문제를 적었을 때 같이 붙일 것들 ──
+     화면 주소·눌렀던 곳·콘솔 오류·실패한 요청을 모아 둡니다.
+     사람이 "이상해요" 한 줄만 적어도 고치는 쪽에서 재현할 수 있게 하려는 것입니다.
+     (issues #7 · 2번) */
+  var CTX_MAX = 12;
+  var ctx = [];
+  function keep(kind, text) {
+    if (!text) return;
+    ctx.push({ at: new Date().toISOString().slice(11, 19), kind: kind, text: String(text) });
+    if (ctx.length > CTX_MAX) ctx = ctx.slice(-CTX_MAX);
+  }
+  var lastHit = '';          /* 마지막으로 누른 곳 */
+
+  function context() {
+    var out = [];
+    out.push('화면: ' + page() + '  ' + location.href.slice(0, 200));
+    out.push('브라우저: ' + navigator.userAgent.slice(0, 120));
+    out.push('창 크기: ' + window.innerWidth + '×' + window.innerHeight);
+    if (lastHit) out.push('마지막으로 누른 곳: ' + lastHit);
+    var errs = ctx.filter(function (c) { return c.kind !== '요청실패'; });
+    var reqs = ctx.filter(function (c) { return c.kind === '요청실패'; });
+    if (errs.length) {
+      out.push('');
+      out.push('콘솔 오류 ' + errs.length + '건');
+      errs.forEach(function (c) { out.push('  ' + c.at + ' [' + c.kind + '] ' + c.text); });
+    }
+    if (reqs.length) {
+      out.push('');
+      out.push('실패한 요청 ' + reqs.length + '건');
+      reqs.forEach(function (c) { out.push('  ' + c.at + ' ' + c.text); });
+    }
+    if (!errs.length && !reqs.length) out.push('(콘솔 오류·실패한 요청 없음)');
+    return out.join('\n');
+  }
+
   function log(kind, o) {
     if (!isOn()) return;
     var row = {
@@ -225,6 +260,26 @@
     }, 400);
   }
 
+  /* 테스트 모드라는 것을 화면 위에 분명히 띄웁니다.
+     QA 중에 실제 주문을 넣어 버리는 사고를 막으려는 것입니다. (issues #7 · 1번) */
+  function banner() {
+    if (document.getElementById('cgQaBar')) return;
+    var bar = document.createElement('div');
+    bar.id = 'cgQaBar';
+    bar.setAttribute('role', 'status');
+    bar.textContent = '테스트 모드입니다 — 여기서 넣는 주문은 실제 주문이 아닙니다';
+    bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;'
+      + 'padding:7px 12px;text-align:center;font-size:12.5px;font-weight:700;'
+      + 'font-family:inherit;color:#3a2a00;background:#FFE923;'
+      + 'box-shadow:0 1px 6px rgba(0,0,0,.18);pointer-events:none;'
+      + 'letter-spacing:-.01em';
+    document.body.appendChild(bar);
+    /* 띠가 머리말을 가리지 않게 본문을 조금 내립니다 */
+    var h = bar.offsetHeight || 30;
+    document.documentElement.style.scrollPaddingTop = h + 'px';
+    document.body.style.marginTop = h + 'px';
+  }
+
   function build() {
     if (box()) return;
     /* 시험대 안이면 창을 안 띄웁니다 (바깥에 이미 있습니다) */
@@ -252,8 +307,10 @@
           + '<button class="note">메모</button>'
           + '<button class="ok">잘 됨</button>'
         + '</div>'
+        + '<div class="qa-sent"></div>'
       + '</div>';
     document.body.appendChild(b);
+    banner();
 
     b.querySelector('.qa-x').onclick = function () { cgQA.off(); };
     b.querySelector('.qa-min').onclick = function () {
@@ -272,8 +329,16 @@
         t.placeholder = '무엇이 이상한지 적어주세요';
         return;
       }
-      log(kind, { note: v || '이 화면은 잘 됩니다', target: page() });
+      /* 버그로 적으면 맥락을 같이 붙입니다 (issues #7 · 2번) */
+      var body = v || '이 화면은 잘 됩니다';
+      if (kind === 'bug') body = body + '\n\n──── 자동으로 붙인 정보 ────\n' + context();
+      log(kind, { note: body, target: page() });
       t.value = '';
+      if (kind === 'bug') {
+        var m = b.querySelector('.qa-sent');
+        if (m) { m.textContent = '보냈습니다 · 화면 정보와 오류를 함께 붙였습니다';
+                 setTimeout(function () { m.textContent = ''; }, 4000); }
+      }
     }
     b.querySelector('.bug').onclick = function () { send('bug'); };
     b.querySelector('.note').onclick = function () { send('note'); };
@@ -310,6 +375,8 @@
     document.addEventListener('click', function (e) {
       var el = e.target.closest('button, a, [onclick], input[type=checkbox], input[type=radio]');
       if (!el || el.closest('#cgQaBox')) return;
+      lastHit = label(el) + ' — ' + where(el)
+        + (el.getAttribute('onclick') ? ' → ' + el.getAttribute('onclick').slice(0, 60) : '');
       log('click', { target: where(el), label: label(el) });
     }, true);
 
@@ -337,6 +404,8 @@
     }, 700);
 
     window.addEventListener('error', function (e) {
+      keep('오류', String(e.message).slice(0, 120)
+        + ' (' + (e.filename || '').split('/').pop() + ':' + e.lineno + ')');
       log('bug', {
         note: '코드 오류 · ' + String(e.message).slice(0, 80),
         target: (e.filename || '').split('/').pop() + ':' + e.lineno,
@@ -344,11 +413,23 @@
       });
     });
 
+    /* 콘솔에 찍히는 오류도 같이 모읍니다 — 화면에 안 보이는 것이 많습니다 */
+    var _ce = console.error;
+    console.error = function () {
+      try {
+        keep('콘솔', Array.prototype.slice.call(arguments)
+          .map(function (x) { return (x && x.message) ? x.message : String(x); })
+          .join(' ').slice(0, 160));
+      } catch (e2) {}
+      return _ce.apply(console, arguments);
+    };
+
     var _f = window.fetch;
     window.fetch = function () {
       var url = String(arguments[0] || '');
       return _f.apply(this, arguments).then(function (r) {
         if (!r.ok && url.indexOf('qa_events') < 0) {
+          keep('요청실패', r.status + ' ' + url.slice(0, 140));
           log('bug', {
             note: '서버 오류 ' + r.status,
             target: url.split('/').slice(-1)[0].slice(0, 60),
@@ -356,6 +437,9 @@
           });
         }
         return r;
+      }, function (err) {
+        keep('요청실패', '연결 실패 · ' + url.slice(0, 140));
+        throw err;
       });
     };
   }
@@ -465,6 +549,9 @@
   function start() {
     build();
     watch();
+    /* 켜면 녹화도 같이 시작합니다. 나중에 "그때 뭐 눌렀더라"를 안 물어보려는 것입니다.
+       화면 녹화를 지원하지 않는 브라우저면 조용히 넘어갑니다. (issues #7 · 1번) */
+    if (canRec()) setTimeout(function () { try { startRec(); } catch (e) {} }, 400);
     setTimeout(inspect, 1500);
     log('move', { note: page() + ' 열림', target: location.href.slice(0, 120) });
   }
