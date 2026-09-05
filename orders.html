@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>주문 관리 | CHEWGUMI ADMIN</title>
+<link rel="canonical" href="https://shop.chewgumi.com/orders.html">
 <script src="assets/role.js"></script>
 <script src="assets/guard.js" defer></script>
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -614,7 +615,8 @@ function doLogin(){
 function doLogout(){token=null;who='';try{CGAuth.logout();}catch(e){}try{localStorage.removeItem('cg_sb');}catch(e){}sync();}
 
 function load(){
-  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price),refunds(amount,reason,created_at)&order=created_at.desc&limit=1000',
+  /* 테스트 주문(is_test=true)은 목록·통계·AI 답변에서 모두 뺍니다. (issues #22 · GitHub #129) */
+  fetch(SB+'/rest/v1/orders?select=*,order_items(product_name,qty,unit_price),refunds(amount,reason,created_at)&is_test=eq.false&order=created_at.desc&limit=1000',
     {headers:{apikey:KEY,Authorization:'Bearer '+token}})
   .then(r=>r.ok?r.json():Promise.reject(r.status))
   .then(rows=>{ORD=rows;stats();render();})
