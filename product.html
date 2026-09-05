@@ -324,6 +324,20 @@ select{width:100%;padding:13px 14px;border-radius:14px;font-size:13.5px;font-fam
 </div>
 
 <script>
+/* ── 이미지 실패 처리기 (issues #41) ──────────────────────────
+   상세 이미지 태그마다 onerror="cgImgFail(this)" 가 붙어 있는데,
+   그 함수를 아래쪽 상세이미지 블록 안에서 만들고 있었습니다.
+   그 블록은 주소에 ?no= 가 없으면 맨 앞에서 되돌아가 버려서,
+   함수가 만들어지지 않은 채 사진이 실패하면 콘솔에 오류가 납니다.
+   화면에는 티가 안 나지만 오류 기록이 쌓여 진짜 문제를 가립니다.
+   그래서 이 파일에서 가장 먼저 실행되는 이곳으로 옮겼습니다. */
+window.cgImgFail = function(el){
+  if (el.dataset.done) { el.style.display='none'; return; }
+  el.dataset.done = '1';
+  if (!el.dataset.fb) { el.style.display='none'; return; }
+  el.src = el.dataset.fb;
+};
+
 /* 글래스 팝업 */
 function cgClose(){ document.getElementById('cgDim').classList.remove('on'); }
 function cgModal(o){
@@ -1706,12 +1720,7 @@ button[onclick*="addCart"]:active, .acts .cart:active{
   }
 
 
-window.cgImgFail = function(el){
-    if (el.dataset.done) { el.style.display='none'; return; }
-    el.dataset.done = '1';
-    if (!el.dataset.fb) { el.style.display='none'; return; }
-    el.src = el.dataset.fb;
-  };
+/* cgImgFail 은 이 파일 맨 위로 옮겼습니다 (issues #41) */
 
   /* 상세 이미지가 길 때는 앞부분만 펼치고 나머지는 '더 보기' 로 둡니다.
      개입 상품(18~21)은 레몬민트 20장 + 그레이프 20장 = 40장이라
