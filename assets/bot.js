@@ -136,6 +136,29 @@
     try{localStorage.setItem('cg_cart',JSON.stringify(cart));}catch(e){}
     return cart.reduce(function(s,c){return s+(c.price||0)*(c.qty||1);},0);
   }
+  /* ── 말로 담기 마무리 (5단계) ──
+     주문 카드를 보여드린 뒤, 단추를 누르지 않고 말로만 "주문할게요" / "담아두기" /
+     "아니요" 라고 답해도 그대로 진행되도록 답을 기다립니다.
+     2분이 지나면 스스로 사라지고, 다른 상품을 말씀하시면 새 카드로 넘어갑니다. */
+  var cgOrderAsk = null;
+  var CG_ORD_TTL = 120000;
+  function cgOrderLive(){
+    if(!cgOrderAsk) return null;
+    if(Date.now() - cgOrderAsk.at > CG_ORD_TTL){ cgOrderAsk = null; return null; }
+    return cgOrderAsk;
+  }
+  function cgOrderGo(p,qty){
+    cgOrderAsk = null;
+    addToCart(p,qty);
+    botSay('장바구니에 담았습니다. 주문서로 이동합니다.');
+    setTimeout(function(){ location.href='checkout.html'; },700);
+  }
+  function cgOrderKeep(p,qty){
+    cgOrderAsk = null;
+    var t=addToCart(p,qty);
+    botSay('담아두었습니다. 장바구니 합계 '+won(t)+'원입니다.');
+  }
+
   function orderCard(p,qty){
     var wrap=document.createElement('div'); wrap.className='cgbot-order';
     var ship=p.price*qty>=50000?0:2500;
@@ -146,17 +169,11 @@
       +'<div class="o-bt"><button class="ob primary">담고 주문하기</button>'
       +'<button class="ob">담아두기</button></div>';
     var bs=wrap.querySelectorAll('.ob');
-    bs[0].onclick=function(){
-      addToCart(p,qty);
-      add('bot','장바구니에 담았습니다. 주문서로 이동합니다.');
-      setTimeout(function(){ location.href='checkout.html'; },700);
-    };
-    bs[1].onclick=function(){
-      var t=addToCart(p,qty);
-      add('bot','담아두었습니다. 장바구니 합계 '+won(t)+'원입니다.');
-    };
+    bs[0].onclick=function(){ cgOrderGo(p,qty); };
+    bs[1].onclick=function(){ cgOrderKeep(p,qty); };
     el('cgbotBody').appendChild(wrap);
     el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
+    cgOrderAsk = { p:p, qty:qty, at:Date.now() };
   }
   function tryOrder(text){
     if(!BUY.test(String(text||''))) return false;
@@ -175,7 +192,7 @@
       el('cgbotBody').scrollTop=el('cgbotBody').scrollHeight;
       return true;
     }
-    var _m=p.name+'으로 준비했습니다. 확인하시고 진행해 주세요.';
+    var _m=p.name+'으로 준비했습니다. "주문할게요" 또는 "담아두기" 라고 말씀하시거나 아래 단추를 눌러 주세요.';
     add('bot',_m); if(window.cgbotSpeak) cgbotSpeak(_m);
     orderCard(p,1);
     return true;
@@ -195,6 +212,7 @@
     if(!confirm('지금까지의 대화를 지울까요?')) return;
     hist = [];
     started = false;
+    cgOrderAsk = null;
     var b=document.getElementById('cgbotBody');
     if(b) b.innerHTML='';
     try{
@@ -282,6 +300,21 @@
 
       var _hit = CG_VOICE.match(v);                        /* ③ 이 화면 전용 명령이 먼저 */
       if(_hit && _hit.id && cgOwn()[_hit.id]){ _hit._said = v; if(cgDo(_hit)) return; }
+    }
+    var _ord = cgOrderLive();          /* ④-앞 · 방금 보여드린 주문 카드에 대한 대답 */
+    if(_ord && !findProduct(v)){
+      var _s = String(v).replace(/[\s.!?~,]/g,'');
+      if(/(아니|취소|괜찮|됐어|그만)/.test(_s)){
+        cgOrderAsk = null; pushHist('me',v);
+        botSay('알겠습니다. 담지 않았습니다.'); return;
+      }
+      if(/(담아둘|담아둬|담아두|담아만|담기만|보관|나중)/.test(_s)){
+        pushHist('me',v); cgOrderKeep(_ord.p,_ord.qty); return;
+      }
+      if(CG_YES.test(_s) || /(담고|주문할|주문하|주문해|결제할|결제해|결제하|바로주문|진행)/.test(_s)){
+        pushHist('me',v); cgOrderGo(_ord.p,_ord.qty); return;
+      }
+      cgOrderAsk = null;               /* 다른 말씀이면 카드는 그대로 두고 상담으로 넘어갑니다 */
     }
     if(tryOrder(v)){ pushHist('me',v); return; }
     if(window.CG_VOICE){                                   /* ⑤ 모든 화면 공통 명령 */
