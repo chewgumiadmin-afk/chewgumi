@@ -17,6 +17,23 @@
   if(window.__cgbotMounted) return;   /* 한 페이지에 두 번 실려도 하나만 */
   window.__cgbotMounted = true;
   window.cgBotShared = true;   /* 표식 — 이 화면이 공용 봇을 쓰고 있다는 뜻 */
+
+  /* ── 4단계 · 음성 명령 사전을 함께 불러옵니다 ──
+     화면마다 <script> 한 줄을 더 넣지 않아도 되도록 이 파일이 자기 위치를 기준으로 찾아옵니다.
+     (p/ 아래 상품 페이지처럼 폴더가 다른 화면도 경로가 저절로 맞습니다) */
+  (function(){
+    try{
+      if(window.CG_VOICE) return;
+      if(document.querySelector('script[src*="voice-manifest.js"]')) return;
+      var me = document.currentScript;
+      if(!me){ var ss=document.getElementsByTagName('script');
+        for(var i=ss.length-1;i>=0;i--){ if((ss[i].src||'').indexOf('bot.js')>-1){ me=ss[i]; break; } } }
+      var src = (me && me.src) ? me.src.replace(/bot\.js(\?.*)?$/, 'voice-manifest.js')
+                               : 'assets/voice-manifest.js';
+      var t = document.createElement('script'); t.src = src; t.defer = true;
+      (document.head || document.documentElement).appendChild(t);
+    }catch(e){}
+  })();
   var MARKUP = "<button class=\"cgbot-fab\" onclick=\"cgbotToggle()\" aria-label=\"상담 문의\">\n  <svg viewBox=\"0 0 24 24\"><path d=\"M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z\"/></svg>\n  <span class=\"dot\"></span>\n</button>\n<div class=\"cgbot-win\" id=\"cgbotWin\">\n  <div class=\"cgbot-hd\">\n    <div><b>츄구미 상담</b><small>상담 · 주문 · 음성으로 이용하세요</small></div>\n    <button class=\"cgbot-clr\" onclick=\"cgbotClear()\" aria-label=\"대화 지우기\" title=\"대화 지우기\">지우기</button>\n    <button onclick=\"cgbotToggle()\" aria-label=\"닫기\">&times;</button>\n  </div>\n  <div class=\"cgbot-body\" id=\"cgbotBody\"></div>\n  <div class=\"cgbot-note\">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>\n  <div class=\"cgbot-ft\">\n    <button id=\"cgVoiceBtn\" class=\"cg-ic\" type=\"button\" title=\"꾹 눌러 말하기 · 짧게 눌러 음성답변\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z\"/><path d=\"M18 11a6 6 0 0 1-12 0M12 17v4M9 21h6\"/></svg>\n        <span class=\"cg-spk\" aria-hidden=\"true\"></span>\n      </button>\n      <input id=\"cgbotIn\" placeholder=\"말하거나 입력하세요\" onkeydown=\"if(event.key==='Enter')cgbotSend()\">\n      <button id=\"cgbotBtn\" onclick=\"cgbotSend()\" aria-label=\"보내기\" title=\"보내기\"><img src=\"logo.png\" alt=\"\" class=\"send-logo\" onerror=\"this.onerror=null;this.src='assets/logo-rainbow.png'\"></button>\n  </div>\n</div>\n";
   function mount(){
     if(!document.body) return;
@@ -215,10 +232,63 @@
       setTimeout(function(){el('cgbotIn').focus();},80);
     }
   };
+  /* ═══ 4단계 · 음성 명령 사전 연결 (assets/voice-manifest.js) ═══
+     손님 말은 사전에 적힌 목록에서만 찾아 실행합니다. 목록에 없으면 평소대로 상담 답변으로 갑니다.
+     말을 코드로 바꿔 그때그때 실행하는 일은 없습니다. (issues #16 · fix_log #18)
+     사전이 없는 화면에서는 이 부분이 통째로 건너뛰어져 지금까지와 똑같이 동작합니다.
+
+     순서 — ① 말로 받으면 안 되는 것 → ② 여쭤 본 동작의 대답 → ③ 이 화면 전용 명령
+            → ④ 말로 주문 담기 → ⑤ 모든 화면 공통 명령 → ⑥ 상담 답변
+     ③ 을 ④ 보다 먼저 두는 이유: 주문서 화면의 "결제해 줘" 같은 말이
+     주문 담기로 새어 나가면 안 되기 때문입니다. 반대로 "트래블잇 3봉 주문할게요" 는
+     화면 전용 명령이 아니므로 ④ 의 주문 담기가 그대로 받습니다. */
+  var cgPending = null;   /* 되돌릴 수 없는 동작을 여쭤 본 뒤 "네" 를 기다리는 중 */
+  var CG_YES = /^(네|넵|예|응|어|그래|확인|진행|해줘|해주세요|맞아|맞아요|좋아|좋아요|오케이|ok|yes)$/i;
+  function botSay(m){ add('bot', m); pushHist('bot', m); if(window.cgbotSpeak) cgbotSpeak(m); }
+  /* 이 화면에서만 되는 명령의 id 목록 — 공통 목록을 빼서 구합니다 */
+  function cgOwn(){
+    try{
+      var seen={}, out={};
+      CG_VOICE.menu('__common__.html').forEach(function(m){ seen[m.id]=1; });
+      CG_VOICE.menu().forEach(function(m){ if(!seen[m.id]) out[m.id]=1; });
+      return out;
+    }catch(e){ return {}; }
+  }
+  /* 사전에서 고른 동작 하나를 실행합니다 */
+  function cgDo(hit){
+    pushHist('me', hit._said);
+    if(hit.confirm){ cgPending = hit.id;
+      botSay(hit.label + ' 할까요? "네" 라고 말씀해 주세요.'); return true; }
+    var r = CG_VOICE.run(hit.id);
+    botSay((r && r.say) || hit.label);
+    return true;
+  }
+
   window.cgbotSend=function(){
     var v=el('cgbotIn').value.trim(); if(!v) return;
     el('cgbotIn').value=''; add('me',v);
+    if(window.CG_VOICE){
+      var _bk = CG_VOICE.blocked(v);                       /* ① 카드번호·비밀번호는 말로 받지 않습니다 */
+      if(_bk){ pushHist('me',v); botSay(_bk.say); return; }
+
+      if(cgPending){                                       /* ② 여쭤 본 동작의 대답 */
+        var _a = cgPending; cgPending = null; pushHist('me',v);
+        if(CG_YES.test(v.replace(/[\s.!?~,]/g,''))){
+          var _r1 = CG_VOICE.run(_a, { confirmed: true });
+          botSay((_r1 && _r1.say) || '진행했습니다.');
+        } else botSay('취소했습니다.');
+        return;
+      }
+
+      var _hit = CG_VOICE.match(v);                        /* ③ 이 화면 전용 명령이 먼저 */
+      if(_hit && _hit.id && cgOwn()[_hit.id]){ _hit._said = v; if(cgDo(_hit)) return; }
+    }
     if(tryOrder(v)){ pushHist('me',v); return; }
+    if(window.CG_VOICE){                                   /* ⑤ 모든 화면 공통 명령 */
+      var _hit2 = CG_VOICE.match(v);
+      if(_hit2 && _hit2.id){ _hit2._said = v; if(cgDo(_hit2)) return; }
+    }
+
     pushHist('me',v);
     var t=add('bot','…'); el('cgbotBtn').disabled=true;
     fetch(SB+'/functions/v1/chat',{method:'POST',
