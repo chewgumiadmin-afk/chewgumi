@@ -554,6 +554,16 @@
     '보러 가기 →': 'Take a look →',
     '츄구미의 새로운 소식을 알려드립니다': 'The latest from ChewGumi',
 
+    /* 상담 챗봇 (assets/bot.js) */
+    '츄구미 상담': 'ChewGumi Support',
+    '상담 · 주문 · 음성으로 이용하세요': 'Chat, order, or use your voice',
+    '답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.': 'Answers may not always be accurate. For anything important, please reach us on KakaoTalk.',
+
+    /* 게시판 직원용 단추 */
+    '운영자': 'Staff',
+    '글 관리': 'Manage posts',
+    '관리자 홈': 'Admin home',
+
     /* 사업자 정보 — 값은 로마자로만 옮깁니다 (내용을 바꾸지 않습니다) */
     '윤소호': 'Yun So-ho',
     '04309 서울 용산구 청파로47길 46, 205호': 'Room 205, 46 Cheongpa-ro 47-gil, Yongsan-gu, Seoul 04309, Republic of Korea',
