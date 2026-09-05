@@ -32,6 +32,10 @@
     /* 머리말 · 길찾기 */
     '홈': 'Home',
     '← 홈으로': '← Home',
+    /* 화면 아래쪽 '홈으로' 는 화살표 없이 쓰는 곳이 많아 따로 넣습니다.
+       product · notice · qna · review · cart · checkout 여섯 곳에서 한국어로 남아 있었습니다 (issues #5) */
+    '홈으로': 'Home',
+    '공지': 'Notice',
     '전체상품': 'Shop All',
     '전체 상품 목록': 'All products',
     '회사소개': 'About',
