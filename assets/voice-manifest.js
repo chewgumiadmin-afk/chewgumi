@@ -1,5 +1,5 @@
 /* ═════════════════════════════════════════════════════════
-   츄구미 음성 명령 사전 — assets/voice-manifest.js   (2026-09-04)
+   츄구미 음성 명령 사전 — assets/voice-manifest.js   (2026-09-05)
 
    왜 만들었나
    ───────────
@@ -107,7 +107,45 @@
     ],
     'cart.html': [
       { id: 'to_checkout', label: '주문서로 넘어가기', do: 'go', to: 'checkout.html',
-        say: ['주문할래', '결제할래', '다음'] }
+        say: ['주문할래', '결제할래', '다음'] },
+      { id: 'read_total',  label: '합계 읽어주기', do: 'read',
+        sel: ['#sPay', '#sGoods'],
+        say: ['얼마', '합계', '총 얼마', '결제 금액'] }
+    ],
+
+    /* 상품 상세 — 담기·가격 확인까지. 되돌릴 수 없는 '바로 주문' 은 한 번 더 여쭙습니다.
+       (주소가 p/여행-1.html 처럼 다른 상품 낱장은 위 COMMON 만 씁니다) */
+    'product.html': [
+      { id: 'add_cart',   label: '장바구니에 담기', do: 'click', sel: '#pCart',
+        say: ['장바구니에 담', '담아 줘', '카트에 넣', '이거 담'] },
+      { id: 'read_price', label: '가격 읽어주기', do: 'read',
+        sel: ['#pTotal', '#pSale'],
+        say: ['얼마', '가격 알려', '값이', '가격은'] },
+      { id: 'cart_panel', label: '장바구니 서랍 열기', do: 'call', fn: 'openCart',
+        say: ['장바구니 열', '카트 열'] },
+      { id: 'buy_now',    label: '바로 주문하기', do: 'click', sel: '#pBuy', confirm: true,
+        say: ['바로 주문', '바로 구매', '지금 살', '바로 결제'] }
+    ],
+
+    /* 배송 조회 — 누르기와 읽어주기만. 아무 것도 바꾸지 않습니다. */
+    'tracking.html': [
+      { id: 'do_track',   label: '배송 조회하기', do: 'click', sel: '#go',
+        say: ['조회해', '찾아 줘', '확인해', '조회'] },
+      { id: 'read_track', label: '배송 상태 읽어주기', do: 'read',
+        sel: ['#steps', '#res'],
+        say: ['어디까지', '배송 상태', '어디 있', '읽어 줘'] }
+    ],
+
+    /* 마이페이지 — 읽어주기만 (바꾸는 것은 손님이 직접) */
+    'mypage.html': [
+      { id: 'read_orders', label: '주문 내역 읽어주기', do: 'read', sel: ['#list'],
+        say: ['주문 내역', '내 주문', '뭐 샀', '읽어 줘'] }
+    ],
+
+    /* 자주 묻는 질문 — 읽어주기만 */
+    'faq.html': [
+      { id: 'read_faq', label: '자주 묻는 질문 읽어주기', do: 'read', sel: ['#list'],
+        say: ['읽어 줘', '알려 줘', '뭐가 있'] }
     ],
     'checkout.html': [
       { id: 'pay_bank',  label: '무통장입금 고르기', do: 'click', sel: '#ptBank',
@@ -127,7 +165,11 @@
     ],
     'order-lookup.html': [
       { id: 'to_tracking', label: '배송 조회로', do: 'go', to: 'tracking.html',
-        say: ['배송', '어디까지'] }
+        say: ['배송', '어디까지'] },
+      { id: 'do_find',     label: '주문 조회하기', do: 'click', sel: '#findBtn',
+        say: ['조회해', '찾아 줘', '확인해', '조회'] },
+      { id: 'read_order',  label: '조회 결과 읽어주기', do: 'read', sel: ['#resBox'],
+        say: ['읽어 줘', '결과 알려', '내 주문'] }
     ]
   };
 
@@ -238,7 +280,7 @@
   }
 
   window.CG_VOICE = {
-    version: '2026-09-04',
+    version: '2026-09-05',
     page: pageName,
     list: list,
     match: match,
