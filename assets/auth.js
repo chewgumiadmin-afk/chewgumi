@@ -21,6 +21,23 @@
     try { localStorage.removeItem(STORE); } catch (e) {}
   }
 
+  /* ── 새 토큰을 기존 로그인 정보 '위에' 얹습니다 ──
+     예전에는 갱신할 때 t·r·u·e 네 가지만 다시 써서
+     em(이메일) · exp(만료시각) · role 이 통째로 사라졌습니다.
+     그러면 한 시간쯤 뒤에 마이페이지·주문 화면이 로그인 상태를 못 알아보고,
+     상담 대화 기록도 다른 이름으로 저장돼 끊겼습니다.
+     여기서 한 곳에 모아 두고 갱신하는 세 곳이 모두 이것을 씁니다. */
+  function stamp(s, d) {
+    s = s || {};
+    var sec = Number(d && d.expires_in) > 0 ? Number(d.expires_in) : 3600;
+    s.t = d.access_token;
+    if (d.refresh_token) s.r = d.refresh_token;
+    if (!s.r) s.r = '';
+    s.e = Date.now() + sec * 1000;               /* 밀리초 — 화면들이 보는 값 */
+    s.exp = Math.floor(Date.now() / 1000) + sec; /* 초 — 화면들이 먼저 보는 값 */
+    return s;
+  }
+
   /* 토큰 만료 시각 확인 */
   function expSoon(t) {
     if (!t) return true;
@@ -45,7 +62,7 @@
       .then(function (d) {
         refreshing = null;
         if (d && d.access_token) {
-          write({ t: d.access_token, r: d.refresh_token || s.r, u: s.u, e: s.e });
+          write(stamp(s, d));   /* 이메일·권한·만료를 지우지 않고 그대로 둡니다 */
           return d.access_token;
         }
         /* 갱신 실패 = 진짜 만료 */
@@ -77,12 +94,9 @@
             : '이메일 또는 비밀번호가 올바르지 않습니다.';
           throw new Error(msg);
         }
-        write({
-          t: d.access_token,
-          r: d.refresh_token || '',
-          u: email.split('@')[0],
-          e: email
-        });
+        /* 예전에는 e 칸에 이메일을 넣었는데, 다른 화면들은 e 를 '만료시각' 으로
+           읽고 있어 서로 어긋났습니다. 이메일은 em, 만료는 e·exp 로 맞춥니다. */
+        write(stamp({ u: String(email || '').split('@')[0], em: email }, d));
         return d.access_token;
       });
   }
@@ -133,7 +147,9 @@
   window.CGAuth = {
     login: login, logout: logout, token: token,
     headers: headers, call: call, refresh: refresh,
-    user: function () { var s = read(); return s ? { name: s.u, email: s.e } : null; },
+    user: function () { var s = read(); if (!s) return null;
+      /* em 이 정식 자리. 예전 저장값은 e 에 이메일이 들어 있어 그것도 받아 줍니다 */
+      return { name: s.u, email: s.em || (typeof s.e === 'string' ? s.e : '') }; },
     isIn: function () { var s = read(); return !!(s && s.t); }
   };
 
@@ -157,9 +173,7 @@
       .then(function (d) {
         refreshing = null;
         if (!d || !d.access_token) return st.t;
-        st.t = d.access_token;
-        if (d.refresh_token) st.r = d.refresh_token;
-        st.e = Date.now() + ((d.expires_in || 3600) * 1000);
+        st = stamp(st, d);
         write(st);
         return st.t;
       })
