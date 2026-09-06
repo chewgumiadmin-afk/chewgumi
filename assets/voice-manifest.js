@@ -212,6 +212,38 @@
   var NOTREADY = /불러오는\s*중|불러오지|가져오는\s*중|로딩|loading|잠시만|준비\s*중|없습니다|비어\s*있|실패|오류|다시\s*시도|\.\.\.|…/i;
   var NOTREADY_MAX = 60;
 
+  /* ── 이동 주소는 사이트 뿌리를 기준으로 잡습니다 ──
+     상품 낱장은 p/ 폴더 안에 있어서, 거기서 "장바구니" 라고 하면
+     예전에는 /p/cart.html (없는 주소) 로 갔습니다. bot.js 와 같은 방식으로
+     이 파일이 놓인 자리에서 뿌리를 계산합니다.
+     알아내지 못하면 예전처럼 상대주소 그대로 — 뿌리 화면에서는 결과가 같습니다. */
+  var CG_V_ME = document.currentScript;
+  if (!CG_V_ME) {
+    var _vs = document.getElementsByTagName('script');
+    for (var _vi = _vs.length - 1; _vi >= 0; _vi--) {
+      if ((_vs[_vi].src || '').indexOf('voice-manifest.js') > -1) { CG_V_ME = _vs[_vi]; break; }
+    }
+  }
+  var CG_V_ROOT = (CG_V_ME && CG_V_ME.src)
+    ? CG_V_ME.src.replace(/voice-manifest\.js(\?.*)?$/, '').replace(/assets\/$/, '')
+    : '';
+
+  function root() {
+    if (CG_V_ROOT) return CG_V_ROOT;
+    if (typeof window.cgBotRoot === 'string' && window.cgBotRoot) return window.cgBotRoot;
+    return '';
+  }
+  /* 우리 화면 이름일 때만 뿌리를 붙입니다.
+     http… · / · # · ? 로 시작하는 주소는 손대지 않습니다. */
+  function href(to) {
+    var t = String(to == null ? '' : to);
+    if (!t) return t;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(t) || t.slice(0, 2) === '//') return t;
+    var c = t.charAt(0);
+    if (c === '/' || c === '#' || c === '?') return t;
+    return root() + t;
+  }
+
   function pageName(p) {
     if (p) return String(p);
     var f = (location.pathname || '').split('/').pop();
@@ -279,7 +311,7 @@
     }
 
     try {
-      if (a.do === 'go') { location.href = a.to; return { ok: true, say: a.label }; }
+      if (a.do === 'go') { location.href = href(a.to); return { ok: true, say: a.label }; }
 
       if (a.do === 'click') {
         var e = find(a);
