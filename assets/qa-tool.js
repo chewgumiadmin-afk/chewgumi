@@ -424,11 +424,28 @@
       return _ce.apply(console, arguments);
     };
 
+    /* ── R5 오탐 막기 (issues #47 · fix_log #55) ──
+       로그인·회원가입 창구는 비밀번호가 틀리면 400 을 돌려줍니다. 서버가 고장난 것이 아니라
+       "맞지 않습니다" 라고 정상으로 답한 것입니다. 예전에는 이것까지 "서버 오류 400" 버그로
+       올려서, 손님이 비밀번호를 한 번 틀릴 때마다 가짜 버그가 한 건씩 쌓였습니다.
+       401 · 403 · 5xx 와 그 밖의 창구에서 나는 400 은 예전 그대로 잡습니다. */
+    var AUTH_URL = /\/auth\/v1\/(token|signup|verify|recover|otp|resend|magiclink|user)\b/i;
+    function okToFail(url, status) {
+      return status === 400 && AUTH_URL.test(url);
+    }
+
     var _f = window.fetch;
     window.fetch = function () {
-      var url = String(arguments[0] || '');
+      /* 주소가 Request 개체로 올 때도 있습니다 — 그때는 안에 든 주소를 봅니다 */
+      var _a0 = arguments[0];
+      var url = String((_a0 && typeof _a0 === 'object' && _a0.url) ? _a0.url : (_a0 || ''));
       return _f.apply(this, arguments).then(function (r) {
         if (!r.ok && url.indexOf('qa_events') < 0) {
+          if (okToFail(url, r.status)) {
+            /* 버그로 올리지 않고 흔적만 남깁니다 */
+            keep('로그인실패', '아이디나 비밀번호가 맞지 않았습니다 (서버는 정상)');
+            return r;
+          }
           keep('요청실패', r.status + ' ' + url.slice(0, 140));
           log('bug', {
             note: '서버 오류 ' + r.status,
