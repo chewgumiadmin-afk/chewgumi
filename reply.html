@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!-- ChewGumi 답장함 — 클로드가 여쭙고, 대표님이 링크 눌러 답하는 곳 -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>답장함 | CHEWGUMI</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<style>
+:root{
+  --main:#D82558; --main2:#E95073; --soft:#FBE9EF;
+  --ink:#17171c; --gray:#7a6b71; --line:#EADFE3;
+  --ok:#227F4C; --wait:#8A6E22;
+  --bg:#FFF9FA; --card:#fff;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",sans-serif;
+  font-size:16px; line-height:1.7; -webkit-text-size-adjust:100%;
+  padding:0 16px calc(60px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:560px;margin:0 auto}
+header{padding:28px 0 20px;border-bottom:2px solid var(--ink)}
+.brand{font-size:11px;letter-spacing:.18em;color:var(--main);font-weight:800;margin:0 0 8px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px}
+.lede{margin:0;color:var(--gray);font-size:15px}
+
+.hint{
+  background:var(--soft);border-radius:10px;padding:14px 16px;margin:20px 0 0;font-size:14.5px;
+}
+.hint b{font-weight:700}
+
+h2{font-size:15px;font-weight:800;margin:30px 0 12px;letter-spacing:-.01em}
+h2 .n{color:var(--main)}
+
+.q{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:18px 18px 16px;margin:0 0 14px;box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+.q.answered{opacity:.6}
+.ask{font-size:17px;font-weight:700;margin:0 0 8px;letter-spacing:-.01em}
+.detail{font-size:14.5px;color:var(--gray);margin:0 0 14px;white-space:pre-line}
+.ref{font-size:12px;color:var(--gray);font-variant-numeric:tabular-nums}
+
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+button.opt{
+  font:inherit;font-size:15px;font-weight:600;cursor:pointer;
+  min-height:46px;padding:0 18px;border-radius:999px;
+  border:1.5px solid var(--main);background:#fff;color:var(--main);
+}
+button.opt:active{transform:translateY(1px)}
+button.opt:focus-visible{outline:3px solid var(--main2);outline-offset:2px}
+.free{display:flex;gap:8px;flex-wrap:wrap}
+.free input{
+  flex:1 1 200px;min-height:46px;padding:0 14px;font:inherit;font-size:16px;
+  border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);
+}
+.free input:focus{outline:none;border-color:var(--main)}
+button.send{
+  font:inherit;font-size:15px;font-weight:700;cursor:pointer;min-height:46px;padding:0 20px;
+  border:0;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
+}
+.done{font-size:14.5px;color:var(--ok);font-weight:600;margin:0}
+.done .a{color:var(--ink)}
+
+.empty{color:var(--gray);font-size:15px;padding:26px 0}
+.msg{margin:10px 0 0;font-size:14px;min-height:20px}
+.msg.bad{color:var(--main)}
+.msg.ok{color:var(--ok)}
+
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--gray);font-size:13px}
+footer a{color:var(--main)}
+@media (prefers-color-scheme:dark){
+  :root{--ink:#F5EDEF;--gray:#A9979E;--line:#352B30;--bg:#171214;--card:#201A1D;
+        --main:#FF6E90;--main2:#FF8AA3;--soft:#341F27;--ok:#63CE93}
+  .free input,button.opt{background:var(--card)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="brand">CHEWGUMI</p>
+  <h1>답장함</h1>
+  <p class="lede">츄구미 AI가 일하다가 사람이 정해야 하는 것을 여기에 모아 둡니다. 눌러서 답해 주시면 다음 작업에 바로 반영합니다.</p>
+</header>
+
+<div class="hint">
+  <b>로그인하지 않으셔도 됩니다.</b> 이 링크를 받으신 분이면 바로 답하실 수 있습니다.
+  답을 누르면 그 자리에서 저장되고, 츄구미 AI가 다음 점검 때(최대 1시간) 읽고 반영합니다.
+</div>
+
+<h2>답을 기다리는 것 <span class="n" id="cnt"></span></h2>
+<div id="open"><p class="empty">불러오는 중…</p></div>
+
+<h2>이미 답해 주신 것</h2>
+<div id="closed"><p class="empty">아직 없습니다.</p></div>
+
+<footer>
+  <p>츄구미 AI가 자동으로 채웁니다. 사람이 직접 적지 않습니다.<br>
+  진행 상황은 <a href="https://shop.chewgumi.com/dev.html">dev.html</a>, 문제 목록은 <a href="https://shop.chewgumi.com/issue.html">issue.html</a>.</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var H={apikey:KEY,'Content-Type':'application/json'};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function el(id){return document.getElementById(id);}
+
+  /* 링크에 ?who=yoon 처럼 붙으면 그 사람 것만 보여줍니다 */
+  var who=(location.search.match(/[?&]who=([a-z]+)/i)||[])[1]||'';
+
+  function load(){
+    fetch(SB+'/rest/v1/ceo_replies?select=*&order=created_at.desc&limit=60',{headers:H})
+      .then(function(r){return r.json();})
+      .then(render)
+      .catch(function(){ el('open').innerHTML='<p class="empty">지금은 불러오지 못했습니다. 잠시 뒤 새로고침해 주세요.</p>'; });
+  }
+
+  function card(x){
+    var d='<div class="q'+(x.status==='open'?'':' answered')+'" id="q'+x.id+'">'
+      + '<p class="ask">'+esc(x.ask)+'</p>'
+      + (x.detail?'<p class="detail">'+esc(x.detail)+'</p>':'');
+
+    if(x.status==='open'){
+      if(x.kind==='choice'){
+        var os=[];
+        try{ os=Array.isArray(x.options)?x.options:JSON.parse(x.options||'[]'); }catch(e){ os=[]; }
+        d+='<div class="opts">'+os.map(function(o){
+          return '<button class="opt" type="button" data-id="'+x.id+'" data-v="'+esc(o.v)+'">'
+                 +esc(o.label||o.v)+'</button>';
+        }).join('')+'</div>';
+      }else if(x.kind==='text'){
+        d+='<div class="free"><input type="text" id="in'+x.id+'" placeholder="여기에 적어 주세요">'
+          +'<button class="send" type="button" data-id="'+x.id+'" data-free="1">보내기</button></div>';
+      }
+      d+='<p class="msg" id="m'+x.id+'"></p>';
+    }else{
+      d+='<p class="done">답해 주셨습니다 — <span class="a">'+esc(x.answer)+'</span></p>';
+    }
+    if(x.ref) d+='<p class="ref">'+esc(x.ref)+'</p>';
+    return d+'</div>';
+  }
+
+  function render(rows){
+    rows=Array.isArray(rows)?rows:[];
+    if(who) rows=rows.filter(function(x){return x.for_who===who;});
+    var o=rows.filter(function(x){return x.status==='open';});
+    var c=rows.filter(function(x){return x.status!=='open';});
+    el('cnt').textContent=o.length?o.length+'건':'';
+    el('open').innerHTML=o.length?o.map(card).join(''):'<p class="empty">지금은 여쭐 것이 없습니다. 고맙습니다.</p>';
+    el('closed').innerHTML=c.length?c.map(card).join(''):'<p class="empty">아직 없습니다.</p>';
+  }
+
+  function answer(id,val){
+    var m=el('m'+id); if(m){ m.className='msg'; m.textContent='보내는 중…'; }
+    fetch(SB+'/rest/v1/ceo_replies?id=eq.'+encodeURIComponent(id),{
+      method:'PATCH',
+      headers:{apikey:KEY,'Content-Type':'application/json',Prefer:'return=representation'},
+      body:JSON.stringify({status:'answered',answer:String(val),
+        answered_at:new Date().toISOString(),answered_by:who||'link'})
+    }).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      if(m){ m.className='msg ok'; m.textContent='받았습니다. 다음 점검 때 반영합니다.'; }
+      setTimeout(load,700);
+    }).catch(function(){
+      if(m){ m.className='msg bad'; m.textContent='보내지 못했습니다. 한 번만 다시 눌러 주세요.'; }
+    });
+  }
+
+  document.addEventListener('click',function(e){
+    var b=e.target.closest ? e.target.closest('button') : null;
+    if(!b) return;
+    var id=b.getAttribute('data-id'); if(!id) return;
+    if(b.getAttribute('data-free')){
+      var i=el('in'+id); var v=i?i.value.trim():'';
+      if(!v){ var m=el('m'+id); if(m){m.className='msg bad';m.textContent='내용을 적어 주세요.';} return; }
+      answer(id,v);
+    }else{
+      answer(id,b.getAttribute('data-v'));
+    }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
