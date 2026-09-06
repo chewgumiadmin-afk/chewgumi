@@ -18,6 +18,16 @@
   window.__cgbotMounted = true;
   window.cgBotShared = true;   /* 표식 — 이 화면이 공용 봇을 쓰고 있다는 뜻 */
 
+  /* ── 이 파일이 놓인 자리를 기준으로 사이트 뿌리 주소를 잡습니다 ──
+     p/ 아래 상품 낱장처럼 폴더가 다른 화면에서도 그림·이동 주소가 어긋나지 않게 합니다.
+     (알아내지 못하면 예전과 똑같이 상대주소를 씁니다 — 뿌리 화면에서는 결과가 같습니다) */
+  var CG_ME = document.currentScript;
+  if(!CG_ME){ var _cs = document.getElementsByTagName('script');
+    for(var _ci=_cs.length-1; _ci>=0; _ci--){ if((_cs[_ci].src||'').indexOf('bot.js')>-1){ CG_ME=_cs[_ci]; break; } } }
+  var CG_ASSETS = (CG_ME && CG_ME.src) ? CG_ME.src.replace(/bot\.js(\?.*)?$/, '') : 'assets/';
+  var CG_ROOT   = CG_ASSETS.replace(/assets\/$/, '');
+  window.cgBotRoot = CG_ROOT;
+
   /* ── 4단계 · 음성 명령 사전을 함께 불러옵니다 ──
      화면마다 <script> 한 줄을 더 넣지 않아도 되도록 이 파일이 자기 위치를 기준으로 찾아옵니다.
      (p/ 아래 상품 페이지처럼 폴더가 다른 화면도 경로가 저절로 맞습니다) */
@@ -34,12 +44,12 @@
       (document.head || document.documentElement).appendChild(t);
     }catch(e){}
   })();
-  var MARKUP = "<button class=\"cgbot-fab\" onclick=\"cgbotToggle()\" aria-label=\"상담 문의\">\n  <svg viewBox=\"0 0 24 24\"><path d=\"M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z\"/></svg>\n  <span class=\"dot\"></span>\n</button>\n<div class=\"cgbot-win\" id=\"cgbotWin\">\n  <div class=\"cgbot-hd\">\n    <div><b>츄구미 상담</b><small>상담 · 주문 · 음성으로 이용하세요</small></div>\n    <button class=\"cgbot-clr\" onclick=\"cgbotClear()\" aria-label=\"대화 지우기\" title=\"대화 지우기\">지우기</button>\n    <button onclick=\"cgbotToggle()\" aria-label=\"닫기\">&times;</button>\n  </div>\n  <div class=\"cgbot-body\" id=\"cgbotBody\"></div>\n  <div class=\"cgbot-note\">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>\n  <div class=\"cgbot-ft\">\n    <button id=\"cgVoiceBtn\" class=\"cg-ic\" type=\"button\" title=\"꾹 눌러 말하기 · 짧게 눌러 음성답변\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z\"/><path d=\"M18 11a6 6 0 0 1-12 0M12 17v4M9 21h6\"/></svg>\n        <span class=\"cg-spk\" aria-hidden=\"true\"></span>\n      </button>\n      <input id=\"cgbotIn\" placeholder=\"말하거나 입력하세요\" onkeydown=\"if(event.key==='Enter')cgbotSend()\">\n      <button id=\"cgbotBtn\" onclick=\"cgbotSend()\" aria-label=\"보내기\" title=\"보내기\"><img src=\"logo.png\" alt=\"\" class=\"send-logo\" onerror=\"this.onerror=null;this.src='assets/logo-rainbow.png'\"></button>\n  </div>\n</div>\n";
+  var MARKUP = "<button class=\"cgbot-fab\" onclick=\"cgbotToggle()\" aria-label=\"상담 문의\">\n  <svg viewBox=\"0 0 24 24\"><path d=\"M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.9-.9L3 21l2-4.6A8.4 8.4 0 0 1 21 11.5z\"/></svg>\n  <span class=\"dot\"></span>\n</button>\n<div class=\"cgbot-win\" id=\"cgbotWin\">\n  <div class=\"cgbot-hd\">\n    <div><b>츄구미 상담</b><small>상담 · 주문 · 음성으로 이용하세요</small></div>\n    <button class=\"cgbot-clr\" onclick=\"cgbotClear()\" aria-label=\"대화 지우기\" title=\"대화 지우기\">지우기</button>\n    <button onclick=\"cgbotToggle()\" aria-label=\"닫기\">&times;</button>\n  </div>\n  <div class=\"cgbot-body\" id=\"cgbotBody\"></div>\n  <div class=\"cgbot-note\">답변이 정확하지 않을 수 있습니다. 중요한 문의는 카카오톡으로 연결해 주세요.</div>\n  <div class=\"cgbot-ft\">\n    <button id=\"cgVoiceBtn\" class=\"cg-ic\" type=\"button\" title=\"꾹 눌러 말하기 · 짧게 눌러 음성답변\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z\"/><path d=\"M18 11a6 6 0 0 1-12 0M12 17v4M9 21h6\"/></svg>\n        <span class=\"cg-spk\" aria-hidden=\"true\"></span>\n      </button>\n      <input id=\"cgbotIn\" placeholder=\"말하거나 입력하세요\" onkeydown=\"if(event.key==='Enter')cgbotSend()\">\n      <button id=\"cgbotBtn\" onclick=\"cgbotSend()\" aria-label=\"보내기\" title=\"보내기\"><img src=\"__CGROOT__logo.png\" alt=\"\" class=\"send-logo\" onerror=\"this.onerror=null;this.src='__CGASSETS__logo-rainbow.png'\"></button>\n  </div>\n</div>\n";
   function mount(){
     if(!document.body) return;
     if(document.getElementById('cgbotWin')) return;  /* 페이지에 이미 박혀 있으면 건드리지 않음 */
     var w = document.createElement('div');
-    w.innerHTML = MARKUP;
+    w.innerHTML = MARKUP.replace(/__CGROOT__/g, CG_ROOT).replace(/__CGASSETS__/g, CG_ASSETS);
     while(w.firstChild) document.body.appendChild(w.firstChild);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
@@ -151,7 +161,7 @@
     cgOrderAsk = null;
     addToCart(p,qty);
     botSay('장바구니에 담았습니다. 주문서로 이동합니다.');
-    setTimeout(function(){ location.href='checkout.html'; },700);
+    setTimeout(function(){ location.href = CG_ROOT + 'checkout.html'; },700);
   }
   function cgOrderKeep(p,qty){
     cgOrderAsk = null;
