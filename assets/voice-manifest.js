@@ -162,9 +162,39 @@
         say: ['계좌번호 읽', '계좌 불러', '계좌번호 알려', '어디로 입금'] },
       { id: 'copy_account', label: '계좌번호 복사',   do: 'call', fn: 'copyAcc',
         say: ['계좌번호 복사', '계좌 복사'] },
+
+      /* 5단계 · 입금까지 말로 끝내기 —
+         손님이 무통장을 고른 뒤 필요한 것은 "어디로, 얼마를" 두 가지입니다.
+         전에는 계좌번호만 읽어 주어 금액을 보려면 화면을 봐야 했습니다. */
+      { id: 'read_total',   label: '입금할 금액 읽어주기', do: 'read',
+        sel: ['#sPay'],
+        /* 아직 계산 전이면 ₩0 이 적혀 있습니다 — 숫자 두 자리부터 진짜 금액으로 봅니다 */
+        needDigits: 2,
+        notReady: '금액이 아직 계산되지 않았습니다. 잠시 뒤 다시 말씀해 주세요.',
+        /* '얼마' 한 낱말만 쓰면 "배송 얼마나 걸려요" 까지 걸려 이용안내로 못 갑니다.
+           그래서 금액을 분명히 가리키는 말만 적었습니다. */
+        say: ['총 얼마', '합계', '결제 금액', '입금 금액', '얼마 내', '얼마 입금', '금액 알려'] },
+      { id: 'read_deposit', label: '입금 안내 읽어주기', do: 'read',
+        sel: ['#bankBox', '#sPay'], join: true,
+        needDigits: 4,
+        notReady: '아직 계좌번호가 나오지 않았습니다. 잠시 뒤 다시 말씀해 주세요.',
+        say: ['입금 안내', '입금 정보', '어디에 얼마', '입금할 곳', '계좌랑 금액'] },
       /* 되돌릴 수 없는 것 — 반드시 한 번 더 여쭙고 진행합니다 */
       { id: 'pay_submit', label: '결제·주문 확정',    do: 'click', sel: '#payBtn', confirm: true,
         say: ['결제해 줘', '주문 확정', '진행해 줘', '결제하기'] }
+    ],
+    /* 결제 끝난 화면 — 가상계좌는 여기서 비로소 계좌번호가 나옵니다.
+       읽어 주기만 하고 아무 것도 바꾸지 않습니다. (5단계 · 가상계좌 음성 완주) */
+    'pay-return.html': [
+      { id: 'read_vbank',  label: '입금 계좌 읽어주기', do: 'read',
+        sel: ['#vb'],
+        needDigits: 4,
+        notReady: '계좌번호를 아직 받지 못했습니다. 잠시 뒤 다시 말씀해 주세요.',
+        say: ['계좌번호', '어디로 입금', '입금 계좌', '계좌 알려', '입금 안내'] },
+      { id: 'read_done',   label: '결제 결과 읽어주기', do: 'read',
+        sel: ['#result', '#rows'],
+        notReady: '결제 결과를 아직 확인하는 중입니다. 잠시만 기다려 주세요.',
+        say: ['결과', '주문 어떻게', '읽어 줘', '주문 확인', '잘 됐'] }
     ],
     'order-lookup.html': [
       { id: 'to_tracking', label: '배송 조회로', do: 'go', to: 'tracking.html',
@@ -267,8 +297,21 @@
       }
 
       if (a.do === 'read') {
-        var r = find(a);
-        var txt = r ? String(r.textContent || '').replace(/\s+/g, ' ').trim() : '';
+        /* join 이 붙으면 적힌 자리를 모두 이어서 읽습니다 (예: 계좌 + 금액).
+           읽기만 할 뿐이라 화면은 아무 것도 바뀌지 않습니다. */
+        var txt;
+        if (a.join) {
+          var sels = a.sel instanceof Array ? a.sel : [a.sel], parts = [];
+          for (var s = 0; s < sels.length; s++) {
+            var el2 = document.querySelector(sels[s]);
+            var t2 = el2 ? String(el2.textContent || '').replace(/\s+/g, ' ').trim() : '';
+            if (t2) parts.push(t2);
+          }
+          txt = parts.join(' · ');
+        } else {
+          var r = find(a);
+          txt = r ? String(r.textContent || '').replace(/\s+/g, ' ').trim() : '';
+        }
         if (!txt) return { ok: false, reason: 'missing', say: '아직 읽어 드릴 내용이 없습니다.' };
 
         /* [1] 아직 불러오는 중이거나 실패 안내문이면 읽지 않습니다 (issues #35) */
