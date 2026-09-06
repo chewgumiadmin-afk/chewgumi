@@ -11,7 +11,7 @@
 :root{
   --main:#D82558; --main2:#E95073; --soft:#FBE9EF;
   --ink:#17171c; --gray:#7a6b71; --line:#EADFE3;
-  --ok:#227F4C; --wait:#8A6E22;
+  --ok:#227F4C; --kko:#FEE500; --kkoink:#191600;
   --bg:#FFF9FA; --card:#fff;
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -27,9 +27,7 @@ header{padding:28px 0 20px;border-bottom:2px solid var(--ink)}
 h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px}
 .lede{margin:0;color:var(--gray);font-size:15px}
 
-.hint{
-  background:var(--soft);border-radius:10px;padding:14px 16px;margin:20px 0 0;font-size:14.5px;
-}
+.hint{background:var(--soft);border-radius:10px;padding:14px 16px;margin:20px 0 0;font-size:14.5px}
 .hint b{font-weight:700}
 
 h2{font-size:15px;font-weight:800;margin:30px 0 12px;letter-spacing:-.01em}
@@ -40,9 +38,10 @@ h2 .n{color:var(--main)}
   padding:18px 18px 16px;margin:0 0 14px;box-shadow:0 1px 2px rgba(0,0,0,.04);
 }
 .q.answered{opacity:.6}
+.q.out{border-left:4px solid var(--main)}
 .ask{font-size:17px;font-weight:700;margin:0 0 8px;letter-spacing:-.01em}
 .detail{font-size:14.5px;color:var(--gray);margin:0 0 14px;white-space:pre-line}
-.ref{font-size:12px;color:var(--gray);font-variant-numeric:tabular-nums}
+.ref{font-size:12px;color:var(--gray);font-variant-numeric:tabular-nums;margin:10px 0 0}
 
 .opts{display:flex;flex-wrap:wrap;gap:8px;margin:0}
 button.opt{
@@ -62,6 +61,14 @@ button.send{
   font:inherit;font-size:15px;font-weight:700;cursor:pointer;min-height:46px;padding:0 20px;
   border:0;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
 }
+button.kko{
+  font:inherit;font-size:15px;font-weight:700;cursor:pointer;min-height:46px;padding:0 20px;
+  border:0;border-radius:10px;background:var(--kko);color:var(--kkoink);
+}
+button.copy{
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer;min-height:46px;padding:0 16px;
+  border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--gray);
+}
 .done{font-size:14.5px;color:var(--ok);font-weight:600;margin:0}
 .done .a{color:var(--ink)}
 
@@ -75,7 +82,7 @@ footer a{color:var(--main)}
 @media (prefers-color-scheme:dark){
   :root{--ink:#F5EDEF;--gray:#A9979E;--line:#352B30;--bg:#171214;--card:#201A1D;
         --main:#FF6E90;--main2:#FF8AA3;--soft:#341F27;--ok:#63CE93}
-  .free input,button.opt{background:var(--card)}
+  .free input,button.opt,button.copy{background:var(--card)}
 }
 </style>
 </head>
@@ -93,6 +100,8 @@ footer a{color:var(--main)}
   답을 누르면 그 자리에서 저장되고, 츄구미 AI가 다음 점검 때(최대 1시간) 읽고 반영합니다.
 </div>
 
+<div id="outbox"></div>
+
 <h2>답을 기다리는 것 <span class="n" id="cnt"></span></h2>
 <div id="open"><p class="empty">불러오는 중…</p></div>
 
@@ -106,11 +115,14 @@ footer a{color:var(--main)}
 
 </div>
 
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
 <script>
 (function(){
   var SB='https://psynvpuedzjvytsgdhgg.supabase.co';
   var KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
   var H={apikey:KEY,'Content-Type':'application/json'};
+  var SITE='https://shop.chewgumi.com';
+  var LOGO=SITE+'/logo.png';
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -118,11 +130,52 @@ footer a{color:var(--main)}
 
   /* 링크에 ?who=yoon 처럼 붙으면 그 사람 것만 보여줍니다 */
   var who=(location.search.match(/[?&]who=([a-z]+)/i)||[])[1]||'';
+  var ROWS=[];
+
+  /* ── 카카오톡 카드 보내기 ──
+     카카오는 남의 대화방에 서버가 직접 보내는 것을 열어주지 않습니다.
+     대신 카드를 만들어 두고, 보내는 분이 방을 고르는 방식은 됩니다. */
+  var KKO=false;
+  fetch(SB+'/rest/v1/shop_settings?select=value&key=eq.kakao_js_key',{headers:H})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(rows){
+      var k=(rows||[])[0]&&rows[0].value;
+      if(k&&window.Kakao){
+        try{ if(!window.Kakao.isInitialized()) window.Kakao.init(k);
+             KKO=window.Kakao.isInitialized(); }catch(e){ KKO=false; }
+      }
+      render(ROWS);
+    }).catch(function(){ render(ROWS); });
+
+  function shareCard(title, desc, url, btnText){
+    if(!KKO) return false;
+    try{
+      window.Kakao.Share.sendDefault({
+        objectType:'feed',
+        content:{ title:title, description:desc, imageUrl:LOGO,
+                  link:{mobileWebUrl:url, webUrl:url} },
+        buttons:[{ title:btnText||'내용 보고 답하기',
+                   link:{mobileWebUrl:url, webUrl:url} }]
+      });
+      return true;
+    }catch(e){ return false; }
+  }
+  function copyText(t){
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+    }catch(e){}
+    try{
+      var a=document.createElement('textarea');
+      a.value=t; a.style.position='fixed'; a.style.opacity='0';
+      document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove();
+      return Promise.resolve();
+    }catch(e){ return Promise.reject(); }
+  }
 
   function load(){
     fetch(SB+'/rest/v1/ceo_replies?select=*&order=created_at.desc&limit=60',{headers:H})
       .then(function(r){return r.json();})
-      .then(render)
+      .then(function(rows){ ROWS=Array.isArray(rows)?rows:[]; render(ROWS); })
       .catch(function(){ el('open').innerHTML='<p class="empty">지금은 불러오지 못했습니다. 잠시 뒤 새로고침해 주세요.</p>'; });
   }
 
@@ -151,11 +204,35 @@ footer a{color:var(--main)}
     return d+'</div>';
   }
 
+  /* 남에게 보낼 것 — 카드 보내기 버튼이 붙습니다 */
+  function outCard(x){
+    return '<div class="q out" id="o'+x.id+'">'
+      + '<p class="ask">'+esc(x.ask)+'</p>'
+      + (x.detail?'<p class="detail">'+esc(x.detail)+'</p>':'')
+      + '<div class="free">'
+      + '<button class="kko" type="button" data-share="'+x.id+'">카카오톡으로 보내기</button>'
+      + '<button class="copy" type="button" data-copy="'+x.id+'">문구 복사</button>'
+      + '</div><p class="msg" id="om'+x.id+'"></p></div>';
+  }
+
   function render(rows){
     rows=Array.isArray(rows)?rows:[];
-    if(who) rows=rows.filter(function(x){return x.for_who===who;});
-    var o=rows.filter(function(x){return x.status==='open';});
-    var c=rows.filter(function(x){return x.status!=='open';});
+
+    /* 남에게 보낼 것 — 내 화면(who 없음 또는 ceo)에서만 보여줍니다 */
+    var out=[];
+    if(!who || who==='ceo'){
+      out=rows.filter(function(x){ return x.status==='open' && x.for_who && x.for_who!=='ceo'; });
+    }
+    el('outbox').innerHTML = out.length
+      ? '<h2>다른 분께 보낼 것 <span class="n">'+out.length+'건</span></h2>'
+        + '<div class="hint" style="margin:0 0 14px">카카오톡 <b>대화방을 고르는 창</b>이 뜹니다. 받으신 분이 카드의 버튼을 누르면 이 화면으로 와서 답하실 수 있습니다.</div>'
+        + out.map(outCard).join('')
+      : '';
+
+    var mine=who ? rows.filter(function(x){return x.for_who===who;}) : rows;
+    var o=mine.filter(function(x){return x.status==='open';});
+    var c=mine.filter(function(x){return x.status!=='open';});
+    if(!who||who==='ceo') o=o.filter(function(x){return !x.for_who||x.for_who==='ceo';});
     el('cnt').textContent=o.length?o.length+'건':'';
     el('open').innerHTML=o.length?o.map(card).join(''):'<p class="empty">지금은 여쭐 것이 없습니다. 고맙습니다.</p>';
     el('closed').innerHTML=c.length?c.map(card).join(''):'<p class="empty">아직 없습니다.</p>';
@@ -177,13 +254,50 @@ footer a{color:var(--main)}
     });
   }
 
+  function rowOf(id){
+    for(var i=0;i<ROWS.length;i++) if(String(ROWS[i].id)===String(id)) return ROWS[i];
+    return null;
+  }
+  function plainOf(x){
+    var url=SITE+'/reply.html?who='+encodeURIComponent(x.for_who||'');
+    return x.ask+'\n\n'+(x.detail||'')+'\n\n답하실 곳: '+url;
+  }
+
   document.addEventListener('click',function(e){
     var b=e.target.closest ? e.target.closest('button') : null;
     if(!b) return;
+
+    var sid=b.getAttribute('data-share');
+    if(sid){
+      var x=rowOf(sid); if(!x) return;
+      var m=el('om'+sid);
+      var url=SITE+'/reply.html?who='+encodeURIComponent(x.for_who||'');
+      var desc=String(x.detail||'').split('\n')[0].slice(0,110);
+      if(shareCard('츄구미 — '+x.ask, desc, url)){
+        if(m){ m.className='msg ok'; m.textContent='대화방을 고르시면 카드가 전송됩니다.'; }
+      }else if(m){
+        m.className='msg bad';
+        m.textContent='카카오톡 창을 열지 못했습니다. [문구 복사]로 붙여넣어 주세요.';
+      }
+      return;
+    }
+
+    var cid=b.getAttribute('data-copy');
+    if(cid){
+      var y=rowOf(cid); if(!y) return;
+      var mm=el('om'+cid);
+      copyText(plainOf(y)).then(function(){
+        if(mm){ mm.className='msg ok'; mm.textContent='복사했습니다. 대화방에 붙여넣으세요.'; }
+      },function(){
+        if(mm){ mm.className='msg bad'; mm.textContent='복사하지 못했습니다. 내용을 직접 긁어 주세요.'; }
+      });
+      return;
+    }
+
     var id=b.getAttribute('data-id'); if(!id) return;
     if(b.getAttribute('data-free')){
       var i=el('in'+id); var v=i?i.value.trim():'';
-      if(!v){ var m=el('m'+id); if(m){m.className='msg bad';m.textContent='내용을 적어 주세요.';} return; }
+      if(!v){ var m2=el('m'+id); if(m2){m2.className='msg bad';m2.textContent='내용을 적어 주세요.';} return; }
       answer(id,v);
     }else{
       answer(id,b.getAttribute('data-v'));
