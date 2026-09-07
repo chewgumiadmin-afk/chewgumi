@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!-- 계정 주인이 직접 키를 넣는 카드 마법사.
+     대표님은 이 사이트에 계정이 없으므로 로그인 대신 '한 번 쓰는 링크'로 들어옵니다.
+     이 화면은 값을 넣기만 합니다 — 이미 들어 있는 키는 읽어오지 않습니다. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>츄구미 — 설정 도움</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<style>
+:root{--main:#D82558;--sub:#E95073;--ink:#1a1a1a;--gray:#767676;--line:rgba(0,0,0,.10);
+  --ok:#1a8a4a;--bad:#D82558;--bg:#FDF3F5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+  -webkit-text-size-adjust:100%}
+.top{padding:20px 18px 8px;text-align:center}
+.top .logo{font-size:19px;font-weight:900;letter-spacing:.04em;color:var(--main)}
+.top .who{margin-top:6px;font-size:13px;color:var(--gray)}
+.wrap{max-width:560px;margin:0 auto;padding:8px 16px 60px}
+
+.dots{display:flex;gap:6px;justify-content:center;margin:14px 0 18px;flex-wrap:wrap}
+.dots i{width:26px;height:5px;border-radius:99px;background:rgba(216,37,88,.18)}
+.dots i.on{background:var(--main)}
+.dots i.done{background:var(--ok)}
+
+.card{background:#fff;border-radius:22px;padding:22px 20px 20px;
+  box-shadow:0 12px 34px rgba(216,37,88,.10);border:1px solid rgba(255,255,255,.9)}
+.card h2{margin:0 0 4px;font-size:19px;line-height:1.35;word-break:keep-all}
+.card .why{margin:0 0 16px;font-size:13.5px;line-height:1.8;color:#555;word-break:keep-all}
+.card .why b{color:var(--main)}
+
+.go{margin:0 0 16px;padding:12px 14px;border-radius:14px;background:var(--bg)}
+.go em{display:block;font-style:normal;font-size:12px;color:var(--gray);margin-bottom:3px}
+.go a{display:block;color:var(--main);font-weight:700;text-decoration:none;
+  font-size:13.5px;word-break:break-all;line-height:1.5}
+
+ol.how{margin:0 0 16px;padding-left:20px}
+ol.how li{font-size:13.5px;line-height:1.9;color:#333;margin-bottom:6px;word-break:keep-all}
+ol.how li b{background:rgba(255,233,35,.5);padding:0 3px;border-radius:3px}
+
+.warn{margin:0 0 16px;padding:11px 13px;border-radius:12px;font-size:12.5px;line-height:1.7;
+  background:rgba(255,233,35,.22);border:1px solid rgba(216,37,88,.16);color:#5a4400;word-break:keep-all}
+
+label.f{display:block;margin-bottom:12px}
+label.f span{display:block;font-size:12.5px;font-weight:700;color:#444;margin-bottom:5px}
+label.f input[type=text],label.f input[type=password]{width:100%;min-height:50px;padding:0 14px;
+  border-radius:14px;border:1px solid var(--line);font-family:inherit;font-size:16px;background:#fff}
+label.f input:focus{outline:2px solid rgba(216,37,88,.35);outline-offset:1px}
+label.chk{display:flex;align-items:flex-start;gap:9px;margin-bottom:14px;font-size:13.5px;
+  line-height:1.7;cursor:pointer;word-break:keep-all}
+label.chk input{width:22px;height:22px;flex:none;margin-top:1px}
+
+.btns{display:flex;gap:8px;margin-top:6px}
+button{font-family:inherit;cursor:pointer}
+.b-main{flex:1;min-height:54px;border:0;border-radius:999px;font-size:15px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,var(--sub),var(--main));box-shadow:0 10px 24px rgba(216,37,88,.26)}
+.b-main:disabled{background:#E4E4E4;color:#999;box-shadow:none;cursor:default}
+.b-skip{min-height:54px;padding:0 18px;border-radius:999px;border:1px solid var(--line);
+  background:#fff;font-size:13.5px;font-weight:700;color:#666}
+.msg{margin-top:12px;font-size:13px;line-height:1.7;word-break:keep-all;min-height:20px}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+.note{margin-top:18px;text-align:center;font-size:12px;line-height:1.8;color:var(--gray);word-break:keep-all}
+.done{text-align:center;padding:26px 18px}
+.done .big{font-size:40px}
+.done h2{margin:10px 0 8px;font-size:20px}
+.done p{font-size:13.5px;line-height:1.85;color:#555;word-break:keep-all}
+.err{background:#fff;border-radius:20px;padding:26px 20px;text-align:center}
+.err h2{margin:0 0 8px;font-size:18px;color:var(--bad)}
+.err p{font-size:13.5px;line-height:1.8;color:#555}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">CHEW GUMI</div>
+  <div class="who" id="who">설정 도움</div>
+</div>
+
+<div class="wrap">
+  <div class="dots" id="dots"></div>
+  <div id="stage"></div>
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+(function () {
+  var SB  = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var FN  = SB + '/functions/v1/setup-wizard';
+
+  var token = new URLSearchParams(location.search).get('t') || '';
+  var steps = [], idx = 0, carry = {};      /* carry — 앞 카드에서 받은 값을 뒤 카드가 씁니다 */
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function call(b) {
+    return fetch(FN, { method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ token: token }, b)) })
+      .then(function (r) { return r.json(); });
+  }
+  function fail(t, d) {
+    $('stage').innerHTML = '<div class="err"><h2>' + esc(t) + '</h2><p>' + esc(d) + '</p></div>';
+    $('dots').innerHTML = '';
+  }
+
+  /* 앞 카드에서 받은 값으로 뒤 카드 칸을 미리 채웁니다 */
+  function guess(stepKey, f) {
+    if (carry[f.name] != null) return carry[f.name];
+    if (stepKey === 'resend' && f.name === 'domain' && carry.domain) return carry.domain;
+    return '';
+  }
+
+  function paintDots() {
+    $('dots').innerHTML = steps.map(function (s, i) {
+      return '<i class="' + (s.filled ? 'done' : (i === idx ? 'on' : '')) + '"></i>';
+    }).join('');
+  }
+
+  function paint() {
+    if (idx >= steps.length) return finish();
+    var s = steps[idx];
+    paintDots();
+
+    var html = '<div class="card">'
+      + '<h2>' + esc(s.title) + '</h2>'
+      + '<p class="why">' + s.why.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>';
+
+    if (s.where) {
+      html += '<div class="go"><em>여기서 하십니다</em><a href="' + esc(s.where)
+        + '" target="_blank" rel="noopener">' + esc(s.where) + ' ↗</a></div>';
+    }
+    if (s.how && s.how.length) {
+      html += '<ol class="how">' + s.how.map(function (h) {
+        return '<li>' + esc(h).replace(/「(.+?)」/g, '<b>$1</b>') + '</li>';
+      }).join('') + '</ol>';
+    }
+    if (s.caution) html += '<div class="warn">' + esc(s.caution) + '</div>';
+
+    html += (s.fields || []).map(function (f) {
+      if (f.type === 'check') {
+        return '<label class="chk"><input type="checkbox" data-n="' + esc(f.name) + '">'
+          + '<span>' + esc(f.label) + '</span></label>';
+      }
+      return '<label class="f"><span>' + esc(f.label) + '</span>'
+        + '<input type="' + (f.type === 'password' ? 'password' : 'text') + '" data-n="' + esc(f.name) + '"'
+        + ' value="' + esc(guess(s.key, f)) + '"'
+        + ' placeholder="' + esc(f.placeholder || '') + '"'
+        + (f.type === 'password' ? ' autocomplete="off" spellcheck="false"' : '') + '></label>';
+    }).join('');
+
+    html += '<div class="btns">'
+      + '<button class="b-main" id="go">확인하고 저장</button>'
+      + (idx < steps.length - 1 ? '<button class="b-skip" id="skip">나중에</button>' : '')
+      + '</div><div class="msg" id="msg"></div></div>';
+
+    $('stage').innerHTML = html;
+
+    $('go').onclick = function () {
+      var vals = {};
+      [].forEach.call($('stage').querySelectorAll('[data-n]'), function (el) {
+        vals[el.dataset.n] = (el.type === 'checkbox') ? el.checked : el.value.trim();
+      });
+      var m = $('msg');
+      m.className = 'msg'; m.textContent = '확인하는 중입니다…';
+      $('go').disabled = true;
+      /* 밖(네이버·Resend)에 직접 물어보는 단계라 몇 초 걸립니다.
+         가만히 있으면 멈춘 줄 아시고 새로고침하시게 됩니다. */
+      var tick = 0;
+      var timer = setInterval(function () {
+        tick++;
+        if (tick === 3) m.textContent = '해당 서비스에 직접 물어보는 중입니다…';
+        if (tick === 8) m.textContent = '조금만 더 기다려 주세요. 끊지 마시고 그대로 두시면 됩니다…';
+      }, 1000);
+      var stop = function () { clearInterval(timer); };
+
+      call({ action: 'submit', step: s.key, values: vals }).then(function (d) {
+        stop();
+        $('go').disabled = false;
+        if (d.ok) {
+          m.className = 'msg ok';
+          m.textContent = '✓ ' + (d.message || '저장했습니다.');
+          steps[idx].filled = true;
+          /* 다음 카드가 쓸 수 있게 값을 넘겨 둡니다 (비밀번호류는 넘기지 않습니다) */
+          Object.keys(vals).forEach(function (k) {
+            if (/secret|password|key/i.test(k)) return;
+            if (typeof vals[k] === 'string' && vals[k]) carry[k] = vals[k];
+          });
+          setTimeout(function () { idx++; paint(); window.scrollTo(0, 0); }, 1100);
+        } else {
+          m.className = 'msg bad';
+          m.textContent = '✕ ' + (d.message || d.error || '되지 않았습니다.');
+        }
+      }).catch(function () {
+        stop();
+        $('go').disabled = false;
+        m.className = 'msg bad';
+        m.textContent = '연결하지 못했습니다. 잠시 뒤 다시 눌러 주세요.';
+      });
+    };
+
+    if ($('skip')) $('skip').onclick = function () { idx++; paint(); window.scrollTo(0, 0); };
+  }
+
+  function finish() {
+    var left = steps.filter(function (s) { return !s.filled; });
+    paintDots();
+    $('stage').innerHTML = '<div class="card done"><div class="big">' + (left.length ? '🙂' : '✅') + '</div>'
+      + '<h2>' + (left.length ? '여기까지 해주셔서 감사합니다' : '다 됐습니다. 감사합니다') + '</h2>'
+      + '<p>' + (left.length
+        ? '남은 것은 ' + left.map(function (s) { return esc(s.title); }).join(' · ')
+          + ' 입니다. 이 링크는 그대로 두시면 나중에 이어서 하실 수 있습니다.'
+        : '넣어주신 값으로 바로 반영했습니다. 신현정에게 알림이 갔습니다.') + '</p></div>';
+  }
+
+  /* ── 시작 ── */
+  if (!token) { fail('링크가 올바르지 않습니다', '카카오톡으로 받으신 주소를 그대로 열어 주세요.'); return; }
+
+  $('note').textContent = '불러오는 중…';
+  call({ action: 'open' }).then(function (d) {
+    if (!d.ok) { fail('열지 못했습니다', d.error || '알 수 없는 이유입니다.'); $('note').textContent = ''; return; }
+    if (d.for_name) $('who').textContent = d.for_name + '님, 아래만 해주시면 됩니다';
+    steps = d.steps || [];
+    if (!steps.length) {
+      $('dots').innerHTML = '';
+      $('stage').innerHTML = '<div class="card done"><div class="big">✅</div>'
+        + '<h2>지금은 하실 것이 없습니다</h2>'
+        + '<p>준비되면 신현정이 다시 알려드리겠습니다. '
+        + '이 링크는 그대로 두셔도 됩니다.</p></div>';
+      $('note').textContent = '';
+      return;
+    }
+    /* 이미 된 것은 건너뛰고 시작합니다 */
+    while (idx < steps.length && steps[idx].filled) idx++;
+    $('note').textContent = '이 화면은 값을 넣기만 합니다. 이미 저장된 키는 보이지 않습니다. '
+      + '링크 기한 ' + String(d.expires_at || '').slice(0, 10) + '.';
+    paint();
+  }).catch(function () {
+    fail('연결하지 못했습니다', '잠시 뒤에 다시 열어 주세요.');
+    $('note').textContent = '';
+  });
+})();
+</script>
+</body>
+</html>
