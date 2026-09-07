@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<!-- 설정 카드 보내기 — 관리자 화면.
+     계정 주인(대표님 등)에게 '한 번 쓰는 링크'를 만들어 카카오톡으로 보냅니다.
+     이 화면은 값을 만들고 상태만 봅니다. 상대가 넣은 키는 여기서도 보이지 않습니다. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>츄구미 — 설정 카드 보내기</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.ico" sizes="any">
+<style>
+:root{--main:#D82558;--sub:#E95073;--ink:#1a1a1a;--gray:#767676;--line:rgba(0,0,0,.10);
+  --ok:#1a8a4a;--warn:#B26B00;--bg:#FDF3F5}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif}
+header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;
+  gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:17px;font-weight:900;color:var(--main)}
+header .sp{flex:1}
+header a{font-size:13px;color:#555;text-decoration:none;padding:6px 10px;border-radius:8px;
+  border:1px solid var(--line)}
+.wrap{max-width:920px;margin:0 auto;padding:20px 16px 80px}
+.lead{font-size:13.5px;line-height:1.85;color:#555;margin:0 0 20px;word-break:keep-all}
+
+.gate{background:var(--bg);border-radius:16px;padding:22px 20px;text-align:center}
+.gate h2{margin:0 0 8px;font-size:16px}
+.gate p{font-size:13px;line-height:1.8;color:#555;margin:0 0 14px;word-break:keep-all}
+
+.card{border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;background:#fff}
+.card h3{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card .meta{font-size:12px;color:var(--gray);margin-bottom:12px}
+.pill{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill.live{background:rgba(26,138,74,.12);color:var(--ok)}
+.pill.wait{background:rgba(178,107,0,.12);color:var(--warn)}
+.pill.dead{background:rgba(0,0,0,.07);color:var(--gray)}
+
+.bar{height:6px;border-radius:99px;background:rgba(216,37,88,.12);overflow:hidden;margin:10px 0}
+.bar i{display:block;height:100%;background:var(--main)}
+
+ul.steps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+ul.steps li{font-size:12px;padding:4px 9px;border-radius:8px;background:#F5F5F5;color:#666}
+ul.steps li.done{background:rgba(26,138,74,.12);color:var(--ok);font-weight:700}
+
+.linkbox{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.linkbox input{flex:1;min-width:220px;min-height:42px;padding:0 12px;border-radius:10px;
+  border:1px solid var(--line);font-family:inherit;font-size:12.5px;background:#FAFAFA;color:#444}
+button{font-family:inherit;cursor:pointer;border-radius:10px;font-weight:700}
+.b1{min-height:42px;padding:0 16px;border:0;color:#fff;font-size:13px;
+  background:linear-gradient(135deg,var(--sub),var(--main))}
+.b2{min-height:42px;padding:0 14px;border:1px solid var(--line);background:#fff;font-size:13px;color:#555}
+.b2.danger{color:var(--main);border-color:rgba(216,37,88,.3)}
+.b1:disabled,.b2:disabled{opacity:.5;cursor:default}
+
+fieldset{border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+legend{font-size:13px;font-weight:800;padding:0 6px;color:var(--main)}
+label.f{display:block;margin-bottom:12px}
+label.f span{display:block;font-size:12.5px;font-weight:700;color:#444;margin-bottom:5px}
+label.f input{width:100%;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);
+  font-family:inherit;font-size:14px}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-bottom:14px}
+.pick label{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);
+  border-radius:10px;font-size:12.5px;line-height:1.6;cursor:pointer;word-break:keep-all}
+.pick label.off{opacity:.55;cursor:not-allowed}
+.pick input{width:18px;height:18px;flex:none;margin-top:1px}
+.pick b{display:block;font-size:13px;margin-bottom:2px}
+.pick em{font-style:normal;color:var(--warn);font-size:11.5px}
+
+.msg{font-size:13px;line-height:1.7;margin-top:10px;min-height:18px;word-break:keep-all}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--main)}
+.empty{padding:30px;text-align:center;color:var(--gray);font-size:13.5px}
+h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>설정 카드 보내기</h1>
+  <div class="sp"></div>
+  <a href="dev.html">수정 보드</a>
+  <a href="console.html">관리자 홈</a>
+  <span id="me" style="font-size:12px;color:var(--gray)"></span>
+</header>
+
+<div class="wrap">
+  <p class="lead">
+    네이버·카카오·Meta 키는 <b>계정 주인만</b> 받을 수 있습니다. 그런데 대표님은 이 사이트에 계정이 없습니다.
+    그래서 한 번 쓰는 링크를 만들어 카카오톡으로 보내면, 그 링크가 곧 권한이 됩니다.
+    링크는 <b>넣기 전용</b>이라 이미 저장된 키를 읽어가지 못하고, 넣은 값은 실제 API 로 확인한 뒤에만 저장됩니다.
+  </p>
+
+  <div id="gate" class="gate" hidden>
+    <h2>관리자 로그인이 필요합니다</h2>
+    <p>chewgumiadmin 계정으로 로그인하신 뒤 이 화면을 열어 주세요.</p>
+    <button class="b1" onclick="location.href='login.html?next=setup-admin.html'">로그인하러 가기</button>
+  </div>
+
+  <div id="main" hidden>
+    <fieldset>
+      <legend>새로 보내기</legend>
+      <label class="f"><span>누구에게 보내나요</span>
+        <input id="who" type="text" placeholder="윤소호 대표"></label>
+      <label class="f"><span>메모 (선택 — 나중에 구분하려고 적습니다)</span>
+        <input id="note" type="text" placeholder="카카오톡으로 보낸 설정 링크"></label>
+      <div style="font-size:12.5px;font-weight:700;color:#444;margin-bottom:8px">보낼 카드를 고르세요</div>
+      <div class="pick" id="pick"></div>
+      <label class="f" style="max-width:200px"><span>며칠 동안 열어둘까요</span>
+        <input id="days" type="text" value="30" inputmode="numeric"></label>
+      <button class="b1" id="mk">링크 만들기</button>
+      <div class="msg" id="mkmsg"></div>
+    </fieldset>
+
+    <h2 class="sec">보낸 링크</h2>
+    <div id="list"><div class="empty">불러오는 중…</div></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var SB  = 'https://psynvpuedzjvytsgdhgg.supabase.co';
+  var KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
+  var FN  = SB + '/functions/v1/setup-wizard';
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  /* 로그인 토큰 — dev.html 과 같은 방식으로 꺼냅니다 */
+  function jwt(){
+    try { var s = JSON.parse(localStorage.getItem('cg_sb')||'null'); return (s && s.t) || ''; }
+    catch(e){ return ''; }
+  }
+  function whoami(){
+    try { var s = JSON.parse(localStorage.getItem('cg_sb')||'null'); return (s && (s.em||s.u)) || ''; }
+    catch(e){ return ''; }
+  }
+  function call(b){
+    return fetch(FN, { method:'POST',
+      headers:{ apikey:KEY, Authorization:'Bearer '+jwt(), 'Content-Type':'application/json' },
+      body: JSON.stringify(b) }).then(function(r){ return r.json(); });
+  }
+
+  function when(s){
+    if (!s) return '';
+    var d = new Date(s), n = new Date(), h = (n-d)/36e5;
+    if (h < 1) return '방금';
+    if (h < 24) return Math.floor(h)+'시간 전';
+    if (h < 24*7) return Math.floor(h/24)+'일 전';
+    return String(s).slice(0,10);
+  }
+
+  /* ── 보낼 수 있는 카드 목록 ── */
+  function loadCatalog(){
+    return call({ action:'catalog' }).then(function(d){
+      if (!d.ok) throw new Error(d.error||'');
+      $('pick').innerHTML = d.steps.map(function(s){
+        var off = !!s.blocked;
+        return '<label class="'+(off?'off':'')+'">'
+          + '<input type="checkbox" value="'+esc(s.key)+'"'+(off?' disabled':'')+'>'
+          + '<span><b>'+esc(s.title)+'</b>'
+          + (off ? '<em>'+esc(s.blocked)+'</em>' : '')
+          + '</span></label>';
+      }).join('');
+    });
+  }
+
+  /* ── 보낸 링크들 ── */
+  function loadList(){
+    return call({ action:'list' }).then(function(d){
+      if (!d.ok) throw new Error(d.error||'');
+      if (!d.items.length){ $('list').innerHTML = '<div class="empty">아직 보낸 링크가 없습니다.</div>'; return; }
+      $('list').innerHTML = d.items.map(function(it){
+        var state = it.revoked ? ['dead','닫힘']
+          : it.expired ? ['dead','기한 지남']
+          : it.done_at ? ['live','다 끝냄']
+          : it.opened_at ? ['wait','여는 중']
+          : ['wait','아직 안 열어봄'];
+        var pct = it.total ? Math.round(it.done / it.total * 100) : 0;
+        var alive = !it.revoked && !it.expired;
+        return '<div class="card">'
+          + '<h3>'+esc(it.for_name||'(이름 없음)')
+          + ' <span class="pill '+state[0]+'">'+state[1]+'</span></h3>'
+          + '<div class="meta">'
+          +   (it.note ? esc(it.note)+' · ' : '')
+          +   '만든 날 '+when(it.created_at)
+          +   ' · 기한 '+String(it.expires_at).slice(0,10)
+          +   (it.opened_at ? ' · 처음 연 때 '+when(it.opened_at) : '')
+          +   (it.tries ? ' · 시도 '+it.tries+'번' : '')
+          + '</div>'
+          + '<div class="bar"><i style="width:'+pct+'%"></i></div>'
+          + '<div style="font-size:12px;color:#666">'+it.done+' / '+it.total+' 끝남</div>'
+          + '<ul class="steps">' + it.steps.map(function(s){
+              return '<li class="'+(s.done?'done':'')+'" title="'
+                + esc(s.last ? (s.last.ok?'✓ ':'✕ ')+s.last.message : '아직')
+                + '">'+(s.done?'✓ ':'')+esc(s.title)+'</li>';
+            }).join('') + '</ul>'
+          + (alive ? '<div class="linkbox">'
+              + '<input type="text" readonly value="'+esc(it.url)+'" onclick="this.select()">'
+              + '<button class="b1" data-copy="'+esc(it.url)+'">주소 복사</button>'
+              + '<button class="b2" data-kko="'+esc(it.url)+'">카톡 문구</button>'
+              + '<button class="b2 danger" data-off="'+esc(it.token)+'">링크 닫기</button>'
+              + '</div>' : '')
+          + '</div>';
+      }).join('');
+    });
+  }
+
+  /* 복사·카톡문구·닫기 */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+
+    if (b.dataset.copy) {
+      navigator.clipboard.writeText(b.dataset.copy).then(function(){
+        var t = b.textContent; b.textContent = '복사했습니다';
+        setTimeout(function(){ b.textContent = t; }, 1500);
+      });
+    }
+    if (b.dataset.kko) {
+      var msg = '안녕하세요, 신현정입니다.\n\n'
+        + '자사몰 마무리에 대표님 계정으로만 받을 수 있는 설정이 남았습니다.\n'
+        + '아래 링크를 누르시면 한 화면에 하나씩, 어느 메뉴를 눌러야 하는지까지 나옵니다.\n'
+        + '순서대로만 따라가시면 됩니다.\n\n'
+        + b.dataset.kko + '\n\n'
+        + '· 한 번에 다 하지 않으셔도 됩니다. 「나중에」를 누르시면 넘어가고, 다시 열면 이어서 하실 수 있습니다.\n'
+        + '· 넣으신 값이 실제로 되는지 그 자리에서 확인해서, 되는 것만 저장합니다.\n'
+        + '· 이 링크는 값을 넣기만 합니다. 이미 저장된 키는 화면에 나오지 않습니다.\n'
+        + '· 대표님 외에는 열지 말아 주세요.\n\n'
+        + '막히시면 몇 번 단계인지만 알려주세요. 바로 봐 드리겠습니다.';
+      navigator.clipboard.writeText(msg).then(function(){
+        var t = b.textContent; b.textContent = '문구 복사했습니다';
+        setTimeout(function(){ b.textContent = t; }, 1800);
+      });
+    }
+    if (b.dataset.off) {
+      if (!confirm('이 링크를 닫습니다. 상대가 열어도 더 이상 못 씁니다.\n계속할까요?')) return;
+      b.disabled = true;
+      call({ action:'revoke', token: b.dataset.off }).then(function(){ loadList(); });
+    }
+  });
+
+  /* 새로 만들기 */
+  $('mk').onclick = function () {
+    var picked = [].slice.call($('pick').querySelectorAll('input:checked')).map(function(i){ return i.value; });
+    var m = $('mkmsg'); m.className = 'msg';
+    if (!$('who').value.trim()) { m.className='msg bad'; m.textContent='누구에게 보내는지 적어 주세요.'; return; }
+    if (!picked.length) { m.className='msg bad'; m.textContent='카드를 하나 이상 고르세요.'; return; }
+    $('mk').disabled = true; m.textContent = '만드는 중…';
+    call({ action:'create', for_name:$('who').value.trim(), note:$('note').value.trim(),
+           days:Number($('days').value)||30, steps:picked })
+      .then(function(d){
+        $('mk').disabled = false;
+        if (!d.ok) { m.className='msg bad'; m.textContent = '✕ ' + (d.error||'만들지 못했습니다.'); return; }
+        m.className='msg ok'; m.textContent = '✓ 만들었습니다. 아래 목록 맨 위에 있습니다 — 「카톡 문구」를 눌러 복사해 보내세요.';
+        [].forEach.call($('pick').querySelectorAll('input'), function(i){ i.checked = false; });
+        $('who').value = ''; $('note').value = '';
+        loadList();
+      })
+      .catch(function(){ $('mk').disabled = false; m.className='msg bad'; m.textContent='연결하지 못했습니다.'; });
+  };
+
+  /* ── 시작 ── */
+  if (!jwt()) { $('gate').hidden = false; return; }
+  $('me').textContent = whoami();
+  $('main').hidden = false;
+  Promise.all([loadCatalog(), loadList()]).catch(function (e) {
+    $('main').hidden = true; $('gate').hidden = false;
+    $('gate').innerHTML = '<h2>권한이 없습니다</h2>'
+      + '<p>' + esc(String(e.message || '')) + '<br>관리자로 등록된 계정으로 로그인해 주세요.</p>'
+      + '<button class="b1" onclick="location.href=\'login.html?next=setup-admin.html\'">다시 로그인</button>';
+  });
+})();
+</script>
+</body>
+</html>
