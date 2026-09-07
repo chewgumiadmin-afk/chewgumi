@@ -42,6 +42,7 @@ header a{font-size:13px;color:#555;text-decoration:none;padding:6px 10px;border-
 ul.steps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 ul.steps li{font-size:12px;padding:4px 9px;border-radius:8px;background:#F5F5F5;color:#666}
 ul.steps li.done{background:rgba(26,138,74,.12);color:var(--ok);font-weight:700}
+ul.steps li.off{background:transparent;border:1px dashed var(--line);color:#aaa}
 
 .linkbox{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .linkbox input{flex:1;min-width:220px;min-height:42px;padding:0 12px;border-radius:10px;
@@ -67,6 +68,13 @@ label.f input{width:100%;min-height:44px;padding:0 12px;border-radius:10px;borde
 .pick b{display:block;font-size:13px;margin-bottom:2px}
 .pick em{font-style:normal;color:var(--warn);font-size:11.5px}
 
+.copyout{margin-top:12px}
+.copyout .hint{font-size:12px;color:var(--warn);margin-bottom:6px}
+.copyout textarea{width:100%;min-height:190px;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--line);font-family:inherit;font-size:12.5px;line-height:1.7;
+  background:#FAFAFA;color:#333;resize:vertical}
+.addbox{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.addbox .pick{margin-bottom:10px}
 .msg{font-size:13px;line-height:1.7;margin-top:10px;min-height:18px;word-break:keep-all}
 .msg.ok{color:var(--ok)} .msg.bad{color:var(--main)}
 .empty{padding:30px;text-align:center;color:var(--gray);font-size:13.5px}
@@ -122,6 +130,8 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
   var KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
   var FN  = SB + '/functions/v1/setup-wizard';
 
+  var ITEMS = {};    /* 토큰 → 링크 정보 */
+  var CATALOG = [];  /* 보낼 수 있는 카드 전체 */
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -141,6 +151,33 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
       body: JSON.stringify(b) }).then(function(r){ return r.json(); });
   }
 
+  /* 복사. 막히면 글을 펼쳐서 직접 고르시게 합니다 (조용히 실패하지 않게) */
+  function copy(text, btn, okLabel){
+    var done = function(){
+      var t = btn.textContent; btn.textContent = okLabel || '복사했습니다';
+      setTimeout(function(){ btn.textContent = t; }, 1800);
+    };
+    var fallback = function(){
+      var box = btn.closest('.card, fieldset') || document.body;
+      var old = box.querySelector('.copyout');
+      if (old) old.remove();
+      var d = document.createElement('div');
+      d.className = 'copyout';
+      d.innerHTML = '<div class="hint">자동 복사가 막혀 있습니다. 아래 글을 직접 복사해 주세요.</div>'
+        + '<textarea readonly></textarea>';
+      d.querySelector('textarea').value = text;
+      box.appendChild(d);
+      var ta = d.querySelector('textarea');
+      ta.focus(); ta.select();
+      btn.textContent = '아래에 펼쳤습니다';
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else fallback();
+    } catch (e) { fallback(); }
+  }
+
   function when(s){
     if (!s) return '';
     var d = new Date(s), n = new Date(), h = (n-d)/36e5;
@@ -154,6 +191,7 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
   function loadCatalog(){
     return call({ action:'catalog' }).then(function(d){
       if (!d.ok) throw new Error(d.error||'');
+      CATALOG = d.steps;
       $('pick').innerHTML = d.steps.map(function(s){
         var off = !!s.blocked;
         return '<label class="'+(off?'off':'')+'">'
@@ -169,6 +207,7 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
   function loadList(){
     return call({ action:'list' }).then(function(d){
       if (!d.ok) throw new Error(d.error||'');
+      ITEMS = {}; d.items.forEach(function(it){ ITEMS[it.token] = it; });
       if (!d.items.length){ $('list').innerHTML = '<div class="empty">아직 보낸 링크가 없습니다.</div>'; return; }
       $('list').innerHTML = d.items.map(function(it){
         var state = it.revoked ? ['dead','닫힘']
@@ -191,16 +230,19 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
           + '<div class="bar"><i style="width:'+pct+'%"></i></div>'
           + '<div style="font-size:12px;color:#666">'+it.done+' / '+it.total+' 끝남</div>'
           + '<ul class="steps">' + it.steps.map(function(s){
-              return '<li class="'+(s.done?'done':'')+'" title="'
-                + esc(s.last ? (s.last.ok?'✓ ':'✕ ')+s.last.message : '아직')
-                + '">'+(s.done?'✓ ':'')+esc(s.title)+'</li>';
+              return '<li class="'+(s.done?'done':(s.hidden?'off':''))+'" title="'
+                + esc(s.hidden ? s.hidden_why
+                    : (s.last ? (s.last.ok?'✓ ':'✕ ')+s.last.message : '아직'))
+                + '">'+(s.done?'✓ ':(s.hidden?'⏸ ':''))+esc(s.title)+'</li>';
             }).join('') + '</ul>'
           + (alive ? '<div class="linkbox">'
               + '<input type="text" readonly value="'+esc(it.url)+'" onclick="this.select()">'
               + '<button class="b1" data-copy="'+esc(it.url)+'">주소 복사</button>'
-              + '<button class="b2" data-kko="'+esc(it.url)+'">카톡 문구</button>'
+              + '<button class="b2" data-kko="'+esc(it.token)+'">카톡 문구</button>'
+              + '<button class="b2" data-add="'+esc(it.token)+'">카드 추가</button>'
               + '<button class="b2 danger" data-off="'+esc(it.token)+'">링크 닫기</button>'
-              + '</div>' : '')
+              + '</div>'
+              + '<div class="addbox" id="add-'+esc(it.token)+'" hidden></div>' : '')
           + '</div>';
       }).join('');
     });
@@ -211,25 +253,73 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
     var b = e.target.closest('button'); if (!b) return;
 
     if (b.dataset.copy) {
-      navigator.clipboard.writeText(b.dataset.copy).then(function(){
-        var t = b.textContent; b.textContent = '복사했습니다';
-        setTimeout(function(){ b.textContent = t; }, 1500);
-      });
+      copy(b.dataset.copy, b, '주소 복사했습니다');
     }
     if (b.dataset.kko) {
-      var msg = '안녕하세요, 신현정입니다.\n\n'
-        + '자사몰 마무리에 대표님 계정으로만 받을 수 있는 설정이 남았습니다.\n'
-        + '아래 링크를 누르시면 한 화면에 하나씩, 어느 메뉴를 눌러야 하는지까지 나옵니다.\n'
-        + '순서대로만 따라가시면 됩니다.\n\n'
-        + b.dataset.kko + '\n\n'
-        + '· 한 번에 다 하지 않으셔도 됩니다. 「나중에」를 누르시면 넘어가고, 다시 열면 이어서 하실 수 있습니다.\n'
-        + '· 넣으신 값이 실제로 되는지 그 자리에서 확인해서, 되는 것만 저장합니다.\n'
-        + '· 이 링크는 값을 넣기만 합니다. 이미 저장된 키는 화면에 나오지 않습니다.\n'
-        + '· 대표님 외에는 열지 말아 주세요.\n\n'
-        + '막히시면 몇 번 단계인지만 알려주세요. 바로 봐 드리겠습니다.';
-      navigator.clipboard.writeText(msg).then(function(){
-        var t = b.textContent; b.textContent = '문구 복사했습니다';
-        setTimeout(function(){ b.textContent = t; }, 1800);
+      var it = ITEMS[b.dataset.kko]; if (!it) return;
+      var left = it.steps.filter(function(s){ return !s.done && !s.hidden; });
+      var first = it.done === 0 && !it.opened_at;
+      var msg;
+      if (first) {
+        msg = '대표님, 안녕하세요. 신현정입니다.\n\n'
+          + '자사몰 마무리에 대표님 계정으로만 받을 수 있는 설정이 ' + it.total + '가지 남았습니다.\n'
+          + '제 계정으로는 들어갈 수 없는 것들이라 부득이하게 부탁드립니다.\n\n'
+          + '아래 링크를 누르시면 한 화면에 하나씩 나옵니다.\n'
+          + '각 화면에 어느 사이트에 로그인해서 어느 메뉴를 눌러야 하는지까지 다 적어 두었으니,\n'
+          + '보시면서 그대로 따라 하시고 나오는 값을 그 화면에 넣어 주시면 됩니다.\n\n'
+          + it.url + '\n\n'
+          + '해주실 것\n'
+          + left.map(function(s,i){ return (i+1)+'. ' + s.title; }).join('\n') + '\n\n'
+          + '· 한 번에 다 하지 않으셔도 됩니다. 「나중에」를 누르시면 넘어가고,\n'
+          + '  링크를 다시 열면 하던 곳부터 이어서 하실 수 있습니다.\n'
+          + '· 넣으신 값이 실제로 되는지 그 자리에서 확인해서, 되는 것만 저장합니다.\n'
+          + '  잘못 넣으실까 걱정하지 않으셔도 됩니다.\n'
+          + '· 이 링크는 값을 넣기만 합니다. 이미 저장된 키는 화면에 나오지 않습니다.\n'
+          + '· 링크는 ' + String(it.expires_at).slice(0,10) + ' 까지 열립니다. 대표님 외에는 열지 말아 주세요.\n\n'
+          + '막히시면 몇 번 화면인지만 알려주세요. 바로 봐 드리겠습니다.';
+      } else if (!left.length) {
+        msg = '대표님, 부탁드린 것 다 해주셔서 감사합니다. 확인했습니다.';
+      } else {
+        msg = '대표님, 신현정입니다.\n\n'
+          + (it.done ? '먼저 ' + it.done + '가지 해주셔서 감사합니다.\n\n' : '')
+          + '아래 ' + left.length + '가지가 아직 남아 있어 다시 한 번 올립니다.\n\n'
+          + it.url + '\n\n'
+          + left.map(function(s,i){ return (i+1)+'. ' + s.title; }).join('\n') + '\n\n'
+          + '링크를 열면 남은 것부터 바로 나옵니다. 끝내신 것은 건너뜁니다.\n'
+          + '기한은 ' + String(it.expires_at).slice(0,10) + ' 까지입니다.\n\n'
+          + '어려우신 데가 있으면 몇 번인지만 알려주세요.';
+      }
+      copy(msg, b, first ? '문구 복사했습니다' : '독촉 문구 복사했습니다');
+    }
+    if (b.dataset.add) {
+      var box = document.getElementById('add-' + b.dataset.add);
+      if (!box) return;
+      if (!box.hidden) { box.hidden = true; return; }
+      var it2 = ITEMS[b.dataset.add];
+      var have = it2.steps.map(function(s){ return s.key; });
+      var rest = CATALOG.filter(function(c){ return have.indexOf(c.key) < 0 && !c.blocked; });
+      box.innerHTML = rest.length
+        ? '<div class="pick">' + rest.map(function(c){
+            return '<label><input type="checkbox" value="'+esc(c.key)+'">'
+              + '<span><b>'+esc(c.title)+'</b></span></label>'; }).join('') + '</div>'
+          + '<button class="b1" data-doadd="'+esc(b.dataset.add)+'">이 카드들을 붙이기</button>'
+          + '<div class="msg"></div>'
+        : '<div style="font-size:13px;color:#767676;padding:6px 0">더 붙일 카드가 없습니다.</div>';
+      box.hidden = false;
+    }
+    if (b.dataset.doadd) {
+      var box2 = document.getElementById('add-' + b.dataset.doadd);
+      var picked2 = [].slice.call(box2.querySelectorAll('input:checked')).map(function(i){ return i.value; });
+      var m2 = box2.querySelector('.msg');
+      if (!picked2.length) { m2.className='msg bad'; m2.textContent='카드를 고르세요.'; return; }
+      b.disabled = true; m2.className='msg'; m2.textContent='붙이는 중…';
+      call({ action:'addSteps', token:b.dataset.doadd, steps:picked2 }).then(function(d){
+        b.disabled = false;
+        if (!d.ok) { m2.className='msg bad'; m2.textContent='✕ '+(d.error||''); return; }
+        m2.className='msg ok';
+        m2.textContent='✓ ' + d.added.join(', ') + ' 을(를) 붙였습니다. 같은 링크를 다시 여시면 나옵니다 — '
+          + '「카톡 문구」를 눌러 안내를 보내세요.';
+        loadList();
       });
     }
     if (b.dataset.off) {
