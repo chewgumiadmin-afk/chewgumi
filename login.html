@@ -270,6 +270,22 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
 }
 .li-keep em{font-style:normal;color:#797979;font-size:12px}
 .li-hint{margin:-4px 0 12px 28px;font-size:11.5px;color:#9a9aa2;line-height:1.6}
+
+/* 유도 로그인 카드 */
+.li-guide{margin-top:12px;padding:15px 16px;border-radius:16px;text-align:left;
+  background:rgba(255,255,255,.72);border:1px solid rgba(216,37,88,.22);
+  box-shadow:0 8px 22px rgba(216,37,88,.10)}
+.li-guide .lg-t{font-size:14px;font-weight:800;color:#D82558;margin-bottom:6px}
+.li-guide .lg-d{font-size:13px;line-height:1.75;color:#444;word-break:keep-all}
+.li-guide .lg-b{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.li-guide .lg-b button,.li-guide .lg-b a{flex:1 1 auto;min-width:132px;min-height:44px;
+  padding:0 16px;border-radius:999px;border:1px solid rgba(0,0,0,.10);cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:700;background:#fff;color:#1a1a1a;
+  display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.li-guide .lg-b button.on{background:linear-gradient(135deg,#E95073,#D82558);
+  color:#fff;border-color:transparent}
+.li-forgot{display:block;width:100%;margin-top:10px;padding:8px 0;background:none;border:0;
+  font-family:inherit;font-size:12.5px;color:#797979;text-decoration:underline;cursor:pointer}
 </style>
 <link rel="stylesheet" href="assets/glass.css">
 <link rel="stylesheet" href="assets/ui.css">
@@ -309,6 +325,19 @@ h1 { font-family:'Poppins',sans-serif; font-weight:600; font-weight:400; font-si
       <div class="li-hint" id="liKeepHint">공용 컴퓨터에서는 체크하지 마세요.</div>
       <button class="li-btn" onclick="doLogin()">LOGIN — 로그인</button>
       <div class="li-msg" id="liMsg"></div>
+
+      <!-- 유도 로그인 카드 (issues #37)
+           구글로 가입한 이메일에 비밀번호를 넣으면 "올바르지 않습니다"만 나와서,
+           손님이 자기 계정이 없어졌다고 생각하고 나갔습니다.
+           어떤 방법으로 들어가야 하는지를 이 카드가 짚어 줍니다. -->
+      <div class="li-guide" id="liGuide" hidden>
+        <div class="lg-t" id="lgTitle"></div>
+        <div class="lg-d" id="lgDesc"></div>
+        <div class="lg-b" id="lgBtns"></div>
+      </div>
+
+      <button type="button" class="li-forgot" onclick="cgGuide(true)">
+        비밀번호를 모르겠어요 · 로그인 링크 받기</button>
     </div>
     <div class="or"><span>또는</span></div>
     <div class="sso">
@@ -604,9 +633,14 @@ function doLogin(){
     
     } else {
       m.style.color='#D82558';
-      m.textContent = (d.error_description||'').indexOf('confirm')>-1
-        ? '이메일 인증을 먼저 완료해 주세요.'
-        : '이메일 또는 비밀번호가 올바르지 않습니다.';
+      if ((d.error_description||'').indexOf('confirm') > -1) {
+        m.textContent = '이메일 인증을 먼저 완료해 주세요.';
+      } else {
+        /* 그냥 "올바르지 않습니다" 로 끝내지 않습니다.
+           이 이메일이 실제로 어떤 방법으로 들어가는 계정인지 물어보고 길을 짚어 줍니다. */
+        m.textContent = '들어가는 방법을 확인하고 있습니다…';
+        cgGuide(false);
+      }
     }
   }).catch(function(){ m.style.color='#D82558'; m.textContent='네트워크 오류가 발생했습니다.'; });
 }
@@ -682,6 +716,196 @@ function doLogin(){
 <script src="assets/sheet.js" defer></script>
 
 <!-- 공용 언어 전환 (cgI18nShared) -->
+<!-- 유도 로그인 카드에서 쓰는 문구 — i18n.js 보다 먼저 채워 둬야 합칩니다.
+     카드는 나중에 자바스크립트로 그려지지만, i18n.js 에 MutationObserver 가 있어
+     카드가 뜨는 순간 영문으로 바뀝니다. -->
+<script>
+window.cgI18nExtra = Object.assign(window.cgI18nExtra || {}, {
+  '비밀번호를 모르겠어요 · 로그인 링크 받기': "Don't know your password? Get a login link",
+  '들어가는 방법을 확인하고 있습니다…': 'Checking how you sign in…',
+  '이메일을 먼저 입력해 주세요.': 'Please enter your email first.',
+  '확인하지 못했습니다.': 'Could not check.',
+  '확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.': 'Could not check. Please try again shortly.',
+  '가입하신 기록이 없습니다': 'No account found',
+  '회원가입 하러 가기': 'Create an account',
+  '두 가지 방법이 모두 됩니다': 'Both methods work',
+  '비밀번호가 맞지 않습니다': 'That password does not match',
+  '이 이메일은 비밀번호로 들어오는 계정입니다. 비밀번호가 기억나지 않으시면 메일로 로그인 링크를 보내드립니다.':
+    'This account signs in with a password. If you do not remember it, we can email you a login link.',
+  '로그인 링크 메일로 받기': 'Email me a login link',
+  '구글로 로그인': 'Sign in with Google',
+  '카카오로 로그인': 'Sign in with Kakao',
+  '네이버로 로그인': 'Sign in with Naver',
+  '로그인 링크를 보내는 중…': 'Sending your login link…',
+  '메일을 보냈습니다.': 'Email sent.',
+  '메일함을 확인해 주세요': 'Check your inbox',
+  '링크를 보내지 못했습니다': 'Could not send the link',
+  '링크를 보내지 못했습니다. 잠시 뒤 다시 시도해 주세요.': 'Could not send the link. Please try again shortly.',
+  '메일 발송이 아직 준비 중일 수 있습니다. 구글·카카오 단추로 들어오시거나 고객센터로 알려주세요.':
+    'Email delivery may not be ready yet. Please use Google or Kakao, or contact us.',
+  /* 카드 제목·설명은 '구글'/'카카오' 를 끼워 만들기 때문에 완성된 문장을 그대로 넣어 둡니다 */
+  '이 이메일은 구글로 가입하셨습니다': 'This email was registered with Google',
+  '이 이메일은 카카오로 가입하셨습니다': 'This email was registered with Kakao',
+  '이 이메일은 네이버로 가입하셨습니다': 'This email was registered with Naver',
+  '비밀번호로도, 구글로도 들어오실 수 있는 이메일입니다. 비밀번호가 기억나지 않으시면 링크를 받으세요.':
+    'You can sign in with a password or with Google. If you do not remember the password, get a link.',
+  '비밀번호로도, 카카오로도 들어오실 수 있는 이메일입니다. 비밀번호가 기억나지 않으시면 링크를 받으세요.':
+    'You can sign in with a password or with Kakao. If you do not remember the password, get a link.',
+  '비밀번호로도, 네이버로도 들어오실 수 있는 이메일입니다. 비밀번호가 기억나지 않으시면 링크를 받으세요.':
+    'You can sign in with a password or with Naver. If you do not remember the password, get a link.',
+  '비밀번호는 따로 만들지 않으셨습니다. 아래 단추로 들어오시면 됩니다.':
+    'You never set a password. Use the button below to sign in.'
+});
+</script>
 <script src="assets/i18n.js" defer></script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   유도 로그인 카드 · 로그인 링크 (issues #37 · #36)
+
+   무엇을 고치나
+     구글로 가입한 이메일에 비밀번호를 넣으면 "이메일 또는 비밀번호가 올바르지 않습니다"
+     만 나왔습니다. 틀린 말은 아니지만 손님은 계정이 없어진 줄 알고 나갑니다.
+     실제로 hyunjeong.shin@sookmyung.ac.kr 은 providers 가 [email, google] 입니다.
+
+   어떻게 하나
+     ① 로그인이 실패하면 서버(login-method)에 "이 이메일은 어떤 방법으로 들어가나요" 를 묻습니다
+     ② 답에 따라 카드를 바꿔 보여줍니다 — 구글 단추 / 비밀번호 다시 / 가입하러 가기
+     ③ 비밀번호를 모르시면 '로그인 링크'를 메일로 보냅니다 (비밀번호 없이 들어옵니다)
+     ④ 보낸 기록은 DB(login_links)에 남겨 나중에 확인할 수 있게 합니다
+
+   비밀번호는 이 카드가 만지지 않습니다. 손님이 직접 칩니다.
+   ══════════════════════════════════════════════════════════════ */
+(function () {
+  var SB2 = (typeof SB_URL !== 'undefined') ? SB_URL : SB;
+  var K2  = (typeof SB_KEY !== 'undefined') ? SB_KEY : KEY;
+  var busy = false;
+
+  function el(id) { return document.getElementById(id); }
+  function show(title, desc, btns) {
+    var g = el('liGuide');
+    el('lgTitle').textContent = title;
+    el('lgDesc').textContent = desc;
+    var b = el('lgBtns');
+    b.innerHTML = '';
+    (btns || []).forEach(function (x) {
+      var n = document.createElement('button');
+      n.type = 'button';
+      n.textContent = x.label;
+      if (x.primary) n.className = 'on';
+      n.onclick = x.go;
+      b.appendChild(n);
+    });
+    g.hidden = false;
+    g.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  /* 로그인 링크를 메일로 보냅니다. 비밀번호가 필요 없습니다. */
+  function sendLink(email) {
+    var m = el('liMsg');
+    m.style.color = '#797979';
+    m.textContent = '로그인 링크를 보내는 중…';
+    fetch(SB2 + '/auth/v1/otp', {
+      method: 'POST',
+      headers: { apikey: K2, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        create_user: false,                       /* 없는 계정을 새로 만들지 않습니다 */
+        options: { email_redirect_to: location.origin + '/index.html' }
+      })
+    }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (d) {
+        if (d.error || d.msg || d.error_description) {
+          m.style.color = '#D82558';
+          m.textContent = '링크를 보내지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+          show('링크를 보내지 못했습니다',
+            '메일 발송이 아직 준비 중일 수 있습니다. 구글·카카오 단추로 들어오시거나 고객센터로 알려주세요.', []);
+          return;
+        }
+        m.style.color = '#1a8a4a';
+        m.textContent = '메일을 보냈습니다.';
+        show('메일함을 확인해 주세요',
+          email + ' 로 로그인 링크를 보냈습니다. 링크를 누르시면 비밀번호 없이 바로 들어오십니다. '
+          + '메일이 안 보이면 스팸함도 확인해 주세요.', []);
+        /* 보낸 기록을 남깁니다 */
+        fetch(SB2 + '/rest/v1/login_links', {
+          method: 'POST',
+          headers: { apikey: K2, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+          body: JSON.stringify({ email: email, ua: navigator.userAgent.slice(0, 160) })
+        }).catch(function () {});
+      })
+      .catch(function () {
+        m.style.color = '#D82558';
+        m.textContent = '네트워크 오류가 발생했습니다.';
+      });
+  }
+
+  /* wantLink=true 면 곧바로 링크 보내기로 갑니다 */
+  window.cgGuide = function (wantLink) {
+    if (busy) return;
+    var em = (el('liEmail').value || '').trim();
+    var m = el('liMsg');
+    if (!em) {
+      m.style.color = '#D82558';
+      m.textContent = '이메일을 먼저 입력해 주세요.';
+      el('liEmail').focus();
+      return;
+    }
+    busy = true;
+    fetch(SB2 + '/functions/v1/login-method', {
+      method: 'POST',
+      headers: { apikey: K2, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: em })
+    }).then(function (r) { return r.json(); })
+      .then(function (d) {
+        busy = false;
+        if (!d || !d.ok) {
+          m.style.color = '#D82558';
+          m.textContent = (d && d.error) || '확인하지 못했습니다.';
+          return;
+        }
+
+        /* 가입한 적이 없는 이메일 */
+        if (!d.exists) {
+          m.textContent = '';
+          show('가입하신 기록이 없습니다',
+            em + ' 로 가입하신 적이 없습니다. 이메일을 다시 확인해 주시거나 새로 가입해 주세요.',
+            [{ label: '회원가입 하러 가기', primary: true,
+               go: function () { location.href = 'join.html?email=' + encodeURIComponent(em); } }]);
+          return;
+        }
+
+        var social = d.social || [];
+        var KRN = { google: '구글', kakao: '카카오', naver: '네이버' };
+        var btns = social.map(function (p) {
+          return { label: KRN[p] + '로 로그인', primary: true,
+                   go: function () { if (window.sso) sso(p); } };
+        });
+        btns.push({ label: '로그인 링크 메일로 받기', go: function () { sendLink(em); } });
+
+        m.textContent = '';
+        if (wantLink && !social.length) { sendLink(em); return; }
+
+        if (social.length && !d.hasPassword) {
+          show('이 이메일은 ' + social.map(function (p) { return KRN[p]; }).join(' · ') + '로 가입하셨습니다',
+            '비밀번호는 따로 만들지 않으셨습니다. 아래 단추로 들어오시면 됩니다.', btns);
+        } else if (social.length) {
+          show('두 가지 방법이 모두 됩니다',
+            '비밀번호로도, ' + social.map(function (p) { return KRN[p]; }).join(' · ')
+            + '로도 들어오실 수 있는 이메일입니다. 비밀번호가 기억나지 않으시면 링크를 받으세요.', btns);
+        } else {
+          show('비밀번호가 맞지 않습니다',
+            '이 이메일은 비밀번호로 들어오는 계정입니다. 비밀번호가 기억나지 않으시면 '
+            + '메일로 로그인 링크를 보내드립니다.', btns);
+        }
+      })
+      .catch(function () {
+        busy = false;
+        m.style.color = '#D82558';
+        m.textContent = '확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+      });
+  };
+})();
+</script>
 </body>
 </html>
