@@ -180,6 +180,10 @@ button{font-family:inherit}
 .go em{display:block; font-style:normal; font-size:11.5px; font-weight:800; letter-spacing:.1em; color:var(--ink-4); margin-bottom:5px}
 .go a{font-size:14px; font-weight:650; color:var(--ink); word-break:break-all; text-decoration:none; border-bottom:1px solid var(--line-2)}
 .go a:hover{border-color:var(--ink)}
+.go .beside{display:block; margin-top:11px; background:var(--card); color:var(--ink);
+  border:1px solid var(--line-2); border-radius:var(--r-sm); padding:10px 15px;
+  font-size:13.5px; font-weight:750; cursor:pointer}
+.go .beside:hover{border-color:var(--ink); background:#fff}
 
 ol.how{margin:0 0 18px; padding-left:21px; font-size:14.5px; color:var(--ink-2)}
 ol.how li{margin-bottom:9px}
@@ -377,6 +381,22 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     naver_talk:    { min:  5, prep: '네이버 톡톡 파트너센터' }
   };
   var DEFAULT_MIN = 15;
+
+  /* 붙여넣은 글에서 진짜 값만 골라냅니다.
+     콘솔에서 복사하면 앞뒤 공백·줄바꿈·설명글이 같이 딸려오는 일이 잦습니다.
+     pick  — 이 규칙에 맞는 부분만 뽑습니다 (없으면 공백만 정리)
+     wrong — 이 규칙에 맞으면 "다른 칸 값을 넣으셨습니다" 라고 알려줍니다 */
+  var PASTE = {
+    'clova.api_key':          { pick: /nv-[A-Za-z0-9_\-]{10,}/,            hint: 'nv- 로 시작하는 값' },
+    'naver.client_secret':    { pick: /\$2[aby]?\$\d{2}\$[.\/A-Za-z0-9]{20,}/, hint: '$2a$ 로 시작하는 값' },
+    'naver.client_id':        { wrong: /^\$2[aby]?\$/,                     hint: '애플리케이션 ID' },
+    'meta_capi.capi_token':   { pick: /EAA[A-Za-z0-9]{20,}/,               hint: 'EAA 로 시작하는 토큰' },
+    'meta_page.user_token':   { pick: /EAA[A-Za-z0-9]{20,}/,               hint: 'EAA 로 시작하는 토큰' },
+    'meta_capi.pixel_id':     { pick: /\b\d{10,20}\b/,                    hint: '숫자 15자리쯤' },
+    'meta_app.app_id':        { pick: /\b\d{10,20}\b/,                    hint: '숫자' },
+    'resend.domain':          { clean: 'domain',                           hint: '도메인만 (https:// 없이)' },
+    'naver_talk.url':         { pick: /https?:\/\/\S+/,                   hint: 'http 로 시작하는 주소' }
+  };
   /* ══ /CONFIG ═══════════════════════════════════════════════════ */
 
   var token = new URLSearchParams(location.search).get('t') || '';
@@ -457,6 +477,40 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   }
 
   /* ── 카드 ──────────────────────────────────────────────────── */
+  /* 붙여넣기 정리 — 값을 다듬고, 엉뚱한 칸이면 알려줍니다 */
+  function tidy(stepKey, fieldName, raw) {
+    var v = String(raw || '').replace(/[\r\n\t]+/g, ' ').trim();
+    var rule = PASTE[stepKey + '.' + fieldName];
+    if (!rule) return { v: v };
+    if (rule.wrong && rule.wrong.test(v)) {
+      return { v: v, warn: '이 칸은 ' + rule.hint + ' 입니다. 다른 칸 값을 넣으신 것 같습니다.' };
+    }
+    if (rule.clean === 'domain') {
+      v = v.replace(/^https?:\/\//i, '').replace(/[\/?#].*$/, '').replace(/\s+/g, '').toLowerCase();
+      return { v: v };
+    }
+    if (rule.pick) {
+      var m = v.match(rule.pick);
+      if (m) return { v: m[0], picked: m[0] !== v };
+      if (v) return { v: v, warn: rule.hint + ' 이 안 보입니다. 통째로 복사하셨는지 봐 주세요.' };
+    }
+    return { v: v };
+  }
+
+  /* 콘솔을 오른쪽 창으로 띄웁니다.
+     끼워넣기(iframe)는 각 사이트가 x-frame-options 로 막아 불가능합니다.
+     그래서 창을 나란히 여는 방식으로 합니다. 폰에서는 그냥 새 탭입니다. */
+  function openBeside(url) {
+    var wide = window.screen && window.screen.availWidth >= 1100;
+    if (!wide) { window.open(url, '_blank', 'noopener'); return; }
+    var W = window.screen.availWidth, H = window.screen.availHeight;
+    var half = Math.floor(W / 2);
+    var w = window.open(url, 'cg_console',
+      'width=' + half + ',height=' + H + ',left=' + half + ',top=0,noopener');
+    try { window.resizeTo(half, H); window.moveTo(0, 0); } catch (e) { /* 브라우저가 막으면 그냥 둡니다 */ }
+    if (w) w.focus();
+  }
+
   function guess(stepKey, f) {
     if (carry[f.name] != null) return carry[f.name];
     return '';
@@ -475,7 +529,8 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
     if (s.where) {
       h += '<div class="go"><em>여기서 하십니다</em>'
-        + '<a href="' + esc(s.where) + '" target="_blank" rel="noopener">' + esc(s.where) + ' ↗</a></div>';
+        + '<a href="' + esc(s.where) + '" target="_blank" rel="noopener" id="site">' + esc(s.where) + ' ↗</a>'
+        + '<button type="button" class="beside" id="beside">⧉ 옆에 띄우고 시작</button></div>';
     }
     if (s.how && s.how.length) {
       h += '<ol class="how">' + s.how.map(function (x) { return '<li>' + rich(x) + '</li>'; }).join('') + '</ol>';
@@ -500,6 +555,28 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
       + '</div><div class="msg" id="msg"></div></div>';
 
     $('stage').innerHTML = h;
+    if ($('beside')) $('beside').onclick = function () { openBeside(s.where); };
+
+    /* 붙여넣는 즉시 다듬습니다 */
+    [].forEach.call($('stage').querySelectorAll('input[data-n]'), function (el) {
+      if (el.type === 'checkbox') return;
+      el.addEventListener('paste', function (ev) {
+        var t = (ev.clipboardData || window.clipboardData);
+        if (!t) return;
+        ev.preventDefault();
+        var r = tidy(s.key, el.dataset.n, t.getData('text'));
+        el.value = r.v;
+        var m = $('msg');
+        if (r.warn) { m.className = 'msg bad'; m.textContent = '⚠ ' + r.warn; }
+        else if (r.picked) { m.className = 'msg ok'; m.textContent = '✓ 붙여넣은 글에서 값만 골라 넣었습니다.'; }
+        else { m.className = 'msg'; m.textContent = ''; }
+      });
+      el.addEventListener('blur', function () {
+        var r = tidy(s.key, el.dataset.n, el.value);
+        if (r.v !== el.value) el.value = r.v;
+      });
+    });
+
     $('go').onclick = submit;
     if ($('skip')) $('skip').onclick = function () { next(); };
   }
