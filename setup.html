@@ -217,6 +217,37 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 .msg.ok{color:var(--ok); background:var(--ok-bg); border:1px solid var(--ok-line); padding:11px 13px; border-radius:var(--r-sm)}
 .msg.bad{color:var(--bad); background:var(--bad-bg); border:1px solid var(--bad-line); padding:11px 13px; border-radius:var(--r-sm)}
 
+.stagewrap{overflow:hidden}
+.slide{animation:sl .28s cubic-bezier(.22,.61,.36,1)}
+.slide.back{animation-name:slb}
+@keyframes sl { from{opacity:0; transform:translateX(26px)} to{opacity:1; transform:none} }
+@keyframes slb{ from{opacity:0; transform:translateX(-26px)} to{opacity:1; transform:none} }
+@media (prefers-reduced-motion:reduce){ .slide,.slide.back{animation:none} }
+
+/* 카드 안 단계별 안내 */
+.mstep{min-height:132px; display:flex; flex-direction:column; justify-content:center}
+.mstep .mn{font-size:12px; font-weight:800; letter-spacing:.1em; color:var(--ink-4); margin-bottom:12px}
+.mstep .mt{font-size:clamp(17px,2.6vw,20px); line-height:1.6; color:var(--ink); font-weight:600}
+.mstep .mt b{font-weight:800}
+.mdots{display:flex; gap:6px; margin:18px 0 4px; flex-wrap:wrap}
+.mdots i{width:26px; height:4px; border-radius:99px; background:var(--line); cursor:pointer}
+.mdots i.on{background:var(--brand)}
+.mdots i.past{background:var(--ink-4)}
+.mnav{display:flex; gap:9px; margin-top:18px}
+.mnav button{border-radius:var(--r-sm); padding:13px 22px; font-size:14.5px; font-weight:750; cursor:pointer}
+.mnav .prev{background:var(--card); color:var(--ink-3); border:1px solid var(--line-2)}
+.mnav .prev:hover{color:var(--ink); border-color:var(--ink-3)}
+.mnav .nextb{background:var(--brand); color:#fff; border:0; flex:1}
+.mnav .nextb:hover{background:var(--brand-hover)}
+.rest{margin-top:18px; padding-top:16px; border-top:1px dashed var(--line)}
+.rest summary{cursor:pointer; font-size:13px; color:var(--ink-3); list-style:none}
+.rest summary::-webkit-details-marker{display:none}
+.rest summary::before{content:'⌄  '; color:var(--ink-4)}
+.rest ol{margin:12px 0 0; padding-left:20px; font-size:13.5px; color:var(--ink-3); line-height:1.75}
+.rest ol li{margin-bottom:6px}
+.deep{margin-top:14px; font-size:12.5px; color:var(--ink-4); word-break:break-all}
+.deep b{color:var(--ink-3)}
+
 /* 마무리 · 오류 */
 .mid{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:44px 28px; text-align:center; box-shadow:var(--shadow)}
 .mid .big{font-size:52px; line-height:1; margin-bottom:16px}
@@ -516,12 +547,19 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     return '';
   }
 
+  /* mi — 카드 안에서 지금 보고 있는 단계.
+     how[] 를 한 줄씩 보여주고, 끝에 다다르면 입력 칸이 나옵니다.
+     옆 창에서 콘솔을 보시는 박자와 맞추기 위한 구조입니다. */
+  var mi = 0, back = false;
+
   function paint() {
     if (idx >= steps.length) return finish();
     var s = steps[idx];
+    var how = (s.how && s.how.length) ? s.how : [];
+    var last = mi >= how.length;          /* 마지막 = 입력 단계 */
     paintProgress();
 
-    var h = '<div class="card">'
+    var h = '<div class="card slide' + (back ? ' back' : '') + '">'
       + '<div class="no">' + (idx + 1) + ' / ' + steps.length
       + ' · 약 ' + metaOf(s.key).min + '분</div>'
       + '<h2>' + esc(s.title) + '</h2>'
@@ -532,8 +570,35 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
         + '<a href="' + esc(s.where) + '" target="_blank" rel="noopener" id="site">' + esc(s.where) + ' ↗</a>'
         + '<button type="button" class="beside" id="beside">⧉ 옆에 띄우고 시작</button></div>';
     }
-    if (s.how && s.how.length) {
-      h += '<ol class="how">' + s.how.map(function (x) { return '<li>' + rich(x) + '</li>'; }).join('') + '</ol>';
+    /* 단계 표시 */
+    if (how.length) {
+      h += '<div class="mdots">' + how.concat(['입력']).map(function (_, i) {
+        return '<i class="' + (i === mi ? 'on' : (i < mi ? 'past' : '')) + '" data-m="' + i + '"></i>';
+      }).join('') + '</div>';
+    }
+
+    if (!last) {
+      /* 지금 이 단계 하나만 크게 */
+      h += '<div class="mstep"><div class="mn">단계 ' + (mi + 1) + ' / ' + how.length + '</div>'
+        + '<div class="mt">' + rich(how[mi]) + '</div></div>'
+        + '<div class="mnav">'
+        + (mi > 0 ? '<button type="button" class="prev" id="mprev">← 이전</button>' : '')
+        + '<button type="button" class="nextb" id="mnext">'
+        + (mi === how.length - 1 ? '다 했습니다 · 값 넣기 →' : '다음 →') + '</button></div>'
+        + '<details class="rest"><summary>전체 단계 한눈에 보기</summary><ol>'
+        + how.map(function (x) { return '<li>' + rich(x) + '</li>'; }).join('')
+        + '</ol></details>';
+      if (s.caution) h += '<div class="warn" style="margin-top:18px">' + rich(s.caution) + '</div>';
+      $('stage').innerHTML = h + '</div>';
+      bindCommon(s, how);
+      return;
+    }
+
+    /* 입력 단계 */
+    if (how.length) {
+      h += '<details class="rest" open style="border-top:0;padding-top:0;margin-top:0">'
+        + '<summary>방금 하신 단계 다시 보기</summary><ol>'
+        + how.map(function (x) { return '<li>' + rich(x) + '</li>'; }).join('') + '</ol></details>';
     }
     if (s.caution) h += '<div class="warn">' + rich(s.caution) + '</div>';
 
@@ -550,12 +615,30 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
         + (f.type === 'password' ? ' autocomplete="off" spellcheck="false"' : '') + '></label>';
     }).join('');
 
-    h += '<div class="btns"><button class="b-main" id="go">확인하고 저장</button>'
+    h += '<div class="btns">'
+      + (how.length ? '<button class="b-skip" id="mprev2">← 단계로</button>' : '')
+      + '<button class="b-main" id="go">확인하고 저장</button>'
       + (steps.length > 1 ? '<button class="b-skip" id="skip">나중에</button>' : '')
-      + '</div><div class="msg" id="msg"></div></div>';
+      + '</div><div class="msg" id="msg"></div>'
+      + '<div class="deep"><b>이 카드만 다시 열기</b> — 나중에 이어서 하실 때 이 주소를 쓰시면 이 카드로 바로 옵니다.<br>'
+      + esc(location.origin + location.pathname + '?t=' + token + '&card=' + s.key) + '</div>';
 
-    $('stage').innerHTML = h;
+    $('stage').innerHTML = h + '</div>';
+    bindCommon(s, how);
+    if ($('mprev2')) $('mprev2').onclick = function () { back = true; mi = how.length - 1; paint(); };
+
+    $('go').onclick = submit;
+  }
+
+  /* 카드·단계 공통 연결 */
+  function bindCommon(s, how) {
+    back = false;
     if ($('beside')) $('beside').onclick = function () { openBeside(s.where); };
+    if ($('mnext')) $('mnext').onclick = function () { back = false; mi++; paint(); };
+    if ($('mprev')) $('mprev').onclick = function () { back = true; mi--; paint(); };
+    [].forEach.call($('stage').querySelectorAll('.mdots i'), function (d) {
+      d.onclick = function () { back = +d.dataset.m < mi; mi = +d.dataset.m; paint(); };
+    });
 
     /* 붙여넣는 즉시 다듬습니다 */
     [].forEach.call($('stage').querySelectorAll('input[data-n]'), function (el) {
@@ -577,11 +660,12 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
       });
     });
 
-    $('go').onclick = submit;
+    if ($('go')) $('go').onclick = submit;
     if ($('skip')) $('skip').onclick = function () { next(); };
   }
 
   function next() {
+    mi = 0;
     var start = idx;
     do { idx = (idx + 1) % steps.length; } while (steps[idx].filled && idx !== start);
     if (steps.every(function (s) { return s.filled; })) idx = steps.length;
@@ -721,7 +805,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
   $('btn-start').addEventListener('click', function () {
     show('screen-wiz');
-    paint();
+    mi = 0; paint();
     $('help-btn').classList.remove('hide');
     window.scrollTo(0, 0);
   });
@@ -740,6 +824,18 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
         + '<h2>지금은 하실 것이 없습니다</h2>'
         + '<p>준비되면 담당자가 다시 알려드리겠습니다. 이 링크는 그대로 두셔도 됩니다.</p></div>';
       document.querySelector('.bar').style.display = 'none';
+      return;
+    }
+    /* ?card=키 가 붙어 있으면 그 카드로 바로 갑니다.
+       "나중에 다시 하실 때 이 카드만 열기" 링크가 이걸 씁니다. */
+    var want = new URLSearchParams(location.search).get('card') || '';
+    var jump = -1;
+    if (want) for (var i = 0; i < steps.length; i++) if (steps[i].key === want) jump = i;
+
+    if (jump >= 0) {
+      idx = jump; mi = 0;
+      show('screen-wiz'); paint();
+      $('help-btn').classList.remove('hide');
       return;
     }
     while (idx < steps.length && steps[idx].filled) idx++;
