@@ -226,7 +226,16 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
 /* 카드 안 단계별 안내 */
 .mstep{min-height:132px; display:flex; flex-direction:column; justify-content:center}
-.mstep .mn{font-size:12px; font-weight:800; letter-spacing:.1em; color:var(--ink-4); margin-bottom:12px}
+.mstep .mn{font-size:12px; font-weight:800; letter-spacing:.1em; color:var(--ink-4); margin-bottom:12px;
+  display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+.tag{font-size:11.5px; font-weight:750; letter-spacing:0; padding:3px 9px; border-radius:99px; border:1px solid}
+.tag.me{background:#fff7ed; border-color:#fed7aa; color:#9a3412}
+.tag.follow{background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8}
+.split{background:#fafbfc; border:1px solid var(--line); border-left:3px solid var(--ink-4);
+  border-radius:var(--r-sm); padding:13px 15px; margin-bottom:18px; font-size:13.5px;
+  line-height:1.75; color:var(--ink-2)}
+.split b{color:var(--ink); font-weight:750}
+.split .sm{color:var(--ink-4); font-size:12.5px}
 .mstep .mt{font-size:clamp(17px,2.6vw,20px); line-height:1.6; color:var(--ink); font-weight:600}
 .mstep .mt b{font-weight:800}
 .mdots{display:flex; gap:6px; margin:18px 0 4px; flex-wrap:wrap}
@@ -324,6 +333,8 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
           잘못 넣으셔도 아무것도 망가지지 않습니다.</li>
       <li>한 번에 다 안 하셔도 됩니다. <b>「나중에」를 누르고 넘어가셨다가</b>
           같은 링크를 다시 여시면 이어서 하실 수 있습니다.</li>
+      <li><b>로그인·본인인증은 대표님만</b> 하실 수 있습니다. 그 뒤 메뉴를 찾아가는 부분은
+          화면이 한 단계씩 안내하니 따라만 오시면 됩니다. 카드마다 어디까지가 어느 쪽인지 표시해 뒀습니다.</li>
       <li>막히시면 오른쪽 아래 <b>도우미</b>에게 물어보세요. 담당자 연결도 됩니다.</li>
     </ul>
   </div>
@@ -412,6 +423,24 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     naver_talk:    { min:  5, prep: '네이버 톡톡 파트너센터' }
   };
   var DEFAULT_MIN = 15;
+
+  /* 카드마다 '대표님만 하실 수 있는 단계'가 어디까지인지.
+     until = 그 번호(0부터)까지가 본인 확인·서류처럼 사람만 되는 부분입니다.
+     그 뒤는 메뉴를 찾아가 값을 복사하는 것이라 화면 안내만 따라가면 됩니다.
+     로그인·휴대폰 본인인증·캡차·파일 업로드는 어떤 도구로도 대신할 수 없습니다. */
+  var HUMAN = {
+    resend:        { until: 5, why: '도메인 관리하는 곳(가비아·Cloudflare 등) 로그인이 필요합니다' },
+    kakao_channel: { until: 6, why: '사업자 본인인증과 서류 올리기는 대표님만 하실 수 있습니다' },
+    kakao_biz:     { until: 4, why: '사업자 정보 등록·본인인증이 필요합니다' },
+    meta_capi:     { until: 0, why: '페이스북 로그인이 필요합니다' },
+    meta_app:      { until: 0, why: '페이스북 로그인이 필요합니다' },
+    meta_page:     { until: 4, why: '페이스북 로그인과 권한 동의 창은 직접 누르셔야 합니다' },
+    clova:         { until: 0, why: '네이버 클라우드 가입·로그인이 필요합니다' },
+    clova_voice:   { until: 0, why: '네이버 클라우드 로그인이 필요합니다' },
+    elevenlabs:    { until: 0, why: 'ElevenLabs 가입과 결제가 필요합니다' },
+    naver:         { until: 1, why: '스마트스토어 판매자 계정 로그인이 필요합니다' },
+    naver_talk:    { until: 0, why: '네이버 톡톡 파트너센터 로그인이 필요합니다' }
+  };
 
   /* 붙여넣은 글에서 진짜 값만 골라냅니다.
      콘솔에서 복사하면 앞뒤 공백·줄바꿈·설명글이 같이 딸려오는 일이 잦습니다.
@@ -570,6 +599,14 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
         + '<a href="' + esc(s.where) + '" target="_blank" rel="noopener" id="site">' + esc(s.where) + ' ↗</a>'
         + '<button type="button" class="beside" id="beside">⧉ 옆에 띄우고 시작</button></div>';
     }
+    var hu0 = HUMAN[s.key];
+    if (hu0 && hu0.until >= 0 && how.length) {
+      h += '<div class="split"><b>🙋 대표님이 직접</b> — ' + esc(hu0.why)
+        + ' <span class="sm">(' + (hu0.until + 1 === how.length ? '전체 단계'
+            : hu0.until === 0 ? '1단계' : '1~' + (hu0.until + 1) + '단계')
+        + ')</span><br><b>📋 그 뒤는</b> — 메뉴를 찾아가 값을 복사하는 것이라, 화면이 한 단계씩 안내합니다.</div>';
+    }
+
     /* 단계 표시 */
     if (how.length) {
       h += '<div class="mdots">' + how.concat(['입력']).map(function (_, i) {
@@ -578,8 +615,12 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     }
 
     if (!last) {
-      /* 지금 이 단계 하나만 크게 */
-      h += '<div class="mstep"><div class="mn">단계 ' + (mi + 1) + ' / ' + how.length + '</div>'
+      var hu = HUMAN[s.key] || { until: -1 };
+      var isHuman = mi <= hu.until;
+      h += '<div class="mstep">'
+        + '<div class="mn">단계 ' + (mi + 1) + ' / ' + how.length
+        + '<span class="tag ' + (isHuman ? 'me' : 'follow') + '">'
+        + (isHuman ? '🙋 대표님만 하실 수 있는 단계' : '📋 따라 하기만 하면 되는 단계') + '</span></div>'
         + '<div class="mt">' + rich(how[mi]) + '</div></div>'
         + '<div class="mnav">'
         + (mi > 0 ? '<button type="button" class="prev" id="mprev">← 이전</button>' : '')
