@@ -462,7 +462,13 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   };
   /* ══ /CONFIG ═══════════════════════════════════════════════════ */
 
-  var token = new URLSearchParams(location.search).get('t') || '';
+  /* 메신저가 주소를 자르는 일이 잦습니다. 한 군데만 보지 않고 여러 곳에서 찾습니다.
+     ① ?t=   ② #t=   ③ 주소 어디든 48자리 열쇠글 */
+  function findTok(x) { var m = String(x || '').match(/[0-9a-f]{48}/); return m ? m[0] : ''; }
+  var token = new URLSearchParams(location.search).get('t')
+           || new URLSearchParams(String(location.hash).replace(/^#/, '')).get('t')
+           || findTok(location.href) || '';
+  try { if (token) localStorage.setItem('cg_setup_t', token); } catch (e) {}
   var steps = [], idx = 0, carry = {}, expiresAt = '';
 
   /* ── 유틸 ──────────────────────────────────────────────────── */
@@ -494,6 +500,49 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
       + '</h2><p>' + esc(detail) + '</p></div>';
     $('side-list').innerHTML = '';
     document.querySelector('.bar').style.display = 'none';
+  }
+
+  /* 주소가 잘려 온 경우. 「올바르지 않습니다」 로 끝내면 대표님이 하실 수 있는 게 없어서,
+     받으신 글을 통째로 붙여넣으면 그 안에서 열쇠글을 찾아 이어가도록 했습니다. */
+  function recover() {
+    var last = '';
+    try { last = findTok(localStorage.getItem('cg_setup_t')); } catch (e) {}
+    show(null);
+    $('screen-wiz').classList.remove('hide');
+    $('side-list').innerHTML = '';
+    document.querySelector('.bar').style.display = 'none';
+    $('stage').innerHTML =
+      '<div class="mid"><div class="big">\uD83D\uDD17</div>'
+      + '<h2>주소가 잘린 것 같습니다</h2>'
+      + '<p>메신저나 메일에서 주소가 잘리면 이 화면이 나옵니다. '
+      + '받으신 <b>글이나 주소를 통째로</b> 아래에 붙여넣어 주세요. 그대로 이어서 진행됩니다.</p>'
+      + '<label class="f" style="display:block;max-width:520px;margin:20px auto 0;text-align:left">'
+      + '<input id="rec-in" type="text" spellcheck="false" autocomplete="off" '
+      + 'placeholder="https://shop.chewgumi.com/setup.html?t=\u2026"></label>'
+      + '<div class="msg" id="rec-msg"></div>'
+      + '<button class="start" id="rec-go" type="button">이어서 하기 <span class="ar">\u2192</span></button>'
+      + (last ? '<div style="margin-top:14px"><a href="#" id="rec-last" '
+              + 'style="font-size:13.5px;color:var(--ink-3)">지난번에 열었던 링크로 열기</a></div>' : '')
+      + '<p style="margin-top:20px;font-size:13px;color:var(--ink-4)">'
+      + '주소를 못 찾으시겠으면 담당자에게 링크를 다시 받으시면 됩니다.</p>'
+      + '</div>';
+
+    function go(v) {
+      var t = findTok(v);
+      if (!t) {
+        $('rec-msg').textContent = '그 글 안에서 링크를 찾지 못했습니다. 주소 전체가 들어갔는지 봐 주세요.';
+        return;
+      }
+      location.replace(location.pathname + '?t=' + t);
+    }
+    $('rec-go').addEventListener('click', function () { go($('rec-in').value); });
+    $('rec-in').addEventListener('keydown', function (e) { if (e.key === 'Enter') go($('rec-in').value); });
+    $('rec-in').addEventListener('paste', function (e) {
+      var v = (e.clipboardData || window.clipboardData).getData('text');
+      if (findTok(v)) { e.preventDefault(); go(v); }
+    });
+    if (last) $('rec-last').addEventListener('click', function (e) { e.preventDefault(); go(last); });
+    setTimeout(function () { $('rec-in').focus(); }, 60);
   }
   function metaOf(k) { return META[k] || { min: DEFAULT_MIN, prep: '' }; }
 
@@ -883,10 +932,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   $('help-q').addEventListener('keydown', function (e) { if (e.key === 'Enter') helpAsk(); });
 
   /* ── 시작 ──────────────────────────────────────────────────── */
-  if (!/^[0-9a-f]{48}$/.test(token)) {
-    fail('링크가 올바르지 않습니다', '받으신 주소를 그대로 열어 주세요. 주소 일부가 잘렸을 수 있습니다.');
-    return;
-  }
+  if (!/^[0-9a-f]{48}$/.test(token)) { recover(); return; }
 
   $('btn-start').addEventListener('click', function () {
     show('screen-wiz');
