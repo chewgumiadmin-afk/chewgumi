@@ -289,6 +289,10 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 #helper .m.bot span{background:var(--card); border:1px solid var(--line)}
 #helper .m.me span{background:var(--brand); color:#fff}
 #helper .m.wait span{background:var(--card); border:1px solid var(--line); color:var(--ink-4)}
+#helper .chips{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 13px}
+#helper .chips button{background:var(--card); border:1px solid var(--line-2); color:var(--ink-2);
+  border-radius:99px; padding:7px 13px; font-size:12.5px; font-weight:650; cursor:pointer; font-family:inherit}
+#helper .chips button:hover{border-color:var(--brand); color:var(--brand)}
 #helper .cta{margin:2px 0 13px}
 #helper .cta a{display:inline-block; background:var(--kakao); color:var(--kakao-ink); text-decoration:none;
   font-size:13px; font-weight:800; padding:10px 15px; border-radius:var(--r-sm); border:1px solid #f0d800}
@@ -671,8 +675,19 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   }
 
   /* 카드·단계 공통 연결 */
+  /* 도우미가 '지금 어느 단계인지' 알 수 있게 담아둡니다 */
+  var cur = { card: '', step: -1, total: 0, text: '', human: false };
+
   function bindCommon(s, how) {
     back = false;
+    var hu = HUMAN[s.key] || { until: -1 };
+    cur = {
+      card: s.title,
+      step: (mi < how.length) ? mi : -1,
+      total: how.length,
+      text: (mi < how.length) ? String(how[mi] || '').replace(/\*\*/g, '') : '',
+      human: mi <= hu.until
+    };
     if ($('beside')) $('beside').onclick = function () { openBeside(s.where); };
     if ($('mnext')) $('mnext').onclick = function () { back = false; mi++; paint(); };
     if ($('mprev')) $('mprev').onclick = function () { back = true; mi--; paint(); };
@@ -780,6 +795,23 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     $('help-bd').scrollTop = $('help-bd').scrollHeight;
     return d;
   }
+  /* 자주 쓰는 말은 눌러서 보내게 — 폰에서 타이핑이 번거롭습니다 */
+  function chips() {
+    var d = document.createElement('div');
+    d.className = 'chips';
+    [['이 단계 어떻게 하나요', '지금 이 단계를 어떻게 하는지 알려주세요'],
+     ['다 했습니다', '이 단계 다 했습니다. 다음은 뭘 하면 되나요?'],
+     ['막혔어요', '화면이 안내와 달라서 막혔습니다. 어떻게 해야 하나요?']]
+      .forEach(function (c) {
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.textContent = c[0];
+        btn.onclick = function () { d.remove(); $('help-q').value = c[1]; helpAsk(); };
+        d.appendChild(btn);
+      });
+    $('help-bd').appendChild(d);
+    $('help-bd').scrollTop = $('help-bd').scrollHeight;
+  }
+
   function contactBtn() {
     var d = document.createElement('div');
     d.className = 'cta';
@@ -795,8 +827,20 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     $('help-btn').classList.add('hide');
     if (!greeted) {
       greeted = true;
-      bubble('bot', '설정하시다 막히시면 편하게 물어보세요. 어느 카드든 괜찮습니다.\n'
-        + '「이거 어디서 찾나요」 처럼 물어보셔도 됩니다.');
+      var w = bubble('wait', '…');
+      fetch(HELP_FN, {
+        method: 'POST',
+        headers: { apikey: KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: token, action: 'intro', card: cur.card, human: cur.human })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        w.remove();
+        bubble('bot', d.answer || '설정하시다 막히시면 편하게 물어보세요.');
+        chips();
+      }).catch(function () {
+        w.remove();
+        bubble('bot', '설정하시다 막히시면 편하게 물어보세요. 어느 카드든 괜찮습니다.');
+        chips();
+      });
     }
     setTimeout(function () { $('help-q').focus(); }, 50);
   }
@@ -815,14 +859,15 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     fetch(HELP_FN, {
       method: 'POST',
       headers: { apikey: KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token, question: text, history: hist.slice(-6) })
+      body: JSON.stringify({ token: token, question: text, history: hist.slice(-6),
+        card: cur.card, step: cur.step, total: cur.total, stepText: cur.text, human: cur.human })
     }).then(function (r) { return r.json(); }).then(function (d) {
       wait.remove();
       var a = d.answer || d.error || '답변을 받지 못했습니다. 잠시 뒤 다시 물어봐 주세요.';
       bubble('bot', a);
       hist.push({ role: 'bot', text: a });
       if (hist.length > 12) hist = hist.slice(-12);
-      if (d.handoff) contactBtn();
+      if (d.handoff) contactBtn(); else chips();
     }).catch(function () {
       wait.remove();
       bubble('bot', '연결이 잠시 끊겼습니다. 다시 한 번 눌러 주세요.');
