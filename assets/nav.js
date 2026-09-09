@@ -22,6 +22,8 @@
     s.id = STYLE_ID;
     s.textContent = [
       '.cg-back{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 11px;',
+      '  align-self:flex-start;width:max-content;max-width:calc(100vw - 28px);flex:none;',
+      '  /* body \uac00 flex \uc778 \ud654\uba74(login \ub4f1)\uc5d0\uc11c \ubc84\ud2bc\uc774 \uc804\uccb4 \ud3ed\uc73c\ub85c \ub298\uc5b4\ub098\ub358 \uac83\uc744 \ub9c9\uc2b5\ub2c8\ub2e4 */',
       '  border-radius:999px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;',
       '  color:#4a4a52;background:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.9);',
       '  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(0,0,0,.06);',
