@@ -47,20 +47,25 @@
   ════════════════════════════════════════════════════════════════════════
 -->
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ── 1. 디자인 토큰 ─────────────────────────────────────────────── */
+/* ── 1. 디자인 토큰 (츄구미 본진 index.html 과 같은 색·글씨체) ─ ─────────────────────────────────────────────── */
 :root{
-  --ink:#111827; --ink-2:#374151; --ink-3:#6b7280; --ink-4:#9ca3af;
-  --line:#e5e7eb; --line-2:#d1d5db;
-  --bg:#f6f7f9; --card:#ffffff;
-  --brand:#1f2937; --brand-ink:#ffffff; --brand-hover:#111827;
+  --ink:#000000; --ink-2:#3a3a3f; --ink-3:#797979; --ink-4:#9ca3af;
+  --line:#f0dde2; --line-2:#e5c9d1;
+  --bg:#fdf5f7; --card:#ffffff; --alt:#FFE4E6;
+  --brand:#D82558; --brand-ink:#ffffff; --brand-hover:#b71e49;
   --ok:#047857; --ok-bg:#ecfdf5; --ok-line:#a7f3d0;
   --bad:#b91c1c; --bad-bg:#fef2f2; --bad-line:#fecaca;
   --warn-bg:#fffbeb; --warn-line:#fde68a; --warn-ink:#92400e;
   --kakao:#FEE500; --kakao-ink:#191600;
   --r:14px; --r-sm:10px;
   --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
-  --font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif;
+  --font:'SUIT Variable','SUIT','Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  --font-en:'Poppins',sans-serif;
 }
 
 /* ── 2. 바탕 ───────────────────────────────────────────────────── */
@@ -87,22 +92,16 @@ button{font-family:inherit}
 
 /* ── 4. 첫 화면 (안내) ──────────────────────────────────────────── */
 .hero{max-width:760px; margin:0 auto; padding:56px 20px 80px}
-.hero .kicker{
-  font-size:12.5px; font-weight:800; letter-spacing:.18em;
-  color:var(--ink-4); text-transform:uppercase; margin-bottom:18px;
-}
+.hero .kicker{font-family:var(--font-en); font-size:12px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--brand); margin:0 0 10px}
 .hero h1{
   margin:0 0 20px; font-weight:850; letter-spacing:-.03em; line-height:1.08;
-  font-size:clamp(38px, 9vw, 76px);
-}
-.hero h1 .l2{display:block; color:var(--ink-3)}
+  font-size:clamp(38px, 9vw, 76px);; font-family:var(--font-en); letter-spacing:-.02em}
+.hero h1 .l2{display:block; color:var(--brand)}
 .hero .lead{font-size:clamp(16px,2.4vw,19px); color:var(--ink-2); margin:0 0 34px; max-width:56ch}
 .hero .lead b{color:var(--ink); font-weight:700}
 
-.facts{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:0 0 34px}
-.fact{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:16px 18px}
-.fact .n{font-size:26px; font-weight:850; letter-spacing:-.02em; line-height:1.1}
-.fact .t{font-size:12.5px; color:var(--ink-3); margin-top:4px}
+.due{font-size:13.5px; color:var(--ink-3); margin:0 0 30px}
+.due b{color:var(--brand); font-weight:800}
 
 .sec{margin:0 0 14px}
 .sec h2{font-size:15.5px; font-weight:800; margin:0 0 10px; letter-spacing:-.01em}
@@ -319,11 +318,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     이렇게 링크를 보내 직접 받고 있습니다.
   </p>
 
-  <div class="facts">
-    <div class="fact"><div class="n" id="f-count">–</div><div class="t">해주실 것</div></div>
-    <div class="fact"><div class="n" id="f-time">–</div><div class="t">예상 시간</div></div>
-    <div class="fact"><div class="n" id="f-due">–</div><div class="t">링크 기한</div></div>
-  </div>
+  <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
 
   <div class="sec">
     <h2>이렇게 진행됩니다</h2>
@@ -497,12 +492,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   /* ── 첫 화면 ───────────────────────────────────────────────── */
   function paintIntro(forName) {
     var left = steps.filter(function (s) { return !s.filled; });
-    var mins = left.reduce(function (a, s) { return a + metaOf(s.key).min; }, 0);
 
-    $('f-count').textContent = left.length + '가지';
-    $('f-time').textContent  = mins >= 60
-      ? (Math.floor(mins / 60) + '시간' + (mins % 60 ? ' ' + (mins % 60) + '분' : ''))
-      : (mins + '분');
     $('f-due').textContent   = expiresAt ? expiresAt.slice(5, 10).replace('-', '월 ') + '일' : '–';
 
     /* 미리 준비할 것 — 남은 카드 것만, 중복 없이 */
@@ -590,7 +580,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
     var h = '<div class="card slide' + (back ? ' back' : '') + '">'
       + '<div class="no">' + (idx + 1) + ' / ' + steps.length
-      + ' · 약 ' + metaOf(s.key).min + '분</div>'
+      + '</div>'
       + '<h2>' + esc(s.title) + '</h2>'
       + '<p class="why">' + rich(s.why || '') + '</p>';
 
