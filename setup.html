@@ -91,17 +91,51 @@ button{font-family:inherit}
 .top .who{font-size:13px; color:var(--ink-3); text-align:right}
 
 /* ── 4. 첫 화면 (안내) ──────────────────────────────────────────── */
-.hero{max-width:760px; margin:0 auto; padding:56px 20px 80px}
-.hero .kicker{font-family:var(--font-en); font-size:12px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--brand); margin:0 0 10px}
+.hero{max-width:1140px; margin:0 auto;
+  padding:clamp(30px,5.5vw,62px) clamp(16px,4vw,30px) clamp(56px,8vw,88px)}
+.hero .kicker{font-size:12.5px; font-weight:800; letter-spacing:.14em; color:var(--brand); margin:0 0 12px}
 .hero h1{
-  margin:0 0 20px; font-weight:850; letter-spacing:-.03em; line-height:1.08;
-  font-size:clamp(38px, 9vw, 76px);; font-family:var(--font-en); letter-spacing:-.02em}
+  margin:0 0 20px; font-weight:850; line-height:1.1; letter-spacing:-.035em;
+  font-size:clamp(33px, 7.4vw, 54px)}
 .hero h1 .l2{display:block; color:var(--brand)}
-.hero .lead{font-size:clamp(16px,2.4vw,19px); color:var(--ink-2); margin:0 0 34px; max-width:56ch}
+.hero .lead{font-size:clamp(15.5px,1.35vw,17.5px); color:var(--ink-2); margin:0 0 18px; max-width:50ch}
 .hero .lead b{color:var(--ink); font-weight:700}
 
-.due{font-size:13.5px; color:var(--ink-3); margin:0 0 30px}
+/* 두 칸 — 넓으면 왼쪽 설명 / 오른쪽 안내상자, 좁으면 위아래로 */
+.hero-grid{display:grid; gap:clamp(24px,3.4vw,42px); align-items:start}
+@media(min-width:1000px){
+  .hero-grid{grid-template-columns:minmax(0,1.02fr) minmax(330px,0.98fr)}
+  .hero h1{font-size:clamp(40px,4vw,56px)}
+}
+
+/* 숫자 요약 — 몇 가지를, 얼마나 */
+.stats{display:flex; flex-wrap:wrap; gap:10px; margin:22px 0 20px}
+.stat{flex:1 1 130px; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:13px 15px}
+.stat em{display:block; font-style:normal; font-size:11.5px; font-weight:800;
+  letter-spacing:.08em; color:var(--ink-4); margin-bottom:5px}
+.stat b{font-size:19px; font-weight:850; letter-spacing:-.02em; color:var(--ink)}
+.stat span{font-size:13px; font-weight:700; color:var(--ink-3); margin-left:3px}
+
+.due{font-size:13.5px; color:var(--ink-3); margin:0 0 22px}
 .due b{color:var(--brand); font-weight:800}
+
+/* 오른쪽 안내상자 */
+.panel{background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  padding:clamp(18px,2vw,24px); margin:0 0 14px; box-shadow:var(--shadow)}
+.panel h2{font-size:14px; font-weight:850; letter-spacing:.01em; margin:0 0 15px; color:var(--ink)}
+.panel ul{margin:0; padding-left:18px; color:var(--ink-2); font-size:14px}
+.panel ul li{margin-bottom:7px}
+.panel ul li:last-child{margin-bottom:0}
+ol.steps{list-style:none; margin:0; padding:0; counter-reset:st}
+ol.steps li{counter-increment:st; position:relative; padding-left:33px; margin-bottom:14px;
+  font-size:14.5px; line-height:1.68; color:var(--ink-2)}
+ol.steps li:last-child{margin-bottom:0}
+ol.steps li b{color:var(--ink); font-weight:750}
+ol.steps li::before{
+  content:counter(st); position:absolute; left:0; top:2px;
+  width:22px; height:22px; border-radius:50%; background:var(--alt); color:var(--brand);
+  font-size:11.5px; font-weight:850; display:flex; align-items:center; justify-content:center}
 
 .sec{margin:0 0 14px}
 .sec h2{font-size:15.5px; font-weight:800; margin:0 0 10px; letter-spacing:-.01em}
@@ -151,7 +185,7 @@ button{font-family:inherit}
 .fold .in b{color:var(--ink)}
 
 .start{
-  display:inline-flex; align-items:center; gap:9px; margin-top:22px;
+  display:inline-flex; align-items:center; gap:9px; margin-top:4px;
   background:var(--brand); color:var(--brand-ink); border:0; cursor:pointer;
   font-size:16px; font-weight:800; padding:16px 30px; border-radius:var(--r);
   box-shadow:var(--shadow);
@@ -344,45 +378,59 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
 <!-- ── 첫 화면 : 안내 ─────────────────────────────────────────── -->
 <section id="screen-intro" class="hero hide">
-  <div class="kicker">츄구미 쇼핑몰 설정</div>
-  <h1>몇 가지만<span class="l2">받으면 됩니다</span></h1>
+ <div class="hero-grid">
 
-  <p class="lead">
-    츄구미 쇼핑몰이 <b>네이버 · 카카오 · 페이스북</b> 같은 다른 회사 서비스와 연결되려면,
-    그 회사가 내주는 <b>열쇠</b>가 하나씩 필요합니다.
-    이 열쇠는 <b>계정 주인이 직접 로그인해야만</b> 받을 수 있어서, 대표님께 이 링크를 보내드렸습니다.
-  </p>
-  <p class="lead">
-    <b>미리 알아두실 것은 없습니다.</b> 어느 사이트에 들어가 무엇을 누르는지
-    화면이 한 줄씩 알려드립니다. 대표님은 보시면서 따라 누르시고,
-    마지막에 나오는 값만 옮겨 담아 주시면 됩니다.
-  </p>
+  <div class="hero-main">
+    <div class="kicker">츄구미 쇼핑몰 설정</div>
+    <h1>몇 가지만<span class="l2">받으면 됩니다</span></h1>
 
-  <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
+    <p class="lead">
+      츄구미 쇼핑몰이 <b>네이버 · 카카오 · 페이스북</b> 같은 다른 회사 서비스와 연결되려면,
+      그 회사가 내주는 <b>열쇠</b>가 하나씩 필요합니다.
+      이 열쇠는 <b>계정 주인이 직접 로그인해야만</b> 받을 수 있어서, 대표님께 이 링크를 보내드렸습니다.
+    </p>
+    <p class="lead">
+      <b>미리 알아두실 것은 없습니다.</b> 어느 사이트에 들어가 무엇을 누르는지
+      화면이 한 줄씩 알려드립니다. 대표님은 보시면서 따라 누르시고,
+      마지막에 나오는 값만 옮겨 담아 주시면 됩니다.
+    </p>
 
-  <div class="sec">
-    <h2>이렇게 진행됩니다</h2>
-    <ul>
-      <li><b>한 번에 한 장씩</b> 나옵니다. 한 장이 서비스 하나입니다.
-          그 안에서 다시 한 단계씩 넘어가니, 지금 하실 것 하나만 보시면 됩니다.</li>
-      <li>값을 넣고 저장을 누르시면 <b>저희가 그 회사에 진짜 되는지 물어봅니다.</b>
-          되는 것만 저장하고, 안 되면 무엇이 잘못됐는지 우리말로 알려드립니다.
-          <b>잘못 넣으셔도 망가지는 것은 없습니다.</b></li>
-      <li><b>한 번에 다 안 하셔도 됩니다.</b> 「나중에」를 누르고 넘어가셨다가
-          같은 주소를 다시 여시면, 하시던 곳부터 이어집니다.</li>
-      <li><b>로그인과 본인인증만 대표님 몫</b>입니다. 그 뒤로 메뉴를 찾아가는 일은
-          화면이 짚어드립니다. 카드마다 어디까지가 대표님 몫인지 적어뒀습니다.</li>
-      <li>막히시면 오른쪽 아래 <b>「도움이 필요하세요?」</b>를 눌러 물어보세요.
-          지금 보고 계신 화면을 알고 답합니다. 사람에게 넘겨드릴 수도 있습니다.</li>
-    </ul>
+    <div class="stats">
+      <div class="stat"><em>해주실 것</em><b id="f-cnt">–</b><span>가지</span></div>
+      <div class="stat"><em>예상 시간</em><b id="f-min">–</b><span>분쯤</span></div>
+      <div class="stat"><em>한 번에 다 안 하셔도</em><b>됩니다</b></div>
+    </div>
+
+    <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
+
+    <button class="start" id="btn-start">시작하기 <span class="ar">→</span></button>
+    <div class="after" id="intro-note"></div>
   </div>
 
-  <div class="sec">
-    <h2>손에 두시면 빠른 것들</h2>
-    <ul id="prep"></ul>
-  </div>
+  <aside class="hero-side">
+    <div class="panel">
+      <h2>이렇게 진행됩니다</h2>
+      <ol class="steps">
+        <li><b>한 번에 한 장씩</b> 나옵니다. 한 장이 서비스 하나입니다.
+            그 안에서 다시 한 단계씩 넘어가니, 지금 하실 것 하나만 보시면 됩니다.</li>
+        <li>값을 넣고 저장을 누르시면 <b>저희가 그 회사에 진짜 되는지 물어봅니다.</b>
+            되는 것만 저장하고, 안 되면 무엇이 잘못됐는지 우리말로 알려드립니다.
+            <b>잘못 넣으셔도 망가지는 것은 없습니다.</b></li>
+        <li><b>한 번에 다 안 하셔도 됩니다.</b> 「나중에」를 누르고 넘어가셨다가
+            같은 주소를 다시 여시면, 하시던 곳부터 이어집니다.</li>
+        <li><b>로그인과 본인인증만 대표님 몫</b>입니다. 그 뒤로 메뉴를 찾아가는 일은
+            화면이 짚어드립니다. 카드마다 어디까지가 대표님 몫인지 적어뒀습니다.</li>
+        <li>막히시면 오른쪽 아래 <b>「도움이 필요하세요?」</b>를 눌러 물어보세요.
+            지금 보고 계신 화면을 알고 답합니다. 사람에게 넘겨드릴 수도 있습니다.</li>
+      </ol>
+    </div>
 
-  <details class="fold">
+    <div class="panel">
+      <h2>손에 두시면 빠른 것들</h2>
+      <ul id="prep"></ul>
+    </div>
+
+    <details class="fold">
     <summary>어떤 정보가 오가는지 · 무엇은 저장하지 않는지</summary>
     <div class="in">
       <p><b>이 화면은 넣기 전용입니다.</b> 이미 저장된 열쇠를 읽어오지 못합니다.
@@ -400,9 +448,9 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
          다른 사람에게 전달하지 말아 주세요.</p>
     </div>
   </details>
+  </aside>
 
-  <button class="start" id="btn-start">시작하기 <span class="ar">→</span></button>
-  <div class="after" id="intro-note"></div>
+ </div>
 </section>
 
 <!-- ── 진행 방식 고르기 ───────────────────────────────────────── -->
@@ -614,7 +662,13 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   function paintIntro(forName) {
     var left = steps.filter(function (s) { return !s.filled; });
 
-    $('f-due').textContent   = expiresAt ? expiresAt.slice(5, 10).replace('-', '월 ') + '일' : '–';
+    $('f-due').textContent = expiresAt ? expiresAt.slice(5, 10).replace('-', '월 ') + '일' : '–';
+
+    /* 몇 가지를, 얼마나 — 남은 카드만 세어 보여드립니다 */
+    var mins = 0;
+    left.forEach(function (s2) { mins += (metaOf(s2.key).min || 10); });
+    $('f-cnt').textContent = String(left.length);
+    $('f-min').textContent = mins ? String(Math.round(mins / 5) * 5) : '0';
 
     /* 미리 준비할 것 — 남은 카드 것만, 중복 없이 */
     var seen = {}, prep = [];
