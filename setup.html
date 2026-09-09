@@ -30,7 +30,7 @@
 
     steps[] 한 장의 모양
       { key, title, why, where, how[], caution, fields[{name,label,type,placeholder}], filled }
-      type: 'text' | 'password' | 'check'
+      type: 'text' | 'password' | 'check' | 'textarea'
 
   화면 구성
     #screen-intro  안내 (무엇을·얼마나·무엇을 준비·개인정보)
@@ -199,7 +199,11 @@ label.f input{
   padding:13px 14px; border:1px solid var(--line-2); border-radius:var(--r-sm);
   background:var(--card); color:var(--ink);
 }
-label.f input:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(31,41,55,.08)}
+label.f input:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(216,37,88,.10)}
+label.f textarea{width:100%; font-family:var(--font); font-size:16px; padding:12px 13px;
+  border:1px solid var(--line-2); border-radius:var(--r-sm); background:#fff; color:var(--ink);
+  min-height:110px; resize:vertical; line-height:1.6}
+label.f textarea:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(216,37,88,.10)}
 label.chk{display:flex; gap:10px; align-items:flex-start; margin-bottom:13px; cursor:pointer; font-size:14.5px; color:var(--ink-2)}
 label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color:var(--brand)}
 
@@ -637,6 +641,11 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
       if (f.type === 'check') {
         return '<label class="chk"><input type="checkbox" data-n="' + esc(f.name) + '">'
           + '<span>' + esc(f.label) + '</span></label>';
+      }
+      if (f.type === 'textarea') {
+        return '<label class="f"><span>' + esc(f.label) + '</span>'
+          + '<textarea data-n="' + esc(f.name) + '" rows="4"'
+          + ' placeholder="' + esc(f.placeholder || '') + '" maxlength="2000"></textarea></label>';
       }
       return '<label class="f"><span>' + esc(f.label) + '</span>'
         + '<input type="' + (f.type === 'password' ? 'password' : 'text') + '"'
