@@ -290,7 +290,6 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
 /* 마무리 · 오류 */
 .mid{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:44px 28px; text-align:center; box-shadow:var(--shadow)}
-.mid .big{font-size:52px; line-height:1; margin-bottom:16px}
 .mid h2{margin:0 0 12px; font-size:23px; font-weight:820}
 .mid p{margin:0 auto; color:var(--ink-2); font-size:15px; max-width:46ch}
 .foot{max-width:1080px; margin:0 auto; padding:0 20px 40px; font-size:12.5px; color:var(--ink-4)}
@@ -345,13 +344,18 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
 <!-- ── 첫 화면 : 안내 ─────────────────────────────────────────── -->
 <section id="screen-intro" class="hero hide">
-  <div class="kicker">Chewgumi Integration</div>
-  <h1>Set Up<span class="l2">Wizard</span></h1>
+  <div class="kicker">츄구미 쇼핑몰 설정</div>
+  <h1>몇 가지만<span class="l2">받으면 됩니다</span></h1>
 
   <p class="lead">
-    츄구미 쇼핑몰이 <b>네이버 · 카카오 · Meta</b> 같은 바깥 서비스와 연결되려면
-    열쇠가 필요합니다. 그 열쇠는 <b>계정 주인만</b> 받을 수 있어서,
-    이렇게 링크를 보내 직접 받고 있습니다.
+    츄구미 쇼핑몰이 <b>네이버 · 카카오 · 페이스북</b> 같은 다른 회사 서비스와 연결되려면,
+    그 회사가 내주는 <b>열쇠</b>가 하나씩 필요합니다.
+    이 열쇠는 <b>계정 주인이 직접 로그인해야만</b> 받을 수 있어서, 대표님께 이 링크를 보내드렸습니다.
+  </p>
+  <p class="lead">
+    <b>미리 알아두실 것은 없습니다.</b> 어느 사이트에 들어가 무엇을 누르는지
+    화면이 한 줄씩 알려드립니다. 대표님은 보시면서 따라 누르시고,
+    마지막에 나오는 값만 옮겨 담아 주시면 됩니다.
   </p>
 
   <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
@@ -359,24 +363,27 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   <div class="sec">
     <h2>이렇게 진행됩니다</h2>
     <ul>
-      <li>한 장씩 나옵니다. <b>어디로 들어가서 무엇을 누르는지</b> 카드마다 다 적어뒀습니다.</li>
-      <li>값을 넣으시면 저희가 <b>그 서비스에 직접 물어봐 확인</b>하고, 되는 것만 저장합니다.
-          잘못 넣으셔도 아무것도 망가지지 않습니다.</li>
-      <li>한 번에 다 안 하셔도 됩니다. <b>「나중에」를 누르고 넘어가셨다가</b>
-          같은 링크를 다시 여시면 이어서 하실 수 있습니다.</li>
-      <li><b>로그인·본인인증은 대표님만</b> 하실 수 있습니다. 그 뒤 메뉴를 찾아가는 부분은
-          화면이 한 단계씩 안내하니 따라만 오시면 됩니다. 카드마다 어디까지가 어느 쪽인지 표시해 뒀습니다.</li>
-      <li>막히시면 오른쪽 아래 <b>도우미</b>에게 물어보세요. 담당자 연결도 됩니다.</li>
+      <li><b>한 번에 한 장씩</b> 나옵니다. 한 장이 서비스 하나입니다.
+          그 안에서 다시 한 단계씩 넘어가니, 지금 하실 것 하나만 보시면 됩니다.</li>
+      <li>값을 넣고 저장을 누르시면 <b>저희가 그 회사에 진짜 되는지 물어봅니다.</b>
+          되는 것만 저장하고, 안 되면 무엇이 잘못됐는지 우리말로 알려드립니다.
+          <b>잘못 넣으셔도 망가지는 것은 없습니다.</b></li>
+      <li><b>한 번에 다 안 하셔도 됩니다.</b> 「나중에」를 누르고 넘어가셨다가
+          같은 주소를 다시 여시면, 하시던 곳부터 이어집니다.</li>
+      <li><b>로그인과 본인인증만 대표님 몫</b>입니다. 그 뒤로 메뉴를 찾아가는 일은
+          화면이 짚어드립니다. 카드마다 어디까지가 대표님 몫인지 적어뒀습니다.</li>
+      <li>막히시면 오른쪽 아래 <b>「도움이 필요하세요?」</b>를 눌러 물어보세요.
+          지금 보고 계신 화면을 알고 답합니다. 사람에게 넘겨드릴 수도 있습니다.</li>
     </ul>
   </div>
 
   <div class="sec">
-    <h2>미리 준비해두시면 빠릅니다</h2>
+    <h2>손에 두시면 빠른 것들</h2>
     <ul id="prep"></ul>
   </div>
 
   <details class="fold">
-    <summary>🔒 어떤 정보가 오가는지 · 무엇은 저장하지 않는지</summary>
+    <summary>어떤 정보가 오가는지 · 무엇은 저장하지 않는지</summary>
     <div class="in">
       <p><b>이 화면은 넣기 전용입니다.</b> 이미 저장된 열쇠를 읽어오지 못합니다.
          화면에는 「설정됨 / 비어있음」만 보입니다.</p>
@@ -554,7 +561,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   function fail(title, detail) {
     show(null);
     $('screen-wiz').classList.remove('hide');
-    $('stage').innerHTML = '<div class="mid"><div class="big">⚠️</div><h2>' + esc(title)
+    $('stage').innerHTML = '<div class="mid"><h2>' + esc(title)
       + '</h2><p>' + esc(detail) + '</p></div>';
     $('side-list').innerHTML = '';
     document.querySelector('.bar').style.display = 'none';
@@ -570,8 +577,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     $('side-list').innerHTML = '';
     document.querySelector('.bar').style.display = 'none';
     $('stage').innerHTML =
-      '<div class="mid"><div class="big">\uD83D\uDD17</div>'
-      + '<h2>주소가 잘린 것 같습니다</h2>'
+      '<div class="mid"><h2>주소가 잘린 것 같습니다</h2>'
       + '<p>메신저나 메일에서 주소가 잘리면 이 화면이 나옵니다. '
       + '받으신 <b>글이나 주소를 통째로</b> 아래에 붙여넣어 주세요. 그대로 이어서 진행됩니다.</p>'
       + '<label class="f" style="display:block;max-width:520px;margin:20px auto 0;text-align:left">'
@@ -702,14 +708,14 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     if (s.where) {
       h += '<div class="go"><em>여기서 하십니다</em>'
         + '<a href="' + esc(s.where) + '" target="_blank" rel="noopener" id="site">' + esc(s.where) + ' ↗</a>'
-        + '<button type="button" class="beside" id="beside">⧉ 옆에 띄우고 시작</button></div>';
+        + '<button type="button" class="beside" id="beside">옆에 띄우고 시작</button></div>';
     }
     var hu0 = HUMAN[s.key];
     if (hu0 && hu0.until >= 0 && how.length) {
-      h += '<div class="split"><b>🙋 대표님이 직접</b> — ' + esc(hu0.why)
+      h += '<div class="split"><b>대표님이 직접</b> — ' + esc(hu0.why)
         + ' <span class="sm">(' + (hu0.until + 1 === how.length ? '전체 단계'
             : hu0.until === 0 ? '1단계' : '1~' + (hu0.until + 1) + '단계')
-        + ')</span><br><b>📋 그 뒤는</b> — 메뉴를 찾아가 값을 복사하는 것이라, 화면이 한 단계씩 안내합니다.</div>';
+        + ')</span><br><b>그 뒤는</b> — 메뉴를 찾아가 값을 복사하는 것이라, 화면이 한 단계씩 안내합니다.</div>';
     }
 
     /* 단계 표시 */
@@ -725,7 +731,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
       h += '<div class="mstep">'
         + '<div class="mn">단계 ' + (mi + 1) + ' / ' + how.length
         + '<span class="tag ' + (isHuman ? 'me' : 'follow') + '">'
-        + (isHuman ? '🙋 대표님만 하실 수 있는 단계' : '📋 따라 하기만 하면 되는 단계') + '</span></div>'
+        + (isHuman ? '대표님만 하실 수 있는 단계' : '따라 하기만 하면 되는 단계') + '</span></div>'
         + '<div class="mt">' + rich(how[mi]) + '</div></div>'
         + '<div class="mnav">'
         + (mi > 0 ? '<button type="button" class="prev" id="mprev">← 이전</button>' : '')
@@ -812,7 +818,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
         var r = tidy(s.key, el.dataset.n, t.getData('text'));
         el.value = r.v;
         var m = $('msg');
-        if (r.warn) { m.className = 'msg bad'; m.textContent = '⚠ ' + r.warn; }
+        if (r.warn) { m.className = 'msg bad'; m.textContent = r.warn; }
         else if (r.picked) { m.className = 'msg ok'; m.textContent = '✓ 붙여넣은 글에서 값만 골라 넣었습니다.'; }
         else { m.className = 'msg'; m.textContent = ''; }
       });
@@ -881,8 +887,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   function finish() {
     paintProgress();
     var left = steps.filter(function (s) { return !s.filled; });
-    $('stage').innerHTML = '<div class="mid"><div class="big">' + (left.length ? '🙂' : '✅') + '</div>'
-      + '<h2>' + (left.length ? '여기까지 해주셔서 감사합니다' : '다 됐습니다. 감사합니다') + '</h2>'
+    $('stage').innerHTML = '<div class="mid"><h2>' + (left.length ? '여기까지 해주셔서 감사합니다' : '다 됐습니다. 감사합니다') + '</h2>'
       + '<p>' + (left.length
         ? '남은 것은 ' + left.map(function (s) { return esc(s.title); }).join(' · ')
           + ' 입니다. 이 링크를 그대로 두시면 나중에 이어서 하실 수 있습니다.'
@@ -1063,8 +1068,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     if (!steps.length) {
       show(null);
       $('screen-wiz').classList.remove('hide');
-      $('stage').innerHTML = '<div class="mid"><div class="big">✅</div>'
-        + '<h2>지금은 하실 것이 없습니다</h2>'
+      $('stage').innerHTML = '<div class="mid"><h2>지금은 하실 것이 없습니다</h2>'
         + '<p>준비되면 담당자가 다시 알려드리겠습니다. 이 링크는 그대로 두셔도 됩니다.</p></div>';
       document.querySelector('.bar').style.display = 'none';
       return;
