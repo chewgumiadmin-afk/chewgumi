@@ -154,6 +154,10 @@ ol.steps li::before{
   padding:3px 9px; border-radius:99px;
 }
 .cost .line{flex:1 1 200px; font-size:14px; font-weight:700; color:var(--warn-ink); line-height:1.55}
+.cost.zero{background:var(--ok-bg); border-color:var(--ok-line)}
+.cost.zero .tag{background:var(--ok)}
+.cost.zero .line{color:var(--ok)}
+.cost.zero .more{border-top-color:var(--ok-line)}
 .cost .more{
   flex-basis:100%; margin:0; font-size:13.5px; line-height:1.72; color:var(--ink-2);
   border-top:1px dashed var(--warn-line); padding-top:10px;
@@ -797,7 +801,8 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     }
     /* 돈이 드는 카드는 값을 넣기 전에 먼저 보시게 합니다 */
     if (s.cost) {
-      h += '<div class="cost"><span class="tag">' + esc(s.cost.tag || '유료') + '</span>'
+      var zero = /^0원|^지금은 0원/.test(String(s.cost.tag || ''));
+      h += '<div class="cost' + (zero ? ' zero' : '') + '"><span class="tag">' + esc(s.cost.tag || '유료') + '</span>'
         + '<span class="line">' + esc(s.cost.line || '') + '</span>'
         + (s.cost.detail ? '<p class="more">' + rich(s.cost.detail) + '</p>' : '')
         + '</div>';
