@@ -44,3 +44,90 @@ img{max-width:100%}
     transform:none !important}
   .film:hover .film-poster{transform:none}
 }
+
+/* ══════════════════════════════════════════════════════════════
+   접근성 — 누르는 자리 넓히기 (2026-09-10)
+
+   왜: 자동 UI 검사에서 7개 화면 모두 "누르는 곳이 손가락보다 작음"이
+       나왔습니다. 같은 부품(머리글 로고·메뉴·언어 버튼·서랍 메뉴 등)이
+       화면마다 복사돼 있어서, 이 파일 한 곳만 고치면 7개 화면이
+       같이 낫습니다.
+
+   방법: 보이는 크기는 그대로 두고, 눈에 안 보이는 ::after 한 겹을
+       덮어 손가락이 닿는 범위만 44px 로 넓힙니다. 자리를 차지하지
+       않으므로 화면 모양·배치는 1px 도 바뀌지 않습니다.
+       (Apple HIG 44pt · Google Material 48dp 권고)
+
+   일부러 안 건드린 것
+       · VIEW ALL(.sec-more)·탭 버튼 — 이미 ::after 로 화살표를 그리고
+         있어서, 덮으면 화살표가 사라집니다. 비교 촬영으로 확인했습니다.
+       · 바닥글 링크(12px) — 44px 로 넓히면 옆 링크와 상자가 겹쳐
+         엉뚱한 링크가 눌립니다. 30px 까지만 넓혔습니다.
+       · 뒤로 가기 바(38px) — 44px 로 키우면 모든 화면이 6px 밀립니다.
+         모양이 바뀌는 일이라 대표님 확인 뒤에 하겠습니다.
+
+   되돌리려면: 이 블록만 통째로 지우면 됩니다.
+   ══════════════════════════════════════════════════════════════ */
+
+.head a.logo,
+.head nav.nav-auth a,
+header .head-top a.logo,
+header .head-top .burger,
+header .head-top .util a,
+.drawer .d-close,
+.drawer .d-auth a,
+.cgb-dots .cgb-dot,
+.cart-p .c-head button,
+.pd-note a,
+.flow-btns a,
+.ps-btn,
+.li-forgot,
+#langBtn,
+.links a,
+.m-nav a,
+.foot a,
+header > a{
+  position:relative;
+}
+.head a.logo::after,
+.head nav.nav-auth a::after,
+header .head-top a.logo::after,
+header .head-top .burger::after,
+header .head-top .util a::after,
+.drawer .d-close::after,
+.drawer .d-auth a::after,
+.cgb-dots .cgb-dot::after,
+.cart-p .c-head button::after,
+.pd-note a::after,
+.flow-btns a::after,
+.ps-btn::after,
+.li-forgot::after,
+#langBtn::after,
+.links a::after,
+.m-nav a::after,
+header > a::after{
+  content:"";
+  position:absolute;
+  left:50%; top:50%;
+  width:max(100%,44px);
+  height:max(100%,44px);
+  transform:translate(-50%,-50%);
+  /* 배경도 테두리도 없습니다 — 누르는 것만 받습니다 */
+}
+
+/* 바닥글 링크는 서로 붙어 있어 44px 상자가 겹칩니다. 30px 까지만. */
+.foot a::after{
+  content:"";
+  position:absolute;
+  left:50%; top:50%;
+  width:max(100%,30px);
+  height:max(100%,30px);
+  transform:translate(-50%,-50%);
+}
+
+/* 키보드로 옮겨 다닐 때 지금 어디인지 보이게 */
+a:focus-visible, button:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible{
+  outline:2px solid #E95073;
+  outline-offset:2px;
+}
