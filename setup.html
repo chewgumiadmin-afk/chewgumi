@@ -6,10 +6,6 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light">
 <title>Set Up Wizard · 츄구미</title>
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 
 <!--
   ════════════════════════════════════════════════════════════════════════
@@ -95,91 +91,22 @@ button{font-family:inherit}
 .top .who{font-size:13px; color:var(--ink-3); text-align:right}
 
 /* ── 4. 첫 화면 (안내) ──────────────────────────────────────────── */
-.hero{max-width:1140px; margin:0 auto;
-  padding:clamp(30px,5.5vw,62px) clamp(16px,4vw,30px) clamp(56px,8vw,88px)}
-.hero .kicker{font-size:12.5px; font-weight:800; letter-spacing:.14em; color:var(--brand); margin:0 0 12px}
+.hero{max-width:760px; margin:0 auto; padding:56px 20px 80px}
+.hero .kicker{font-family:var(--font-en); font-size:12px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--brand); margin:0 0 10px}
 .hero h1{
-  margin:0 0 20px; font-weight:850; line-height:1.1; letter-spacing:-.035em;
-  font-size:clamp(33px, 7.4vw, 54px)}
+  margin:0 0 20px; font-weight:850; letter-spacing:-.03em; line-height:1.08;
+  font-size:clamp(38px, 9vw, 76px);; font-family:var(--font-en); letter-spacing:-.02em}
 .hero h1 .l2{display:block; color:var(--brand)}
-.hero .lead{font-size:clamp(15.5px,1.35vw,17.5px); color:var(--ink-2); margin:0 0 18px; max-width:50ch}
+.hero .lead{font-size:clamp(16px,2.4vw,19px); color:var(--ink-2); margin:0 0 34px; max-width:56ch}
 .hero .lead b{color:var(--ink); font-weight:700}
 
-/* 두 칸 — 넓으면 왼쪽 설명 / 오른쪽 안내상자, 좁으면 위아래로 */
-.hero-grid{display:grid; gap:clamp(24px,3.4vw,42px); align-items:start}
-@media(min-width:1000px){
-  .hero-grid{grid-template-columns:minmax(0,1.02fr) minmax(330px,0.98fr)}
-  .hero h1{font-size:clamp(40px,4vw,56px)}
-}
-
-/* 숫자 요약 — 몇 가지를, 얼마나 */
-.stats{display:flex; flex-wrap:wrap; gap:10px; margin:22px 0 20px}
-.stat{flex:1 1 130px; background:var(--card); border:1px solid var(--line);
-  border-radius:var(--r-sm); padding:13px 15px}
-.stat em{display:block; font-style:normal; font-size:11.5px; font-weight:800;
-  letter-spacing:.08em; color:var(--ink-4); margin-bottom:5px}
-.stat b{font-size:19px; font-weight:850; letter-spacing:-.02em; color:var(--ink)}
-.stat span{font-size:13px; font-weight:700; color:var(--ink-3); margin-left:3px}
-
-.due{font-size:13.5px; color:var(--ink-3); margin:0 0 22px}
+.due{font-size:13.5px; color:var(--ink-3); margin:0 0 30px}
 .due b{color:var(--brand); font-weight:800}
-
-/* 오른쪽 안내상자 */
-.panel{background:var(--card); border:1px solid var(--line); border-radius:var(--r);
-  padding:clamp(18px,2vw,24px); margin:0 0 14px; box-shadow:var(--shadow)}
-.panel h2{font-size:14px; font-weight:850; letter-spacing:.01em; margin:0 0 15px; color:var(--ink)}
-.panel ul{margin:0; padding-left:18px; color:var(--ink-2); font-size:14px}
-.panel ul li{margin-bottom:7px}
-.panel ul li:last-child{margin-bottom:0}
-ol.steps{list-style:none; margin:0; padding:0; counter-reset:st}
-ol.steps li{counter-increment:st; position:relative; padding-left:33px; margin-bottom:14px;
-  font-size:14.5px; line-height:1.68; color:var(--ink-2)}
-ol.steps li:last-child{margin-bottom:0}
-ol.steps li b{color:var(--ink); font-weight:750}
-ol.steps li::before{
-  content:counter(st); position:absolute; left:0; top:2px;
-  width:22px; height:22px; border-radius:50%; background:var(--alt); color:var(--brand);
-  font-size:11.5px; font-weight:850; display:flex; align-items:center; justify-content:center}
 
 .sec{margin:0 0 14px}
 .sec h2{font-size:15.5px; font-weight:800; margin:0 0 10px; letter-spacing:-.01em}
 .sec ul{margin:0; padding-left:19px; color:var(--ink-2); font-size:14.5px}
 .sec li{margin-bottom:7px}
-
-/* 요금 안내 — 돈이 드는 카드에만 붙습니다 */
-.cost{
-  display:flex; flex-wrap:wrap; align-items:center; gap:8px 11px;
-  background:var(--warn-bg); border:1px solid var(--warn-line);
-  border-radius:var(--r-sm); padding:12px 14px; margin:0 0 18px;
-}
-.cost .tag{
-  flex:none; background:var(--warn-ink); color:#fff;
-  font-size:11.5px; font-weight:800; letter-spacing:.03em;
-  padding:3px 9px; border-radius:99px;
-}
-.cost .line{flex:1 1 200px; font-size:14px; font-weight:700; color:var(--warn-ink); line-height:1.55}
-.cost.zero{background:var(--ok-bg); border-color:var(--ok-line)}
-.cost.zero .tag{background:var(--ok)}
-.cost.zero .line{color:var(--ok)}
-.cost.zero .more{border-top-color:var(--ok-line)}
-.cost .more{
-  flex-basis:100%; margin:0; font-size:13.5px; line-height:1.72; color:var(--ink-2);
-  border-top:1px dashed var(--warn-line); padding-top:10px;
-}
-
-/* 골라서 답하는 칸 */
-.pickone{margin:0 0 16px}
-.pickone > span{display:block; font-size:13px; font-weight:750; color:var(--ink-2); margin-bottom:9px}
-.pickone .opts{display:grid; gap:8px}
-.pickone label{
-  display:flex; align-items:flex-start; gap:10px; cursor:pointer;
-  background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-sm);
-  padding:12px 14px; font-size:14.5px; line-height:1.5; color:var(--ink-2);
-}
-.pickone label:hover{border-color:var(--line-2)}
-.pickone input{width:18px; height:18px; margin:1px 0 0; flex:none; accent-color:var(--brand); cursor:pointer}
-.pickone input:checked + span{color:var(--ink); font-weight:700}
-.pickone label:has(input:checked){border-color:var(--brand); background:var(--alt)}
 
 /* 진행 방식 고르기 */
 .picks{display:grid; gap:14px; margin:26px 0 10px}
@@ -224,7 +151,7 @@ ol.steps li::before{
 .fold .in b{color:var(--ink)}
 
 .start{
-  display:inline-flex; align-items:center; gap:9px; margin-top:4px;
+  display:inline-flex; align-items:center; gap:9px; margin-top:22px;
   background:var(--brand); color:var(--brand-ink); border:0; cursor:pointer;
   font-size:16px; font-weight:800; padding:16px 30px; border-radius:var(--r);
   box-shadow:var(--shadow);
@@ -232,6 +159,66 @@ ol.steps li::before{
 .start:hover{background:var(--brand-hover)}
 .start .ar{font-size:18px}
 .hero .after{font-size:12.5px; color:var(--ink-4); margin-top:13px}
+
+/* 머리말의 '처음으로' — 카드 화면에서만 보입니다 */
+.top .home{
+  background:var(--card); color:var(--ink-2); border:1px solid var(--line);
+  border-radius:99px; padding:7px 14px; font-size:13px; font-weight:700;
+  cursor:pointer; white-space:nowrap; line-height:1.2;
+}
+.top .home:hover{border-color:var(--brand); color:var(--brand)}
+
+/* ── 4-1. 첫 화면 현황판 ───────────────────────────────────────── */
+.board{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  padding:22px 21px; margin:0 0 26px; box-shadow:var(--shadow);
+}
+@media (max-width:520px){ .board{padding:18px 16px; border-radius:12px} }
+.board .bhead{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 12px; margin-bottom:14px}
+.board .bhead h2{margin:0; font-size:16px; font-weight:820; letter-spacing:-.01em}
+.board .bcount{
+  margin-left:auto; font-family:var(--font-en); font-size:13px; font-weight:700;
+  color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.board[data-state="all"] .bcount{color:var(--ok)}
+.board .brail{height:6px; background:var(--line); border-radius:99px; overflow:hidden; margin-bottom:16px}
+.board .bfill{height:100%; width:0%; background:var(--brand); border-radius:99px; transition:width .3s}
+.board[data-state="all"] .bfill{background:var(--ok)}
+
+.board .blist{display:grid; gap:9px; grid-template-columns:1fr}
+@media (min-width:560px){ .board .blist{grid-template-columns:1fr 1fr} }
+@media (min-width:860px){ .board .blist{grid-template-columns:1fr 1fr 1fr} }
+
+.board .bitem{
+  display:flex; align-items:flex-start; gap:10px; width:100%; text-align:left;
+  background:var(--bg); border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:12px 13px; cursor:pointer; font-family:inherit; color:var(--ink);
+  transition:border-color .12s, background .12s;
+}
+.board .bitem:hover{border-color:var(--brand); background:var(--card)}
+.board .bitem:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.board .bmk{
+  flex:none; width:19px; height:19px; margin-top:1px; border-radius:50%;
+  border:1.5px solid var(--line-2); background:var(--card);
+  display:grid; place-items:center; font-size:11px; font-weight:800; color:var(--ink-4);
+}
+.board .bitem.ok .bmk{background:var(--ok); border-color:var(--ok); color:#fff}
+.board .bitem.ok .bmk::before{content:'\2713'}
+.board .bitem.open .bmk{border-color:var(--brand); color:var(--brand)}
+.board .bitem.open .bmk::before{content:'+'}
+.board .btx{display:flex; flex-direction:column; gap:3px; min-width:0}
+.board .btx b{font-size:13.5px; font-weight:700; line-height:1.35; word-break:keep-all}
+.board .btx i{font-style:normal; font-size:11.5px; color:var(--ink-4)}
+.board .bitem.ok .btx b{color:var(--ink-3); font-weight:650}
+.board .bitem.ok .btx i{color:var(--ok)}
+.board .bnote{margin:16px 0 0; font-size:13px; line-height:1.7; color:var(--ink-2)}
+
+/* 폰에서 첫 화면 여백을 줄입니다 */
+@media (max-width:520px){
+  .hero{padding:32px 16px 64px}
+  .hero .lead{margin-bottom:24px}
+  .sec ul{padding-left:17px; font-size:14px}
+}
 
 /* ── 5. 카드 화면 ──────────────────────────────────────────────── */
 .wrap{max-width:1080px; margin:0 auto; padding:24px 20px 120px; display:grid; gap:26px}
@@ -411,65 +398,63 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
 <header class="top">
   <span class="brand">CHEW GUMI</span>
+  <button type="button" class="home hide" id="btn-home">← 처음으로</button>
   <span class="sp"></span>
   <span class="who" id="who"></span>
 </header>
 
 <!-- ── 첫 화면 : 안내 ─────────────────────────────────────────── -->
 <section id="screen-intro" class="hero hide">
- <div class="hero-grid">
+  <div class="kicker">츄구미 쇼핑몰 설정</div>
+  <h1>몇 가지만<span class="l2">받으면 됩니다</span></h1>
 
-  <div class="hero-main">
-    <div class="kicker">츄구미 쇼핑몰 설정</div>
-    <h1>몇 가지만<span class="l2">받으면 됩니다</span></h1>
+  <p class="lead">
+    츄구미 쇼핑몰이 <b>네이버 · 카카오 · 페이스북</b> 같은 다른 회사 서비스와 연결되려면,
+    그 회사가 내주는 <b>열쇠</b>가 하나씩 필요합니다.
+    이 열쇠는 <b>계정 주인이 직접 로그인해야만</b> 받을 수 있어서, 대표님께 이 링크를 보내드렸습니다.
+  </p>
+  <p class="lead">
+    <b>미리 알아두실 것은 없습니다.</b> 어느 사이트에 들어가 무엇을 누르는지
+    화면이 한 줄씩 알려드립니다. 대표님은 보시면서 따라 누르시고,
+    마지막에 나오는 값만 옮겨 담아 주시면 됩니다.
+  </p>
 
-    <p class="lead">
-      츄구미 쇼핑몰이 <b>네이버 · 카카오 · 페이스북</b> 같은 다른 회사 서비스와 연결되려면,
-      그 회사가 내주는 <b>열쇠</b>가 하나씩 필요합니다.
-      이 열쇠는 <b>계정 주인이 직접 로그인해야만</b> 받을 수 있어서, 대표님께 이 링크를 보내드렸습니다.
-    </p>
-    <p class="lead">
-      <b>미리 알아두실 것은 없습니다.</b> 어느 사이트에 들어가 무엇을 누르는지
-      화면이 한 줄씩 알려드립니다. 대표님은 보시면서 따라 누르시고,
-      마지막에 나오는 값만 옮겨 담아 주시면 됩니다.
-    </p>
+  <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
 
-    <div class="stats">
-      <div class="stat"><em>해주실 것</em><b id="f-cnt">–</b><span>가지</span></div>
-      <div class="stat"><em>예상 시간</em><b id="f-min">–</b><span>분쯤</span></div>
-      <div class="stat"><em>한 번에 다 안 하셔도</em><b>됩니다</b></div>
+  <!-- 넣으신 값의 현황. 항목을 누르면 그 카드로 바로 갑니다. -->
+  <div class="board" id="board">
+    <div class="bhead">
+      <h2>지금까지 넣으신 것</h2>
+      <span class="bcount" id="b-count"></span>
     </div>
-
-    <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
-
-    <button class="start" id="btn-start">시작하기 <span class="ar">→</span></button>
-    <div class="after" id="intro-note"></div>
+    <div class="brail"><div class="bfill" id="b-fill"></div></div>
+    <div class="blist" id="b-list"></div>
+    <p class="bnote" id="b-note"></p>
   </div>
 
-  <aside class="hero-side">
-    <div class="panel">
-      <h2>이렇게 진행됩니다</h2>
-      <ol class="steps">
-        <li><b>한 번에 한 장씩</b> 나옵니다. 한 장이 서비스 하나입니다.
-            그 안에서 다시 한 단계씩 넘어가니, 지금 하실 것 하나만 보시면 됩니다.</li>
-        <li>값을 넣고 저장을 누르시면 <b>저희가 그 회사에 진짜 되는지 물어봅니다.</b>
-            되는 것만 저장하고, 안 되면 무엇이 잘못됐는지 우리말로 알려드립니다.
-            <b>잘못 넣으셔도 망가지는 것은 없습니다.</b></li>
-        <li><b>한 번에 다 안 하셔도 됩니다.</b> 「나중에」를 누르고 넘어가셨다가
-            같은 주소를 다시 여시면, 하시던 곳부터 이어집니다.</li>
-        <li><b>로그인과 본인인증만 대표님 몫</b>입니다. 그 뒤로 메뉴를 찾아가는 일은
-            화면이 짚어드립니다. 카드마다 어디까지가 대표님 몫인지 적어뒀습니다.</li>
-        <li>막히시면 오른쪽 아래 <b>「도움이 필요하세요?」</b>를 눌러 물어보세요.
-            지금 보고 계신 화면을 알고 답합니다. 사람에게 넘겨드릴 수도 있습니다.</li>
-      </ol>
-    </div>
+  <div class="sec">
+    <h2>이렇게 진행됩니다</h2>
+    <ul>
+      <li><b>한 번에 한 장씩</b> 나옵니다. 한 장이 서비스 하나입니다.
+          그 안에서 다시 한 단계씩 넘어가니, 지금 하실 것 하나만 보시면 됩니다.</li>
+      <li>값을 넣고 저장을 누르시면 <b>저희가 그 회사에 진짜 되는지 물어봅니다.</b>
+          되는 것만 저장하고, 안 되면 무엇이 잘못됐는지 우리말로 알려드립니다.
+          <b>잘못 넣으셔도 망가지는 것은 없습니다.</b></li>
+      <li><b>한 번에 다 안 하셔도 됩니다.</b> 「나중에」를 누르고 넘어가셨다가
+          같은 주소를 다시 여시면, 하시던 곳부터 이어집니다.</li>
+      <li><b>로그인과 본인인증만 대표님 몫</b>입니다. 그 뒤로 메뉴를 찾아가는 일은
+          화면이 짚어드립니다. 카드마다 어디까지가 대표님 몫인지 적어뒀습니다.</li>
+      <li>막히시면 오른쪽 아래 <b>「도움이 필요하세요?」</b>를 눌러 물어보세요.
+          지금 보고 계신 화면을 알고 답합니다. 사람에게 넘겨드릴 수도 있습니다.</li>
+    </ul>
+  </div>
 
-    <div class="panel">
-      <h2>손에 두시면 빠른 것들</h2>
-      <ul id="prep"></ul>
-    </div>
+  <div class="sec">
+    <h2>손에 두시면 빠른 것들</h2>
+    <ul id="prep"></ul>
+  </div>
 
-    <details class="fold">
+  <details class="fold">
     <summary>어떤 정보가 오가는지 · 무엇은 저장하지 않는지</summary>
     <div class="in">
       <p><b>이 화면은 넣기 전용입니다.</b> 이미 저장된 열쇠를 읽어오지 못합니다.
@@ -487,9 +472,9 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
          다른 사람에게 전달하지 말아 주세요.</p>
     </div>
   </details>
-  </aside>
 
- </div>
+  <button class="start" id="btn-start">시작하기 <span class="ar">→</span></button>
+  <div class="after" id="intro-note"></div>
 </section>
 
 <!-- ── 진행 방식 고르기 ───────────────────────────────────────── -->
@@ -621,13 +606,20 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
            || new URLSearchParams(String(location.hash).replace(/^#/, '')).get('t')
            || findTok(location.href) || '';
   try { if (token) localStorage.setItem('cg_setup_t', token); } catch (e) {}
-  var steps = [], idx = 0, carry = {}, expiresAt = '';
+  var steps = [], idx = 0, carry = {}, expiresAt = '', forName = '';
+
+  /* 여러 번 보내도 되는 카드는 '완료' 로 닫지 않습니다.
+     추가 요청사항은 설정이 아니라 말씀을 받는 칸이라, 늘 열어 둡니다. */
+  var REPEAT = { extra_request: 1 };
 
   /* ── 유틸 ──────────────────────────────────────────────────── */
   function $(id) { return document.getElementById(id); }
   function show(id) {
     ['screen-intro', 'screen-pick', 'screen-wiz'].forEach(function (s) { $(s).classList.add('hide'); });
     if (id) $(id).classList.remove('hide');
+    /* 첫 화면에서는 '처음으로' 가 필요 없습니다 */
+    var hm = $('btn-home');
+    if (hm) hm.classList[(id && id !== 'screen-intro') ? 'remove' : 'add']('hide');
   }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -701,13 +693,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   function paintIntro(forName) {
     var left = steps.filter(function (s) { return !s.filled; });
 
-    $('f-due').textContent = expiresAt ? expiresAt.slice(5, 10).replace('-', '월 ') + '일' : '–';
-
-    /* 몇 가지를, 얼마나 — 남은 카드만 세어 보여드립니다 */
-    var mins = 0;
-    left.forEach(function (s2) { mins += (metaOf(s2.key).min || 10); });
-    $('f-cnt').textContent = String(left.length);
-    $('f-min').textContent = mins ? String(Math.round(mins / 5) * 5) : '0';
+    $('f-due').textContent   = expiresAt ? expiresAt.slice(5, 10).replace('-', '월 ') + '일' : '–';
 
     /* 미리 준비할 것 — 남은 카드 것만, 중복 없이 */
     var seen = {}, prep = [];
@@ -719,9 +705,53 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     $('prep').innerHTML = prep.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('');
 
     if (forName) $('who').textContent = forName + '님';
-    $('intro-note').textContent = left.length < steps.length
-      ? (steps.length - left.length) + '가지는 이미 끝나 있습니다. 남은 것부터 이어서 하십니다.'
-      : '';
+    $('intro-note').textContent = '';   /* 같은 말을 현황판이 더 잘 합니다 */
+    paintBoard();
+  }
+
+  /* ── 첫 화면 현황판 ─────────────────────────────────────────
+     어느 것이 끝났고 무엇이 남았는지 한눈에 보여주고,
+     누르면 그 카드로 바로 갑니다. */
+  function paintBoard() {
+    var board = $('board');
+    if (!board) return;
+    if (!steps.length) { board.classList.add('hide'); return; }
+    board.classList.remove('hide');
+
+    var real  = steps.filter(function (s) { return !REPEAT[s.key]; });
+    var done  = real.filter(function (s) { return s.filled; }).length;
+    var total = real.length;
+    var left  = total - done;
+
+    board.setAttribute('data-state', !done ? 'zero' : (left ? 'some' : 'all'));
+    $('b-count').textContent = total ? (done + ' / ' + total + ' 완료') : '';
+    $('b-fill').style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+
+    $('b-list').innerHTML = steps.map(function (s, i) {
+      var rep = !!REPEAT[s.key];
+      var cls = rep ? 'open' : (s.filled ? 'ok' : 'left');
+      var lab = rep ? '언제든 보내실 수 있습니다'
+                    : (s.filled ? '넣으셨습니다' : '약 ' + metaOf(s.key).min + '분');
+      return '<button type="button" class="bitem ' + cls + '" data-i="' + i + '">'
+        + '<span class="bmk"></span>'
+        + '<span class="btx"><b>' + esc(s.title) + '</b><i>' + esc(lab) + '</i></span>'
+        + '</button>';
+    }).join('');
+
+    [].forEach.call($('b-list').querySelectorAll('.bitem'), function (b) {
+      b.onclick = function () { idx = +b.dataset.i; mi = 0; back = false; startWiz(); };
+    });
+
+    var mins = real.filter(function (s) { return !s.filled; })
+      .reduce(function (a, s) { return a + metaOf(s.key).min; }, 0);
+    $('b-note').textContent = !total
+      ? '항목을 누르시면 그 카드로 바로 갑니다.'
+      : !left
+        ? '모두 끝났습니다. 고맙습니다. 바꾸실 것이 있으면 항목을 눌러 다시 넣으셔도 됩니다.'
+        : !done
+          ? '아직 넣으신 것이 없습니다. 남은 ' + total + '가지를 다 하시면 약 ' + mins
+            + '분쯤 걸립니다. 한 번에 다 하지 않으셔도 됩니다.'
+          : '남은 ' + left + '가지는 약 ' + mins + '분쯤 걸립니다. 항목을 누르시면 그 카드로 바로 갑니다.';
   }
 
   /* ── 좌측 목록 · 진행 막대 ─────────────────────────────────── */
@@ -803,15 +833,6 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
         + '<a href="' + esc(s.where) + '" target="_blank" rel="noopener" id="site">' + esc(s.where) + ' ↗</a>'
         + '<button type="button" class="beside" id="beside">옆에 띄우고 시작</button></div>';
     }
-    /* 돈이 드는 카드는 값을 넣기 전에 먼저 보시게 합니다 */
-    if (s.cost) {
-      var zero = /^0원|^지금은 0원/.test(String(s.cost.tag || ''));
-      h += '<div class="cost' + (zero ? ' zero' : '') + '"><span class="tag">' + esc(s.cost.tag || '유료') + '</span>'
-        + '<span class="line">' + esc(s.cost.line || '') + '</span>'
-        + (s.cost.detail ? '<p class="more">' + rich(s.cost.detail) + '</p>' : '')
-        + '</div>';
-    }
-
     var hu0 = HUMAN[s.key];
     if (hu0 && hu0.until >= 0 && how.length) {
       h += '<div class="split"><b>대표님이 직접</b> — ' + esc(hu0.why)
@@ -860,15 +881,6 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
       if (f.type === 'check') {
         return '<label class="chk"><input type="checkbox" data-n="' + esc(f.name) + '">'
           + '<span>' + esc(f.label) + '</span></label>';
-      }
-      if (f.type === 'choice') {
-        return '<div class="pickone"><span>' + esc(f.label) + '</span><div class="opts">'
-          + (f.options || []).map(function (o, i) {
-              return '<label><input type="radio" name="r-' + esc(f.name) + '"'
-                + ' data-n="' + esc(f.name) + '" value="' + esc(o) + '">'
-                + '<span>' + esc(o) + '</span></label>';
-            }).join('')
-          + '</div></div>';
       }
       if (f.type === 'textarea') {
         return '<label class="f"><span>' + esc(f.label) + '</span>'
@@ -954,7 +966,6 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   function submit() {
     var s = steps[idx], vals = {};
     [].forEach.call($('stage').querySelectorAll('[data-n]'), function (el) {
-      if (el.type === 'radio') { if (el.checked) vals[el.dataset.n] = el.value; return; }
       vals[el.dataset.n] = (el.type === 'checkbox') ? el.checked : el.value.trim();
     });
 
@@ -1128,6 +1139,15 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     try { localStorage.setItem('cg_setup_assist', v); } catch (e) {}
   }
 
+  /* 카드 보다가 처음 안내 화면으로 돌아옵니다. 넣으신 값은 그대로 남습니다. */
+  $('btn-home').addEventListener('click', function () {
+    helpClose();                        /* 먼저 닫고 나서 단추를 숨깁니다 */
+    $('help-btn').classList.add('hide');
+    paintIntro(forName);
+    show('screen-intro');
+    window.scrollTo(0, 0);
+  });
+
   $('btn-start').addEventListener('click', function () {
     show('screen-pick');
     $('pick-panel').classList.add('hide');
@@ -1174,6 +1194,15 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     if (!d.ok) { fail('열지 못했습니다', d.error || '알 수 없는 이유입니다.'); return; }
     steps = d.steps || [];
     expiresAt = String(d.expires_at || '');
+    forName = String(d.for_name || '');
+
+    /* filled 는 app_secrets 에 키가 들어왔는지만 봅니다.
+       그런데 도메인 인증·비즈앱 전환·채널 심사처럼 '키가 없는' 카드는
+       끝내셨어도 filled 가 늘 false 라, 끝낸 카드가 계속 다시 나왔습니다.
+       성공 기록(history)이 있으면 끝난 것으로 봅니다. */
+    var okd = {};
+    (d.history || []).forEach(function (h) { if (h && h.ok) okd[h.step] = 1; });
+    steps.forEach(function (s) { if (okd[s.key] && !REPEAT[s.key]) s.filled = true; });
     $('foot').textContent = '이 화면은 값을 넣기만 합니다. 이미 저장된 열쇠는 보이지 않습니다.'
       + (expiresAt ? '  ·  링크 기한 ' + expiresAt.slice(0, 10) : '');
 
@@ -1193,6 +1222,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
     if (jump >= 0) {
       idx = jump; mi = 0;
+      paintIntro(forName);              /* 돌아오실 때를 위해 첫 화면도 미리 그려 둡니다 */
       show('screen-wiz'); paint();
       $('help-btn').classList.remove('hide');
       return;
