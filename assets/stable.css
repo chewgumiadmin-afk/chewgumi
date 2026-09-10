@@ -71,6 +71,8 @@ img{max-width:100%}
 
 .head a.logo,
 .head nav.nav-auth a,
+.head a.home,
+.d-auth a,
 header .head-top a.logo,
 header .head-top .burger,
 header .head-top .util a,
@@ -91,6 +93,8 @@ header > a{
 }
 .head a.logo::after,
 .head nav.nav-auth a::after,
+.head a.home::after,
+.d-auth a::after,
 header .head-top a.logo::after,
 header .head-top .burger::after,
 header .head-top .util a::after,
