@@ -182,7 +182,7 @@ function cgMyId(){
           var g=document.getElementById('go'); if(g && !g.disabled) signup(); return false;">
     <div class="panel">
       <h2>ACCOUNT · 계정 정보</h2>
-      <label class="f">아이디 (이메일) <em class="req">*</em></label>
+      <label class="f" for="email">아이디 (이메일) <em class="req">*</em></label>
       <div class="row2">
         <input id="email" name="email" type="email" placeholder="example@email.com" autocomplete="email" oninput="onEmailInput()">
         <button type="button" class="btn-sm" id="vBtn" onclick="sendVerify()">인증 메일 받기</button>
@@ -196,21 +196,21 @@ function cgMyId(){
         <button type="button" class="vre" onclick="recheck()">인증 확인</button>
       </div>
 
-      <label class="f">비밀번호 <em class="req">*</em></label>
+      <label class="f" for="pw1">비밀번호 <em class="req">*</em></label>
       <input id="pw1" name="password" type="password" placeholder="8자 이상" autocomplete="new-password" oninput="check()">
       <div class="hint" id="hPw1">8자 이상 · 영문·숫자·기호 중 2가지 이상</div>
 
-      <label class="f">비밀번호 확인 <em class="req">*</em></label>
+      <label class="f" for="pw2">비밀번호 확인 <em class="req">*</em></label>
       <input id="pw2" name="password_confirm" type="password" placeholder="비밀번호를 한 번 더 입력" autocomplete="new-password" oninput="check()">
       <div class="hint" id="hPw2"></div>
     </div>
 
     <div class="panel">
       <h2>PROFILE · 기본 정보</h2>
-      <label class="f">이름 <em class="req">*</em></label>
+      <label class="f" for="name">이름 <em class="req">*</em></label>
       <input id="name" name="name" placeholder="받는 분 성함" autocomplete="name" oninput="check()">
 
-      <label class="f">휴대전화 <em class="req">*</em></label>
+      <label class="f" for="phone">휴대전화 <em class="req">*</em></label>
       <input id="phone" name="tel" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel" oninput="check()">
       <div class="hint">주문·배송 안내를 받으실 번호입니다.</div>
 
@@ -223,7 +223,7 @@ function cgMyId(){
     <div class="panel">
       <h2>AGREEMENT · 약관 동의</h2>
       <div class="all-row">
-        <input type="checkbox" id="all" onchange="toggleAll(this)">
+        <input type="checkbox" id="all" name="agree_all" value="1" onchange="toggleAll(this)">
         <label for="all" style="cursor:pointer">
           <div class="t">전체 동의</div>
           <div class="s">필수 및 선택 항목에 모두 동의합니다.</div>
@@ -231,31 +231,31 @@ function cgMyId(){
       </div>
 
       <div class="ag">
-        <input type="checkbox" class="rq" id="a1" onchange="check()">
+        <input type="checkbox" class="rq" id="a1" name="agree_terms" value="1" onchange="check()">
         <label class="lb" for="a1"><span class="rq">[필수]</span> 이용약관 동의</label>
         <a class="view" href="terms.html" target="_blank" rel="noopener">보기</a>
       </div>
       <div class="ag">
-        <input type="checkbox" class="rq" id="a2" onchange="check()">
+        <input type="checkbox" class="rq" id="a2" name="agree_privacy" value="1" onchange="check()">
         <label class="lb" for="a2"><span class="rq">[필수]</span> 개인정보 수집 및 이용 동의</label>
         <a class="view" href="privacy.html" target="_blank" rel="noopener">보기</a>
       </div>
       <div class="ag">
-        <input type="checkbox" class="rq" id="a3" onchange="check()">
+        <input type="checkbox" class="rq" id="a3" name="agree_age" value="1" onchange="check()">
         <label class="lb" for="a3"><span class="rq">[필수]</span> 만 14세 이상입니다</label>
       </div>
 
       <div class="ag">
-        <input type="checkbox" id="m0" onchange="syncMkt();check()">
+        <input type="checkbox" id="m0" name="marketing" value="1" onchange="syncMkt();check()">
         <label class="lb" for="m0"><span class="op">[선택]</span> 쇼핑정보 수신 동의</label>
       </div>
       <div class="subs">
         <div class="ag">
-          <input type="checkbox" class="mk" id="m1" onchange="check()">
+          <input type="checkbox" class="mk" id="m1" name="marketing_sms" value="1" onchange="check()">
           <label class="lb" for="m1"><span class="op">[선택]</span> SMS 수신 동의</label>
         </div>
         <div class="ag">
-          <input type="checkbox" class="mk" id="m2" onchange="check()">
+          <input type="checkbox" class="mk" id="m2" name="marketing_email" value="1" onchange="check()">
           <label class="lb" for="m2"><span class="op">[선택]</span> 이메일 수신 동의</label>
         </div>
       </div>
