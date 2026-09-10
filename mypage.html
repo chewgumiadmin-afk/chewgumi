@@ -94,7 +94,11 @@ input{width:100%;padding:12px 14px;border-radius:13px;font-size:13.5px;font-fami
   font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:1px solid rgba(0,0,0,.09);width:100%}
 .sso-g{background:#fff;color:#1a1a1a}
 .sso-k{background:#FEE500;color:#191600;border-color:transparent!important}
-.sso-n{background:#03C75A;color:#fff;border-color:transparent!important}
+/* 2026-09-10 — 흰 글자 대비 2.25 → 4.63 (WCAG AA 4.5).
+   네이버 원래 초록으로 되돌리려면 #03C75A 로 바꾸면 됩니다. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.sso-n{background:#02873D;color:#fff;border-color:transparent!important}
 .sso-b button svg{margin-right:2px}
 .sso-msg.bad{color:var(--main);font-weight:600}
 .sso-msg{font-size:11.5px;color:#797979;margin-top:10px;line-height:1.7;text-align:center}
@@ -188,12 +192,18 @@ window.myId = myId;
         <div class="hint">가입하실 때 받으신 나만의 색입니다.</div>
       </div>
     <h2>LOGIN</h2>
-    <input id="em" type="email" placeholder="이메일" autocomplete="email">
-    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-top:9px">
+    <!-- 2026-09-10 — form 으로 감쌌습니다. 전에는 엔터로 로그인이 안 되고
+         브라우저가 비밀번호를 저장하지 못했습니다. -->
+    <form id="mpLoginForm" onsubmit="event.preventDefault();doLogin();return false;">
+    <label class="sr-only" for="em">이메일</label>
+    <input id="em" name="email" type="email" placeholder="이메일" autocomplete="email">
+    <label class="sr-only" for="pw">비밀번호</label>
+    <input id="pw" name="password" type="password" placeholder="비밀번호" autocomplete="current-password" style="margin-top:9px">
     <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn" onclick="doLogin()" style="flex:1">로그인</button>
+      <button type="submit" class="btn" style="flex:1">로그인</button>
       <a class="btn ghost" href="join.html" style="flex:1;display:flex;align-items:center;justify-content:center">회원가입</a>
     </div>
+    </form>
     <div class="msg" id="lmsg"></div>
     <div class="sso">
       <div class="sso-t">SNS 계정으로 간편하게</div>
@@ -221,12 +231,12 @@ window.myId = myId;
 
     <div class="panel">
       <h2>MY INFO · 회원 정보</h2>
-      <div id="infoForm"><label>이름</label><input id="fName">
-      <label>휴대전화</label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000">
+      <div id="infoForm"><label>이름</label><input id="fName" name="name">
+      <label>휴대전화</label><input id="fPhone" name="tel" inputmode="tel" placeholder="010-0000-0000">
       <label>우편번호</label>
-      <div class="row2"><input id="fZip" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
-      <label>주소</label><input id="fAddr1" readonly>
-      <label>상세주소</label><input id="fAddr2">
+      <div class="row2"><input id="fZip" name="postcode" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
+      <label>주소</label><input id="fAddr1" name="address1" readonly>
+      <label>상세주소</label><input id="fAddr2" name="address2">
       <div class="chk"><input type="checkbox" id="mSms"><label for="mSms" style="margin:0">SMS 마케팅 수신 동의</label></div>
       <div class="chk"><input type="checkbox" id="mEmail"><label for="mEmail" style="margin:0">이메일 마케팅 수신 동의</label></div>
       <div style="margin-top:16px"><button class="btn" onclick="saveProfile()">저장하기</button></div></div>
