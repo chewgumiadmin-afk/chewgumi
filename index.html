@@ -1588,16 +1588,20 @@ ChannelIO('boot', { pluginKey: '여기에_플러그인_키' });
     <div id="blWrite" style="display:none; margin-top:14px; padding:16px; border-radius:18px; background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.85);">
       <div id="wAuth">
         <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:var(--gray); margin-bottom:10px;">COMMUNITY LOGIN</div>
-        <input id="wEmail" type="email" placeholder="이메일" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
-        <input id="wPw" type="password" placeholder="비밀번호 (8자 이상)" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;">
+        <!-- 2026-09-10 — form 으로 감쌌습니다. 전에는 엔터로 로그인이 안 되고
+             브라우저가 비밀번호를 저장하지 못했습니다. -->
+        <form id="wAuthForm" onsubmit="event.preventDefault();sbLogin();return false;">
+        <input id="wEmail" name="email" type="email" placeholder="이메일" autocomplete="email" aria-label="이메일" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
+        <input id="wPw" name="password" type="password" placeholder="비밀번호 (8자 이상)" autocomplete="current-password" aria-label="비밀번호" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;">
         <div style="display:flex;gap:8px;">
-          <button onclick="sbLogin()" style="flex:1;padding:11px 0;border:0;border-radius:999px;font-weight:700;color:#fff;background:linear-gradient(135deg,#E95073,#D82558);cursor:pointer;">로그인</button>
-          <button onclick="sbSignup()" style="flex:1;padding:11px 0;border-radius:999px;font-weight:700;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);cursor:pointer;">회원가입</button>
+          <button type="submit" style="flex:1;padding:11px 0;border:0;border-radius:999px;font-weight:700;color:#fff;background:linear-gradient(135deg,#E95073,#D82558);cursor:pointer;">로그인</button>
+          <button type="button" onclick="sbSignup()" style="flex:1;padding:11px 0;border-radius:999px;font-weight:700;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);cursor:pointer;">회원가입</button>
         </div>
+        </form>
       </div>
       <div id="wForm" style="display:none;">
         <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:var(--gray); margin-bottom:10px;">WRITE <span id="wUser" style="font-weight:500;letter-spacing:0;"></span></div>
-        <input id="wTitle" placeholder="제목" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
+        <input id="wTitle" name="title" placeholder="제목" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:8px;font-size:13px;">
         <textarea id="wBody" placeholder="내용" rows="3" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.75);margin-bottom:10px;font-size:13px;resize:vertical;"></textarea>
         <button onclick="sbPost()" style="width:100%;padding:12px 0;border:0;border-radius:999px;font-weight:700;color:#fff;background:linear-gradient(135deg,#E95073,#D82558);cursor:pointer;">등록하기</button>
       </div>
