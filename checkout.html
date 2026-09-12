@@ -332,7 +332,7 @@ async function init(){
       return '<div class="item"><div class="th"><img src="'+esc(p.image||'')+'" alt="" '
         +'referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'"></div>'
         +'<div class="c"><div class="n">'+esc(p.name)+'</div>'
-        +'<div class="p">'+won(p.price_sale)+'원'
+        +'<div class="p">'+won(p.price_sale)   /* 2026-09-12 — won() 이 이미 ₩ 를 붙이는데 '원' 을 또 붙여 "₩9,900원" 으로 나왔습니다 */
         +(p.stock<it.qty?' <b style="color:#c0395c">· 재고부족</b>':'')+'</div>'
         +'<div class="qty">'
         +'<button type="button" onclick="chgQty('+ix+',-1)" aria-label="수량 줄이기">−</button>'
