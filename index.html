@@ -2074,10 +2074,14 @@ window.addEventListener('pageshow', (e) => {
   setTimeout(cgUnlockIfIdle, 60);
 });
 
+/* 2026-09-12 — 서랍을 열면 보던 자리를 잃고 맨 위로 튀었습니다.
+   body 에 overflow:hidden 만 걸면 브라우저가 스크롤 위치를 버립니다.
+   열 때 위치를 적어 두고 화면을 그 자리에 고정했다가, 닫을 때 되돌립니다. */
 function toggleDrawer(open){
   document.getElementById('drawer').classList.toggle('open', open);
   document.getElementById('drawerDim').classList.toggle('open', open);
-  document.body.style.overflow = open ? 'hidden' : '';
+  if (window.cgLockScroll) cgLockScroll(open);
+  else document.body.style.overflow = open ? 'hidden' : '';
 }
 /* 섹션 타이틀 블러 확대 등장 */
 const io = new IntersectionObserver(es => es.forEach(e => {
@@ -2426,8 +2430,8 @@ function cgImgByName(nm){
 let CART = [];
 try { CART = JSON.parse(localStorage.getItem('cg_cart') || '[]'); } catch(e){ CART = []; }
 function saveCart(){ try { localStorage.setItem('cg_cart', JSON.stringify(CART)); } catch(e){} }
-function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
+function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open'); document.getElementById('cartDim').classList.add('open'); if(window.cgLockScroll)cgLockScroll(true); else document.body.style.overflow='hidden'; }
+function closeCart(){ document.getElementById('cartP').classList.remove('open'); document.getElementById('cartDim').classList.remove('open'); if(window.cgLockScroll)cgLockScroll(false); else document.body.style.overflow=''; }
 function addToCart(){
   if (!window._curCard) return;
   const card = window._curCard;
