@@ -125,3 +125,22 @@
   font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;opacity:.85
 }
 .cgbot-hd .cgbot-clr:hover{ opacity:1;background:rgba(255,255,255,.16) }
+
+/* ══════════════════════════════════════════════════════════════
+   떠 있는 버튼 두 개가 겹치지 않게 (2026-09-12)
+
+   무슨 일이 있었나
+     카카오톡 문의 버튼(.kko-fab)과 상담 버튼(.cgbot-fab)이 화면 오른쪽 아래
+     같은 자리에 포개져 있었습니다. 상담 버튼이 위에 있어서,
+     **카카오톡 문의 버튼을 눌러도 상담창이 열렸습니다** — 상품·결제 화면에서
+     카카오톡 문의가 아예 안 되는 상태였습니다.
+
+     화면마다 bottom 값을 따로 적어 둔 탓이라, 어느 폭에서는 비껴가고
+     어느 폭에서는 정확히 포개졌습니다. 폭을 320~1440 까지 훑어서 찾았습니다.
+
+   어떻게 고쳤나
+     두 버튼의 자리를 한 곳에서 정합니다. 상담 버튼이 맨 아래,
+     카카오톡 버튼은 그 위로 58+16px 띄웁니다.
+   ══════════════════════════════════════════════════════════════ */
+.cgbot-fab{ bottom: calc(20px + env(safe-area-inset-bottom)) !important; }
+.kko-fab{  bottom: calc(94px + env(safe-area-inset-bottom)) !important; }
