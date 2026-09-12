@@ -105,3 +105,48 @@
     document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
+
+
+/* ══════════════════════════════════════════════════════════════
+   화면 잠금 — 서랍·장바구니 패널을 열 때 뒤 화면을 고정합니다 (2026-09-12)
+
+   왜: 전에는 body 에 overflow:hidden 만 걸었습니다. 그러면 브라우저가
+       스크롤 위치를 버려서, 메뉴를 열었다 닫으면 보던 자리를 잃고
+       맨 위로 튀었습니다. 상품 목록 한참 아래에서 메뉴를 열면
+       처음부터 다시 내려와야 했습니다.
+
+   쓰는 법
+     cgLockScroll(true)   열 때
+     cgLockScroll(false)  닫을 때 — 보던 자리로 돌려놓습니다
+   ══════════════════════════════════════════════════════════════ */
+(function () {
+  if (window.cgLockScroll) return;
+  var y = 0, locked = false;
+  window.cgLockScroll = function (on) {
+    var b = document.body;
+    if (on) {
+      if (locked) return;
+      y = window.scrollY || window.pageYOffset || 0;
+      locked = true;
+      b.style.position = 'fixed';
+      b.style.top = (-y) + 'px';
+      b.style.left = '0';
+      b.style.right = '0';
+      b.style.width = '100%';
+      b.style.overflow = 'hidden';
+    } else {
+      if (!locked) { b.style.overflow = ''; return; }
+      locked = false;
+      b.style.position = '';
+      b.style.top = '';
+      b.style.left = '';
+      b.style.right = '';
+      b.style.width = '';
+      b.style.overflow = '';
+      /* 자리를 되돌리기 전에 배치를 다시 계산하게 합니다.
+         안 그러면 문서 높이가 아직 화면 높이라 scrollTo 가 0 으로 잘립니다. */
+      void b.offsetHeight;
+      window.scrollTo(0, y);
+    }
+  };
+})();
