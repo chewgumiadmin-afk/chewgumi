@@ -70,8 +70,9 @@ img{max-width:100%}
    ══════════════════════════════════════════════════════════════ */
 
 .head a.logo,
-.head nav.nav-auth a,
+.head nav a,
 .head a.home,
+#login a,
 .d-auth a,
 header .head-top a.logo,
 header .head-top .burger,
@@ -92,8 +93,9 @@ header > a{
   position:relative;
 }
 .head a.logo::after,
-.head nav.nav-auth a::after,
+.head nav a::after,
 .head a.home::after,
+#login a::after,
 .d-auth a::after,
 header .head-top a.logo::after,
 header .head-top .burger::after,
