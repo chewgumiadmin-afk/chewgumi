@@ -645,9 +645,9 @@ function addCart(){
   setCart(c); openCart();
 }
 function openCart(){ renderCart(); document.getElementById('cartP').classList.add('open');
-  document.getElementById('cartDim').classList.add('open'); document.body.style.overflow='hidden'; }
+  document.getElementById('cartDim').classList.add('open'); if(window.cgLockScroll)cgLockScroll(true); else document.body.style.overflow='hidden'; }
 function closeCart(){ document.getElementById('cartP').classList.remove('open');
-  document.getElementById('cartDim').classList.remove('open'); document.body.style.overflow=''; }
+  document.getElementById('cartDim').classList.remove('open'); if(window.cgLockScroll)cgLockScroll(false); else document.body.style.overflow=''; }
 function cQty(i,d){ const c=getCart(); c[i].qty=Math.min(99,Math.max(1,c[i].qty+d)); setCart(c); renderCart(); }
 function cDel(i){ const c=getCart(); c.splice(i,1); setCart(c); renderCart(); }
 function cartCount(){ return getCart().reduce((s,i)=>s+i.qty,0); }
