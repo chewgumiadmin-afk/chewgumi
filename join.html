@@ -31,7 +31,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <style>
-:root{--main:#D82558;--main2:#E95073;--sub:#FFE923;--ink:#1a1a1a;--gray:#797979;
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:root{--main:#D82558;--main2:#E95073;--sub:#FFE923;--ink:#1a1a1a;--gray:#767676;
   --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding-bottom:60px;
@@ -214,10 +215,10 @@ function cgMyId(){
       <input id="phone" name="tel" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel" oninput="check()">
       <div class="hint">주문·배송 안내를 받으실 번호입니다.</div>
 
-      <label class="f">주소 <em class="req">*</em></label>
+      <label class="f" for="zip">주소 <em class="req">*</em></label>
       <div class="row2"><input id="zip" name="postcode" readonly placeholder="우편번호"><button type="button" class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
-      <input id="addr1" name="address1" readonly placeholder="주소" style="margin-top:8px">
-      <input id="addr2" name="address2" placeholder="상세주소" style="margin-top:8px" autocomplete="address-line2">
+      <label class="sr-only" for="addr1">주소</label><input id="addr1" name="address1" readonly placeholder="주소" style="margin-top:8px">
+      <label class="sr-only" for="addr2">상세주소</label><input id="addr2" name="address2" placeholder="상세주소" style="margin-top:8px" autocomplete="address-line2">
     </div>
 
     <div class="panel">
