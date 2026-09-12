@@ -774,7 +774,10 @@
       util.insertBefore(btn, util.lastElementChild);
       return;
     }
-    btn.style.cssText = 'position:fixed;top:10px;right:12px;z-index:9998;font-size:11px;letter-spacing:1px;' +
+    btn.style.cssText = /* 2026-09-12 — z-index 9998 이라 장바구니·상담 패널 위에 떠서,
+   패널 오른쪽 위의 닫기(✕) 버튼을 가로채고 있었습니다. 눌러도 안 닫혔습니다.
+   머리글(900)·아래 메뉴(1100) 보다는 위, 패널(1200 이상) 보다는 아래로 내립니다. */
+      'position:fixed;top:10px;right:12px;z-index:1150;font-size:11px;letter-spacing:1px;' +
       'font-weight:600;background:#fff;color:#333;border:1px solid #ddd;border-radius:14px;' +
       'padding:5px 11px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.12);';
     document.body.appendChild(btn);
