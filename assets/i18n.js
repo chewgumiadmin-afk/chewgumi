@@ -23,6 +23,29 @@
   /* ─────────── 공용 사전 (한국어 → 영어) ───────────
      화면 전체에서 쓰는 UI 문구만 담습니다. 상품 설명·후기 본문은 넣지 않습니다. */
   var DICT = {
+    /* 2026-09-12 추가 — 영어로 바꿔 놓고 화면에 남은 한글을 자동으로 찾아 채웠습니다.
+       (브랜드 문구·후기 본문처럼 사람이 정해야 하는 것은 일부러 넣지 않았습니다.) */
+    '전체선택': 'Select all',
+    '전체상품 (': 'All items (',
+    '선택 삭제': 'Delete selected',
+    '옵션 변경': 'Change option',
+    '공식몰에서 구매 →': 'Buy on the official store →',
+    '공식몰에서 구매하기': 'Buy on the official store',
+    '총 배송비': 'Shipping',
+    '주문서에서 배송지와 결제수단을 선택하실 수 있습니다. 결제는 이지페이(KICC)를 통해 안전하게 처리됩니다.':
+      'You can choose your delivery address and payment method on the order page. Payments are handled securely through EasyPay (KICC).',
+    '사용 가능한 쿠폰이 없습니다. 회원가입 시 2,000원 쿠폰이 지급됩니다.':
+      'No coupons available. Sign up to get a \u20A92,000 coupon.',
+    '· 주문 후 7일 이내 입금': '\u00B7 Deposit within 7 days of ordering',
+    '계좌번호 복사': 'Copy account number',
+    '휴대폰으로 접속하시면 은행 앱을 바로 여실 수 있습니다.':
+      'On a phone you can open your banking app directly.',
+    '국민은행': 'KB Kookmin Bank',
+    '상품·수량 선택': 'Select product and quantity',
+    '와디즈 서포터 후기': 'Wadiz supporter reviews',
+    'L-테아닌 200mg': 'L-Theanine 200mg',
+    'L-아르기닌 1000mg': 'L-Arginine 1000mg',
+    '포스트바이오틱스 2억': 'Postbiotics 200M',
     /* 브랜드 · 공통 */
     '츄구미': 'ChewGumi',
     '한입에 건강을 더하다, 츄구미': 'ChewGumi — wellness in one bite',
@@ -619,6 +642,17 @@
     }
   }
 
+  /* 숫자가 끼어 있어 사전으로 못 잡는 문구 — 규칙으로 바꿉니다 (2026-09-12) */
+  var PATTERNS = [
+    [/^(\d+)개의 후기 · 포토 (\d+)$/, '$1 reviews \u00B7 $2 photos'],
+    [/^(\d+)개의 후기$/, '$1 reviews'],
+    [/^(\d+)개의 순간$/, '$1 moments'],
+    [/^첫 후기를 기다립니다$/, 'Waiting for the first review'],
+    [/^첫 주인공을 기다립니다$/, 'Waiting for the first one'],
+    [/^(\u20A9[\d,]+) 이상 구매 시 배송비 무료입니다\.$/, 'Free shipping on orders over $1.'],
+    [/^(\u20A9[\d,]+) 이상 구매 시 무료$/, 'Free over $1']
+  ];
+
   var LS_KEY = 'cg_lang';
   var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, INPUT: 1, SELECT: 1, OPTION: 1, CODE: 1, PRE: 1, SVG: 1 };
   var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
@@ -662,12 +696,29 @@
     if (observer) observer.disconnect();
 
     walkText(function (node) {
+      /* 2026-09-12 — 숫자가 끼어 있어 사전으로는 못 잡는 문구를 규칙으로 바꿉니다.
+         "60개의 후기" 처럼 개수가 바뀌는 라벨이 영어 화면에 한글로 남아 있었습니다. */
+      /* 내용이 다시 그려진 경우(개수 갱신 등) 캐시를 버리고 새로 계산합니다 */
+      if (node.__cgKo !== undefined) {
+        var cur = norm(node.nodeValue);
+        if (cur !== norm(node.__cgKo) && cur !== norm(node.__cgEn)) {
+          node.__cgKo = undefined; node.__cgEn = undefined;
+        }
+      }
       if (node.__cgKo === undefined) {
         var raw = node.nodeValue;
         var key = norm(raw);
-        if (!key || !DICT.hasOwnProperty(key)) return;   /* 사전에 없으면 영원히 건드리지 않습니다 */
+        if (!key) return;
+        var en = null;
+        if (DICT.hasOwnProperty(key)) en = DICT[key];
+        else {
+          for (var pi = 0; pi < PATTERNS.length; pi++) {
+            if (PATTERNS[pi][0].test(key)) { en = key.replace(PATTERNS[pi][0], PATTERNS[pi][1]); break; }
+          }
+        }
+        if (en === null) return;                         /* 사전에도 규칙에도 없으면 건드리지 않습니다 */
         node.__cgKo = raw;
-        node.__cgEn = lead(raw) + DICT[key] + tail(raw); /* 앞뒤 공백은 그대로 보존 */
+        node.__cgEn = lead(raw) + en + tail(raw);        /* 앞뒤 공백은 그대로 보존 */
       }
       var want = (l === 'en') ? node.__cgEn : node.__cgKo;
       if (node.nodeValue !== want) node.nodeValue = want;
