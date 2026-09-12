@@ -1461,9 +1461,15 @@ html, body{ overflow-x:hidden !important; max-width:100% !important }
   .gal{ border-radius:14px !important }
   .price{ font-size:clamp(22px,7vw,32px) !important }
   .price .off, .price .badge, .off-badge{ font-size:11.5px !important }
-  /* 떠 있는 상담 버튼이 값을 가리지 않게 */
-  .float-wrap, .fl-btns, .cgbot-fab, .kko-fab{
+  /* 떠 있는 상담 버튼이 값을 가리지 않게
+     2026-09-12 — 여기서 .cgbot-fab 과 .kko-fab 을 **같은 높이**로 올려 두어
+     두 버튼이 정확히 포개졌습니다. 위에 있는 상담 버튼이 클릭을 다 가져가서
+     카카오톡 문의 버튼이 아예 안 눌렸습니다. 두 개를 갈라 놓습니다. */
+  .float-wrap, .fl-btns, .cgbot-fab{
     bottom:calc(84px + env(safe-area-inset-bottom)) !important;
+  }
+  .kko-fab{
+    bottom:calc(158px + env(safe-area-inset-bottom)) !important;   /* 84 + 58 + 16 */
   }
 }
 
