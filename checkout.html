@@ -18,7 +18,7 @@
 <script src="https://js.tosspayments.com/v2/standard"></script>
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <style>
-:root{--main:#D82558;--main2:#E95073;--light:#FFE4E6;--sub:#FFE923;--ink:#000;--gray:#797979;
+:root{--main:#D82558;--main2:#E95073;--light:#FFE4E6;--sub:#FFE923;--ink:#000;--gray:#767676;
   --line:rgba(255,255,255,.85);--glass:rgba(255,255,255,.62)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"SUIT Variable","SUIT","Noto Sans KR",sans-serif;color:var(--ink);min-height:100vh;padding-bottom:70px;
@@ -140,17 +140,17 @@ textarea{resize:vertical;min-height:70px}
       <div>
         <div class="panel">
           <h2>ORDERER · 주문자 정보</h2>
-          <label>이름 <em class="req">*</em></label><input id="fName" autocomplete="name">
-          <label>휴대전화 <em class="req">*</em></label><input id="fPhone" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel">
-          <label>이메일 <em class="req">*</em></label><input id="fEmail" type="email" autocomplete="email">
+          <label for="fName">이름 <em class="req">*</em></label><input id="fName" name="name" autocomplete="name">
+          <label for="fPhone">휴대전화 <em class="req">*</em></label><input id="fPhone" name="tel" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel">
+          <label for="fEmail">이메일 <em class="req">*</em></label><input id="fEmail" name="email" type="email" autocomplete="email">
         </div>
         <div class="panel">
           <h2>SHIPPING · 배송지</h2>
-          <label>우편번호 <em class="req">*</em></label>
-          <div class="row2"><input id="fZip" readonly><button class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
-          <label>주소 <em class="req">*</em></label><input id="fAddr1" readonly>
-          <label>상세주소 <em class="req">*</em></label><input id="fAddr2" autocomplete="address-line2">
-          <label>배송 메모 <span class="opt">선택</span></label><textarea id="fMemo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea>
+          <label for="fZip">우편번호 <em class="req">*</em></label>
+          <div class="row2"><input id="fZip" name="postcode" readonly><button type="button" class="btn-sm" onclick="findAddr()">주소 찾기</button></div>
+          <label for="fAddr1">주소 <em class="req">*</em></label><input id="fAddr1" name="address1" readonly>
+          <label for="fAddr2">상세주소 <em class="req">*</em></label><input id="fAddr2" name="address2" autocomplete="address-line2">
+          <label for="fMemo">배송 메모 <span class="opt">선택</span></label><textarea id="fMemo" name="memo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea>
         </div>
       </div>
       <div>
@@ -158,7 +158,7 @@ textarea{resize:vertical;min-height:70px}
           <h2>ORDER · 주문 상품</h2>
           <div id="items"></div>
           <div class="cpbox">
-            <label style="margin-top:4px">할인 쿠폰</label>
+            <label for="cpSel" style="margin-top:4px">할인 쿠폰</label>
             <div class="row2">
               <select id="cpSel" onchange="applyCoupon()"><option value="">쿠폰 선택 안 함</option></select>
             </div>
@@ -182,8 +182,8 @@ textarea{resize:vertical;min-height:70px}
           </div>
           <div id="bankPane">
             <div class="bankbox" id="bankBox">계좌 정보를 불러오는 중…</div>
-            <label class="f">입금자명</label>
-            <input id="depositor" placeholder="주문자와 다르면 입력해 주세요">
+            <label class="f" for="depositor">입금자명</label>
+            <input id="depositor" name="depositor" placeholder="주문자와 다르면 입력해 주세요">
             <div class="bhint">주문 후 안내되는 계좌로 입금해 주시면, 확인 후 발송해 드립니다.</div>
           </div>
           <div id="vbankPane" style="display:none">
@@ -197,8 +197,8 @@ textarea{resize:vertical;min-height:70px}
             <li>입금이 확인되면 바로 발송합니다</li>
           </ul>
         </div>
-        <label class="f">입금자명</label>
-        <input id="vDepositor" placeholder="주문자와 다르면 입력해 주세요">
+        <label class="f" for="vDepositor">입금자명</label>
+        <input id="vDepositor" name="depositor_vbank" placeholder="주문자와 다르면 입력해 주세요">
         <div class="bhint">현금영수증은 입금 후 마이페이지에서 신청하실 수 있습니다.</div>
       </div>
 
