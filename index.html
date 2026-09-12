@@ -243,7 +243,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
    · 사진 매칭: 듀잇 드라이브 사진 → 상품 카드 호버 이미지 + NEW ARRIVALS
    · 영상: 트래블잇 드라이브 mp4 → RECOMMENDED (드라이브 미리보기 임베드)
    ========================================================================== */
-:root { --ink:#000000; --gray:#797979; --line:#e8e8ed; --bg:#fff; --alt:#FFE4E6; --blue:#D82558;
+:root { --ink:#000000; --gray:#767676; --line:#e8e8ed; --bg:#fff; --alt:#FFE4E6; --blue:#D82558;
   --main:#D82558; --main2:#E95073; --pink-bg:#FFBDCC; --pink-light:#FFE4E6; --sub:#FFE923; }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
 html { scroll-behavior:smooth; }
@@ -3543,12 +3543,12 @@ body.at-foot .kko-fab{
     <h3>영상 올리기</h3>
     <p class="sub" id="ufGuide"></p>
     <label>이름 <span style="color:var(--main)">*</span></label>
-    <input id="ufName" placeholder="사이트에 표시될 이름" maxlength="20">
+    <input id="ufName" name="display_name" placeholder="사이트에 표시될 이름" maxlength="20">
     <label>영상 링크 <span style="color:var(--main)">*</span></label>
-    <input id="ufUrl" placeholder="https://www.instagram.com/reel/...">
+    <input id="ufUrl" name="url" placeholder="https://www.instagram.com/reel/...">
     <div class="hint">인스타그램 · 유튜브 · 쓰레드 · 틱톡 · 구글드라이브 링크를 넣어주세요.</div>
     <label>한 줄 소개</label>
-    <input id="ufTitle" placeholder="영상을 한 줄로 소개해 주세요" maxlength="80">
+    <input id="ufTitle" name="title" placeholder="영상을 한 줄로 소개해 주세요" maxlength="80">
     <label>남기실 말씀</label>
     <textarea id="ufMemo" placeholder="선택 사항입니다." maxlength="300"></textarea>
     <div class="uf-act">
