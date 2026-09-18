@@ -1,6 +1,10 @@
-# 멈춤 시험 문서
+# (시험 파일) 멈춤 스위치 — 지우셔도 됩니다
 
-두 번째 판입니다. 같은 경로로 다시 들어왔습니다.
-재개할 때는 **이 두 번째 판만** 나가야 하고,
-첫 번째 판은 superseded 로 남아야 합니다.
-emHOzNBDUkKA8AUOmsQfXBKWKAejZ2mXXzmuvStKume0C4hch/pqnTsbPYMzLWh3idHLyV8s1nPbUzZzr27wHIFunoDqP09EJcsPc4+JGRqwaJqeiaEAOVkMIGym8UVMpSdYaDra8gxi5oRuu5IRY77he1aUdWHm/PWgzaHrrj20nbXAV2jXxphBR5uM18Nz//0TaLprej/CUBzsApCXRwRY/GbMAgJQvA0l2eQT6KJYC8W2Qd4Koo124Q6tpqBd0qphYJCzjLk=
+2026-09-18 에 `apply-gate` 멈춤/재개 스위치를 시험하면서 만든 파일입니다.
+내용에 의미는 없습니다. 지우셔도 아무 일도 일어나지 않습니다.
+
+`gh-put` 은 파일을 **지우지 못합니다** — 만들고 고치는 것만 됩니다.
+지우는 기능을 일부러 넣지 않았습니다. 잘못 부르면 되돌리기 어려운 쪽이라,
+삭제는 사람이 하도록 남겨 두었습니다.
+
+실제 사용법은 여기 있습니다 → [`docs/반영-멈춤스위치.md`](./반영-멈춤스위치.md)
