@@ -180,6 +180,13 @@ input::placeholder,textarea::placeholder{color:#b4b4bc}
     cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
   .up-item .tag{position:absolute;left:0;right:0;bottom:0;padding:3px 5px;
     font-size:9.5px;color:#fff;background:rgba(0,0,0,.5);text-align:center}
+
+/* ── R15 좁은 화면 입력칸 확대 방지 (자동 생성) ── */
+@media (max-width:1023px){
+  .up-box input[type=text],.up-box input:not([type=file]){font-size:16px}
+  input,select,textarea{font-size:16px}
+}
+/* ── R15 끝 ── */
 </style>
 <link rel="stylesheet" href="assets/popup.css">
 <script src="assets/ui.js"></script>
