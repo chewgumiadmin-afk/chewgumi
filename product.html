@@ -542,7 +542,14 @@ const PAY_LINKS = {
   16:'', 17:'', 18:'', 19:'', 20:'', 21:''
 };
 let no = parseInt(new URLSearchParams(location.search).get('no'), 10);
-if (!P[no]) no = 11;
+/* 모르는 번호(트리플잇 101~103 처럼 아직 출시 전인 것 포함)를 받으면
+   전에는 말없이 11번(트래블잇 3봉)을 대신 보여줬습니다.
+   주소는 no=101 인데 화면은 다른 상품이고 [BUY NOW] 까지 눌리던 자리입니다.
+   번호가 적혀 있는데 우리가 모르는 번호라면 새 제품 안내로 보냅니다 (issues #149). */
+if (!P[no]) {
+  if (Number.isFinite(no)) { location.replace('index.html#newline'); }
+  no = 11;
+}
 let qty = 1, rate = null;
 const won = v => '₩' + v.toLocaleString();
 
