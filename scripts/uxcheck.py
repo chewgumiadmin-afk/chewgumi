@@ -35,7 +35,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSION = "1.0"
+VERSION = "1.2"
 STATE_FILE = ".uxcheck-state.json"
 API = "https://api.github.com"
 
@@ -471,41 +471,28 @@ def check_R14(ctx):
 
 
 def check_R15(ctx):
-    """좁은 화면에서도 — 입력칸 16px, 단추 44px. 같은 선택자는 나중 것이 이깁니다."""
-    out = []
-    rel, css = ctx["rel"], ctx["css"]
-    font, height = {}, {}          # 선택자 -> (값, 데스크톱전용?)
-    for m in re.finditer(r"([^{}]+)\{([^}]*)\}", css):
-        sel, decl = m.group(1).strip(), m.group(2)
-        sel = re.sub(r"/\*.*?\*/", "", sel, flags=re.S).strip()
-        if not sel or sel.startswith("@"):
-            continue
-        head = css[max(0, m.start() - 260):m.start()]
-        desktop_only = bool(re.search(r"@media[^{]*min-width\s*:\s*(?:9\d\d|1\d{3,})px", head))
-        if re.search(r"\b(input|select|textarea)\b", sel, re.I):
-            fs = re.search(r"font-size\s*:\s*([\d.]+)px", decl)
-            if fs:
-                font[sel] = (float(fs.group(1)), desktop_only)
-        if re.search(r"(^|[\s,.#])(btn|button)s?\b", sel, re.I) and \
-                not re.search(r"(::|:before|:after|icon|chip|tag|badge|dot|close|"
-                              r"arrow|dots|swatch|thumb|star|heart)", sel, re.I):
-            mh = re.search(r"min-height\s*:\s*([\d.]+)px", decl)
-            h = re.search(r"(?<!min-)(?<!max-)height\s*:\s*([\d.]+)px", decl)
-            val = mh or h
-            if val:
-                height[sel] = (float(val.group(1)), desktop_only)
-    for sel, (px, desktop_only) in sorted(font.items()):
-        if px < 16 and not desktop_only:
-            out.append(Finding("R15", rel, 0, "%s { font-size:%gpx }" % (sel[:70], px),
-                               "입력칸 글자가 %gpx 입니다. 아이폰이 입력할 때 화면을 확대해 버려서 "
-                               "손님이 매번 손으로 되돌려야 합니다. 16px 이상으로 하세요." % px,
-                               key="input-font:" + sel[:70]))
-    for sel, (px, _do) in sorted(height.items()):
-        if px < 44:
-            out.append(Finding("R15", rel, 0, "%s { height:%gpx }" % (sel[:70], px),
-                               "단추 높이가 %gpx 입니다. 폰에서 누르기 어렵습니다. 44px 이상으로 하세요." % px,
-                               key="btn-height:" + sel[:70]))
-    return out
+    """좁은 화면에서도 — 정적 분석으로는 판단하지 않습니다.
+
+    2026-09-18 실측으로 배운 것
+      이 자리에 CSS 를 정규식으로 읽어 'font-size 가 16px 미만'을 찾는 검사가
+      있었습니다. 50건을 보고했는데, 실제 브라우저로 69장을 재 보니 **2건**이었습니다.
+      48건이 거짓 경고였습니다.
+
+      이유는 셋입니다.
+        · 중첩된 @media 블록을 정규식이 제대로 못 읽습니다.
+        · 같은 선택자를 나중에 덮어쓰는 규칙(캐스케이드)을 따라갈 수 없습니다.
+        · 실제로 그 칸이 화면에 보이는지, 체크박스인지 알 수 없습니다.
+
+      거짓 경고 하나가 규칙 전체의 신뢰를 깎습니다. 48건이면 아무도 안 봅니다.
+      그래서 이 검사는 여기서 빼고 `scripts/uxcheck_live.py` 로 옮겼습니다.
+      그쪽은 진짜 브라우저에서 계산된 값을 재므로 틀릴 여지가 없습니다.
+
+          python3 scripts/uxcheck_live.py .        # 폰 크기로 전체 재기
+
+    교훈 — 렌더링해야 알 수 있는 것은 렌더링해서 보고, 파일만 보고 알 수 있는 것만
+    정적으로 봅니다. 규칙을 억지로 정적 검사에 끼워 넣지 않습니다.
+    """
+    return []
 
 
 CHECKS = [check_R1, check_R2, check_R3, check_R4, check_R5, check_R6, check_R7,
