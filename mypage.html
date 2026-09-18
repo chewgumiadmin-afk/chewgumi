@@ -389,6 +389,18 @@ function findAddr(){
     $('fAddr1').value=d.roadAddress||d.jibunAddress;$('fAddr2').focus();}}).open();
 }
 
+/* 주문 수정 창의 배송지 — 여기는 이미 들어온 주문의 주소를 바꾸는 자리라
+   손으로 치다 오타가 나면 물건이 엉뚱한 곳으로 갑니다 (issues #152).
+   위 findAddr 과 같은 것이되 주문 수정 창의 칸을 채웁니다. */
+function eoFindAddr(){
+  var z=document.getElementById('eoZip'), a1=document.getElementById('eoA1'),
+      a2=document.getElementById('eoA2');
+  if(!z||!a1) return;
+  if(!window.daum||!daum.Postcode){ z.readOnly=false; a1.readOnly=false; return; }
+  new daum.Postcode({oncomplete:function(d){ z.value=d.zonecode;
+    a1.value=d.roadAddress||d.jibunAddress; if(a2) a2.focus(); }}).open();
+}
+
 function flushPending(){
   let p=null; try{p=JSON.parse(localStorage.getItem('cg_pending')||'null');}catch(e){}
   if(!p||!token) return Promise.resolve();
@@ -1260,8 +1272,10 @@ body:not(.logged) #area{ display:none !important }
         + '<label>받는 분</label><input id="eoName" value="' + e2(o.buyer_name || '') + '">'
         + '<label>연락처</label><input id="eoPhone" value="' + e2(o.buyer_phone || '') + '" '
           + 'placeholder="010-0000-0000">'
-        + '<label>우편번호</label><input id="eoZip" value="' + e2(o.zipcode || '') + '" inputmode="numeric">'
-        + '<label>주소</label><input id="eoA1" value="' + e2(o.addr1 || '') + '">'
+        + '<label>우편번호</label>'
+        + '<div class="row2"><input id="eoZip" value="' + e2(o.zipcode || '') + '" inputmode="numeric" readonly>'
+          + '<button type="button" class="btn-sm" onclick="eoFindAddr()">주소 찾기</button></div>'
+        + '<label>주소</label><input id="eoA1" value="' + e2(o.addr1 || '') + '" readonly>'
         + '<label>상세주소</label><input id="eoA2" value="' + e2(o.addr2 || '') + '">'
         + '<label>요청사항</label><input id="eoMemo" value="' + e2(o.memo || '') + '" '
           + 'placeholder="문 앞에 놓아주세요">'

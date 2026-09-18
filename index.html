@@ -9399,70 +9399,14 @@ body, input, select, textarea, button,
 
 
 
-<script>
-/* USER FILMS — 카드를 누르면 크게 보기 (드라이브 영상 재생) */
-(function(){
-  var box = null;
-  function build(){
-    if (box) return box;
-    box = document.createElement('div');
-    box.className = 'uf-dim hide';
-    box.innerHTML =
-      '<div class="uf-box">' +
-        '<button class="uf-x" aria-label="닫기">\u2715</button>' +
-        '<div class="uf-media" id="ufMedia"></div>' +
-        '<div class="uf-info"><p id="ufCap"></p>' +
-        '<span class="uf-who" id="ufWho"></span></div>' +
-      '</div>';
-    document.body.appendChild(box);
-    box.addEventListener('click', function(e){
-      if (e.target === box || e.target.classList.contains('uf-x')) close();
-    });
-    return box;
-  }
-  function close(){
-    if (!box) return;
-    box.classList.add('hide');
-    var m = document.getElementById('ufMedia');
-    if (m) m.innerHTML = '';
-    document.body.classList.remove('modal-open');
-  }
-  window.ufClose = close;
-
-  window.ufOpen = function(i){
-    var cards = document.querySelectorAll('#ufGrid > .uf-card');
-    var card = cards[i];
-    if (!card) return;
-    build().classList.remove('hide');
-    document.body.classList.add('modal-open');
-
-    var m = document.getElementById('ufMedia');
-    var drive = card.getAttribute('data-drive') || '';
-    var kind = card.getAttribute('data-kind') || 'image';
-
-    if (kind === 'video' && drive) {
-      m.innerHTML = '<iframe src="https://drive.google.com/file/d/' + drive +
-        '/preview" allow="autoplay" allowfullscreen ' +
-        'style="width:100%;aspect-ratio:9/16;max-height:76svh;border:0;' +
-        'border-radius:16px;display:block;background:#000"></iframe>';
-    } else {
-      var im = card.querySelector('img');
-      m.innerHTML = '<img src="' + (im ? im.src : '') + '" alt="" ' +
-        'style="width:100%;height:auto;max-height:76svh;object-fit:contain;' +
-        'border-radius:16px;display:block">';
-    }
-    var cap = document.getElementById('ufCap');
-    if (cap) cap.textContent = card.getAttribute('data-cap') || '';
-    var ov = card.querySelector('.ov b');
-    var who = document.getElementById('ufWho');
-    if (who) who.textContent = ov ? ov.textContent : '';
-  };
-
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') close();
-  });
-})();
-</script>
+<!-- USER FILMS 크게 보기는 위쪽 한 곳에서만 합니다 (issues #152).
+     여기에 같은 기능이 한 벌 더 있었습니다. 그 쪽이 나중에 실행되면서
+     window.ufOpen / ufClose 를 덮어썼고, 스스로 만든 상자에
+     ufMedia · ufCap · ufWho 를 같은 id 로 또 붙였습니다.
+     getElementById 는 앞엣것만 돌려주므로 사진과 글은 숨어 있는
+     #ufView 로 들어가고, 정작 눈에 보이는 상자는 비어 있었습니다.
+     지워서 위쪽 구현 하나만 남깁니다 — 그 쪽이 좋아요·별점·인스타
+     링크까지 갖춘 온전한 판입니다. -->
 
 <script>
 /* 리뷰 띠 — 저절로 흐르고, 손대면 멈춥니다 */
