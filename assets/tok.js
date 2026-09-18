@@ -24,18 +24,36 @@
     try { localStorage.setItem(BEAT, String(Date.now())); } catch (e) {}
   }
 
+  /* 내가 찍기 전의 맥박을 먼저 붙잡아 둡니다.
+     전에는 keptOff 가 그때그때 맥박을 다시 읽었는데, 이 파일은 맨 아래에서
+     자기 맥박을 먼저 찍습니다. 그래서 늘 "방금 뛴 맥박"을 보게 되고
+     「다른 탭이 켜져 있구나」로 판단해, 브라우저를 닫았다 열어도
+     로그아웃되지 않았습니다. 「로그인 유지 안 함」이 사실상 꺼져 있던 자리입니다. */
+  var priorBeat = 0;
+  try { priorBeat = Number(localStorage.getItem(BEAT) || 0); } catch (e) {}
+
   function keptOff() {
     try {
       if (localStorage.getItem('cg_keep_off') !== '1') return false;
       if (sessionStorage.getItem('cg_alive') === '1') return false;
-      /* 다른 탭이 아직 뛰고 있으면 브라우저를 닫은 게 아닙니다 */
-      var last = Number(localStorage.getItem(BEAT) || 0);
-      if (last && Date.now() - last < BEAT_MS) {
+      /* 다른 탭이 아직 뛰고 있으면 브라우저를 닫은 게 아닙니다 —
+         내가 찍기 전의 맥박으로 봅니다 */
+      if (priorBeat && Date.now() - priorBeat < BEAT_MS) {
         try { sessionStorage.setItem('cg_alive', '1'); } catch (e) {}
         return false;
       }
       return true;
     } catch (e) { return false; }
+  }
+
+  /* 브라우저를 닫았다 연 것이면 여기서 바로 지웁니다.
+     cgTok·cgSession 을 부르지 않고 cg_sb 를 직접 읽는 화면이 아직 많아서,
+     읽는 쪽을 고치는 대신 남아 있지 않게 합니다 (issues #154). */
+  if (keptOff()) {
+    try {
+      localStorage.removeItem('cg_sb');
+      localStorage.removeItem('cg_keep_off');
+    } catch (e) {}
   }
 
   /* 이 탭이 살아 있다는 표시를 남깁니다 */
