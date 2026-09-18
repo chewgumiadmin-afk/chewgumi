@@ -1,0 +1,157 @@
+# 츄구미 UX-RULES 자동 검사 — 실험용 v2
+#
+# Actions 탭에서 단추만 눌러 조건을 바꿔 가며 몇 번이고 돌릴 수 있습니다.
+# 토큰을 터미널에 붙여넣을 일이 없습니다.
+#
+# 두는 곳: .github/workflows/uxcheck.yml
+
+name: UX 규칙 검사
+
+on:
+  pull_request:
+    paths:
+      - "**.html"
+      - "assets/**"
+      - "scripts/uxcheck.py"
+
+  workflow_dispatch:
+    inputs:
+      severity:
+        description: "어느 등급까지 볼까요"
+        type: choice
+        default: bug
+        options: [bug, all]
+      skip_rules:
+        description: "건너뛸 규칙 (띄어쓰기로 여러 개, 예: R15 R13)"
+        type: string
+        default: ""
+      only:
+        description: "이 화면만 검사 (띄어쓰기로 여러 개, 예: checkout.html cart.html)"
+        type: string
+        default: ""
+      register:
+        description: "이슈를 실제로 등록할까요? (끄면 보기만)"
+        type: boolean
+        default: false
+      target_repo:
+        description: "이슈를 올릴 저장소 (비우면 이 저장소)"
+        type: string
+        default: ""
+      max_issues:
+        description: "한 번에 올릴 최대 개수"
+        type: string
+        default: "5"
+      reset_state:
+        description: "지문 캐시를 비우고 처음부터 (실험용)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  uxcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1          # R-20: 저장소 전체가 있어야 R14 가 맞다
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ── 입력값을 명령줄 옵션으로 조립 ──────────────────────────
+      - name: 조건 조립
+        id: opt
+        run: |
+          OPTS=""
+          for r in ${{ inputs.skip_rules }}; do OPTS="$OPTS --skip-rule $r"; done
+          for f in ${{ inputs.only }};       do OPTS="$OPTS --only $f";      done
+          if [ "${{ inputs.reset_state }}" = "true" ]; then OPTS="$OPTS --reset-state"; fi
+          SEV="${{ inputs.severity }}"; SEV="${SEV:-all}"
+          echo "opts=$OPTS"  >> "$GITHUB_OUTPUT"
+          echo "sev=$SEV"    >> "$GITHUB_OUTPUT"
+          echo "조건: --severity $SEV $OPTS"
+
+      - name: 검사
+        continue-on-error: true   # 버그가 있으면 exit 1 — 여기서 멈추지 않는다
+        run: |
+          python3 scripts/uxcheck.py . \
+            --severity "${{ steps.opt.outputs.sev }}" \
+            ${{ steps.opt.outputs.opts }} \
+            --report md --out uxcheck-report.md \
+            --json uxcheck.json \
+            --issues uxcheck-issues.json
+
+      - name: 요약 붙이기
+        if: always()
+        run: |
+          {
+            echo "## UX 규칙 검사"
+            echo
+            echo "\`--severity ${{ steps.opt.outputs.sev }} ${{ steps.opt.outputs.opts }}\`"
+            echo
+            sed -n '1,30p' uxcheck-report.md
+            echo
+            echo "<details><summary>전체 보고서</summary>"
+            echo
+            cat uxcheck-report.md
+            echo
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 보고서 보관
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uxcheck-${{ github.run_number }}
+          path: |
+            uxcheck-report.md
+            uxcheck.json
+            uxcheck-issues.json
+          retention-days: 30
+
+      # ── register 를 켰을 때만 이슈 등록 ────────────────────────
+      #
+      # 이 저장소에 올릴 때는 secrets.GITHUB_TOKEN (자동, 등록 불필요).
+      # 다른 저장소(원본)에 올릴 때만 secrets.UPSTREAM_TOKEN 이 필요합니다.
+      - name: 이슈 등록
+        if: github.event_name == 'workflow_dispatch' && inputs.register
+        env:
+          GITHUB_TOKEN: ${{ secrets.UPSTREAM_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ inputs.target_repo }}"
+          REPO="${REPO:-${{ github.repository }}}"
+          echo "→ $REPO 에 최대 ${{ inputs.max_issues }} 건"
+          python3 scripts/uxcheck.py . \
+            --report none \
+            --severity "${{ steps.opt.outputs.sev }}" \
+            ${{ steps.opt.outputs.opts }} \
+            --github --repo "$REPO" \
+            --max-issues "${{ inputs.max_issues }}"
+
+      # ── 지문 캐시를 저장소에 남긴다 (등록했을 때만) ────────────
+      # 이게 있어야 다음 실행에서 같은 이슈를 또 안 올립니다.
+      - name: 지문 캐시 커밋
+        if: github.event_name == 'workflow_dispatch' && inputs.register
+        run: |
+          if [ -n "$(git status --porcelain .uxcheck-state.json)" ]; then
+            git config user.name  "uxcheck"
+            git config user.email "qa-bot@chewgumi.com"
+            git add .uxcheck-state.json
+            git commit -m "QA: 지문 캐시 갱신 [skip ci]"
+            git push
+          else
+            echo "바뀐 지문 없음"
+          fi
+
+# ── 정기 실행 (W4 에서 켭니다) ────────────────────────────────
+# 위 on: 아래에 넣으면 됩니다. 지금은 꺼 둡니다 —
+# 사람 없이 도는 것은 W4 에서 "상태 변화만 알림 + 승인 체크포인트"를
+# 설계한 뒤에 켜기로 했습니다.
+#
+#   schedule:
+#     - cron: "0 0 * * 1"    # 매주 월요일 09:00 KST
