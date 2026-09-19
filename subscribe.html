@@ -12,6 +12,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 
 <script src="assets/site.js"></script>
+<!-- 주소 찾기 — checkout.html 과 같은 것을 씁니다 (issues #152) -->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <meta name="description" content="매달 알아서 도착하는 츄구미. 필요한 만큼 골라 구독하세요.">
 <meta property="og:type" content="website">
@@ -111,6 +113,12 @@ input,select,textarea{width:100%;padding:12px 13px;border-radius:12px;font-size:
 textarea{resize:vertical;min-height:70px;line-height:1.7}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
 .fg .w2{grid-column:span 2}
+/* 우편번호 칸 + 주소 찾기 단추 (issues #152) */
+.row2{display:flex;gap:8px;align-items:center}
+.row2 input{flex:1;min-width:0}
+.btn-sm{flex:0 0 auto;padding:0 14px;height:42px;border:1px solid var(--line);border-radius:10px;
+  font-size:12.5px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.9);white-space:nowrap}
+input[readonly]{background:rgba(0,0,0,.035);cursor:default}
 .btn{width:100%;margin-top:18px;padding:16px 0;border:0;border-radius:999px;font-size:15px;font-weight:700;
   color:#fff;background:linear-gradient(135deg,var(--main2),var(--main));
   box-shadow:0 12px 28px rgba(216,37,88,.3)}
@@ -197,8 +205,9 @@ textarea{resize:vertical;min-height:70px;line-height:1.7}
       <div><label>받는 분 이름 <span style="color:var(--main)">*</span></label><input id="fName"></div>
       <div><label>휴대전화 <span style="color:var(--main)">*</span></label><input id="fPhone" inputmode="numeric" placeholder="010-0000-0000"></div>
       <div class="w2"><label>이메일</label><input id="fEmail" type="email"></div>
-      <div><label>우편번호</label><input id="fZip" inputmode="numeric"></div>
-      <div><label>주소 <span style="color:var(--main)">*</span></label><input id="fAddr1"></div>
+      <div><label>우편번호</label>
+        <div class="row2"><input id="fZip" inputmode="numeric" readonly><button type="button" class="btn-sm" onclick="findAddr()">주소 찾기</button></div></div>
+      <div><label>주소 <span style="color:var(--main)">*</span></label><input id="fAddr1" readonly></div>
       <div class="w2"><label>상세주소</label><input id="fAddr2"></div>
       <div class="w2"><label>배송 메모</label><textarea id="fMemo" placeholder="예) 부재 시 경비실에 맡겨주세요"></textarea></div>
     </div>
@@ -331,6 +340,15 @@ function fillMe(){
     if(!$('fAddr1').value) $('fAddr1').value=p.addr1||'';
     if(!$('fAddr2').value) $('fAddr2').value=p.addr2||'';
   }).catch(()=>{});
+}
+
+/* 주소는 찾기로만 채웁니다 — 손으로 치면 오타가 나고 배송이 잘못 갑니다 (issues #152).
+   checkout.html 의 findAddr 와 같습니다. 우편번호 스크립트가 못 올라온 경우에는
+   칸을 열어 주어, 주소를 아예 못 넣는 일이 없게 합니다. */
+function findAddr(){
+  if(!window.daum||!daum.Postcode){ $('fZip').readOnly=false; $('fAddr1').readOnly=false; return; }
+  new daum.Postcode({oncomplete:d=>{ $('fZip').value=d.zonecode;
+    $('fAddr1').value=d.roadAddress||d.jibunAddress; $('fAddr2').focus(); }}).open();
 }
 
 function apply(){
