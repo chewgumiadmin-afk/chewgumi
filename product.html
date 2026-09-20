@@ -382,7 +382,14 @@ function paintWish(){
   b.textContent = on ? '♥' : '♡';
   b.classList.toggle('on', on);
 }
+/* 관심상품 단추는 한 번에 한 번만. WISH 배열은 서버가 답한 뒤에야 바뀌는데,
+   그 전에 또 누르면 같은 판단(on)이 다시 나와 POST 가 두 번 나갑니다.
+   #154 의 cg_beat 과 같은 모양입니다 — 아직 갱신되지 않은 상태를 보고 판단하는 것.
+   빠르게 담기·빼기를 오가면 응답 순서가 뒤집혀 원하지 않은 쪽으로 남기도 합니다. */
+var wishBusy = false;
+
 function toggleWish(){
+  if (wishBusy) return;
   if (!sbToken) {
     cgModal({ icon:'♡', title:'로그인이 필요합니다',
       desc:'관심상품은 회원 계정에 저장됩니다.<br>로그인하시면 어느 기기에서나 확인하실 수 있어요.',
@@ -390,11 +397,19 @@ function toggleWish(){
     return;
   }
   const on = WISH.indexOf(no) > -1;
+  const wishBtn = document.getElementById('pWish');
+  wishBusy = true;
+  if (wishBtn) { wishBtn.disabled = true; wishBtn.setAttribute('aria-busy', 'true'); }
+  const unlockWish = () => {
+    wishBusy = false;
+    if (wishBtn) { wishBtn.disabled = false; wishBtn.removeAttribute('aria-busy'); }
+  };
   if (on) {
     fetch(SB_URL + '/rest/v1/wishes?product_no=eq.' + no, { method:'DELETE',
       headers:{ apikey:SB_KEY, Authorization:'Bearer ' + sbToken } })
       .then(r => { if (r.ok) { WISH = WISH.filter(x => x !== no); paintWish();
-        cgModal({ icon:'♡', title:'관심상품에서 뺐습니다', actions:[{ t:'확인', k:'ok' }] }); } });
+        cgModal({ icon:'♡', title:'관심상품에서 뺐습니다', actions:[{ t:'확인', k:'ok' }] }); } })
+      .then(unlockWish, unlockWish);
   } else {
     fetch(SB_URL + '/rest/v1/wishes', { method:'POST',
       headers:{ apikey:SB_KEY, Authorization:'Bearer ' + sbToken, 'Content-Type':'application/json', Prefer:'return=minimal' },
@@ -407,7 +422,8 @@ function toggleWish(){
         else if (r.status === 401) { sbToken = null; try{localStorage.removeItem('cg_sb');}catch(e){}
           cgModal({ icon:'!', title:'로그인이 만료되었습니다', desc:'다시 로그인해 주세요.',
             actions:[{ t:'로그인', k:'ok', href:'join.html' }, { t:'닫기' }] }); }
-      });
+      })
+      .then(unlockWish, unlockWish);
   }
 }
 
