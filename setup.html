@@ -215,6 +215,24 @@ button{font-family:inherit}
 .board .btx{display:flex; flex-direction:column; gap:3px; min-width:0}
 .board .btx b{font-size:13.5px; font-weight:700; line-height:1.35; word-break:keep-all}
 .board .btx i{font-style:normal; font-size:11.5px; color:var(--ink-4)}
+
+/* 「오늘 가게 모습」 — 읽기 전용. 개수만 보여 주고, 누를 것은 없습니다. */
+.board.shop .slist{display:grid; gap:9px}
+.board.shop .sitem{
+  display:flex; align-items:flex-start; gap:10px;
+  background:var(--bg); border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:12px 13px;
+}
+.board.shop .sp{
+  flex:none; width:19px; height:19px; margin-top:1px; border-radius:50%;
+  display:grid; place-items:center; font-size:11px; font-weight:800; color:#fff;
+  background:var(--ink-4);
+}
+.board.shop .sp.p1{background:var(--brand)}
+.board.shop .stx{display:flex; flex-direction:column; gap:3px; min-width:0}
+.board.shop .stx b{font-size:13.5px; font-weight:700; line-height:1.35; word-break:keep-all}
+.board.shop .stx i{font-style:normal; font-size:11.5px; color:var(--ink-4)}
+.board.shop .sok{font-size:13px; color:var(--ink-3); padding:4px 1px}
 .board .bitem.ok .btx b{color:var(--ink-3); font-weight:650}
 .board .bitem.ok .btx i{color:var(--ok)}
 .board .bnote{margin:16px 0 0; font-size:13px; line-height:1.7; color:var(--ink-2)}
@@ -427,6 +445,16 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
 
   <p class="due">이 링크는 <b id="f-due">–</b>까지 열려 있습니다.</p>
 
+  <!-- 가게가 지금 어떤지. 숫자만 읽어 옵니다 — 여기서 바꾸는 것은 없습니다. -->
+  <div class="board shop hide" id="shop">
+    <div class="bhead">
+      <h2>오늘 가게 모습</h2>
+      <span class="bcount" id="s-at"></span>
+    </div>
+    <div class="slist" id="s-list"></div>
+    <p class="bnote" id="s-note"></p>
+  </div>
+
   <!-- 넣으신 값의 현황. 항목을 누르면 그 카드로 바로 갑니다. -->
   <div class="board" id="board">
     <div class="bhead">
@@ -551,6 +579,7 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
   var KEY       = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';  /* 공개키 — 노출돼도 됩니다 */
   var FN        = SB + '/functions/v1/setup-wizard';
   var HELP_FN   = SB + '/functions/v1/setup-help';
+  var TODO_FN   = SB + '/functions/v1/card-todos';   /* 읽기 전용 — 개수만 옵니다 */
   var KAKAO_URL = 'https://open.kakao.com/o/ggxqCGMi';               /* 담당자 오픈채팅 */
 
   /* 카드별 예상 소요 시간(분) · 미리 준비할 것.
@@ -713,6 +742,48 @@ label.chk input{width:19px; height:19px; margin-top:2px; flex:none; accent-color
     if (forName) $('who').textContent = forName + '님';
     $('intro-note').textContent = '';   /* 같은 말을 현황판이 더 잘 합니다 */
     paintBoard();
+    paintShop();
+  }
+
+  /* ── 오늘 가게 모습 ─────────────────────────────────────────
+     대표님이 이 링크만 가지고 계셔도 가게가 어떤지는 아셔야 합니다.
+     그래서 「발송할 주문 3건」 같은 **개수만** 읽어 옵니다.
+
+     여기서 발송하거나 환불하지는 않습니다. 링크를 가진 사람이면
+     누구나 열 수 있는 화면이라, 바꾸는 일은 로그인한 뒤
+     console.html 에서만 하도록 두었습니다.
+
+     창구가 아직 없으면 조용히 접어 둡니다 — 설정이 본래 할 일이라
+     여기서 오류를 띄워 대표님을 붙잡지 않습니다. */
+  var shopDone = false;
+  function paintShop() {
+    var box = $('shop');
+    if (!box || shopDone) return;
+    shopDone = true;
+
+    fetch(TODO_FN, {
+      method: 'POST',
+      headers: { apikey: KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token })
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.ok) return;
+        var t = d.todos || [];
+        $('s-at').textContent = d.at ? d.at + ' 기준' : '';
+        $('s-list').innerHTML = t.length
+          ? t.map(function (x) {
+              return '<div class="sitem"><span class="sp p' + (x.p === 1 ? '1' : '2') + '">'
+                + (x.p === 1 ? '!' : '·') + '</span>'
+                + '<span class="stx"><b>' + esc(x.t) + '</b><i>' + esc(x.d) + '</i></span></div>';
+            }).join('')
+          : '<div class="sok">지금 급히 처리할 일은 없습니다.</div>';
+        $('s-note').textContent = t.length
+          ? '여기서는 보기만 됩니다. 처리는 관리 화면에서 직원이 합니다.'
+          : '';
+        box.classList.remove('hide');
+      })
+      .catch(function () { /* 조용히 둡니다 */ });
   }
 
   /* ── 첫 화면 현황판 ─────────────────────────────────────────
