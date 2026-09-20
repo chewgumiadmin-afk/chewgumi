@@ -496,7 +496,11 @@ def check_R12(ctx):
     """주문번호만 알면 보는 곳에서는 개인정보 가리기."""
     out = []
     rel, js = ctx["rel"], ctx["js"]
-    if not re.search(r"guest_\w+|guestLookup|nonmember_", js):
+    # 「비회원 조회」 경로만 봅니다. guest_ 로 시작한다고 다 조회가 아닙니다 —
+    # guest_cancel · guest_change_qty · guest_edit_addr 는 자기 주문을 고치는
+    # 쓰기 호출이고, 남의 개인정보를 보여주는 자리가 아닙니다.
+    # 이것까지 세면 mypage.html 처럼 로그인해야 들어가는 화면이 걸립니다.
+    if not re.search(r"guest_(order|items|lookup|find|search)\b|guestLookup|nonmember_", js):
         return out
     if not re.search(r"(mask|\*\*\*\*|가리|replace\s*\(\s*/.*\d)", js):
         out.append(Finding("R12", rel, 0, "비회원 조회 · 마스킹 코드 없음",
