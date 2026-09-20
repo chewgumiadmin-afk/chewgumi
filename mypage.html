@@ -343,7 +343,7 @@ const KEY='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 const ST={pending:'입금대기',paid:'결제완료',preparing:'배송준비',shipping:'배송중',
   delivered:'배송완료',cancelled:'취소',refunded:'환불'};
 let token=null,who='';
-try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s){token=s.t;who=s.u;}}catch(e){}
+try{const s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null'));if(s){token=s.t;who=s.u;}}catch(e){}
 const $=id=>document.getElementById(id);
 const won=v=>Number(v||0).toLocaleString();
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
@@ -671,7 +671,7 @@ sync();
   var SBn='https://psynvpuedzjvytsgdhgg.supabase.co';
   var Kn='sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
   function show(){
-    var t=null; try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)t=s.t;}catch(e){}
+    var t=null; try{var s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null')); if(s)t=s.t;}catch(e){}
     if(!t) return;
     fetch(SBn+'/rest/v1/profiles?select=nickname,nickname_hex&limit=1',
       {headers:{apikey:Kn,Authorization:'Bearer '+t}})

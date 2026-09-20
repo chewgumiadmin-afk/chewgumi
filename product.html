@@ -367,7 +367,7 @@ function cgModal(o){
 const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
 const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 let sbToken = null, sbUser = null, WISH = [];
-try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) { sbToken = s.t; sbUser = s.u; } } catch(e){}
+try { const s = (window.cgSession ? cgSession() : JSON.parse(localStorage.getItem('cg_sb') || 'null')); if (s) { sbToken = s.t; sbUser = s.u; } } catch(e){}
 
 function loadWish(){
   if (!sbToken) { WISH = []; paintWish(); return; }
