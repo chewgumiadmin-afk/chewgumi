@@ -50,6 +50,7 @@ input,select,textarea{border:1px solid var(--line);background:rgba(255,255,255,.
 .msg{color:var(--gray);min-height:17px}
 .msg.bad{color:var(--main)}.msg.ok{color:var(--ok)}
 .empty{text-align:center;color:var(--gray)}
+.tag-ai{display:inline-block;margin-left:8px;vertical-align:1px;font-size:10px;font-weight:800;letter-spacing:0;padding:2px 9px;border-radius:999px;background:rgba(216,37,88,.1);color:var(--main)}
 .hide{display:none}
 
 /* 채팅 */
@@ -329,6 +330,8 @@ label:has(> input[type=checkbox]){
 <script src="assets/tok.js"></script>
 <link rel="stylesheet" href="assets/qa-tool.css">
 <script src="assets/qa-tool.js" defer></script>
+<link rel="stylesheet" href="assets/order-assist.css">
+<script src="assets/order-assist.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -382,6 +385,16 @@ label:has(> input[type=checkbox]){
     <div class="panel">
       <h2>지금 처리할 일</h2>
       <div id="todos"><div class="empty">확인 중…</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>주문 처리 <span class="tag-ai">AI</span></h2>
+      <div class="msg" style="margin:-6px 0 12px">
+        위 「지금 처리할 일」에서 본 것을 여기서 바로 처리합니다.
+        <b>말한다고 바로 바뀌지 않습니다</b> — 무엇이 어떻게 바뀌는지와
+        그 판단의 근거가 된 주문을 먼저 보여드립니다.
+      </div>
+      <div id="oa"></div>
     </div>
 
     <div class="panel">
@@ -465,7 +478,32 @@ function sync(){
     });
   }const on=!!token;
   $('login').classList.toggle('hide',on);$('area').classList.toggle('hide',!on);
-  if(on){ $('me').innerHTML='<b>'+esc(who)+'</b> 님'; boot(); setTimeout(function(){try{if(typeof pshUI==='function')pshUI();if(typeof hlLoad==='function')hlLoad();}catch(e){}},600); }}
+  if(on){ $('me').innerHTML='<b>'+esc(who)+'</b> 님'; boot(); oaInit(); setTimeout(function(){try{if(typeof pshUI==='function')pshUI();if(typeof hlLoad==='function')hlLoad();}catch(e){}},600); }}
+
+/* 주문 처리 칸 — 로그인한 뒤에 한 번만 켭니다.
+   여기에는 이 화면이 받아 둔 주문 목록이 없으므로 lookup 을 주지 않습니다.
+   그러면 order-assist 가 답에 나온 주문번호만 따로 받아 근거 표를 채웁니다. */
+let _oa=null;
+function oaInit(){
+  if(_oa || !window.cgOrderAssist || !$('oa')) return;
+  _oa = cgOrderAssist({
+    mount:'oa',
+    onDone:function(){ todosReload(); }
+  });
+}
+
+/* 처리한 뒤 「지금 처리할 일」만 다시 받아 옵니다 — 대화는 건드리지 않습니다 */
+function todosReload(){
+  call({action:'snapshot'}).then(function(r){
+    if(!r.ok) return;
+    const t=(r.d&&r.d.todos)||[];
+    $('todos').innerHTML = t.length ? t.map(x=>
+      '<div class="todo"><span class="p p'+x.p+'">'+x.p+'</span>'
+      +'<span class="b"><b>'+esc(x.t)+'</b><span>'+esc(x.d)+'</span></span>'
+      +'<a class="mini" href="'+esc(x.u)+'">처리</a></div>').join('')
+      : '<div class="empty" style="padding:32px 0">처리할 일이 없습니다.</div>';
+  }).catch(function(){});
+}
 function doLogin(){
   const email=$('em').value.trim(),pw=$('pw').value;
   if(!email||!pw)return $('lmsg').textContent='이메일과 비밀번호를 입력해 주세요.';
