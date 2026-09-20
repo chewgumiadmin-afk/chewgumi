@@ -301,7 +301,14 @@ function addComment(id){
       headers:{apikey:KEY,Authorization:'Bearer '+KEY,
         'Content-Type':'application/json',Prefer:'return=minimal'},
       body:JSON.stringify({issue_id:id,author:name||'익명',body:b})})
-    .then(()=>load()).catch(()=>alert('등록에 실패했습니다.'));
+    .then(function(r){
+      if(!r.ok) return r.text().then(function(x){
+        var why='';
+        try{ why=(JSON.parse(x||'{}').message)||''; }catch(e){ why=x||''; }
+        throw new Error(why.slice(0,120) || ('서버가 '+r.status+' 로 답했습니다')); });
+      return load();
+    })
+    .catch(function(e){ alert('의견을 등록하지 못했습니다.\n'+(e && e.message ? e.message : '잠시 뒤 다시 눌러 주세요.')); });
   });
 }
 function setStatus(id){
@@ -312,7 +319,14 @@ function setStatus(id){
       headers:{apikey:KEY,Authorization:'Bearer '+token,
         'Content-Type':'application/json',Prefer:'return=minimal'},
       body:JSON.stringify({status:s})})
-    .then(()=>load()).catch(()=>alert('변경에 실패했습니다.'));
+    .then(function(r){
+      if(!r.ok) return r.text().then(function(x){
+        var why='';
+        try{ why=(JSON.parse(x||'{}').message)||''; }catch(e){ why=x||''; }
+        throw new Error(why.slice(0,120) || ('서버가 '+r.status+' 로 답했습니다')); });
+      return load();
+    })
+    .catch(function(e){ alert('상태를 바꾸지 못했습니다.\n'+(e && e.message ? e.message : '권한이 있는 계정인지 확인해 주세요.')); });
   });
 }
 </script>
