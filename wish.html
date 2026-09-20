@@ -271,7 +271,7 @@ const P = {
 const SB_URL = 'https://psynvpuedzjvytsgdhgg.supabase.co';
 const SB_KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
 let sbToken = null;
-try { const s = JSON.parse(localStorage.getItem('cg_sb') || 'null'); if (s) sbToken = s.t; } catch(e){}
+try { const s = (window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null')); if (s) sbToken = s.t; } catch(e){}
 const won = v => '₩' + Number(v).toLocaleString();
 
 function shell(inner){ document.getElementById('body').innerHTML = '<div class="panel">' + inner + '</div>'; }

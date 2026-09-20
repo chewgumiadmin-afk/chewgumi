@@ -268,7 +268,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const won=n=>'₩'+Number(n||0).toLocaleString('ko-KR');
 function say(t,k){ const m=$('m1'); m.className='msg'+(k?' '+k:''); m.textContent=t; }
-function tok(){ try{ return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||KEY; }catch(e){ return KEY; } }
+function tok(){ try{ return ((window.cgSession?(cgSession()||{}):JSON.parse(localStorage.getItem('cg_sb')||'{}'))).t||KEY; }catch(e){ return KEY; } }
 
 /* 채널 */
 function loadChannels(){

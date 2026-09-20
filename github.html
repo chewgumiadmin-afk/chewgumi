@@ -206,7 +206,7 @@ const dt=s=>s?new Date(s).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',
 let token=null,who='',curFile='';
 try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
 const H=()=>({apikey:KEY,'Content-Type':'application/json',
-  Authorization:'Bearer '+((function(){try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null');return s&&s.t||'';}catch(e){return '';}})())});
+  Authorization:'Bearer '+((function(){try{var s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null'));return s&&s.t||'';}catch(e){return '';}})())});
 const call=p=>fetch(FN,{method:'POST',headers:H(),body:JSON.stringify(p)})
   .then(r=>r.json().then(d=>({ok:r.ok,d})));
 

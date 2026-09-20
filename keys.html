@@ -243,7 +243,7 @@ const H={apikey:KEY,Authorization:'Bearer '+tok(),'Content-Type':'application/js
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 function say(t,k){ const m=$('m1'); m.className='msg'+(k?' '+k:''); m.textContent=t; }
-function tok(){ try{ return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''; }catch(e){ return ''; } }
+function tok(){ try{ return ((window.cgSession?(cgSession()||{}):JSON.parse(localStorage.getItem('cg_sb')||'{}'))).t||''; }catch(e){ return ''; } }
 
 let ROWS=[];
 

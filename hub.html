@@ -199,7 +199,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 let token=null,who='',qa=false;
 try{ if(window.CGAuth && CGAuth.isIn()){ var u=CGAuth.user()||{};
-  who=u.name||''; token=(JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''; } }catch(e){}
+  who=u.name||''; token=((window.cgSession?(cgSession()||{}):JSON.parse(localStorage.getItem('cg_sb')||'{}'))).t||''; } }catch(e){}
 try{ qa = localStorage.getItem('cg_qa_mode')==='1'; }catch(e){}
 
 const I={
@@ -303,7 +303,7 @@ function load(){
   var bd={};
   fetch(SB+'/functions/v1/admin-chat',{method:'POST',
     headers:{apikey:KEY,Authorization:'Bearer '+
-      ((JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''),
+      (((window.cgSession?(cgSession()||{}):JSON.parse(localStorage.getItem('cg_sb')||'{}'))).t||''),
       'Content-Type':'application/json'},
     body:JSON.stringify({action:'snapshot'})})
   .then(function(r){return r.json();})
@@ -334,7 +334,7 @@ sync();
   var KR={ceo:'대표',dev:'개발자',design:'디자이너',qa:'점검',staff:'운영',guest:'손님'};
 
   function tok(){
-    try{ var s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+    try{ var s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null'));
       if(!s||!s.t) return '';
       var _ex = s.exp ? s.exp*1000 : (s.e||0); if (_ex && Date.now() > _ex) return '';
       return s.t; }catch(e){ return ''; }

@@ -210,7 +210,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const ST={open:'대기',doing:'진행중',done:'완료',hold:'보류'};
 const KD={bug:'오류',design:'디자인',feature:'기능',question:'문의',urgent:'긴급'};
 let kind='bug', filt='all', ISSUES=[], token=null, isAdmin=false;
-try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');if(s)token=s.t;}catch(e){}
+try{const s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null'));if(s)token=s.t;}catch(e){}
 try{const n=localStorage.getItem('cg_reporter');if(n)$('who').value=n;}catch(e){}
 
 document.querySelectorAll('#kinds button').forEach(b=>b.onclick=()=>{

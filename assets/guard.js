@@ -15,8 +15,15 @@
   var OPEN = /^(index|product|cart|checkout|join|login|reset|mypage|wish|subscribe|tracking|about|faq|guide|terms|privacy|notice|review|qna|reports|help)\.html$/;
   if (OPEN.test(page) || page === '') return;
 
+  /* cg_sb 를 직접 읽지 않고 cgSession() 을 먼저 씁니다 — tok.js 가 만료와
+     「로그인 유지 안 함」을 확인해 줍니다. 직접 읽으면 만료된 토큰으로
+     page_access 를 부르게 되고, 손님은 「로그인이 만료되었습니다」가 아니라
+     「권한이 없습니다」를 봅니다. tok.js 가 아직 없으면 예전처럼 읽습니다. */
   function token(){
-    try { return (JSON.parse(localStorage.getItem('cg_sb') || '{}')).t || ''; }
+    try {
+      if (window.cgTok) return cgTok() || '';
+      return (JSON.parse(localStorage.getItem('cg_sb') || '{}')).t || '';
+    }
     catch (e) { return ''; }
   }
 
