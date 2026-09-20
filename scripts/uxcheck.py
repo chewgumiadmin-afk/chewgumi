@@ -273,19 +273,67 @@ def check_R3(ctx):
     return out
 
 
+def _id_regions(html):
+    """id 가 나온 자리를 「같은 화면에 함께 있을 수 있는 묶음」으로 나눕니다.
+
+    파일 전체에서 id 를 세면 거짓경고가 납니다. 이 저장소의 화면들은 자바스크립트
+    문자열로 화면을 통째로 만들어 innerHTML 에 넣고, 쓸 때마다 앞엣것을 지웁니다.
+    그래서 manage.html 의 「회원」 판과 「후기」 판이 둘 다 id="list" 를 써도
+    한 순간에 하나만 존재합니다. 이런 것까지 버그로 세면 보고서를 믿지 않게 됩니다.
+
+      markup      <script> 밖의 진짜 마크업 — 늘 함께 있습니다
+      script:N    <script> 안, 세미콜론으로 끊은 한 덩어리
+                  한 덩어리 안에서 두 번 나오면 같은 틀 안이라 정말 겹칩니다
+
+    돌려주는 것: {id: [(구역이름, 줄번호), ...]}
+    """
+    ID_RE = re.compile(r"<[a-zA-Z][^>]*\bid\s*=\s*[\"']([^\"']+)[\"']")
+    spans = []   # (시작, 끝, 구역이름)
+    pos, n = 0, 0
+    for m in re.finditer(r"<script\b[^>]*>(.*?)</script>", html, re.S | re.I):
+        if m.start() > pos:
+            spans.append((pos, m.start(), "markup"))
+        body_start = m.start(1)
+        chunk_start = body_start
+        for sm in re.finditer(r";", m.group(1)):
+            spans.append((chunk_start, body_start + sm.start() + 1, "script:%d" % n))
+            chunk_start = body_start + sm.start() + 1
+            n += 1
+        if chunk_start < m.end(1):
+            spans.append((chunk_start, m.end(1), "script:%d" % n)); n += 1
+        pos = m.end()
+    if pos < len(html):
+        spans.append((pos, len(html), "markup"))
+
+    seen = {}
+    for m in ID_RE.finditer(html):
+        i = m.start()
+        region = next((name for a, b, name in spans if a <= i < b), "markup")
+        seen.setdefault(m.group(1), []).append((region, lineno(html, i)))
+    return seen
+
+
 def check_R4(ctx):
-    """한 화면에 같은 id 가 둘 이상."""
+    """한 화면에 같은 id 가 둘 이상.
+
+    같은 구역 안에서 두 번 나올 때만 셉니다. 서로 다른 틀에 흩어져 있으면
+    한 순간에 하나만 존재하므로 버그가 아닙니다 (`_id_regions` 참고).
+    """
     out = []
     html, rel = ctx["html"], ctx["rel"]
-    seen = {}
-    for m in re.finditer(r"<[a-zA-Z][^>]*\bid\s*=\s*[\"']([^\"']+)[\"']", html):
-        seen.setdefault(m.group(1), []).append(lineno(html, m.start()))
-    for ident, lines in sorted(seen.items()):
-        if len(lines) > 1:
-            out.append(Finding("R4", rel, lines[0], 'id="%s"' % ident,
-                               "id `%s` 가 %d 번 나옵니다 (줄 %s). 코드는 맨 앞엣것만 찾아서 "
-                               "뒤엣것은 죽습니다." % (ident, len(lines), ", ".join(map(str, lines))),
-                               key="dup-id:" + ident))
+    for ident, hits in sorted(_id_regions(html).items()):
+        if len(hits) < 2:
+            continue
+        per = {}
+        for region, ln in hits:
+            per.setdefault(region, []).append(ln)
+        clash = max(per.values(), key=len)
+        if len(clash) < 2:
+            continue    # 틀마다 하나씩 — 함께 있지 않습니다
+        out.append(Finding("R4", rel, clash[0], 'id="%s"' % ident,
+                           "id `%s` 가 한 틀 안에서 %d 번 나옵니다 (줄 %s). 코드는 맨 앞엣것만 "
+                           "찾아서 뒤엣것은 죽습니다." % (ident, len(clash), ", ".join(map(str, clash))),
+                           key="dup-id:" + ident))
     return out
 
 
