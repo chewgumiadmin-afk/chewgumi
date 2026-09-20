@@ -239,7 +239,7 @@ window.myId = myId;
       <label>상세주소</label><input id="fAddr2" name="address2">
       <div class="chk"><input type="checkbox" id="mSms" name="marketing_sms" value="1"><label for="mSms" style="margin:0">SMS 마케팅 수신 동의</label></div>
       <div class="chk"><input type="checkbox" id="mEmail" name="marketing_email" value="1"><label for="mEmail" style="margin:0">이메일 마케팅 수신 동의</label></div>
-      <div style="margin-top:16px"><button class="btn" onclick="saveProfile()">저장하기</button></div></div>
+      <div style="margin-top:16px"><button class="btn" id="pSaveBtn" onclick="saveProfile()">저장하기</button></div></div>
       <div class="msg" id="pmsg"></div>
     </div>
 
@@ -424,12 +424,27 @@ function loadProfile(){
     $('pts').textContent=won(p.points); if(window.cgShowInfo) cgShowInfo(p);
   }).catch(s=>{if(s===401){doLogout();}});
 }
+/* 저장은 한 번에 하나만. 「저장하기」를 두 번 누르면 profiles 를 두 번 고치고
+   consents 에 같은 동의가 두 줄 들어갑니다. 동의 기록은 남는 것이 목적이라
+   중복이 특히 곤란합니다 (uxcheck R11). */
+var savingProfile = false;
+
 function saveProfile(){
+  if (savingProfile) return;
+
   var uid = (window.myId ? myId() : '');
   if (!uid) {
     $('pmsg').textContent = '로그인이 풀렸습니다. 다시 로그인해 주세요.';
     $('pmsg').className = 'pm bad';
     return;
+  }
+
+  savingProfile = true;
+  var saveBtn = $('pSaveBtn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.setAttribute('aria-busy', 'true'); }
+  function unlockSave(){
+    savingProfile = false;
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.removeAttribute('aria-busy'); }
   }
 
   var body = {
@@ -502,7 +517,8 @@ function saveProfile(){
   .catch(function(){
     $('pmsg').textContent = '연결하지 못했습니다.';
     $('pmsg').className = 'pm bad';
-  });
+  })
+  .then(unlockSave, unlockSave);
 }
 
 function showConsents(){
