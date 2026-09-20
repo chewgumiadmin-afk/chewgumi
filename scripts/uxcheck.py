@@ -446,18 +446,48 @@ def check_R10(ctx):
     return out
 
 
+# 기다리는 동안 「알려주기」와 「잠그기」는 다른 일입니다.
+#   안내  — 손님이 답답해하지 않게 합니다
+#   잠금  — 두 번 눌리는 것을 실제로 막습니다
+# 안내만 있고 잠금이 없으면 주문·삭제가 두 번 들어갈 수 있습니다.
+# fetch 한 덩어리 안에서 주소와 method 를 함께 봅니다.
+# POST 라고 다 「바꾸는」 호출이 아닙니다 — 엣지 함수(/functions/v1/…)는 배송비
+# 계산처럼 읽기만 하는 것도 프로토콜상 POST 입니다. 두 번 불려도 손해가 없습니다.
+# 표를 직접 건드리는 /rest/v1/<표> 의 POST·PATCH·PUT·DELETE 만 셉니다.
+_R11_WRITE = re.compile(
+    r"fetch\s*\(([^;]{0,400}?)method\s*:\s*['\"](POST|PATCH|PUT|DELETE)['\"]", re.S | re.I)
+_R11_LOCK = re.compile(
+    r"\b(busy|isBusy|loading|isLoading|lock|locked|inFlight|sending|saving|submitting)\b\s*=\s*(?:true|!0)"
+    r"|disabled\s*=\s*(?:true|!0)|\.disabled\b|setAttribute\(\s*['\"]disabled"
+    r"|aria-busy")
+_R11_TELL = re.compile(r"중…|중\.\.\.|중['\"`]|저장하는 중|처리 중|불러오는 중")
+
+
 def check_R11(ctx):
-    """기다리는 동안 알려주고 단추를 잠그기."""
+    """기다리는 동안 알려주고 단추를 잠그기.
+
+    읽기만 두 번 하는 화면은 두 번 눌려도 손해가 없습니다. 서버에 **쓰는**
+    호출(POST·PATCH·PUT·DELETE)이 있을 때만 봅니다.
+    """
     out = []
     rel, js = ctx["rel"], ctx["js"]
-    n_fetch = len(re.findall(r"\bfetch\s*\(", js))
-    if n_fetch < 2:
+    writes = [m for m in _R11_WRITE.findall(js) if "/rest/v1/" in m[0]]
+    if not writes:
         return out
-    n_guard = len(re.findall(r"disabled\s*=\s*(?:true|!0)|\.disabled\b|aria-busy|저장하는 중|처리 중|불러오는 중", js))
-    if n_guard == 0:
-        out.append(Finding("R11", rel, 0, "fetch %d 곳 · 단추 잠금/안내 0 곳" % n_fetch,
-                           "서버를 %d 번 부르는데 기다리는 동안 안내도, 단추 잠금도 없습니다. "
-                           "두 번 눌리면 주문이 두 번 들어갑니다." % n_fetch,
+    if _R11_LOCK.search(js):
+        return out          # 잠금이 있으면 통과 — 안내 문구는 화면마다 다릅니다
+
+    kinds = ", ".join(sorted({m[1].upper() for m in writes}))
+    if _R11_TELL.search(js):
+        out.append(Finding("R11", rel, 0, "쓰기 %d 곳(%s) · 안내 있음 · 잠금 없음" % (len(writes), kinds),
+                           "서버에 쓰는 호출이 %d 곳(%s) 인데, 기다리는 동안 안내만 하고 "
+                           "단추를 잠그지 않습니다. 두 번 눌리면 두 번 들어갑니다. "
+                           "`busy` 같은 잠금 하나면 막힙니다." % (len(writes), kinds),
+                           key="no-loading-lock"))
+    else:
+        out.append(Finding("R11", rel, 0, "쓰기 %d 곳(%s) · 안내도 잠금도 없음" % (len(writes), kinds),
+                           "서버에 쓰는 호출이 %d 곳(%s) 인데 기다리는 동안 안내도, 단추 잠금도 "
+                           "없습니다. 손님은 멈춘 줄 알고 한 번 더 누릅니다." % (len(writes), kinds),
                            key="no-loading-guard"))
     return out
 
