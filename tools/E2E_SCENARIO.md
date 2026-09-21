@@ -32,7 +32,7 @@ AI 에이전트(Claude in Chrome · Cowork · GPT Agent)에게 그대로 넘겨�
 
 ```
 아이디    test@chewgumi.com
-비밀번호   Chewgumi!2026
+비밀번호   따로 전달 (#111)
 ```
 
 운영자 권한이 있는 테스트 전용 계정입니다.
@@ -47,7 +47,7 @@ AI 에이전트(Claude in Chrome · Cowork · GPT Agent)에게 그대로 넘겨�
 1. `https://chewgumiadmin-afk.github.io/chewgumi/console.html` 열기
 2. 「ADMIN LOGIN」 영역이 보이는지 확인
 3. 이메일 칸에 `test@chewgumi.com` 입력
-4. 비밀번호 칸에 `Chewgumi!2026` 입력
+4. 비밀번호 칸에 전달받은 비밀번호 입력 (#111)
 5. **[로그인]** 클릭
 6. **확인** — 로그인 화면이 사라지고 메뉴 카드 13개가 나타나는가
 7. **확인** — 각 카드에 「주문 · 배송」「재고 · 품절 관리」「마케팅 발송」 등이 보이는가
@@ -259,7 +259,7 @@ https://chewgumiadmin-afk.github.io/chewgumi/ 사이트 테스트입니다.
 4. 판단이 애매하면 임의로 진행하지 말고 물어봐 주세요.
 5. 전체 완료 후 F항의 양식으로 요약해 주세요.
 
-계정: test@chewgumi.com / Chewgumi!2026
+계정: test@chewgumi.com / 비밀번호는 따로 전달 (#111)
 ```
 
 ---
