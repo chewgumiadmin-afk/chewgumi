@@ -542,6 +542,12 @@ function ask(preset){
     busy=false; $('send').disabled=false;
     t.innerHTML = ok ? link(d.text) : esc(d.error||'답변을 불러오지 못했습니다.');
     if(ok) hist.push({role:'ai',text:d.text});
+    /* 비서가 주문을 바꾸는 계획(handoff)을 넘기면 「주문 처리」 칸에 카드로 띄웁니다.
+       여기서는 아무것도 바뀌지 않습니다 — 「이대로 처리」를 눌러야 order-bot 이 실행합니다 (#156 CG-156-1). */
+    if(ok && d.handoff && _oa && typeof _oa.preview==='function'){
+      _oa.preview({ok:true,q:d.handoff.q,jobs:d.handoff.jobs||[],note:d.handoff.note||''});
+      try{ _oa.el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){}
+    }
     $('log').scrollTop=$('log').scrollHeight;
   }).catch(()=>{busy=false;$('send').disabled=false;
     t.textContent='네트워크 오류가 발생했습니다.';});

@@ -238,7 +238,19 @@
 
       call({ action: 'ask', q: q }).then(function (d) {
         askBtn.disabled = false;
-        if (!d.ok) { say(d.error || '답을 받지 못했습니다.', 'bad'); return; }
+        return preview(d);
+      }).catch(function () {
+        askBtn.disabled = false;
+        say('답을 받지 못했습니다.', 'bad');
+      });
+    }
+
+    /* order-bot 의 ask 결과(jobs · note)를 카드로 보여줍니다.
+       admin-chat 비서가 계획(handoff)을 넘겨줄 때도 같은 카드를 씁니다 (#156 CG-156-1). */
+    function preview(d) {
+      {
+        if (!d || !d.ok) { say((d && d.error) || '답을 받지 못했습니다.', 'bad'); return; }
+        if (d.q) qIn.value = String(d.q);
         JOBS = d.jobs || [];
         var nos = refNos(JOBS, d.note);
 
@@ -272,10 +284,7 @@
             + '<button type="button" class="btn ok" data-run="1">이대로 처리</button>'
             + '<button type="button" class="mini" data-cancel="1">그만두기</button></div>');
         });
-      }).catch(function () {
-        askBtn.disabled = false;
-        say('답을 받지 못했습니다.', 'bad');
-      });
+      }
     }
 
     askBtn.addEventListener('click', ask);
@@ -290,7 +299,9 @@
     return {
       fill: function (t) { qIn.value = t; qIn.focus(); },
       ask: ask,
-      cancel: cancel
+      preview: preview,
+      cancel: cancel,
+      el: host
     };
   };
 })();
