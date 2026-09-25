@@ -107,17 +107,17 @@
   }
   /* ── 주문 도우미 ── */
   var PRODUCTS=[
-    {no:15,name:'트래블잇 1봉',price:3500,line:'travel',key:['1봉','한봉','낱개'],img:'assets/prod/travel-1.jpg'},
-    {no:11,name:'트래블잇 3봉',price:9900,line:'travel',key:['3봉','세봉'],img:'assets/prod/travel-3.jpg'},
-    {no:12,name:'트래블잇 5봉',price:14900,line:'travel',key:['5봉','다섯봉'],img:'assets/prod/travel-5.jpg'},
-    {no:13,name:'트래블잇 10봉',price:27900,line:'travel',key:['10봉','열봉'],img:'assets/prod/travel-10.jpg'},
-    {no:14,name:'트래블잇 20봉',price:52500,line:'travel',key:['20봉','스무봉'],img:'assets/prod/travel-20.jpg'},
-    {no:16,name:'듀잇 레몬민트',price:19900,line:'doit',key:['레몬','민트'],img:'assets/prod/dew-lemon.jpg'},
-    {no:17,name:'듀잇 그레이프',price:19900,line:'doit',key:['그레이프','포도'],img:'assets/prod/dew-grape.jpg'},
-    {no:18,name:'듀잇 4개입',price:19900,line:'doit',key:['4개','네개'],img:'assets/prod/dew-4.jpg'},
-    {no:19,name:'듀잇 6개입',price:27900,line:'doit',key:['6개','여섯'],img:'assets/prod/dew-6.jpg'},
-    {no:20,name:'듀잇 10개입',price:42900,line:'doit',key:['10개','열개'],img:'assets/prod/dew-10.jpg'},
-    {no:21,name:'듀잇 20개입',price:81000,line:'doit',key:['20개','스무개'],img:'assets/prod/dew-20.jpg'}
+    {no:15,name:'트래블잇 1봉',price:3500,line:'travel',key:['1봉','한봉','낱개'],img:'assets/prod/travel-1.webp'},
+    {no:11,name:'트래블잇 3봉',price:9900,line:'travel',key:['3봉','세봉'],img:'assets/prod/travel-3.webp'},
+    {no:12,name:'트래블잇 5봉',price:14900,line:'travel',key:['5봉','다섯봉'],img:'assets/prod/travel-5.webp'},
+    {no:13,name:'트래블잇 10봉',price:27900,line:'travel',key:['10봉','열봉'],img:'assets/prod/travel-10.webp'},
+    {no:14,name:'트래블잇 20봉',price:52500,line:'travel',key:['20봉','스무봉'],img:'assets/prod/travel-20.webp'},
+    {no:16,name:'듀잇 레몬민트',price:19900,line:'doit',key:['레몬','민트'],img:'assets/prod/dew-lemon.webp'},
+    {no:17,name:'듀잇 그레이프',price:19900,line:'doit',key:['그레이프','포도'],img:'assets/prod/dew-grape.webp'},
+    {no:18,name:'듀잇 4개입',price:19900,line:'doit',key:['4개','네개'],img:'assets/prod/dew-4.webp'},
+    {no:19,name:'듀잇 6개입',price:27900,line:'doit',key:['6개','여섯'],img:'assets/prod/dew-6.webp'},
+    {no:20,name:'듀잇 10개입',price:42900,line:'doit',key:['10개','열개'],img:'assets/prod/dew-10.webp'},
+    {no:21,name:'듀잇 20개입',price:81000,line:'doit',key:['20개','스무개'],img:'assets/prod/dew-20.webp'}
   ];
   var BUY=/사줘|살게|살래|주문|구매|시켜|사고\s*싶|담아|장바구니|결제|주세요/;
 

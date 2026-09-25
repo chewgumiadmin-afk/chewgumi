@@ -631,6 +631,27 @@ def scan(root, only=None, skip_rules=()):
             except Exception as exc:              # 규칙 하나가 터져도 나머지는 돈다
                 print("  ! %s %s 검사 중 오류: %s" % (rel, rule, exc), file=sys.stderr)
 
+    # assets/*.js 도 R8(cg_sb 직접 읽기)만 본다 (#158 CG-158-2). 나머지 규칙은 마크업 전제라 그대로 둔다.
+    if "R8" not in skip_rules and not only:
+        adir = os.path.join(root, "assets")
+        if os.path.isdir(adir):
+            for fn in sorted(os.listdir(adir)):
+                if not fn.endswith(".js") or fn == "tok.js":
+                    continue
+                jp = os.path.join(adir, fn)
+                try:
+                    jsrc = open(jp, encoding="utf-8", errors="replace").read()
+                except OSError:
+                    continue
+                jrel = os.path.relpath(jp, root).replace(os.sep, "/")
+                jctx = {"html": "", "rel": jrel, "js": jsrc, "extjs": "", "css": "",
+                        "known_files": known, "root": root}
+                scanned.append(jrel)
+                try:
+                    findings.extend(check_R8(jctx))
+                except Exception as exc:
+                    print("  ! %s R8 검사 중 오류: %s" % (jrel, exc), file=sys.stderr)
+
     # 부분 체크아웃 보호막 — 없는 화면이 너무 많으면 R14 를 '주의' 로 낮춘다.
     # (git clone 전체가 아니라 몇 장만 복사해 놓고 돌린 경우)
     dead = [f for f in findings if f.rule == "R14" and f.key.startswith("dead:")]

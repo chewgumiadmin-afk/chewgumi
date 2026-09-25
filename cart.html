@@ -232,17 +232,17 @@ const CDN='assets/logo-rainbow.png';
 /* QA 2026-08-31 — 배너 이미지를 실제 상품 사진으로 바꿨습니다.
    (트래블잇 3·5·20봉에 듀잇 초록 배너가, 듀잇 4·6·20개입에 같은 광고 배너가 붙어 있었습니다) */
 const P = {
-  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-1.jpg'},
-  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-3.jpg'},
-  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-5.jpg'},
-  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-10.jpg'},
-  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-20.jpg'},
-  16:{n:'듀잇 레몬민트', cate:47, img:'assets/prod/dew-lemon.jpg'},
-  17:{n:'듀잇 그레이프', cate:47, img:'assets/prod/dew-grape.jpg'},
-  18:{n:'듀잇 4개입', cate:47, img:'assets/prod/dew-4.jpg'},
-  19:{n:'듀잇 6개입', cate:47, img:'assets/prod/dew-6.jpg'},
-  20:{n:'듀잇 10개입', cate:47, img:'assets/prod/dew-10.jpg'},
-  21:{n:'듀잇 20개입', cate:47, img:'assets/prod/dew-20.jpg'}
+  15:{n:'[1봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-1.webp'},
+  11:{n:'[3봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-3.webp'},
+  12:{n:'[5봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-5.webp'},
+  13:{n:'[10봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-10.webp'},
+  14:{n:'[20봉] 츄구미 여행용젤리 트래블잇 Travel-it (40g)', cate:42, img:'assets/prod/travel-20.webp'},
+  16:{n:'듀잇 레몬민트', cate:47, img:'assets/prod/dew-lemon.webp'},
+  17:{n:'듀잇 그레이프', cate:47, img:'assets/prod/dew-grape.webp'},
+  18:{n:'듀잇 4개입', cate:47, img:'assets/prod/dew-4.webp'},
+  19:{n:'듀잇 6개입', cate:47, img:'assets/prod/dew-6.webp'},
+  20:{n:'듀잇 10개입', cate:47, img:'assets/prod/dew-10.webp'},
+  21:{n:'듀잇 20개입', cate:47, img:'assets/prod/dew-20.webp'}
 };
 /* QA 2026-08-31 — 두 가지를 고쳤습니다.
    · 챗봇이 담는 '트래블잇 5봉'(대괄호 없음)을 못 알아보고 3봉으로 보던 것
@@ -271,8 +271,8 @@ function cartImg(it, n){
   if (raw) return String(raw).replace(/^https?:\/\/[^/]+\//, '');
   if (P[n] && P[n].img) return P[n].img;
   const s = String((it && it.name) || '');
-  if (/트래블|travel/i.test(s)) return 'assets/prod/travel.jpg';
-  if (/듀잇|dew/i.test(s))      return 'assets/prod/dew-lemon.jpg';
+  if (/트래블|travel/i.test(s)) return 'assets/prod/travel.webp';
+  if (/듀잇|dew/i.test(s))      return 'assets/prod/dew-lemon.webp';
   return CDN;
 }
 function prodHref(n){ return n ? ('product.html?no=' + n) : 'index.html#all'; }
