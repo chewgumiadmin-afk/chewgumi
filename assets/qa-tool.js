@@ -268,11 +268,20 @@
     bar.id = 'cgQaBar';
     bar.setAttribute('role', 'status');
     bar.textContent = '테스트 모드입니다 — 여기서 넣는 주문은 실제 주문이 아닙니다';
+    /* 츄구미 글꼴(SUIT) · 브랜드 분홍 --cg-main #D82558 위에 흰 글자 — 대비 4.86:1 (WCAG AA)
+       cgui.css 를 안 싣는 화면도 있어 글꼴을 직접 적고, SUIT 가 없으면 같은 CDN 에서 싣습니다 */
     bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483646;'
       + 'padding:7px 12px;text-align:center;font-size:12.5px;font-weight:700;'
-      + 'font-family:inherit;color:#3a2a00;background:#FFE923;'
-      + 'box-shadow:0 1px 6px rgba(0,0,0,.18);pointer-events:none;'
+      + "font-family:'SUIT Variable','SUIT',-apple-system,BlinkMacSystemFont,"
+      + "'Apple SD Gothic Neo',sans-serif;color:#fff;background:#D82558;"
+      + 'box-shadow:0 1px 6px rgba(216,37,88,.28);pointer-events:none;'
       + 'letter-spacing:-.01em';
+    if (!document.querySelector('link[href*="SUIT-Variable.css"]')) {
+      var f = document.createElement('link');
+      f.rel = 'stylesheet';
+      f.href = 'https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css';
+      document.head.appendChild(f);
+    }
     document.body.appendChild(bar);
     /* 띠가 머리말을 가리지 않게 본문을 조금 내립니다 */
     var h = bar.offsetHeight || 30;
