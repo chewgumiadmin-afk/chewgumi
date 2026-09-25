@@ -298,7 +298,7 @@ function findAddr(){
 }
 
 async function fillProfile(){
-  let tk=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)tk=s.t;}catch(e){}
+  let tk=(typeof cgTok==='function'?cgTok():'')||null; /* 만료를 보는 한 곳 (#158 CG-158-1) */
   if(!tk)return;
   try{
     const r=await fetch(SB+'/rest/v1/profiles?select=name,phone,zipcode,addr1,addr2&limit=1',
@@ -375,7 +375,7 @@ function matchNo(name){
   return null;
 }
 function authH(){
-  let tk=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)tk=s.t;}catch(e){}
+  let tk=(typeof cgTok==='function'?cgTok():'')||null; /* 만료를 보는 한 곳 (#158 CG-158-1) */
   const hd={'Content-Type':'application/json',apikey:KEY};
   if(tk)hd.Authorization='Bearer '+tk;
   return hd;
@@ -649,7 +649,7 @@ $('payBtn').addEventListener('click',async()=>{
   const items=CART.map(it=>({id:cgItemId(it),qty:it.qty}));
   let od;
   try{
-    let tk=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)tk=s.t;}catch(e){}
+    let tk=(typeof cgTok==='function'?cgTok():'')||null; /* 만료를 보는 한 곳 (#158 CG-158-1) */
     const hd={'Content-Type':'application/json',apikey:KEY};
     if(tk)hd.Authorization='Bearer '+tk;
     const FNB = SB+'/functions/v1/bank';
