@@ -280,7 +280,7 @@ const FN=SB+'/functions/v1/product-admin';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
 const won=n=>Number(n||0).toLocaleString('ko-KR');
-function tok(){ try{ return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''; }catch(e){ return ''; } }
+function tok(){ try{ return ((window.cgSession?(cgSession()||{}):JSON.parse(localStorage.getItem('cg_sb')||'{}'))).t||''; }catch(e){ return ''; } }
 function say(id,t,k){ const m=$(id); m.className='msg'+(k?' '+k:''); m.textContent=t; }
 
 let ITEMS=[], CUR=null, DETAILS=[];

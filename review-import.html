@@ -290,7 +290,7 @@ function say(id,t,k){
   const m=$(id); m.className='msg'+(k?' '+k:''); m.textContent=t;
 }
 function tok(){
-  try{ return (JSON.parse(localStorage.getItem('cg_sb')||'{}')).t||''; }catch(e){ return ''; }
+  try{ return ((window.cgSession?(cgSession()||{}):JSON.parse(localStorage.getItem('cg_sb')||'{}'))).t||''; }catch(e){ return ''; }
 }
 
 /* ── 엑셀 붙여넣기 ── */

@@ -273,19 +273,67 @@ def check_R3(ctx):
     return out
 
 
+def _id_regions(html):
+    """id 가 나온 자리를 「같은 화면에 함께 있을 수 있는 묶음」으로 나눕니다.
+
+    파일 전체에서 id 를 세면 거짓경고가 납니다. 이 저장소의 화면들은 자바스크립트
+    문자열로 화면을 통째로 만들어 innerHTML 에 넣고, 쓸 때마다 앞엣것을 지웁니다.
+    그래서 manage.html 의 「회원」 판과 「후기」 판이 둘 다 id="list" 를 써도
+    한 순간에 하나만 존재합니다. 이런 것까지 버그로 세면 보고서를 믿지 않게 됩니다.
+
+      markup      <script> 밖의 진짜 마크업 — 늘 함께 있습니다
+      script:N    <script> 안, 세미콜론으로 끊은 한 덩어리
+                  한 덩어리 안에서 두 번 나오면 같은 틀 안이라 정말 겹칩니다
+
+    돌려주는 것: {id: [(구역이름, 줄번호), ...]}
+    """
+    ID_RE = re.compile(r"<[a-zA-Z][^>]*\bid\s*=\s*[\"']([^\"']+)[\"']")
+    spans = []   # (시작, 끝, 구역이름)
+    pos, n = 0, 0
+    for m in re.finditer(r"<script\b[^>]*>(.*?)</script>", html, re.S | re.I):
+        if m.start() > pos:
+            spans.append((pos, m.start(), "markup"))
+        body_start = m.start(1)
+        chunk_start = body_start
+        for sm in re.finditer(r";", m.group(1)):
+            spans.append((chunk_start, body_start + sm.start() + 1, "script:%d" % n))
+            chunk_start = body_start + sm.start() + 1
+            n += 1
+        if chunk_start < m.end(1):
+            spans.append((chunk_start, m.end(1), "script:%d" % n)); n += 1
+        pos = m.end()
+    if pos < len(html):
+        spans.append((pos, len(html), "markup"))
+
+    seen = {}
+    for m in ID_RE.finditer(html):
+        i = m.start()
+        region = next((name for a, b, name in spans if a <= i < b), "markup")
+        seen.setdefault(m.group(1), []).append((region, lineno(html, i)))
+    return seen
+
+
 def check_R4(ctx):
-    """한 화면에 같은 id 가 둘 이상."""
+    """한 화면에 같은 id 가 둘 이상.
+
+    같은 구역 안에서 두 번 나올 때만 셉니다. 서로 다른 틀에 흩어져 있으면
+    한 순간에 하나만 존재하므로 버그가 아닙니다 (`_id_regions` 참고).
+    """
     out = []
     html, rel = ctx["html"], ctx["rel"]
-    seen = {}
-    for m in re.finditer(r"<[a-zA-Z][^>]*\bid\s*=\s*[\"']([^\"']+)[\"']", html):
-        seen.setdefault(m.group(1), []).append(lineno(html, m.start()))
-    for ident, lines in sorted(seen.items()):
-        if len(lines) > 1:
-            out.append(Finding("R4", rel, lines[0], 'id="%s"' % ident,
-                               "id `%s` 가 %d 번 나옵니다 (줄 %s). 코드는 맨 앞엣것만 찾아서 "
-                               "뒤엣것은 죽습니다." % (ident, len(lines), ", ".join(map(str, lines))),
-                               key="dup-id:" + ident))
+    for ident, hits in sorted(_id_regions(html).items()):
+        if len(hits) < 2:
+            continue
+        per = {}
+        for region, ln in hits:
+            per.setdefault(region, []).append(ln)
+        clash = max(per.values(), key=len)
+        if len(clash) < 2:
+            continue    # 틀마다 하나씩 — 함께 있지 않습니다
+        out.append(Finding("R4", rel, clash[0], 'id="%s"' % ident,
+                           "id `%s` 가 한 틀 안에서 %d 번 나옵니다 (줄 %s). 코드는 맨 앞엣것만 "
+                           "찾아서 뒤엣것은 죽습니다." % (ident, len(clash), ", ".join(map(str, clash))),
+                           key="dup-id:" + ident))
     return out
 
 
@@ -398,18 +446,48 @@ def check_R10(ctx):
     return out
 
 
+# 기다리는 동안 「알려주기」와 「잠그기」는 다른 일입니다.
+#   안내  — 손님이 답답해하지 않게 합니다
+#   잠금  — 두 번 눌리는 것을 실제로 막습니다
+# 안내만 있고 잠금이 없으면 주문·삭제가 두 번 들어갈 수 있습니다.
+# fetch 한 덩어리 안에서 주소와 method 를 함께 봅니다.
+# POST 라고 다 「바꾸는」 호출이 아닙니다 — 엣지 함수(/functions/v1/…)는 배송비
+# 계산처럼 읽기만 하는 것도 프로토콜상 POST 입니다. 두 번 불려도 손해가 없습니다.
+# 표를 직접 건드리는 /rest/v1/<표> 의 POST·PATCH·PUT·DELETE 만 셉니다.
+_R11_WRITE = re.compile(
+    r"fetch\s*\(([^;]{0,400}?)method\s*:\s*['\"](POST|PATCH|PUT|DELETE)['\"]", re.S | re.I)
+_R11_LOCK = re.compile(
+    r"\b(busy|isBusy|loading|isLoading|lock|locked|inFlight|sending|saving|submitting)\b\s*=\s*(?:true|!0)"
+    r"|disabled\s*=\s*(?:true|!0)|\.disabled\b|setAttribute\(\s*['\"]disabled"
+    r"|aria-busy")
+_R11_TELL = re.compile(r"중…|중\.\.\.|중['\"`]|저장하는 중|처리 중|불러오는 중")
+
+
 def check_R11(ctx):
-    """기다리는 동안 알려주고 단추를 잠그기."""
+    """기다리는 동안 알려주고 단추를 잠그기.
+
+    읽기만 두 번 하는 화면은 두 번 눌려도 손해가 없습니다. 서버에 **쓰는**
+    호출(POST·PATCH·PUT·DELETE)이 있을 때만 봅니다.
+    """
     out = []
     rel, js = ctx["rel"], ctx["js"]
-    n_fetch = len(re.findall(r"\bfetch\s*\(", js))
-    if n_fetch < 2:
+    writes = [m for m in _R11_WRITE.findall(js) if "/rest/v1/" in m[0]]
+    if not writes:
         return out
-    n_guard = len(re.findall(r"disabled\s*=\s*(?:true|!0)|\.disabled\b|aria-busy|저장하는 중|처리 중|불러오는 중", js))
-    if n_guard == 0:
-        out.append(Finding("R11", rel, 0, "fetch %d 곳 · 단추 잠금/안내 0 곳" % n_fetch,
-                           "서버를 %d 번 부르는데 기다리는 동안 안내도, 단추 잠금도 없습니다. "
-                           "두 번 눌리면 주문이 두 번 들어갑니다." % n_fetch,
+    if _R11_LOCK.search(js):
+        return out          # 잠금이 있으면 통과 — 안내 문구는 화면마다 다릅니다
+
+    kinds = ", ".join(sorted({m[1].upper() for m in writes}))
+    if _R11_TELL.search(js):
+        out.append(Finding("R11", rel, 0, "쓰기 %d 곳(%s) · 안내 있음 · 잠금 없음" % (len(writes), kinds),
+                           "서버에 쓰는 호출이 %d 곳(%s) 인데, 기다리는 동안 안내만 하고 "
+                           "단추를 잠그지 않습니다. 두 번 눌리면 두 번 들어갑니다. "
+                           "`busy` 같은 잠금 하나면 막힙니다." % (len(writes), kinds),
+                           key="no-loading-lock"))
+    else:
+        out.append(Finding("R11", rel, 0, "쓰기 %d 곳(%s) · 안내도 잠금도 없음" % (len(writes), kinds),
+                           "서버에 쓰는 호출이 %d 곳(%s) 인데 기다리는 동안 안내도, 단추 잠금도 "
+                           "없습니다. 손님은 멈춘 줄 알고 한 번 더 누릅니다." % (len(writes), kinds),
                            key="no-loading-guard"))
     return out
 
@@ -418,7 +496,11 @@ def check_R12(ctx):
     """주문번호만 알면 보는 곳에서는 개인정보 가리기."""
     out = []
     rel, js = ctx["rel"], ctx["js"]
-    if not re.search(r"guest_\w+|guestLookup|nonmember_", js):
+    # 「비회원 조회」 경로만 봅니다. guest_ 로 시작한다고 다 조회가 아닙니다 —
+    # guest_cancel · guest_change_qty · guest_edit_addr 는 자기 주문을 고치는
+    # 쓰기 호출이고, 남의 개인정보를 보여주는 자리가 아닙니다.
+    # 이것까지 세면 mypage.html 처럼 로그인해야 들어가는 화면이 걸립니다.
+    if not re.search(r"guest_(order|items|lookup|find|search)\b|guestLookup|nonmember_", js):
         return out
     if not re.search(r"(mask|\*\*\*\*|가리|replace\s*\(\s*/.*\d)", js):
         out.append(Finding("R12", rel, 0, "비회원 조회 · 마스킹 코드 없음",

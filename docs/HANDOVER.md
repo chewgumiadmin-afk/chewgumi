@@ -22,12 +22,13 @@
 
 ```
 아이디                   비밀번호        권한
-ceo@chewgumi.com        CeoQA!2026     대표 (모든 화면)
-dev@chewgumi.com        DevQA!2026     개발자
-design@chewgumi.com     DesignQA!2026  디자이너
+ceo@chewgumi.com         따로 전달       대표 (모든 화면)
+dev@chewgumi.com         따로 전달       개발자
+design@chewgumi.com      따로 전달       디자이너
 ```
 
-> **오픈 전에 비밀번호를 바꿔주세요.** 지금 것은 개발용 임시 비밀번호입니다.
+> **비밀번호는 여기 적지 않습니다.** 저장소에 평문으로 두면 볼 수 있는 사람이
+> 늘어납니다. 값은 대표님께 따로 전달합니다. 오픈 전에 세 개 모두 바꿔주세요 — #111
 
 로그인: `shop.chewgumi.com/login.html`
 

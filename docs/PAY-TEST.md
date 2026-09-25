@@ -20,11 +20,11 @@
 
 | 아이디 | 비밀번호 | 권한 |
 |---|---|---|
-| ceo@chewgumi.com | CeoQA!2026 | 대표 · 모든 화면 |
-| dev@chewgumi.com | DevQA!2026 | 개발자 |
-| qa@chewgumi.com | QaQA!2026 | 점검 |
+| ceo@chewgumi.com | 따로 전달 | 대표 · 모든 화면 |
+| dev@chewgumi.com | 따로 전달 | 개발자 |
+| qa@chewgumi.com | 따로 전달 | 점검 |
 
-> 오픈 전에 비밀번호를 바꿔주세요.
+> 비밀번호는 여기 적지 않습니다 — 따로 전달합니다. 오픈 전에 바꿔주세요 — #111
 
 ### 이지페이 가맹점 관리자
 

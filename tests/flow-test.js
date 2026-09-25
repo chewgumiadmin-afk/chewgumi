@@ -5,7 +5,14 @@
 
 const SB = 'https://psynvpuedzjvytsgdhgg.supabase.co';
 const KEY = 'sb_publishable_Tz7vgJXgYHQ3tyUfm87WTw_vV1Dxfuk';
-const ACC = { email: 'test@chewgumi.com', password: 'Chewgumi!2026' };
+/* 테스트 계정은 환경변수로만 받습니다 — 파일에 적어 두면 저장소 기록에 남습니다 (#111)
+     CG_TEST_EMAIL=… CG_TEST_PASSWORD=… node tests/flow-test.js               */
+const ACC = { email: process.env.CG_TEST_EMAIL || '', password: process.env.CG_TEST_PASSWORD || '' };
+if (!ACC.email || !ACC.password) {
+  console.error('CG_TEST_EMAIL · CG_TEST_PASSWORD 가 없습니다.');
+  console.error('이 시험은 운영 Supabase 에 실제 주문을 넣습니다. 값을 알고 돌리십시오.');
+  process.exit(2);
+}
 
 let token = null;
 let pass = 0, fail = 0, skip = 0;

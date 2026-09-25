@@ -826,7 +826,7 @@ const ST={draft:'검토 대기',deployed:'반영됨',reverted:'되돌림',failed
 let token=null,who='',curId=null,ADMIN_PATHS=[],IS_CLIENT=false;
 try{var _u=CGAuth.user(); if(_u&&CGAuth.isIn()){who=_u.name; token='1';}}catch(e){}
 const H=()=>({apikey:KEY,'Content-Type':'application/json',
-  Authorization:'Bearer '+((function(){try{var s=JSON.parse(localStorage.getItem('cg_sb')||'null');return s&&s.t||'';}catch(e){return '';}})())});
+  Authorization:'Bearer '+((function(){try{var s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null'));return s&&s.t||'';}catch(e){return '';}})())});
 
 function sync(){
   if(window.CGAuth && CGAuth.isIn() && !window._cgChecked){

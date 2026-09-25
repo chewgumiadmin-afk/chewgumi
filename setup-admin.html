@@ -141,11 +141,11 @@ h2.sec{font-size:14px;margin:26px 0 10px;color:#333}
 
   /* 로그인 토큰 — dev.html 과 같은 방식으로 꺼냅니다 */
   function jwt(){
-    try { var s = JSON.parse(localStorage.getItem('cg_sb')||'null'); return (s && s.t) || ''; }
+    try { var s = (window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null')); return (s && s.t) || ''; }
     catch(e){ return ''; }
   }
   function whoami(){
-    try { var s = JSON.parse(localStorage.getItem('cg_sb')||'null'); return (s && (s.em||s.u)) || ''; }
+    try { var s = (window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null')); return (s && (s.em||s.u)) || ''; }
     catch(e){ return ''; }
   }
   function call(b){

@@ -1,0 +1,58 @@
+/*! 말로 주문 처리하기 — 공용 모양새 · MedIT
+ *  orders.html 안에만 있던 것을 console.html 에서도 쓰려고 빼냈습니다.
+ *  글자색·단추는 화면마다 이미 있는 .btn · .mini · .msg 를 그대로 씁니다.
+ *  여기서는 이 칸에만 필요한 것(입력창·미리보기·근거 표)만 정합니다.
+ */
+.cgoa-q{
+  width:100%;min-height:48px;padding:12px 15px;border-radius:13px;
+  border:1px solid rgba(255,255,255,.85);
+  background:rgba(255,255,255,.92);color:#17171c;
+  font-family:inherit;font-size:16px;   /* 16px 미만이면 아이폰이 화면을 확대합니다 */
+}
+@media(min-width:1024px){ .cgoa-q{font-size:14.5px} }
+.cgoa-q:focus{ outline:2px solid #D82558;outline-offset:-1px }
+
+.cgoa .bx{ display:flex;gap:7px;flex-wrap:wrap;margin-top:10px }
+/* 「이대로 처리」만 초록 — 이 단추만 실제로 자료를 바꿉니다.
+   console.html 의 유리 단추 스타일이 !important 라 여기도 붙입니다. */
+.cgoa .btn.ok{
+  background:linear-gradient(135deg,#3FBF7A,#2AA060) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.35) !important;
+}
+.cgoa .btn.ok:hover{ background:linear-gradient(135deg,#46CB83,#2FAE6A) !important }
+
+.cgoa-pv{
+  margin-top:14px;padding:16px 18px;border-radius:16px;
+  background:rgba(255,228,230,.55);border:1px solid rgba(255,189,204,.7);
+}
+.cgoa-pv.hide{ display:none }
+.cgoa .bnote{ font-size:12.5px;color:#8A3350;margin-bottom:11px;line-height:1.7 }
+.cgoa .brow{
+  padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px;line-height:1.7;
+}
+.cgoa .brow:last-of-type{ border-bottom:0 }
+.cgoa .brow b{ font-weight:700 }
+.cgoa .barw{ color:#D82558;margin:0 8px;font-weight:700 }
+.cgoa .btn-no{
+  display:inline-block;margin-top:5px;padding:3px 11px;border-radius:999px;
+  background:rgba(255,255,255,.8);font-size:12px;font-weight:600;
+}
+.cgoa .bwhy{ font-size:12px;color:#797979;margin-top:4px }
+
+/* 근거 표 — 봇이 무엇을 보고 답했는지 주문번호별로 펼쳐 둡니다 */
+.cgoa .brefcap{ font-size:11.5px;color:#797979;margin:13px 0 5px;line-height:1.6 }
+.cgoa .brefwrap{ overflow-x:auto;-webkit-overflow-scrolling:touch }
+.cgoa .bref{ border-collapse:collapse;width:100%;min-width:560px;font-size:12.5px;line-height:1.55 }
+.cgoa .bref th,.cgoa .bref td{ padding:7px 9px;text-align:left;white-space:nowrap;
+  border-bottom:1px solid rgba(0,0,0,.06) }
+.cgoa .bref th{ font-size:11px;letter-spacing:.5px;color:#8A3350;font-weight:700 }
+.cgoa .bref td.num{ text-align:right }
+.cgoa .bref tr:last-child td{ border-bottom:0 }
+.cgoa .brefx{ color:#B4243F;font-weight:600 }
+
+.cgoa-hint{
+  font-size:12px;color:#797979;line-height:1.85;margin-top:12px;
+  padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.5);
+}
+.cgoa-hint b{ color:#17171c }

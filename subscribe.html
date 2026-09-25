@@ -273,7 +273,7 @@ let PLANS=[], cur=null;
 
 function hd(){
   const h={'Content-Type':'application/json',apikey:KEY};
-  try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null');
+  try{const s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null'));
     if(s&&s.t) h.Authorization='Bearer '+s.t;}catch(e){}
   return h;
 }
@@ -327,7 +327,7 @@ function closeForm(){ $('form').classList.add('hide'); cur=null;
   document.querySelector('.plans').scrollIntoView({behavior:'smooth',block:'start'}); }
 
 function fillMe(){
-  let t=null; try{const s=JSON.parse(localStorage.getItem('cg_sb')||'null'); if(s)t=s.t;}catch(e){}
+  let t=null; try{const s=(window.cgSession?cgSession():JSON.parse(localStorage.getItem('cg_sb')||'null')); if(s)t=s.t;}catch(e){}
   if(!t) return;
   fetch(SB+'/rest/v1/profiles?select=name,phone,email,zipcode,addr1,addr2&limit=1',
     {headers:{apikey:KEY,Authorization:'Bearer '+t}})
