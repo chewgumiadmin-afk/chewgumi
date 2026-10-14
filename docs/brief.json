@@ -1,0 +1,14 @@
+{
+ "updated": "2026-10-14T06:19:39Z",
+ "runs": [
+  {
+   "at": "2026-10-14T06:19:39Z",
+   "task": "최신앱 디자인 · API 실험",
+   "commits": [],
+   "issues": [],
+   "prs": [],
+   "decisions": [],
+   "note": "오늘은 새로 알아낸 것이 없습니다 — Speculation Rules 시험은 이 환경에서 prefetch 동작을 확인하지 못해 결론 없음"
+  }
+ ]
+}
