@@ -222,19 +222,21 @@
     .catch(function () { return null; });
   }
 
+  /*  qa-shots 는 비공개 창고입니다.
+   *  공개 주소가 없으므로 올린 뒤 "qa-shots/<파일>" 경로만 적어 둡니다.
+   *  보는 쪽(qa-tool.html)이 관리자로 로그인해 그때그때 서명 주소를 받습니다.
+   *  올리기는 로그인 없이도 됩니다 — 폰으로 손님 화면을 볼 때는 로그인하지 않습니다. */
   function upload(blob) {
     if (!blob || blob.size > 5 * 1024 * 1024) return Promise.resolve('');
-    var name = (run || 'QA') + '_' + page().replace('.html', '')
+    var path = 'qa-shots/' + (run || 'QA') + '_' + page().replace('.html', '')
              + '_' + Date.now().toString(36) + '.png';
-    return fetch(SB + '/storage/v1/object/qa-shots/' + name, {
+    return fetch(SB + '/storage/v1/object/' + path, {
       method: 'POST',
       headers: { apikey: K, Authorization: 'Bearer ' + K,
                  'Content-Type': 'image/png', 'x-upsert': 'true' },
       body: blob
     })
-    .then(function (r) {
-      return r.ok ? SB + '/storage/v1/object/public/qa-shots/' + name : '';
-    })
+    .then(function (r) { return r.ok ? path : ''; })
     .catch(function () { return ''; });
   }
 

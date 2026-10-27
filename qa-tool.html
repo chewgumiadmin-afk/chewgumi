@@ -363,9 +363,9 @@ function paintIss(){
   $('ic').textContent=rows.length+'건';
   $('iss').innerHTML = rows.length ? rows.map(function(x){
     const done=x.status==='done';
+    /* qa-shots 는 비공개라 주소를 그때그때 받아 옵니다 (아래 fillShots) */
     const shot = x.shot_url
-      ? '<a class="sh" href="'+esc(x.shot_url)+'" target="_blank" rel="noopener">'
-        +'<img src="'+esc(x.shot_url)+'" alt="'+esc(x.page)+' 화면" loading="lazy"></a>'
+      ? '<span class="sh" data-shot="'+esc(x.shot_url)+'" data-pg="'+esc(x.page||'')+'">…</span>'
       : '<span class="sh">사진 없음</span>';
     const note=String(x.note||'');
     const long=note.length>160 || note.split('\n').length>3;
@@ -383,6 +383,49 @@ function paintIss(){
       + (done?'':'<button class="fix" onclick="fixIss('+x.id+')">고침</button>')
       + '</div>';
   }).join('') : '<div class="empty">'+(SHOWDONE?'아직 없습니다':'안 고친 이슈가 없습니다')+'</div>';
+  fillShots();
+}
+
+/* ── 비공개 창고의 사진 ──
+ *  qa-shots 는 공개 주소가 없습니다. 관리자로 로그인했을 때만
+ *  서명된 주소(한 시간)를 받아 와 그림을 띄웁니다.
+ *  로그인하지 않았으면 그림 자리에 그렇다고 적습니다. */
+const SIGNED={};
+function signShot(path){
+  if(SIGNED[path]) return Promise.resolve(SIGNED[path]);
+  if(/^https?:/i.test(path)) return Promise.resolve(path);   /* 옛 공개 주소 */
+  if(!tok()) return Promise.resolve('');
+  return fetch(SB+'/storage/v1/object/sign/'+path,{
+    method:'POST',
+    headers:Object.assign({},H(),{'Content-Type':'application/json'}),
+    body:JSON.stringify({expiresIn:3600})
+  })
+  .then(r=>r.ok?r.json():null)
+  .then(function(d){
+    if(!d || !d.signedURL) return '';
+    SIGNED[path]=SB+'/storage/v1'+d.signedURL;
+    return SIGNED[path];
+  })
+  .catch(function(){ return ''; });
+}
+
+function fillShots(){
+  document.querySelectorAll('#iss .sh[data-shot]').forEach(function(el){
+    const path=el.getAttribute('data-shot');
+    el.removeAttribute('data-shot');
+    signShot(path).then(function(u){
+      if(!u){ el.textContent = tok() ? '사진을 못 불러왔습니다' : '관리자 로그인 필요'; return; }
+      const a=document.createElement('a');
+      a.className='sh'; a.href=u; a.target='_blank'; a.rel='noopener';
+      const im=document.createElement('img');
+      im.src=u; im.loading='lazy';
+      im.alt=(el.getAttribute('data-pg')||'')+' 화면';
+      im.onerror=function(){ a.replaceWith(Object.assign(document.createElement('span'),
+        {className:'sh',textContent:'사진을 못 불러왔습니다'})); };
+      a.appendChild(im);
+      el.replaceWith(a);
+    });
+  });
 }
 
 function moreIss(btn){
@@ -416,7 +459,7 @@ function copyIss(){
     t+=(i+1)+'. ['+String(x.page||'').replace('.html','')+'] '+(KIND[x.kind]||x.kind)+'\n'
       +'   '+String(x.note||'').split('\n').join('\n   ')+'\n'
       +'   기기 · '+(x.device||'')+' '+(x.viewport||'')+'\n'
-      +(x.shot_url?'   사진 · '+x.shot_url+'\n':'')+'\n';
+      +(x.shot_url?'   사진 · '+x.shot_url+' (비공개 · qa-tool.html 에서 보세요)\n':'')+'\n';
   });
   if(navigator.clipboard){
     navigator.clipboard.writeText(t)
