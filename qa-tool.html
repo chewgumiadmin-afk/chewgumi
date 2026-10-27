@@ -126,6 +126,30 @@ button,input,select{font-family:inherit;font-size:16px}
   flex:none;width:34px;font-size:11.5px;font-weight:800;color:var(--main);
 }
 .rule span{flex:1;min-width:0;font-size:13px;line-height:1.7;word-break:keep-all}
+
+/* 보내온 이슈 */
+.iss{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,.055)}
+.iss:last-child{border-bottom:0}
+.iss.done{opacity:.5}
+.iss a.sh,.iss span.sh{
+  flex:none;width:86px;height:64px;border-radius:10px;overflow:hidden;
+  background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.07);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;color:var(--gray);text-align:center;
+}
+.iss a.sh img{width:100%;height:100%;object-fit:cover;object-position:top}
+.iss .b{flex:1;min-width:0}
+.iss .hd{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+.iss .pg{font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;
+  background:rgba(216,37,88,.1);color:var(--main)}
+.iss .mt{font-size:11px;color:var(--gray);font-family:ui-monospace,monospace}
+.iss .tx{font-size:13px;line-height:1.7;word-break:keep-all;white-space:pre-wrap;color:#333}
+.iss .tx.cut{max-height:5.1em;overflow:hidden}
+.iss .more{margin-top:4px;border:0;background:none;padding:0;cursor:pointer;
+  font-family:inherit;font-size:11.5px;font-weight:700;color:var(--main)}
+.iss .fix{flex:none;align-self:flex-start;min-height:30px;padding:0 12px;
+  border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.9);
+  font-size:11.5px;font-weight:700;color:#555;cursor:pointer;font-family:inherit}
 </style>
 <script src="assets/guard.js" defer></script>
 <!-- 크기 통일 — 공용 UI 토큰 (issues #7) -->
@@ -157,6 +181,17 @@ button,input,select{font-family:inherit;font-size:16px}
       <button class="btn sub sm" onclick="load()">새로 고침</button>
     </div>
     <div class="msg" id="m1"></div>
+  </div>
+
+  <div class="panel">
+    <h2>보내온 이슈 <span class="n" id="ic">—</span></h2>
+    <div class="btns" style="margin:0 0 10px">
+      <button class="btn sub sm" onclick="loadIss()">새로 고침</button>
+      <button class="btn sub sm" id="tg" onclick="togIss()">고친 것도 보기</button>
+      <button class="btn sub sm" onclick="copyIss()">개발자에게 보낼 글 복사</button>
+    </div>
+    <div id="iss"><div class="empty">불러오는 중…</div></div>
+    <div class="msg" id="m3"></div>
   </div>
 
   <div class="panel">
@@ -301,11 +336,144 @@ function copyOne(){
   }
 }
 
+/* ── 보내온 이슈 ──
+ *  qa_events 는 발자국이라 금방 길어집니다.
+ *  여기는 사람이 "고쳐주세요"라고 적은 것만, 화면 사진과 함께 봅니다.
+ */
+let ISS=[], SHOWDONE=false;
+const KIND={bug:'버그',note:'고쳐주세요',check:'잘 됨'};
+
+function togIss(){
+  SHOWDONE=!SHOWDONE;
+  $('tg').textContent = SHOWDONE ? '안 고친 것만 보기' : '고친 것도 보기';
+  paintIss();
+}
+
+function shownIss(){ return SHOWDONE ? ISS : ISS.filter(x=>x.status!=='done'); }
+
+function loadIss(){
+  fetch(SB+'/rest/v1/qa_reports?select=*&order=created_at.desc&limit=200',{headers:H()})
+  .then(r=>r.ok?r.json():[])
+  .then(function(rows){ ISS=rows||[]; paintIss(); })
+  .catch(function(){ $('iss').innerHTML='<div class="empty">불러오지 못했습니다</div>'; });
+}
+
+function paintIss(){
+  const rows=shownIss();
+  $('ic').textContent=rows.length+'건';
+  $('iss').innerHTML = rows.length ? rows.map(function(x){
+    const done=x.status==='done';
+    /* qa-shots 는 비공개라 주소를 그때그때 받아 옵니다 (아래 fillShots) */
+    const shot = x.shot_url
+      ? '<span class="sh" data-shot="'+esc(x.shot_url)+'" data-pg="'+esc(x.page||'')+'">…</span>'
+      : '<span class="sh">사진 없음</span>';
+    const note=String(x.note||'');
+    const long=note.length>160 || note.split('\n').length>3;
+    return '<div class="iss'+(done?' done':'')+'">'
+      + shot
+      + '<div class="b">'
+        + '<div class="hd">'
+          + '<span class="pg">'+esc(String(x.page||'').replace('.html',''))+'</span>'
+          + '<span class="mt">'+esc(KIND[x.kind]||x.kind||'')+' · '+esc(x.device||'')
+            +(x.viewport?' · '+esc(x.viewport):'')+' · '+when(x.created_at)+'</span>'
+        + '</div>'
+        + '<div class="tx'+(long?' cut':'')+'">'+esc(note)+'</div>'
+        + (long?'<button class="more" onclick="moreIss(this)">더 보기</button>':'')
+      + '</div>'
+      + (done?'':'<button class="fix" onclick="fixIss('+x.id+')">고침</button>')
+      + '</div>';
+  }).join('') : '<div class="empty">'+(SHOWDONE?'아직 없습니다':'안 고친 이슈가 없습니다')+'</div>';
+  fillShots();
+}
+
+/* ── 비공개 창고의 사진 ──
+ *  qa-shots 는 공개 주소가 없습니다. 관리자로 로그인했을 때만
+ *  서명된 주소(한 시간)를 받아 와 그림을 띄웁니다.
+ *  로그인하지 않았으면 그림 자리에 그렇다고 적습니다. */
+const SIGNED={};
+function signShot(path){
+  if(SIGNED[path]) return Promise.resolve(SIGNED[path]);
+  if(/^https?:/i.test(path)) return Promise.resolve(path);   /* 옛 공개 주소 */
+  if(!tok()) return Promise.resolve('');
+  return fetch(SB+'/storage/v1/object/sign/'+path,{
+    method:'POST',
+    headers:Object.assign({},H(),{'Content-Type':'application/json'}),
+    body:JSON.stringify({expiresIn:3600})
+  })
+  .then(r=>r.ok?r.json():null)
+  .then(function(d){
+    if(!d || !d.signedURL) return '';
+    SIGNED[path]=SB+'/storage/v1'+d.signedURL;
+    return SIGNED[path];
+  })
+  .catch(function(){ return ''; });
+}
+
+function fillShots(){
+  document.querySelectorAll('#iss .sh[data-shot]').forEach(function(el){
+    const path=el.getAttribute('data-shot');
+    el.removeAttribute('data-shot');
+    signShot(path).then(function(u){
+      if(!u){ el.textContent = tok() ? '사진을 못 불러왔습니다' : '관리자 로그인 필요'; return; }
+      const a=document.createElement('a');
+      a.className='sh'; a.href=u; a.target='_blank'; a.rel='noopener';
+      const im=document.createElement('img');
+      im.src=u; im.loading='lazy';
+      im.alt=(el.getAttribute('data-pg')||'')+' 화면';
+      im.onerror=function(){ a.replaceWith(Object.assign(document.createElement('span'),
+        {className:'sh',textContent:'사진을 못 불러왔습니다'})); };
+      a.appendChild(im);
+      el.replaceWith(a);
+    });
+  });
+}
+
+function moreIss(btn){
+  const tx=btn.previousElementSibling;
+  const open=tx.classList.toggle('cut');
+  btn.textContent = open ? '더 보기' : '접기';
+}
+
+function fixIss(id){
+  if(!tok()){ say('m3','관리자로 로그인하셔야 바꿀 수 있습니다.','bad'); return; }
+  fetch(SB+'/rest/v1/qa_reports?id=eq.'+id,{
+    method:'PATCH',
+    headers:Object.assign({},H(),{'Content-Type':'application/json',Prefer:'return=minimal'}),
+    body:JSON.stringify({status:'done',claimed_at:new Date().toISOString()})
+  })
+  .then(function(r){
+    if(!r.ok){ say('m3','바꾸지 못했습니다.','bad'); return; }
+    const row=ISS.find(x=>x.id===id);
+    if(row) row.status='done';
+    paintIss();
+    say('m3','고침으로 표시했습니다.','ok');
+  })
+  .catch(function(){ say('m3','바꾸지 못했습니다.','bad'); });
+}
+
+function copyIss(){
+  const rows=shownIss();
+  if(!rows.length){ say('m3','보낼 것이 없습니다.','bad'); return; }
+  let t='츄구미 QA 이슈 '+rows.length+'건\n\n';
+  rows.forEach(function(x,i){
+    t+=(i+1)+'. ['+String(x.page||'').replace('.html','')+'] '+(KIND[x.kind]||x.kind)+'\n'
+      +'   '+String(x.note||'').split('\n').join('\n   ')+'\n'
+      +'   기기 · '+(x.device||'')+' '+(x.viewport||'')+'\n'
+      +(x.shot_url?'   사진 · '+x.shot_url+' (비공개 · qa-tool.html 에서 보세요)\n':'')+'\n';
+  });
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(t)
+      .then(function(){ say('m3','복사했습니다.','ok'); })
+      .catch(function(){ say('m3','복사하지 못했습니다.','bad'); });
+  } else say('m3','이 브라우저는 복사를 지원하지 않습니다.','bad');
+}
+
 $('rules').innerHTML = RULES.map(function(r){
   return '<div class="rule"><b>'+r[0]+'</b><span>'+r[1]+'</span></div>';
 }).join('');
 
 load();
+loadIss();
 </script>
 </body>
 </html>
