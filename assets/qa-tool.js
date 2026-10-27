@@ -150,6 +150,135 @@
     }).catch(function () {});
   }
 
+  /* ── 어느 기기에서 보고 있는지 ──
+     context() 는 사람이 읽을 글로 적고, 여기는 추려서 칸에 나눠 담습니다.
+     나중에 "아이폰에서만 깨지는 것"을 추려 보려는 것입니다. */
+  function device() {
+    var u = navigator.userAgent;
+    var os = /iPhone/.test(u) ? '아이폰'
+           : /iPad/.test(u) ? '아이패드'
+           : /Android/.test(u) ? '안드로이드'
+           : /Macintosh/.test(u) ? '맥'
+           : /Windows/.test(u) ? '윈도우' : '기타';
+    var br = /Edg\//.test(u) ? '엣지'
+           : /SamsungBrowser/.test(u) ? '삼성인터넷'
+           : /KAKAOTALK/i.test(u) ? '카카오톡'
+           : /NAVER|Whale/i.test(u) ? '네이버'
+           : /Chrome\//.test(u) ? '크롬'
+           : /Safari\//.test(u) ? '사파리' : '기타';
+    return os + ' · ' + br;
+  }
+
+  function viewport() { return window.innerWidth + '×' + window.innerHeight; }
+
+  /* 사람이 읽을 화면 이름 — 제목 앞머리를 씁니다 */
+  function screenName() {
+    var t = (document.title || '').split('|')[0].trim();
+    return t || page().replace('.html', '');
+  }
+
+  /* ── 화면 사진 ──
+     글로만 적으면 "어디가 어떻게"가 빠집니다. 그 순간 보이던 그대로를 함께 보냅니다.
+     html2canvas 는 찍을 때만 불러옵니다. 못 불러오면 사진 없이 보냅니다. */
+  var H2C = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+  var h2cWait = null;
+
+  function loadH2C() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    if (h2cWait) return h2cWait;
+    h2cWait = new Promise(function (ok, no) {
+      var el = document.createElement('script');
+      el.src = H2C;
+      el.onload = function () { window.html2canvas ? ok(window.html2canvas) : no(); };
+      el.onerror = no;
+      document.head.appendChild(el);
+      setTimeout(no, 8000);
+    }).catch(function () { h2cWait = null; return null; });
+    return h2cWait;
+  }
+
+  /* 지금 보이는 만큼만 찍습니다 (긴 화면을 통째로 찍으면 무겁습니다) */
+  function shoot() {
+    return loadH2C().then(function (h2c) {
+      if (!h2c) return null;
+      return h2c(document.body, {
+        backgroundColor: '#fff',
+        useCORS: true,
+        logging: false,
+        scale: Math.min(1, 900 / Math.max(window.innerWidth, 1)),
+        x: window.scrollX, y: window.scrollY,
+        width: window.innerWidth, height: window.innerHeight,
+        scrollX: 0, scrollY: 0,
+        /* QA 도구 자신은 안 찍습니다 */
+        ignoreElements: function (el) {
+          return el.id === 'cgQaBox' || el.id === 'cgQaBar';
+        }
+      });
+    })
+    .then(function (cv) {
+      if (!cv) return null;
+      return new Promise(function (ok) { cv.toBlob(ok, 'image/png'); });
+    })
+    .catch(function () { return null; });
+  }
+
+  function upload(blob) {
+    if (!blob || blob.size > 5 * 1024 * 1024) return Promise.resolve('');
+    var name = (run || 'QA') + '_' + page().replace('.html', '')
+             + '_' + Date.now().toString(36) + '.png';
+    return fetch(SB + '/storage/v1/object/qa-shots/' + name, {
+      method: 'POST',
+      headers: { apikey: K, Authorization: 'Bearer ' + K,
+                 'Content-Type': 'image/png', 'x-upsert': 'true' },
+      body: blob
+    })
+    .then(function (r) {
+      return r.ok ? SB + '/storage/v1/object/public/qa-shots/' + name : '';
+    })
+    .catch(function () { return ''; });
+  }
+
+  /* ── 이슈로 보내기 ──
+     qa_events 는 발자국이라 금방 길어집니다. 사람이 "이것 고쳐주세요"라고 적은 것만
+     qa_reports 에 따로 쌓아, qa-tool.html 에서 사진과 함께 봅니다. */
+  function report(kind, note) {
+    var pg = page();
+    return shoot().then(upload).then(function (shot) {
+      return fetch(SB + '/rest/v1/qa_reports', {
+        method: 'POST',
+        headers: {
+          apikey: K, Authorization: 'Bearer ' + K,
+          'Content-Type': 'application/json', Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+          page: pg, kind: kind, note: (note || '').trim(),
+          device: device(), viewport: viewport(),
+          shot_url: shot || '', status: 'open'
+        })
+      }).then(function (r) { return { ok: r.ok, shot: !!shot }; });
+    })
+    .catch(function () { return { ok: false, shot: false }; });
+  }
+
+  /* 시험대(qa-lab) 바깥 창이 "지금 화면을 찍어 보내라"고 시킬 수 있게 합니다 */
+  function listenLab() {
+    window.addEventListener('message', function (e) {
+      if (e.origin !== location.origin) return;
+      var d = e.data;
+      if (!d || d.ask !== 'cgqa-report') return;
+      var body = (d.note || '').trim();
+      if (d.kind === 'bug') body += '\n\n──── 자동으로 붙인 정보 ────\n' + context();
+      report(d.kind || 'bug', body).then(function (r) {
+        try {
+          e.source.postMessage({
+            src: 'cgqa', done: 'report', ok: r.ok, shot: r.shot,
+            page: page(), name: screenName()
+          }, e.origin);
+        } catch (x) {}
+      });
+    });
+  }
+
   function box() { return document.getElementById('cgQaBox'); }
 
   function paint() {
@@ -343,11 +472,28 @@
       if (kind === 'bug') body = body + '\n\n──── 자동으로 붙인 정보 ────\n' + context();
       log(kind, { note: body, target: page() });
       t.value = '';
-      if (kind === 'bug') {
-        var m = b.querySelector('.qa-sent');
-        if (m) { m.textContent = '보냈습니다 · 화면 정보와 오류를 함께 붙였습니다';
-                 setTimeout(function () { m.textContent = ''; }, 4000); }
+
+      /* 화면을 찍어 이슈로도 보냅니다 */
+      var m = b.querySelector('.qa-sent');
+      function say(txt, cls) {
+        if (!m) return;
+        m.className = 'qa-sent' + (cls ? ' ' + cls : '');
+        m.textContent = txt;
+        if (txt) setTimeout(function () {
+          if (m.textContent === txt) { m.textContent = ''; m.className = 'qa-sent'; }
+        }, 5000);
       }
+      var btns = b.querySelectorAll('.qa-b button');
+      var i;
+      for (i = 0; i < btns.length; i++) btns[i].disabled = true;
+      say('화면을 찍어 보내는 중…');
+      report(kind, body).then(function (r) {
+        for (var j = 0; j < btns.length; j++) btns[j].disabled = false;
+        say(r.ok ? (r.shot ? '보냈습니다 · 화면 사진과 오류를 함께 붙였습니다'
+                           : '보냈습니다 (사진은 못 찍었습니다)')
+                 : '이슈로 보내지 못했습니다 · 기록에는 남았습니다',
+            r.ok ? 'ok' : 'bad');
+      });
     }
     b.querySelector('.bug').onclick = function () { send('bug'); };
     b.querySelector('.note').onclick = function () { send('note'); };
@@ -639,6 +785,12 @@
     },
     record: startRec,
     stop: stopRec,
+    report: report,
+    shot: shoot,
+    where: function () {
+      return { page: page(), name: screenName(),
+               device: device(), viewport: viewport(), url: location.href };
+    },
     log: log,
     run: function () { return run; },
     events: function () { return buf; }
@@ -650,6 +802,7 @@
   function start() {
     build();
     watch();
+    listenLab();
     /* 켜면 녹화도 같이 시작합니다. 나중에 "그때 뭐 눌렀더라"를 안 물어보려는 것입니다.
        화면 녹화를 지원하지 않는 브라우저면 조용히 넘어갑니다. (issues #7 · 1번) */
     if (canRec()) setTimeout(function () { try { startRec(); } catch (e) {} }, 400);
