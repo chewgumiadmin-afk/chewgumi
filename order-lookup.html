@@ -251,14 +251,14 @@ dd{margin:0;word-break:keep-all}
 
   <!-- 찾기 -->
   <div class="panel" id="findBox">
-    <label>주문번호</label>
+    <label for="fNo">주문번호</label>
     <input id="fNo" placeholder="20260821-442165" autocomplete="off" inputmode="numeric">
 
-    <label>주문자명 또는 전화 뒷 4자리</label>
+    <label for="fKey">주문자명 또는 전화 뒷 4자리</label>
     <input id="fKey" placeholder="홍길동  또는  1234" autocomplete="off">
 
     <button class="btn" onclick="find()" id="findBtn">주문 조회하기</button>
-    <div class="msg" id="m1"></div>
+    <div class="msg" id="m1" role="status" aria-live="polite"></div>
 
     <div class="hint">
       주문번호는 <b>주문 완료 화면</b>과 <b>주문 확인 메일</b>에서 보실 수 있습니다.<br>
@@ -306,10 +306,10 @@ function find(){
   .then(r=>r.ok?r.json():Promise.reject())
   .then(function(d){
     $('findBtn').disabled=false;
-    if(!d||!d.ok){ say((d&&d.msg)||'주문을 찾지 못했습니다.','bad'); $('resBox').classList.add('hide'); return; }
+    if(!d||!d.ok){ say(((d&&d.msg)||'주문을 찾지 못했습니다.')+' 주문번호와 주문자명(또는 전화 뒷 4자리)을 다시 확인해 보세요. 계속 안 되면 chewgumi24@gmail.com 으로 알려 주세요.','bad'); $('resBox').classList.add('hide'); return; }
     say(''); window._ORD = d.order; draw(d.order);
   })
-  .catch(function(){ $('findBtn').disabled=false; say('조회하지 못했습니다. 잠시 후 다시 시도해 주세요.','bad'); });
+  .catch(function(){ $('findBtn').disabled=false; say('조회하지 못했습니다. 잠시 후 다시 시도해 주세요. 계속 안 되면 chewgumi24@gmail.com 으로 알려 주세요.','bad'); });
 }
 
 function draw(o){
