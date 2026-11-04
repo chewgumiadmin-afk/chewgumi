@@ -72,7 +72,9 @@ def todo(item):
     """사람 확인 없이 지금 반영해도 되는 항목인가."""
     blocked = item.get('막는것', '').strip()
     state = item.get('상태', '').strip()
-    return blocked in ('없음', '') and state.startswith('대기')
+    # 「없음 (대표님 결정 YYYY-MM-DD · …)」 처럼 대표님 결정 기록이 붙은 것도 막는 것이 없는 것입니다 — 예약 작업이 결정을 이렇게 적습니다.
+    # 「없음 (문서의 사실 오류) — 단 … 미룸」 같은 단서 달린 것은 그대로 사람 대기에 둡니다 (#164 Sourcery).
+    return (blocked in ('없음', '') or blocked.startswith('없음 (대표님 결정')) and state.startswith('대기')
 
 
 def _get(url, token):
@@ -175,11 +177,31 @@ def _age_line(blocked, today=None):
     return '사람 대기 나이   가장 오래된 %d일 (%s) · 중앙값 %g일 · 기준 %s' % (oldest[0], oldest[1], med, today.isoformat())
 
 
+def _question_line(blocked, today=None):
+    """사람이 정해야 할 카드(막는것 있음) 가운데 「질문:」이 없는 것 — 한 마디로 답할 수 있는 모양이 아닙니다 (#152 MN-152-1).
+    음성 브리핑 길은 「결정 대기: <id> → 답」 한 줄이라, 질문이 없는 카드는 그 길로 답할 수 없습니다."""
+    import datetime
+    today = today or datetime.datetime.now(datetime.timezone.utc).date()
+    need = [x for x in blocked if not x.get('막는것', '').strip().startswith('없음')]
+    if not need:
+        return ''
+    noq = [x for x in need if not re.search(r'질문\s*[:：]', x.get('막는것', ''))]
+    old = 0
+    for x in noq:
+        try:
+            if (today - datetime.date.fromisoformat(x['생성일'])).days >= 30:
+                old += 1
+        except (KeyError, ValueError):
+            pass
+    return '질문 없는 대기   %d건 / %d건 (그중 30일 넘은 것 %d건)' % (len(noq), len(need), old)
+
+
 def report(items, repo):
     t = [x for x in items if todo(x)]
     blocked = [x for x in items if not todo(x) and x.get('상태', '').startswith('대기')]
     done = [x for x in items if x.get('상태', '').startswith('반영됨')]
     held = [x for x in items if x.get('상태', '').startswith('보류')]
+    doing = [x for x in items if x.get('상태', '').startswith('진행')]   # 어느 세션이 맡아 고치는 중 — 끊기면 여기서 이어받습니다
 
     L = []
     A = L.append
@@ -193,10 +215,14 @@ def report(items, repo):
     A('바로 반영    %d 건' % len(t))
     A('사람 대기    %d 건' % len(blocked))
     A('반영됨       %d 건' % len(done))
+    A('진행 중      %d 건' % len(doing))
     A('보류         %d 건' % len(held))
     age = _age_line(blocked)
     if age:
         A(age)
+    qline = _question_line(blocked)
+    if qline:
+        A(qline)
     A('```')
     A('')
 
@@ -241,6 +267,17 @@ def report(items, repo):
             commit = st.split('·', 1)[1].strip() if '·' in st else ''
             A('| `%s` | #%s | %s | `%s` |' % (
                 x.get('id'), x.get('이슈'), x.get('무엇', ''), commit))
+        A('')
+
+    if doing:
+        A('## 진행 중')
+        A('')
+        A('어느 세션이 맡아 고치고 있습니다. 그 세션이 끝났는데 여기 남아 있으면 이어받아 고칩니다.')
+        A('')
+        A('| id | 이슈 | 무엇 | 상태 |')
+        A('|---|---|---|---|')
+        for x in doing:
+            A('| `%s` | #%s | %s | %s |' % (x.get('id'), x.get('이슈'), x.get('무엇', ''), x.get('상태', '')))
         A('')
 
     if held:
