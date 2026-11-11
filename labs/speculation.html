@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>실험 · 미리 받아 두기(Speculation Rules) — CHEWGUMI</title>
+<!-- 실험 화면입니다. 사이트 어디에서도 링크하지 않고(sitemap·robots 에도 없음) 손님 화면의 흐름은 바뀌지 않습니다 (CLAUDE.md §2).
+     무엇을 실험하나: 목록에서 상품 상세로 갈 때, 브라우저가 손가락·마우스가 링크 위에 머문 순간 상세 화면의 HTML 을 미리 받아 두면
+     (Speculation Rules · prefetch) 눌렀을 때 첫 응답을 기다리지 않는지. 브라우저 내장 기능이고 무료이며 외부 서버·열쇠가 없습니다.
+     미리 받는 것은 같은 사이트의 상품 상세 HTML 뿐입니다 — prefetch 는 화면을 실행하지 않아(prerender 와 다릅니다) 조회수·주문 같은
+     부수 효과가 없고, 결제·로그인·주문·관리 화면은 규칙에 넣지 않았습니다. 지원하지 않는 브라우저는 <script type="speculationrules"> 를
+     그냥 무시해 지금과 똑같이 동작합니다. 절약 모드(Save-Data)면 브라우저가 알아서 미리 받지 않습니다.
+     예시 상품 번호만 쓰고 손님·주문 정보는 쓰지 않습니다. 색은 사이트가 이미 쓰는 --main(#D82558)·--ink(#2A1B21) 만 씁니다. -->
+<style>
+:root{--main:#D82558;--ink:#2A1B21;--gray:#6B5C62;--line:#E8DFE2;--bg:#FFF8FA}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+main{max-width:30rem;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.25rem;margin:0 0 6px}
+p{margin:0 0 14px}
+.sub{color:var(--gray);font-size:.9375rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
+.btn{display:block;width:100%;min-height:48px;border:0;border-radius:999px;background:var(--main);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin:8px 0}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn:focus-visible,a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.list a{display:flex;align-items:center;min-height:48px;padding:8px 12px;margin:8px 0;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-weight:600}
+#out{min-height:3em;background:#FDECF1;border-radius:12px;padding:10px 14px;font-size:.9375rem}
+table{width:100%;border-collapse:collapse;font-size:.875rem;table-layout:fixed}
+th,td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;vertical-align:top}
+th{font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <h1>실험 · 미리 받아 두기</h1>
+  <p class="sub">상품 목록에서 상세로 갈 때 첫 화면이 더 빨리 뜨는지 보는 실험 화면입니다. 손님 화면에는 연결돼 있지 않습니다.</p>
+
+  <div class="card">
+    <strong>이 브라우저</strong>
+    <table id="sup" aria-label="이 브라우저의 지원 상태"></table>
+  </div>
+
+  <div class="card">
+    <strong>예시 상품 (번호만 · 실제 상세 화면으로 이동)</strong>
+    <div class="list">
+      <a href="../product.html?no=1">예시 상품 1</a>
+      <a href="../product.html?no=2">예시 상품 2</a>
+      <a href="../product.html?no=3">예시 상품 3</a>
+    </div>
+    <p class="sub">규칙이 켜져 있으면 링크 위에 손가락·마우스가 머문 뒤 눌렀을 때 상세 HTML 을 이미 받아 둔 상태에서 열립니다.</p>
+  </div>
+
+  <div class="card">
+    <button class="btn" id="on" type="button">미리 받아 두기 켜기</button>
+    <button class="btn ghost" id="off" type="button">끄기</button>
+    <p id="out" role="status" aria-live="polite">꺼져 있습니다.</p>
+  </div>
+</main>
+<script>
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i)};
+  var supported=!!(window.HTMLScriptElement&&HTMLScriptElement.supports&&HTMLScriptElement.supports("speculationrules"));
+  var conn=navigator.connection||{};
+  var rows=[
+    ["speculationrules 지원",supported?"예":"아니오 (규칙은 무시되고 지금과 똑같이 열립니다)"],
+    ["절약 모드(Save-Data)",conn.saveData?"켜짐 — 브라우저가 미리 받지 않습니다":"꺼짐 또는 알 수 없음"],
+    ["연결 종류",conn.effectiveType||"알 수 없음"]
+  ];
+  $("sup").innerHTML=rows.map(function(r){return "<tr><th scope=\"row\">"+r[0]+"</th><td>"+r[1]+"</td></tr>"}).join("");
+
+  // 규칙은 이 화면의 링크 중 상품 상세(product.html)만 — 결제·로그인·주문·관리 화면과 새 창으로 여는 링크는 넣지 않습니다.
+  // eagerness "moderate": 손가락·마우스가 링크 위에 약 200ms 머문 뒤에만 받습니다(화면에 보이기만 해서는 받지 않음).
+  var RULES={prefetch:[{where:{and:[{href_matches:"/product.html*"},{not:{selector_matches:"[rel~=nofollow]"}},{not:{selector_matches:"[target=_blank]"}}]},eagerness:"moderate"}]};
+  var el=null;
+  function on(){
+    if(el)return;
+    el=document.createElement("script"); el.type="speculationrules"; el.textContent=JSON.stringify(RULES);
+    document.head.appendChild(el);
+    $("out").textContent=supported?"켜졌습니다. 링크 위에 잠깐 머문 뒤 눌러 보세요.":"켰지만 이 브라우저는 지원하지 않아 아무 일도 일어나지 않습니다.";
+  }
+  function off(){ if(el){el.remove();el=null;} $("out").textContent="꺼져 있습니다."; }
+  $("on").addEventListener("click",on); $("off").addEventListener("click",off);
+  // ?rules=1 로 열면 처음부터 켭니다 (측정용).
+  if(/[?&]rules=1(&|$)/.test(location.search)) on();
+})();
+</script>
+</body>
+</html>
