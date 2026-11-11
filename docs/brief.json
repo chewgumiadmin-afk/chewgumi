@@ -1,6 +1,28 @@
 {
-  "updated": "2026-11-10T12:30:00Z",
+  "updated": "2026-11-11T06:40:00Z",
   "runs": [
+    {
+      "at": "2026-11-11T06:40:00Z",
+      "task": "최신앱 디자인 · API 실험",
+      "commits": [
+        {
+          "sha": "8fff527",
+          "title": "실험 화면: 미리 받아 두기(Speculation Rules · prefetch) (CG-183-1)"
+        }
+      ],
+      "issues": [
+        {
+          "n": 183,
+          "title": "[리서치][API실험] 츄구미 Speculation Rules prefetch",
+          "research": true
+        }
+      ],
+      "prs": [],
+      "decisions": [
+        "CG-183-2: 상품 카드를 진짜 링크로 바꾸고 목록에 미리 받기 규칙을 켜도 됩니까 (가 켜기/나 실험만/다 링크만)"
+      ],
+      "note": "B API실험. 가짜 지연 400ms 환경에서 첫 응답 439→33ms. 실제 호스팅·모바일 터치는 못 잼. Safari·Firefox 미지원"
+    },
     {
       "at": "2026-11-10T12:30:00Z",
       "task": "Claude 운영 에이전트",
