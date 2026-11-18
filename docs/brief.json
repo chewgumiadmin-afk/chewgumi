@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-18T06:30:00Z",
+  "updated": "2026-11-18T21:35:00Z",
   "runs": [
     {
       "at": "2026-11-10T12:30:00Z",
@@ -179,7 +179,12 @@
     {
       "at": "2026-11-18T06:30:00Z",
       "task": "최신앱 디자인 · API 실험",
-      "commits": [],
+      "commits": [
+        {
+          "sha": "695e00c",
+          "title": "전체상품: 필터 칩 aria-pressed · 개수 줄 role=status (CG-187-3) (#188)"
+        }
+      ],
       "issues": [
         {
           "n": 187,
@@ -191,7 +196,7 @@
         {
           "n": 188,
           "title": "전체상품 칩 aria-pressed · 개수 줄 role=status (CG-187-3)",
-          "state": "open",
+          "state": "merged",
           "opened": "2026-11-18"
         }
       ],
