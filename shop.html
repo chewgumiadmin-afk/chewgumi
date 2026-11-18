@@ -249,10 +249,10 @@ header{
 
   <div class="bar">
     <div class="chips" id="chips">
-      <button class="chip on" data-f="">전체</button>
-      <button class="chip" data-f="travel">Travel-it</button>
-      <button class="chip" data-f="doit">Dew-it</button>
-      <button class="chip" data-f="triple">Triple-it</button>
+      <button class="chip on" data-f="" aria-pressed="true">전체</button>
+      <button class="chip" data-f="travel" aria-pressed="false">Travel-it</button>
+      <button class="chip" data-f="doit" aria-pressed="false">Dew-it</button>
+      <button class="chip" data-f="triple" aria-pressed="false">Triple-it</button>
     </div>
     <select id="sortBy">
       <option value="new">신상품순</option>
@@ -261,7 +261,7 @@ header{
       <option value="name">상품명순</option>
     </select>
   </div>
-  <div class="cnt" id="cnt">불러오는 중…</div>
+  <div class="cnt" id="cnt" role="status">불러오는 중…</div>
 
   <div class="grid" id="grid"></div>
 
@@ -357,8 +357,8 @@ function draw(){
 
 $('chips').addEventListener('click',e=>{
   const b=e.target.closest('.chip'); if(!b) return;
-  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');
+  document.querySelectorAll('.chip').forEach(x=>{ x.classList.remove('on'); x.setAttribute('aria-pressed','false'); });
+  b.classList.add('on'); b.setAttribute('aria-pressed','true');
   LINE=b.dataset.f||'';
   draw();
 });
@@ -369,8 +369,8 @@ $('sortBy').addEventListener('change',e=>{ SORT=e.target.value; draw(); });
   const q=new URLSearchParams(location.search).get('line');
   if(q){
     const b=document.querySelector('.chip[data-f="'+q+'"]');
-    if(b){ document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on'); LINE=q; }
+    if(b){ document.querySelectorAll('.chip').forEach(x=>{ x.classList.remove('on'); x.setAttribute('aria-pressed','false'); });
+      b.classList.add('on'); b.setAttribute('aria-pressed','true'); LINE=q; }
   }
 })();
 
