@@ -153,21 +153,78 @@ a{color:inherit;text-decoration:none}
   <h1>QA 시험대</h1>
   <span class="run" id="runId">—</span>
   <select id="pick">
-    <option value="index.html">메인</option>
-    <option value="cart.html">장바구니</option>
-    <option value="checkout.html">주문서</option>
-    <option value="mypage.html">마이페이지</option>
-    <option value="order-lookup.html">주문 조회</option>
-    <option value="login.html">로그인</option>
-    <option value="join.html">회원가입</option>
-    <option value="tracking.html">배송 조회</option>
-    <option value="review.html">후기</option>
-    <option value="notice.html">공지</option>
-    <option value="qna.html">문의</option>
-    <option value="guide.html">이용안내</option>
-    <option value="orders.html">주문 관리</option>
-    <option value="stock.html">재고 관리</option>
-    <option value="manage.html">정리 도구</option>
+    <optgroup label="고객 화면">
+      <option value="index.html">메인</option>
+      <option value="shop.html">쇼핑</option>
+      <option value="products.html">상품 목록</option>
+      <option value="product.html">상품 상세</option>
+      <option value="cart.html">장바구니</option>
+      <option value="checkout.html">주문서</option>
+      <option value="pay-return.html">결제 결과</option>
+      <option value="order-lookup.html">주문 조회</option>
+      <option value="order-detail.html">주문 상세</option>
+      <option value="tracking.html">배송 조회</option>
+      <option value="mypage.html">마이페이지</option>
+      <option value="login.html">로그인</option>
+      <option value="join.html">회원가입</option>
+      <option value="reset.html">비밀번호 재설정</option>
+      <option value="subscribe.html">정기구독</option>
+      <option value="wish.html">찜</option>
+      <option value="review.html">후기</option>
+      <option value="review-write.html">후기 쓰기</option>
+      <option value="reports.html">의견 보내기</option>
+      <option value="notice.html">공지</option>
+      <option value="qna.html">문의</option>
+      <option value="faq.html">자주 묻는 질문</option>
+      <option value="guide.html">이용안내</option>
+      <option value="help.html">도움말</option>
+      <option value="about.html">브랜드 소개</option>
+      <option value="boards.html">게시판</option>
+      <option value="posts.html">글 목록</option>
+      <option value="grievance.html">고충 접수</option>
+      <option value="message.html">알림</option>
+      <option value="status.html">상태</option>
+      <option value="hub.html">허브</option>
+      <option value="terms.html">이용약관</option>
+      <option value="privacy.html">개인정보</option>
+      <option value="reply.html">답변</option>
+    </optgroup>
+    <optgroup label="관리자 화면">
+      <option value="console.html">관리자 홈</option>
+      <option value="orders.html">주문 관리</option>
+      <option value="stock.html">재고 관리</option>
+      <option value="manage.html">정리 도구</option>
+      <option value="members.html">회원 관리</option>
+      <option value="subs-admin.html">정기구독 관리</option>
+      <option value="reviews-admin.html">후기 관리</option>
+      <option value="reports-admin.html">의견 관리</option>
+      <option value="issue.html">이슈 등록</option>
+      <option value="tasks.html">할 일</option>
+      <option value="ops.html">운영</option>
+      <option value="drive.html">드라이브</option>
+      <option value="exports.html">내보내기</option>
+      <option value="export-ai.html">AI 내보내기</option>
+      <option value="keys.html">키 관리</option>
+      <option value="channels.html">채널</option>
+      <option value="integrations.html">연동</option>
+      <option value="campaign.html">캠페인</option>
+      <option value="sns.html">SNS</option>
+      <option value="github.html">깃허브</option>
+      <option value="cafe24.html">카페24</option>
+      <option value="bot.html">봇</option>
+      <option value="fixlog.html">수정 기록</option>
+      <option value="access.html">접근 권한</option>
+      <option value="lab.html">실험실</option>
+      <option value="dev.html">개발</option>
+      <option value="admin.html">관리</option>
+      <option value="preview.html">미리보기</option>
+      <option value="review-import.html">후기 가져오기</option>
+      <option value="cs-settings.html">상담 설정</option>
+      <option value="mail-template.html">메일 서식</option>
+      <option value="setup.html">초기 설정</option>
+      <option value="setup-admin.html">관리자 설정</option>
+      <option value="patents.html">특허</option>
+    </optgroup>
   </select>
   <button class="b sub" id="go">열기</button>
   <button class="b sub" id="newtab">새 창으로</button>
@@ -309,6 +366,7 @@ $('toggle').onclick=function(){
 };
 
 /* 수정 요청 */
+let WAIT=null;
 function note(kind){
   if(!ON){ say('m1','먼저 [기록 시작]을 눌러주세요.','bad'); return; }
   const t=$('memo');
@@ -318,9 +376,31 @@ function note(kind){
     t.placeholder='무엇이 이상한지 적어주세요';
     return;
   }
-  log(kind,{note:v||'이 화면은 잘 됩니다'});
+  const body=v||'이 화면은 잘 됩니다';
+  log(kind,{note:body});
   t.value='';
-  say('m1','적었습니다.','ok');
+
+  /* 왼쪽 화면에게 "지금 모습을 찍어 이슈로 보내라"고 부탁합니다.
+     안쪽에서 찍어야 실제로 시험하던 화면이 담깁니다. */
+  const fr=$('fr');
+  if(!fr || !fr.contentWindow){ say('m1','적었습니다.','ok'); return; }
+  const btns=[$('bBug'),$('bNote'),$('bOk')];
+  btns.forEach(function(b){ b.disabled=true; });
+  say('m1','왼쪽 화면을 찍어 보내는 중…');
+  let done=false;
+  const back=function(ok,shot,name){
+    if(done) return;
+    done=true; WAIT=null;
+    btns.forEach(function(b){ b.disabled=false; });
+    say('m1', ok ? (name?name+' ':'')+'화면으로 보냈습니다'+(shot?' · 사진 포함':' (사진 없이)')
+                 : '이슈로 보내지 못했습니다 · 기록에는 남았습니다',
+        ok?'ok':'bad');
+  };
+  WAIT=back;
+  try{
+    fr.contentWindow.postMessage({ask:'cgqa-report',kind:kind,note:body}, location.origin);
+  }catch(e){ back(false); }
+  setTimeout(function(){ back(false); }, 15000);
 }
 $('bBug').onclick=function(){ note('bug'); };
 $('bNote').onclick=function(){ note('note'); };
@@ -413,6 +493,10 @@ window.addEventListener('message', function(e){
   if(e.origin !== location.origin) return;
   const d=e.data;
   if(!d || d.src!=='cgqa') return;
+  if(d.done==='report'){
+    if(WAIT) WAIT(d.ok, d.shot, d.name);
+    return;
+  }
   log(d.kind||'click', {
     page:d.page||PAGE, target:d.target||'',
     label:d.label||'', value:d.value||'',
