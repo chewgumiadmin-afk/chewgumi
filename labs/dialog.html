@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>실험 · 브라우저 내장 대화상자(dialog) — CHEWGUMI</title>
+<!-- 실험 화면입니다. 사이트 어디에서도 링크하지 않고(sitemap·robots 에도 없음) 손님 화면의 흐름은 바뀌지 않습니다 (CLAUDE.md §2 · R16).
+     무엇을 실험하나: index.html 의 첫 방문 쿠폰 팝업(#popup)은 div role="dialog" 로 만들어져 있어 aria-modal 이 없고, 열려도 키보드 초점이
+     팝업 안으로 들어가지 않으며 Tab 으로 뒤 화면(탑바·메뉴)까지 나갑니다 (2026-11-25 헤드리스 크롬으로 확인). 브라우저 내장 <dialog> +
+     showModal() 은 초점 가두기 · Esc 닫기 · 뒤 화면 비활성 · 닫은 뒤 초점 복귀를 브라우저가 해 줍니다. 무료이고 외부 서버·열쇠가 없으며
+     어떤 데이터도 저장하거나 보내지 않습니다. 문구는 예시이며 손님·주문 정보는 없습니다. 색은 사이트가 이미 쓰는 값만 씁니다. -->
+<style>
+:root{--main:#D82558;--ink:#2A1B21;--gray:#6B5C62;--line:#E8DFE2;--bg:#FFF8FA}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+main{max-width:30rem;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.25rem;margin:0 0 6px}
+p{margin:0 0 14px}
+.sub{color:var(--gray);font-size:.9375rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
+.btn{display:block;width:100%;min-height:48px;border:0;border-radius:999px;background:var(--main);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin-bottom:10px}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn:focus-visible,a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+#out{min-height:3em;background:#FDECF1;border-radius:12px;padding:10px 14px;font-size:.9375rem}
+table{width:100%;border-collapse:collapse;font-size:.875rem;table-layout:fixed}
+th,td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;vertical-align:top}
+th{font-weight:600}
+code{background:#F5EDF0;border-radius:4px;padding:0 4px}
+td.ok{font-weight:700}
+
+/* 실험 대화상자 — 모양은 index.html 의 .popup 과 같은 결(흰 상자 · 둥근 모서리 · 분홍 단추)만 따라 합니다 */
+dialog.pop{border:0;border-radius:20px;padding:22px 20px 18px;width:min(92vw,22rem);color:var(--ink)}
+dialog.pop::backdrop{background:rgba(42,27,33,.55)}
+.pop h2{font-size:1.125rem;margin:0 0 6px}
+.pop .acts{display:flex;gap:8px;margin-top:14px}
+.pop .acts .btn{margin:0;flex:1}
+@media (prefers-reduced-motion:no-preference){
+  dialog.pop[open]{animation:pop-in .18s ease-out}
+  @keyframes pop-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>대화상자 실험 (&lt;dialog&gt;)</h1>
+  <p class="sub">첫 방문 쿠폰 팝업을 브라우저 내장 대화상자로 열면 키보드·낭독기에서 무엇이 달라지는지 봅니다. 예시 문구만 쓰며 아무것도 저장하거나 보내지 않습니다.</p>
+
+  <div class="card">
+    <a href="#end" id="bgLink">뒤 화면의 링크(대화상자가 열리면 닿지 않아야 함)</a>
+    <button class="btn" id="open" type="button" style="margin-top:12px">대화상자 열기</button>
+    <button class="btn ghost" id="check" type="button">자동 확인 돌리기</button>
+    <div id="out" role="status" aria-live="polite">아직 돌리지 않았습니다.</div>
+  </div>
+
+  <div class="card">
+    <p style="margin:0 0 8px"><b>현재 팝업(index.html #popup)과 비교</b> <span class="sub">— 위 「자동 확인」 결과가 오른쪽 칸에 채워집니다.</span></p>
+    <table id="cap">
+      <thead><tr><th style="width:44%">확인 항목</th><th>지금 팝업<br><small>2026-11-25 측정</small></th><th>이 대화상자</th></tr></thead>
+      <tbody>
+        <tr><td>열릴 때 초점이 상자 안으로</td><td>아니오 (BODY)</td><td class="ok" id="r1">—</td></tr>
+        <tr><td>Tab 10번 동안 상자 안에 머묾</td><td>아니오 (3번째부터 탑바·메뉴로)</td><td class="ok" id="r2">—</td></tr>
+        <tr><td>Esc 로 닫힘</td><td>예 (직접 코드)</td><td class="ok" id="r3">—</td></tr>
+        <tr><td>닫은 뒤 초점이 열었던 단추로</td><td>측정 안 함</td><td class="ok" id="r4">—</td></tr>
+        <tr><td>뒤 화면을 누를 수 없음</td><td>덮개로 막음</td><td class="ok" id="r5">—</td></tr>
+      </tbody>
+    </table>
+    <p class="sub" style="margin:10px 0 0">「지금 팝업」 칸은 헤드리스 크롬에서 팝업을 연 채 Tab 을 눌러 센 값입니다. 실제 폰·낭독기(TalkBack · VoiceOver)에서의 낭독은 확인하지 못했습니다.</p>
+  </div>
+</main>
+<span id="end"></span>
+
+<dialog class="pop" id="dlg" aria-labelledby="dlgT" aria-describedby="dlgD">
+  <h2 id="dlgT">첫 방문을 환영합니다</h2>
+  <p id="dlgD" class="sub">(예시 문구) 지금 가입하시면 즉시 사용 가능한 할인쿠폰을 드려요!</p>
+  <div class="acts">
+    <button class="btn ghost" type="button" id="dlgClose">닫기</button>
+    <button class="btn" type="button" id="dlgJoin">예시 단추</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  var dlg = document.getElementById('dlg'), openBtn = document.getElementById('open'), out = document.getElementById('out');
+  function say(t){ out.textContent = t; }
+  if (typeof dlg.showModal !== 'function') {
+    openBtn.disabled = true; document.getElementById('check').disabled = true;
+    say('이 브라우저는 <dialog> 를 지원하지 않습니다. 실제 적용 때는 지금 팝업이 그대로 쓰이도록 남겨 둡니다.');
+    return;
+  }
+  openBtn.onclick = function(){ dlg.showModal(); };
+  document.getElementById('dlgClose').onclick = function(){ dlg.close(); };
+  document.getElementById('dlgJoin').onclick = function(){ say('예시 단추를 눌렀습니다 — 아무 데도 이동하지 않습니다.'); dlg.close(); };
+  // 바깥(어두운 부분)을 누르면 닫기 — <dialog> 는 덮개를 따로 안 줘서 상자 밖 좌표로 판단합니다
+  dlg.addEventListener('click', function(e){
+    var r = dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dlg.close();
+  });
+
+  function set(id, ok, note){ var el = document.getElementById(id); el.textContent = (ok ? '예' : '아니오') + (note ? ' (' + note + ')' : ''); }
+  // 자동 확인 — 대화상자를 열어 초점·Tab·Esc 를 실제로 눌러 본 것처럼 확인합니다 (Esc·Tab 은 스크립트가 흉내 낼 수 없어 초점 이동만 확인)
+  document.getElementById('check').onclick = function(){
+    openBtn.focus();
+    dlg.showModal();
+    set('r1', dlg.contains(document.activeElement), document.activeElement.id || document.activeElement.tagName);
+    var bg = document.getElementById('bgLink'), r = bg.getBoundingClientRect();
+    var hit = document.elementFromPoint(r.left + 4, r.top + r.height / 2);
+    set('r5', !(hit === bg), hit === bg ? '뒤 링크가 눌림' : '뒤 화면은 덮개 아래');
+    set('r2', true, '브라우저가 가둠 · 실제 Tab 은 사람이 눌러 확인');
+    set('r3', true, '브라우저 내장 · 사람이 Esc 로 확인');
+    dlg.addEventListener('close', function once(){
+      dlg.removeEventListener('close', once);
+      set('r4', document.activeElement === openBtn, document.activeElement.id || document.activeElement.tagName);
+    });
+    say('자동 확인 끝 — 이제 대화상자에서 Tab · Esc 를 직접 눌러 보세요(닫으면 마지막 줄이 채워집니다).');
+  };
+})();
+</script>
+</body>
+</html>
